@@ -133,11 +133,6 @@
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
     <Compile Include="CreerSignalement.cs" />
-    <Compile Include="EspaceCollaboratifHelper.cs" />
-    <Compile Include="FormConfigurerRipart.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormConfigurerRipart.Designer.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RépondreSignalement.cs" />
@@ -145,9 +140,6 @@
     <Compile Include="TelechargerSignalements.cs" />
     <Compile Include="VoirObjetsAssocies.cs" />
     <Compile Include="VoirSignalement.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="FormConfigurerRipart.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
