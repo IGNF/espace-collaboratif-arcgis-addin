@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Représente une boite englobante

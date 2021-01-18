@@ -2,7 +2,7 @@
 using System.IO;
 using log4net.Config;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe qui initialise le logger

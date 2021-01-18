@@ -1,4 +1,4 @@
-﻿namespace EspaceCollaboratif.Core
+﻿namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe représentant un thème

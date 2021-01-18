@@ -6,7 +6,7 @@ using System.IO;
 using System.Globalization;
 using log4net;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe pour le parsing des réponses xml et l'extraction des informations nécessaires

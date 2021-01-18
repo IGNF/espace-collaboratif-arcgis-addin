@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe représentant une remarque
@@ -257,7 +257,7 @@ namespace EspaceCollaboratif.Core
 
             System.Xml.Linq.XElement reponsesXML = new System.Xml.Linq.XElement("GEOREM_GEOREP");
           
-            foreach (EspaceCollaboratif.Core.GeoReponse uneGeoReponse in this.Reponses)
+            foreach (ArcGisProEspaceCollaboratif.Core.GeoReponse uneGeoReponse in this.Reponses)
             {
                 reponsesXML.Add(uneGeoReponse.EncodeToXML());
             }
@@ -266,19 +266,19 @@ namespace EspaceCollaboratif.Core
         }
 
 
-        public void SetPosition(EspaceCollaboratif.Core.Point position)
+        public void SetPosition(ArcGisProEspaceCollaboratif.Core.Point position)
         {
             this.Position = position;
         }
 
         public void SetPosition(double longitude, double latitude)
         {
-            this.Position = new EspaceCollaboratif.Core.Point( longitude, latitude);
+            this.Position = new ArcGisProEspaceCollaboratif.Core.Point( longitude, latitude);
         }
 
         public void ClearPosition()
         {
-            this.Position = new EspaceCollaboratif.Core.Point();
+            this.Position = new ArcGisProEspaceCollaboratif.Core.Point();
         }
 
 

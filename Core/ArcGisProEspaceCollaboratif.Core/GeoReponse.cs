@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe pour définir un objet réponse de EspaceCollaboratif.

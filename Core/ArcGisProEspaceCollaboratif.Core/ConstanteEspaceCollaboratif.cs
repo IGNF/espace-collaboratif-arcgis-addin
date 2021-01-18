@@ -1,7 +1,7 @@
 ﻿ using System;
 using System.Globalization;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     public class  ConstanteEspaceCollaboratif
     {

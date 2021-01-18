@@ -7,7 +7,7 @@ using System.Globalization;
 using log4net;
 using System.Xml.Linq;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Implémentation de l'interface IClient
@@ -23,7 +23,7 @@ namespace EspaceCollaboratif.Core
         private readonly String password;
 
         //utilisateur courant connecté
-        private readonly Auteur auteur=null;
+        //private readonly Auteur auteur=null;
 
         //version du service
         private readonly String version="";

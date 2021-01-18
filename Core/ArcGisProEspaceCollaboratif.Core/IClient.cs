@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EspaceCollaboratif.Core
+namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Classe qui gére les communications de haut niveaux entre le poste client et le serveur EspaceCollaboratif.
