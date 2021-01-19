@@ -63,6 +63,5 @@ namespace ArcGisProEspaceCollaboratif.Core
         int Get_MAX_TAILLE_UPLOAD_FILE();
         int Get_NB_DEFAULT_REMARQUES_PAGINATION();
         
-
     }
 }

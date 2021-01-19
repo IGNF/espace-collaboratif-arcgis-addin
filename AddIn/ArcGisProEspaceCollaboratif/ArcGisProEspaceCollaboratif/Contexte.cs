@@ -6,7 +6,6 @@ using System.Collections;
 
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
-//using ESRI.ArcGIS.Geometry;
 using ArcGIS.Core.Geometry;
 using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
@@ -132,7 +131,7 @@ namespace ArcGisProEspaceCollaboratif
         
 
         /// <summary>
-        /// Teste si le fichier de configuration Ripart.xml n'existe pas dans le répertoire de travail, on le copie 
+        /// Teste si le fichier de configuration EspaceCollaboratif.xml n'existe pas dans le répertoire de travail, on le copie 
         /// du répertoire d'installation 
         /// </summary>
         /// <returns>True si il existe le fichier de configuration EspaceCollaboratif.xml à côté de la carte en cours.</returns>
@@ -394,7 +393,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public void EffacerCompletCalquesRipart()
         {
-            this.CreateOrLoadRipartLayer();
+            this.CreateOrLoadEspaceCollaboratifLayer();
             foreach (IFeatureLayer calqueRipart in this.calquesRipart)
             {
                 IQueryFilter queryFilter = new QueryFilter();
@@ -744,8 +743,8 @@ namespace ArcGisProEspaceCollaboratif
                 if (nomCalqueExtraction.Length == 0)
                 { continue; }
 
-                ILayer calqueExtraxtion = this.GetLayerByName(nomCalqueExtraction);
-                if (calqueExtraxtion == null)
+                ILayer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
+                if (calqueExtraction == null)
                 { continue; }
 
                 ienum = elemCalqueExtraction[i].GetEnumerator();
@@ -758,7 +757,7 @@ namespace ArcGisProEspaceCollaboratif
                     string idObjectExtraction = noeud.Attributes["ID"].Value;
                     string valObjectExtraction = noeud.InnerText;
 
-                    IFeatureLayer featureLayerFiltrageSpatial = calqueExtraxtion as IFeatureLayer;
+                    IFeatureLayer featureLayerFiltrageSpatial = calqueExtraction as IFeatureLayer;
                     IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
 
                     IQueryFilter filtreSpatial = new QueryFilter
@@ -793,7 +792,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
+        /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
         public List<Geometry> GetGeometryFiltreSpatial_from_selection()
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
@@ -1066,39 +1065,35 @@ namespace ArcGisProEspaceCollaboratif
             return listCroquis;
         }
 
-
-
-
         /// <summary>
         /// Renvoie la date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.
         /// </summary>
         /// <returns>La date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.</returns>
         public System.DateTime Get_LastUpdate()
         {
-            IFeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
-            IFeatureClass featureClass = calqueEspaceCollaboratif.FeatureClass;
-
-            int champDate = featureClass.FindField(EspaceCollaboratifHelper.nom_Champ_DateMAJ);
-
-            IQueryFilter queryFilter = new QueryFilter();
-
-            IFeatureCursor cursor = featureClass.Search(queryFilter, true);
-
-            IFeature feature = cursor.NextFeature();
-
+            FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
+            FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
+            FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition();
+            int index = featureClassDefinition.FindField(EspaceCollaboratifHelper.nom_Champ_DateMAJ);
+            QueryFilter queryFilter = new QueryFilter();
             List<System.DateTime> listDate = new List<DateTime>();
-
-            while (feature != null)
+            using (RowCursor rowCursor = featureClass.Search(queryFilter, false))
             {
-               // listDate.Add(feature.get_Value(champDate));
-               listDate.Add( DateTime.Parse( feature.get_Value(champDate).ToString() ) );
-
-               feature = cursor.NextFeature();
+                while (rowCursor.MoveNext())
+                {
+                    /*using (Row row = rowCursor.Current)
+                    {
+                        string location = Convert.ToString(row[EspaceCollaboratifHelper.nom_Champ_DateMAJ]);
+                        listDate.Add(DateTime.Parse(location));
+                    }*/
+                    using (Feature feature = (Feature)rowCursor.Current)
+                    {
+                        listDate.Add(DateTime.Parse(feature.GetOriginalValue(index).ToString()));
+                    }
+                }
             }
-
             return listDate.Max();
         }
-
 
         /// <summary>
         /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
@@ -1108,15 +1103,13 @@ namespace ArcGisProEspaceCollaboratif
         public int Count_Remarque_by_Statut(int statut)
         {
             FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
-            IFeatureClass featureClass = calqueEspaceCollaboratif.FeatureClass;
-
-            int champStatut = featureClass.FindField(EspaceCollaboratifHelper.nom_Champ_Statut);
-            IQueryFilter queryFilter = new QueryFilter
+            FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
+            QueryFilter queryFilter = new QueryFilter
             {
                 WhereClause = EspaceCollaboratifHelper.nom_Champ_Statut + " = " + statut
             };
-
-            return featureClass.FeatureCount(queryFilter);
+           
+            return featureClass.GetCount(queryFilter);
         }
 
         /// <summary>
