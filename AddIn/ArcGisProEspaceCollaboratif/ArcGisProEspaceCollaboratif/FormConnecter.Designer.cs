@@ -1,6 +1,6 @@
 ﻿namespace ArcGisProEspaceCollaboratif
 {
-    partial class FormConnecterEspaceCollaboratif
+    partial class FormConnecter
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConnecterEspaceCollaboratif));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConnecter));
             this.InputLoginEspaceCollaboratif = new System.Windows.Forms.TextBox();
             this.labelInputLoginEspaceCollaboratif = new System.Windows.Forms.Label();
             this.labelInputPasswordEspaceCollaboratif = new System.Windows.Forms.Label();

@@ -5,16 +5,16 @@ using log4net;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    public partial class FormConnecterEspaceCollaboratif : Form
+    public partial class FormConnecter : Form
     {
 
         private System.Drawing.Size formSize; 
 
         ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
-        private static readonly ILog logger = LogManager.GetLogger(typeof(FormConnecterEspaceCollaboratif));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(FormConnecter));
        
 
-        public FormConnecterEspaceCollaboratif()
+        public FormConnecter()
         {
             InitializeComponent();
 

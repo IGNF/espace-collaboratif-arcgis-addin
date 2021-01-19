@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ArcGisProEspaceCollaboratif")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Acme")]
+[assembly: AssemblyCompany("IGN")]
 [assembly: AssemblyProduct("ArcGisProEspaceCollaboratif")]
-[assembly: AssemblyCopyright("Copyright © Acme 2021")]
+[assembly: AssemblyCopyright("Copyright © IGN 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -5,12 +5,12 @@ using System.Windows.Forms;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    public partial class FormInfoEspaceCollaboratif : Form
+    public partial class FormInfo : Form
     {
         int tempo;
 
 
-        public FormInfoEspaceCollaboratif()
+        public FormInfo()
         {
             InitializeComponent();
             this.timer.Stop();

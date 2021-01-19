@@ -1,0 +1,510 @@
+﻿using System;
+using System.Windows.Forms;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.ArcMapUI;
+using ArcGIS.Core.Data;
+
+namespace ArcGisProEspaceCollaboratif
+{
+    public partial class FormConfigurer : Form
+    {
+        bool majAttributs = false;
+        Contexte contexte = null;
+
+        public FormConfigurer(Contexte contexte)
+        {
+            InitializeComponent();
+
+            this.toolTip.SetToolTip(this.textBoxUrl, "L'adresse en ligne pour accéder au service de l'espace collaboratif.");
+            this.toolTip.SetToolTip(this.textBoxLogin, "Le login du compte utilisateur à utiliser par défaut pour se connecter au service de l'espace collaboratif.");
+            this.toolTip.SetToolTip(this.dateTimePicker, "La date limite à partir de laquelle seront extraites que les remarques plus récentes que cette date.");
+            this.toolTip.SetToolTip(this.numericUpDownDate, "Nombre de jours par rapport aujourd'hui limitant les remarques importées.");
+            this.toolTip.SetToolTip(this.comboBoxCalque, "Le calque à utiliser pour le filtrage spatial lors de l'importation des remarques de l'espace collaboratif.");
+            this.toolTip.SetToolTip(this.treeViewAttributs, "Les calques et leurs champs qu'il faut mettre en attribut lors de la génération des croquis de l'espace collaboratif.");
+            this.toolTip.SetToolTip(this.numericUpDownPagination, "Le nombre de remarques de l'espace collaboratif contenues dans un bloc de communication entre le serveur de l'espace collaboratif et l'add-in.");
+            this.toolTip.SetToolTip(this.buttonOK, "Pour sauvegarder la configuration dans le fichier EspaceCollaboratif.xml.");
+
+            this.contexte = contexte;
+        }
+
+
+        private void ConfigEspaceCollaboratif_Load(object sender, EventArgs e)
+        {
+            this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
+
+            if (EspaceCollaboratifHelper.Load_Login().Length == 0)
+            {
+                this.checkBoxLogin.Checked = false;
+                this.textBoxLogin.Enabled = false;
+            }
+            else
+            {
+                this.checkBoxLogin.Checked = true;
+                this.textBoxLogin.Text = EspaceCollaboratifHelper.Load_Login();
+            }
+
+            this.numericUpDownPagination.Value = EspaceCollaboratifHelper.Load_Pagination();
+            if (EspaceCollaboratifHelper.Load_Pagination() == 0)
+            {
+                this.checkBoxPagination.Checked = false;
+                this.numericUpDownPagination.Enabled = false;
+            }
+
+            this.dateTimePicker.Value = System.DateTime.Now;
+            this.dateTimePicker.MinDate = Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut).Date;
+            System.DateTime dateDefaut = EspaceCollaboratifHelper.Load_DateExtraction();
+            if (dateDefaut.Date == Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut).Date)
+            {
+                this.dateTimePicker.Enabled = false;
+                this.numericUpDownDate.Enabled = false;
+                this.checkBoxDate.Checked = false;
+            }
+            else
+            {
+                this.dateTimePicker.MaxDate = System.DateTime.Now.AddDays(1);
+                this.dateTimePicker.Text = dateDefaut.ToShortDateString();
+            }
+
+            string calqueFiltrageDefaut = EspaceCollaboratifHelper.Load_CalqueFiltrage();
+
+            IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
+            IActiveView activeView = mxDocument.ActiveView;
+
+            Map map = mxDocument.ActiveView.FocusMap as Map;
+
+            IEnumLayer listLayer = map.get_Layers(null, true); // Enumération des calques et des groupes de calques.
+            ILayer layer = listLayer.Next();
+
+            while (layer != null)
+            {
+                IFeatureLayer fl = layer as IFeatureLayer;
+
+                if (fl != null && !(layer.Name.Equals(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone)))
+                {   // On ne retient que les calques de type surfacique.
+                    if (fl.FeatureClass.ShapeType == ArcGIS.Core.Geometry.GeometryType.Polygon)
+                    {
+                        this.comboBoxCalque.Items.Add(layer.Name);
+                    }
+                }
+
+                layer = listLayer.Next();
+            }        
+
+            if (calqueFiltrageDefaut.Length == 0)
+            {
+                this.checkBoxCalque.Checked = false;
+                this.comboBoxCalque.Enabled = false;
+            }
+            else
+            {
+                this.comboBoxCalque.SelectedIndex = this.comboBoxCalque.FindStringExact(calqueFiltrageDefaut);
+            }
+
+
+            if (EspaceCollaboratifHelper.Load_AttributsCroquis().Nodes.Count >0)
+            {
+                this.checkBoxCroquis.Checked = true;
+            }
+            this.checkBoxCroquis.Text = "Calques sources et champs à mettre en\nattribut pour les nouveaux croquis de l'espace collaboratif :";
+
+            if (EspaceCollaboratifHelper.Load_Group() =="true")
+            {
+                this.checkBoxGroup.Checked = true;
+            }
+            else {
+                this.checkBoxGroup.Checked = false;
+            }
+            this.lblGroup.Text = this.contexte.ripClient.GetProfil().Geogroupe.Nom;
+
+
+        }
+
+        /// <summary>
+        /// Complète treeViewAttributs avec les calques et leurs champs présents sur la carte en cours. 
+        /// </summary>
+        /// <param name="contexte">Le contexte de la carte en cours</param>        
+        public void SetTreeViewAttributs(Contexte contexte)
+        {
+            for (int numLayer = 0; numLayer < contexte.Map.LayerCount; numLayer++)
+            {
+                ILayer calque = contexte.Map.get_Layer(numLayer);
+
+                if (calque is IGroupLayer && ((ICompositeLayer)calque).Count>0)
+                {           
+                    this.GetLayersInGroupLayer((ICompositeLayer)calque);                
+                }
+                else if ( calque is IFeatureLayer) // On ne prend que les calques vectoriels           
+                {
+                    this.AddCalque(calque);
+                }
+
+            }          
+
+
+            // Préselection des attributs pour génération de croquis.
+            this.majAttributs = false;
+            System.Windows.Forms.TreeNode attributsPreferred = EspaceCollaboratifHelper.Load_AttributsCroquis();
+            
+            foreach (System.Windows.Forms.TreeNode calqueAttribut in attributsPreferred.Nodes)
+            {  
+              this.SearchAndCheckElement( this.SeachNodeByName(calqueAttribut.Text)
+                                        , calqueAttribut);                
+            }
+
+            for (int numCalque = 0; numCalque < this.treeViewAttributs.Nodes.Count; numCalque++)
+            {
+                this.UpdateCheckNode(numCalque);
+            }
+
+            this.majAttributs = true;
+        }
+
+
+        /// <summary>
+        /// Recherche récursive de tous les calques dans un groupLayer
+        /// </summary>
+        /// <param name="group">le groupe </param>
+        private void GetLayersInGroupLayer(ICompositeLayer group)
+        {
+            for (int i = 0; i < group.Count; i++)
+            {
+                if (group.get_Layer(i) is IFeatureLayer)
+                {
+                    this.AddCalque(group.get_Layer(i));
+                }
+
+                else if (group.get_Layer(i) is IGroupLayer && ((ICompositeLayer)group.get_Layer(i)).Count > 0)
+                {
+                    this.GetLayersInGroupLayer((ICompositeLayer)group.get_Layer(i));
+                }
+
+            }
+        }
+
+
+        /// <summary>
+        /// Ajoute le calque et ses attributs à la liste des calques dans le configurateur
+        /// </summary>
+        /// <param name="calque"></param>
+        private void AddCalque(ILayer calque)
+        {
+            ILayerFields fieldsCalque = calque as ILayerFields;
+            this.treeViewAttributs.Nodes.Add(calque.Name);
+
+            for (int numField = 0; numField < fieldsCalque.FieldCount; numField++)
+            {   // Exclusion si le champ est type géométrique, raster ou binaire
+                if ((fieldsCalque.Field[numField].Type != FieldType.Geometry)
+                    && (fieldsCalque.Field[numField].Type != FieldType.Raster)
+                    && (fieldsCalque.Field[numField].Type != FieldType.Blob))
+                {
+                    this.treeViewAttributs.Nodes[treeViewAttributs.Nodes.Count - 1].Nodes.Add(fieldsCalque.Field[numField].Name);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Parcourt l'arbre des attributs pour retourner le numéro du noeud ayant le nom donné.
+        /// </summary>
+        /// <param name="nameCalque">Le nom du calque sdont on cherche le noeud dans l'arbre des attributs.</param>
+        /// <returns>Le numero du noeud trouvé, ou -1 en cas contraire.</returns>
+        private int SeachNodeByName(string nameCalque)
+        {
+            for (int i = 0; i < this.treeViewAttributs.Nodes.Count; i++)
+            {
+                if (this.treeViewAttributs.Nodes[i].Text == nameCalque)
+                {
+                    return i;
+                }
+            }          
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Recherche dans la liste des champs d'un calque donné, celui dont le nom correspond à un des noms en entrée et le coche s'il existe. 
+        /// </summary>
+        /// <param name="numCalque">Le n° du calque dans lequel il faut rechercher le champ voulu.</param>
+        /// <param name="nameField">Les noms des champs à rechercher.</param>
+        private void SearchAndCheckElement(int numNode, System.Windows.Forms.TreeNode treeNodeElements)
+        {
+            foreach (System.Windows.Forms.TreeNode element in treeNodeElements.Nodes)
+            {
+                this.SearchAndCheckElement(numNode, element.Text);
+            }
+        }
+
+        /// <summary>
+        /// Recherche dans la liste des champs d'un calque donné, celui dont le nom correspond au nom en entrée et le coche s'il existe. 
+        /// </summary>
+        /// <param name="numCalque">Le n° du calque dans lequel il faut rechercher le champ voulu.</param>
+        /// <param name="nameField">Le nom du champ à rechercher.</param>
+        private void SearchAndCheckElement(int numCalque, string nameField)
+        {
+            if (nameField.Length == 0 || (numCalque == -1) || (this.treeViewAttributs.Nodes.Count < numCalque - 1) ) { return; }
+            
+            for (int i = 0; i < this.treeViewAttributs.Nodes[numCalque].Nodes.Count; i++)
+            {
+                if (this.treeViewAttributs.Nodes[numCalque].Nodes[i].Text == nameField)
+                {                   
+                    this.treeViewAttributs.Nodes[numCalque].Nodes[i].Checked = true;
+                    return;
+                }
+            }
+           
+        }
+
+
+        /// <summary>
+        /// Événement à faire lors d'une sélection dans le calendrier. 
+        /// </summary>
+        private void DateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            if (this.dateTimePicker.Value.ToShortDateString() == System.DateTime.Now.ToShortDateString())
+            {
+                this.numericUpDownDate.Value = 0;
+            }
+            else
+            {
+                System.TimeSpan diffDate = System.DateTime.Now - this.dateTimePicker.Value;
+                this.numericUpDownDate.Value = diffDate.Days;
+            }
+        }
+
+        /// <summary>
+        /// Événement à faire lors d'une sélection du nombre du jour restant.
+        /// </summary>
+        private void NumericUpDownDate_ValueChanged(object sender, EventArgs e)
+        {
+            int diff = (int)this.numericUpDownDate.Value;
+
+            if (diff == 00)
+            {
+                this.dateTimePicker.Value = System.DateTime.Now;
+            }
+            else
+            {
+                System.DateTime newDate = System.DateTime.Now.AddDays(-diff);
+
+                if (newDate > this.dateTimePicker.MinDate)
+                {
+                    this.dateTimePicker.Value = newDate;
+                }
+                else
+                {
+                    this.dateTimePicker.Value = this.dateTimePicker.MinDate;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Événement à faire en cas de validation du formulaire.
+        /// </summary>
+        private void ButtonOK_Click(object sender, EventArgs e)
+        {
+
+           
+            EspaceCollaboratifHelper.Save_Urlhost(this.textBoxUrl.Text);
+
+            
+           if (!this.checkBoxLogin.Checked)
+           {
+               this.textBoxLogin.Text = "";
+           }
+           EspaceCollaboratifHelper.Save_Login(this.textBoxLogin.Text);
+
+           if (this.checkBoxPagination.Checked)
+           {
+               EspaceCollaboratifHelper.Save_Pagination((uint)this.numericUpDownPagination.Value);
+           }
+           else
+           {
+               EspaceCollaboratifHelper.Save_Pagination(0);
+           }
+
+           if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
+           {
+               EspaceCollaboratifHelper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
+           }
+           else
+           {
+               EspaceCollaboratifHelper.Save_CalqueFiltrage("");
+           }
+
+           if (this.checkBoxDate.Checked)
+           {
+               EspaceCollaboratifHelper.Save_DateExtraction(this.dateTimePicker.Value.Date);
+           }
+           else
+           {
+               EspaceCollaboratifHelper.Save_DateExtraction(Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut));
+           }
+
+           if (this.checkBoxGroup.Checked)
+           {
+               EspaceCollaboratifHelper.Save_Group("true");
+           }
+           else
+           {
+               EspaceCollaboratifHelper.Save_Group("false");
+           }
+
+           this.majAttributs = false;
+           if (this.checkBoxCroquis.Checked)
+           {
+               this.SaveAttributs();
+           }
+           else
+           {
+               EspaceCollaboratifHelper.Save_AttributsCroquis(new TreeNode());
+           }
+           
+            
+
+            this.Close();
+
+        }
+
+        /// <summary>
+        /// Événement à faire en cas de changement de la case à cocher pour l'entrée du login.
+        /// </summary>
+        private void CheckBoxLogin_CheckedChanged(object sender, EventArgs e)
+        {
+            this.textBoxLogin.Enabled = this.checkBoxLogin.Checked;
+        }
+
+        /// <summary>
+        /// Événement à faire en cas de changement de la case à cocher pour l'entrée de la pagination.
+        /// </summary>
+        private void CheckBoxPagination_CheckedChanged(object sender, EventArgs e)
+        {
+            this.numericUpDownPagination.Enabled = this.checkBoxPagination.Checked;
+        }
+
+        /// <summary>
+        /// Événement à faire en cas de changement de la case à cocher pour l'entrée de la date de filtrage.
+        /// </summary>
+        private void CheckBoxDate_CheckedChanged(object sender, EventArgs e)
+        {
+            this.dateTimePicker.Enabled = this.checkBoxDate.Checked;
+            this.numericUpDownDate.Enabled = this.checkBoxDate.Checked;
+        }
+
+        /// <summary>
+        /// Événement à faire en cas de changement de la case à cocher pour l'entrée du calque de filtrage.
+        /// </summary>
+        private void CheckBoxCalque_CheckedChanged(object sender, EventArgs e)
+        {
+            this.comboBoxCalque.Enabled = this.checkBoxCalque.Checked;   
+        }    
+      
+
+        /// <summary>
+        /// Met une coche sur le nœud  parent de treeViewAttributs si au moins un des ses sous-éléments est coché. 
+        /// </summary>
+        /// <param name="numNode">L'index du nœud  à tester.</param>
+        public void UpdateCheckNode(int numNode)
+        {
+            if (this.treeViewAttributs.Nodes.Count < numNode) { return; }
+
+            this.treeViewAttributs.Nodes[numNode].Checked = this.HasCheckedElement(numNode);
+        }
+
+
+        /// <summary>
+        /// Coche ou décoche tous les sous-éléments d'un nœud  donné de treeViewAttributs.
+        /// </summary>
+        /// <param name="numNode">L'index du nœud  à parcourrir.</param>
+        /// <param name="status">Option pour cocher ou non les sous-éléments.</param>
+        public void SetCheckNode(int numNode, bool status)
+        {
+            if (this.treeViewAttributs.Nodes.Count < numNode) { return; }
+
+            for (int i = 0; i < this.treeViewAttributs.Nodes[numNode].Nodes.Count; i++)
+            {
+                this.treeViewAttributs.Nodes[numNode].Nodes[i].Checked = status;
+            }
+
+            this.treeViewAttributs.Nodes[numNode].Checked = status;
+        }
+
+
+        /// <summary>
+        /// Indique si au moins un des sous-élements du nœud est coché
+        /// </summary>
+        /// <param name="numNode">L'index du nœud  à parcourrir.</param>
+        /// <returns>False si aucun sous-élément du nœud n'est coché.</returns>
+        public bool HasCheckedElement(int numNode)
+        {
+            if (this.treeViewAttributs.Nodes.Count < numNode) { return false; }
+
+            foreach (TreeNode childNode in this.treeViewAttributs.Nodes[numNode].Nodes)
+            {
+                if (childNode.Checked)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sauvegarde dans le fichier de configuration les champs sélectionnés.
+        /// </summary>
+        public void SaveAttributs()
+        {
+            System.Windows.Forms.TreeNode attributs = new TreeNode();
+
+            for (int numCalque = 0; numCalque < this.treeViewAttributs.Nodes.Count; numCalque++)
+            {
+                this.UpdateCheckNode(numCalque);
+
+                if (this.treeViewAttributs.Nodes[numCalque].Checked)
+                {
+                    attributs.Nodes.Add(this.treeViewAttributs.Nodes[numCalque].Text);
+
+                    foreach (System.Windows.Forms.TreeNode attribut in this.treeViewAttributs.Nodes[numCalque].Nodes)
+                    {
+                        if (attribut.Checked)
+                        {
+                            attributs.Nodes[attributs.Nodes.Count - 1].Nodes.Add(attribut.Text);
+                        }
+                    }
+                }
+            }
+
+            EspaceCollaboratifHelper.Save_AttributsCroquis(attributs);
+        }
+
+
+        /// <summary>
+        /// Met-à-jour les noeuds de treeViewAttributs selon leurs états de sélection et de ceux de leurs enfants. 
+        /// </summary>
+        private void TreeViewAttributs_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            
+            if (!this.majAttributs) { return; }
+
+            this.majAttributs = false;
+            if (e.Node.Level == 0)
+            {
+                int index = e.Node.Index;
+                bool select = this.treeViewAttributs.Nodes[index].Checked;               
+                this.SetCheckNode(index, select);                
+            }
+            else
+            {
+                int level = e.Node.Parent.Index;
+                this.UpdateCheckNode(level);
+            }
+            this.majAttributs = true;
+        }
+
+        private void TableLayoutPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+    }
+}

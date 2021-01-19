@@ -133,18 +133,38 @@
     <Compile Include="ChargerCouches.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
+    <Compile Include="Contexte.cs" />
     <Compile Include="CreerSignalement.cs" />
-    <Compile Include="FormConnecterEspaceCollaboratif.cs">
+    <Compile Include="EspaceCollaboratifHelper.cs" />
+    <Compile Include="FormConfigurer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormConnecterEspaceCollaboratif.Designer.cs">
-      <DependentUpon>FormConnecterEspaceCollaboratif.cs</DependentUpon>
+    <Compile Include="FormConfigurer.designer.cs">
+      <DependentUpon>FormConfigurer.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormInfoEspaceCollaboratif.cs">
+    <Compile Include="FormConnecter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormInfoEspaceCollaboratif.designer.cs">
-      <DependentUpon>FormInfoEspaceCollaboratif.cs</DependentUpon>
+    <Compile Include="FormConnecter.Designer.cs">
+      <DependentUpon>FormConnecter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormCreerSignalement.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCreerSignalement.designer.cs">
+      <DependentUpon>FormCreerSignalement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormInfo.designer.cs">
+      <DependentUpon>FormInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormRepondre.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRepondre.designer.cs">
+      <DependentUpon>FormRepondre.cs</DependentUpon>
     </Compile>
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -165,11 +185,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormConnecterEspaceCollaboratif.resx">
-      <DependentUpon>FormConnecterEspaceCollaboratif.cs</DependentUpon>
+    <EmbeddedResource Include="FormConfigurer.resx">
+      <DependentUpon>FormConfigurer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormInfoEspaceCollaboratif.resx">
-      <DependentUpon>FormInfoEspaceCollaboratif.cs</DependentUpon>
+    <EmbeddedResource Include="FormConnecter.resx">
+      <DependentUpon>FormConnecter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCreerSignalement.resx">
+      <DependentUpon>FormCreerSignalement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormInfo.resx">
+      <DependentUpon>FormInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRepondre.resx">
+      <DependentUpon>FormRepondre.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>

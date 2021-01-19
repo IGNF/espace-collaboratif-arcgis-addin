@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
+using ArcGIS.Core.Geometry;
+using ArcGIS.Core.Data;
+using ArcGIS.Desktop.Mapping;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.Geometry;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
 
@@ -17,7 +20,6 @@ namespace ArcGisProEspaceCollaboratif
     /// </summary>
     public class EspaceCollaboratifHelper
     {
-
         public const String nom_Fichier_EspaceCollaboratif = "EspaceCollaboratif.gdb";
         public const String nom_Fichier_Parametres_EspaceCollaboratif = "EspaceCollaboratif.xml";
 
@@ -46,7 +48,6 @@ namespace ArcGisProEspaceCollaboratif
         public const String nom_Champ_UrlPrive = "URL_privé";
         public const String nom_Champ_Document = "Document";
         public const String nom_Champ_Autorisation = "Autorisation";
-
         public const String nom_Champ_LienRemarque = "Lien_remarque";
         public const String nom_Champ_NomCroquis = "Nom";
         public const String nom_Champ_Attributs = "Attributs_croquis";
@@ -64,18 +65,13 @@ namespace ArcGisProEspaceCollaboratif
         public const String xml_BaliseChampCalque = "Calque_Champ";
         public const String xml_Group = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Import_pour_groupe";
 
-       
         public const String dateDefaut = "01/01/1900";
         public const int longueurMaxChamp = 5000;
      
         public static String EspaceCollaboratifAssemblyDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)+ "\\";
        
-
-        private ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
+        private readonly ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(EspaceCollaboratifHelper));
-
-
-
 
         /// <summary>
         /// Teste si la remarque donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
@@ -83,14 +79,13 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="remarqueTest">La remarque EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si la remarque à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Remarque remarqueTest, List<IGeometry> geometrys)
+        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Remarque remarqueTest, List<Geometry> geometrys)
         {
-            foreach (IGeometry shape in geometrys)
+            foreach (Geometry shape in geometrys)
             {
                 if (!shape.IsEmpty)
                 {
-                    IPolygon polygon = shape as IPolygon;
-
+                    Polygon polygon = shape as Polygon;
                     // Création de l'opérateur de filtrage
                     IRelationalOperator2 filtrageSpatial = (IRelationalOperator2)polygon;
 
@@ -99,12 +94,9 @@ namespace ArcGisProEspaceCollaboratif
                         return true;
                     }
                 }
-
             }
-
             return false;
         }
-
 
         /// <summary>
         /// Définit toutes les caractéristiques pour le futur calque dédié à contenir les remarques EspaceCollaboratif.
@@ -112,14 +104,13 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static IFeatureLayer CreerCalqueRemarqueEspaceCollaboratif(IFeatureWorkspace featureWorkspace, ISpatialReference spatialReferenceCalque)
+        public static IFeatureLayer CreerCalqueRemarqueEspaceCollaboratif(IFeatureWorkspace featureWorkspace, SpatialReference spatialReferenceCalque)
         {
             // Instantiate a feature class description to get the required fields.
             IFeatureClassDescription fcDescription = new FeatureClassDescription() as IFeatureClassDescription;
             IObjectClassDescription ocDescription = (IObjectClassDescription)fcDescription;
             IFields fields = ocDescription.RequiredFields;
             IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
-
             // -- on complete la définition de la géométrie
             {
                 int shapeFieldIndex = fields.FindField(fcDescription.ShapeFieldName);
@@ -127,10 +118,9 @@ namespace ArcGisProEspaceCollaboratif
 
                 IGeometryDef geometryDef = shapeField.GeometryDef;
                 IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
-                geometryDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPoint; // Ici on choisit une géométrie de point pour le nouveau calque.
+                geometryDefEdit.GeometryType_2 = GeometryType.Point; // Ici on choisit une géométrie de point pour le nouveau calque.
 
-                ISpatialReference spatialReference = spatialReferenceCalque;
-
+                SpatialReference spatialReference = spatialReferenceCalque;
                 ISpatialReferenceResolution spatialReferenceResolution = (ISpatialReferenceResolution)spatialReference;
                 spatialReferenceResolution.ConstructFromHorizon();
                 spatialReferenceResolution.SetDefaultXYResolution();
@@ -142,41 +132,41 @@ namespace ArcGisProEspaceCollaboratif
 
 
             // Ajoute le champ: numéro de la remarque
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_IdRemarque, esriFieldType.esriFieldTypeInteger));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_IdRemarque, FieldType.Integer));
             // Ajoute le champ: nom de l'auteur de la remarque
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Auteur, esriFieldType.esriFieldTypeString, 50));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Auteur, FieldType.String, 50));
             // Ajoute le champ: nom de la commune où est située la remarque
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Commune, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Commune, FieldType.String));
             // Ajoute le champ: nom du département où est située la remarque
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Departement, esriFieldType.esriFieldTypeString, 23));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Departement, FieldType.String, 23));
             // Ajoute le champ: indicatif département où est située la remarque
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_IDDepartement, esriFieldType.esriFieldTypeString, 3));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_IDDepartement, FieldType.String, 3));
             // Ajoute le champ: date de création
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_DateCreation, esriFieldType.esriFieldTypeDate));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_DateCreation, FieldType.Date));
             // Ajoute le champ: date de mise à jour
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_DateMAJ, esriFieldType.esriFieldTypeDate));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_DateMAJ, FieldType.Date));
             // Ajoute le champ: date de validation
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_DateValidation, esriFieldType.esriFieldTypeDate));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_DateValidation, FieldType.Date));
             // Ajoute le champ: thèmes
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Themes, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Themes, FieldType.String));
             // Ajoute le champ: statut
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Statut, esriFieldType.esriFieldTypeInteger));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Statut, FieldType.Integer));
 
             // Ajoute le champ: message            
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Message, esriFieldType.esriFieldTypeString, EspaceCollaboratifHelper.longueurMaxChamp));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Message, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
 
             // Ajoute le champ: réponse
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Reponse, esriFieldType.esriFieldTypeString, EspaceCollaboratifHelper.longueurMaxChamp));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Reponse, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
 
             // Ajoute le champ: lien public.
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Url, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Url, FieldType.String));
             // Ajoute le champ: lien privé.
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_UrlPrive, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_UrlPrive, FieldType.String));
 
             // Ajoute le champ: document.
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Document, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Document, FieldType.String));
             // Ajoute le champ: autorisation
-            fieldsEdit.AddField(DefenirChamp(nom_Champ_Autorisation, esriFieldType.esriFieldTypeString));
+            fieldsEdit.AddField(DefinirChamp(nom_Champ_Autorisation, FieldType.String));
              
             // Use IFieldChecker to create a validated fields collection.
             IFieldChecker fieldChecker = new FieldChecker();
@@ -196,9 +186,11 @@ namespace ArcGisProEspaceCollaboratif
                 "" //configKeyword
             );
 
-            IFeatureLayer featureLayer = new FeatureLayer();
-            featureLayer.FeatureClass = featureClass;
-            featureLayer.Name = featureClass.AliasName;
+            IFeatureLayer featureLayer = new FeatureLayer
+            {
+                FeatureClass = featureClass,
+                Name = featureClass.AliasName
+            };
 
             ILayer layer = featureLayer;
         
@@ -214,7 +206,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <param name="type_CoucheCroquis">Le type géométrique du calque nouvellement créé.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static IFeatureLayer CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, IFeatureWorkspace workspaceTemp, ISpatialReference spatialReferenceCalque, esriGeometryType type_CoucheCroquis)
+        public static IFeatureLayer CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, IFeatureWorkspace workspaceTemp, ISpatialReference spatialReferenceCalque, GeometryType type_CoucheCroquis)
         {
             // Instantiate a feature class description to get the required fields.
             IFeatureClassDescription fcDescription_CoucheCroquis = new FeatureClassDescription() as IFeatureClassDescription;
@@ -232,7 +224,7 @@ namespace ArcGisProEspaceCollaboratif
                 IGeometryDefEdit geometryDefEdit_CoucheCroquis = (IGeometryDefEdit)geometryDef_CoucheCroquis;
                 geometryDefEdit_CoucheCroquis.GeometryType_2 = type_CoucheCroquis;
 
-                ISpatialReference spatialReference_CoucheCroquis = spatialReferenceCalque;
+                SpatialReference spatialReference_CoucheCroquis = spatialReferenceCalque;
 
                 ISpatialReferenceResolution spatialReferenceResolution_CoucheCroquis = (ISpatialReferenceResolution)spatialReference_CoucheCroquis;
                 spatialReferenceResolution_CoucheCroquis.ConstructFromHorizon();
@@ -245,10 +237,10 @@ namespace ArcGisProEspaceCollaboratif
 
 
             // Ajoute le champ: Lien_remarque
-            fieldsEdit_CoucheCroquis.AddField(DefenirChamp(nom_Champ_LienRemarque, esriFieldType.esriFieldTypeInteger));
-            fieldsEdit_CoucheCroquis.AddField(DefenirChamp(nom_Champ_NomCroquis, esriFieldType.esriFieldTypeString));
-            fieldsEdit_CoucheCroquis.AddField(DefenirChamp(nom_Champ_Attributs, esriFieldType.esriFieldTypeString, EspaceCollaboratifHelper.longueurMaxChamp));
-            fieldsEdit_CoucheCroquis.AddField(DefenirChamp(nom_Champ_LienBDuni, esriFieldType.esriFieldTypeString));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienRemarque, FieldType.Integer));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_NomCroquis, FieldType.String));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_Attributs, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienBDuni, FieldType.String));
 
 
 
@@ -271,9 +263,11 @@ namespace ArcGisProEspaceCollaboratif
                 "" //configKeyword
             );
 
-            IFeatureLayer featureLayer_Croquis = new FeatureLayer();
-            featureLayer_Croquis.FeatureClass = featureClass_Croquis;
-            featureLayer_Croquis.Name = featureClass_Croquis.AliasName;
+            IFeatureLayer featureLayer_Croquis = new FeatureLayer
+            {
+                FeatureClass = featureClass_Croquis,
+                Name = featureClass_Croquis.AliasName
+            };
 
             return featureLayer_Croquis;
         }
@@ -287,9 +281,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="typeChamp">Le type de donnée contenue dans le nouveau champ.</param>
         /// <param name="tailleLimite">La longueur maximale du nouveau champ.</param>
         /// <returns>Field à utliser lors de la définition d'un nouvel calque.</returns>
-        public static IField DefenirChamp(string nomChamp, esriFieldType typeChamp, int tailleLimite = 0)
+        public static Field DefinirChamp(string nomChamp, FieldType typeChamp, int tailleLimite = 0)
         {
-            IField fieldSupp = new Field();
+            IField fieldSupp = new IField();
             IFieldEdit fieldEdit = (IFieldEdit)fieldSupp;
             fieldEdit.Name_2 = nomChamp;
             fieldEdit.Type_2 = typeChamp;
@@ -323,12 +317,12 @@ namespace ArcGisProEspaceCollaboratif
 
 
         /// <summary>
-        /// Génère à partir d'un croquis EspaceCollaboratif, son équivalent IGeometry pouvant être mise dans une shape.
+        /// Génère à partir d'un croquis EspaceCollaboratif, son équivalent Geometry pouvant être mise dans une shape.
         /// </summary>
-        /// <param name="uneGeometrie">Une IGeometry de départ pour définir la nature géométrique de la IGeometry en sortie.</param>
+        /// <param name="uneGeometrie">Une Geometry de départ pour définir la nature géométrique de la IGeometry en sortie.</param>
         /// <param name="unCroquis">Le croquis à transformer en IGeometry équivalent.</param>
         /// <returns>Une Geometry équivalente au croquis en entrée.</returns>
-        public static IGeometry GeometryFromCroquis(IGeometry uneGeometrie, ArcGisProEspaceCollaboratif.Core.Croquis unCroquis)
+        public static Geometry GeometryFromCroquis(Geometry uneGeometrie, ArcGisProEspaceCollaboratif.Core.Croquis unCroquis)
         {
             IPointCollection pointCollection = null;
             pointCollection = uneGeometrie as IPointCollection;
@@ -392,9 +386,9 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (ArcGisProEspaceCollaboratif.Core.Remarque remarque in remarques)
             {
-                if (remarque.concatenateReponse().Length > maxLength)
+                if (remarque.ConcatenateReponse().Length > maxLength)
                 {
-                    maxLength = remarque.concatenateReponseHTML().Length;
+                    maxLength = remarque.ConcatenateReponseHTML().Length;
                 }
             }
 
@@ -412,9 +406,9 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (ArcGisProEspaceCollaboratif.Core.Remarque remarque in remarques)
             {
-                if (remarque.concatenateReponse().Length > maxLength)
+                if (remarque.ConcatenateReponse().Length > maxLength)
                 {
-                    maxLength = remarque.concatenateReponse().Length;
+                    maxLength = remarque.ConcatenateReponse().Length;
                 }
             }
 
@@ -429,18 +423,18 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>True si <paramref name="featureTest"/> est de type Polygon, Envelope ou est une ligne fermée.</returns>
         public static bool TestGeometrieFiltrageSpatial(IFeature featureTest)
         {
-            IGeometry contourFiltrageSpatial = featureTest.Shape;
+            Geometry contourFiltrageSpatial = featureTest.Shape;
             ICurve contour = featureTest as ICurve;
 
-            if (contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryPolygon
-                  || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryEnvelope
+            if (contourFiltrageSpatial.GeometryType == GeometryType.Polygon
+                  || contourFiltrageSpatial.GeometryType == GeometryType.Envelope
                    )
             {
                 return true;
             }
             else
             {
-                if (contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryPolygon
+                if (contourFiltrageSpatial.GeometryType == GeometryType.Polygon
                   || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryCircularArc
                   || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryEllipticArc
                   || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryRing
@@ -572,7 +566,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le Polygon délimitée par <paramref name="polyligneEntree"/>.</returns>
         public static IPolygon PolylineToPolygon(IPolyline polyligneEntree)
         {
-            IPolygon polygonSortie = new Polygon() as IPolygon;
+            IPolygon polygonSortie = new IPolygon() as IPolygon;
 
             IPointCollection vertexPolyligne = polyligneEntree as IPointCollection;
             IPointCollection vertexPolygon = polygonSortie as IPointCollection;
@@ -734,7 +728,7 @@ namespace ArcGisProEspaceCollaboratif
 
             // Si le croquis se résume à un ponctuel
             if (croquisEntree.Type == ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Point || croquisEntree.Type == ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte)
-            { return EspaceCollaboratifHelper.TransformPoint(croquisEntree.firstCoord()); }
+            { return EspaceCollaboratifHelper.TransformPoint(croquisEntree.FirstCoord()); }
 
             return EspaceCollaboratifHelper.Centroid(EspaceCollaboratifHelper.CroquisToPolyline(croquisEntree));
         }
@@ -858,11 +852,11 @@ namespace ArcGisProEspaceCollaboratif
         {
             ArcGisProEspaceCollaboratif.Core.Croquis newCroquis = new ArcGisProEspaceCollaboratif.Core.Croquis();
             if (pointCollectionEntree.PointCount == 0) { return newCroquis; }
-            newCroquis.setType(typeCroquis);
+            newCroquis.SetType(typeCroquis);
 
             for (int i = 0; i < pointCollectionEntree.PointCount; i++)
             {
-                newCroquis.addPoint(EspaceCollaboratifHelper.TransformPoint(pointCollectionEntree.Point[i]));
+                newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(pointCollectionEntree.Point[i]));
             }
             return newCroquis;
         }
@@ -913,7 +907,7 @@ namespace ArcGisProEspaceCollaboratif
                    string  sAtt = System.Convert.ToString(feature.get_Value(i));
 
                    // Suppression de la partie heure 00:00:00 si le champ est de type date
-                   if (feature.Fields.Field[i].Type == esriFieldType.esriFieldTypeDate && sAtt.Length != 0)
+                   if (feature.Fields.Field[i].Type == FieldType.Date && sAtt.Length != 0)
                    {
                        if (sAtt.Substring(sAtt.Length - 9).Equals(" 00:00:00"))
                        {
@@ -921,7 +915,7 @@ namespace ArcGisProEspaceCollaboratif
                        }
                    }
 
-                   croquis.addAttribut(feature.Fields.Field[i].Name, sAtt);
+                   croquis.AddAttribut(feature.Fields.Field[i].Name, sAtt);
                 }
             }
              
@@ -947,7 +941,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometryEntree">La géométrie dont il faut convertir en croquis EspaceCollaboratif.</param>        
         /// <returns>Le croquis EspaceCollaboratif issu depuis <paramref name="geometryEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Croquis MakeCroquis(IGeometry geometryEntree)
+        public static ArcGisProEspaceCollaboratif.Core.Croquis MakeCroquis(Geometry geometryEntree)
         {
             ArcGisProEspaceCollaboratif.Core.Croquis newCroquis = new ArcGisProEspaceCollaboratif.Core.Croquis();
 
@@ -967,32 +961,32 @@ namespace ArcGisProEspaceCollaboratif
                     break;
 
                 case esriGeometryType.esriGeometryLine:
-                    newCroquis.setType(ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
+                    newCroquis.SetType(ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
                     ILine ligne = geometryEntree as ILine;
-                    newCroquis.addPoint(EspaceCollaboratifHelper.TransformPoint(ligne.FromPoint));
-                    newCroquis.addPoint(EspaceCollaboratifHelper.TransformPoint(ligne.ToPoint));
+                    newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(ligne.FromPoint));
+                    newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(ligne.ToPoint));
                     break;
 
-                case esriGeometryType.esriGeometryPoint:
-                    newCroquis.setType(ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Point);
+                case GeometryType.Point:
+                    newCroquis.SetType(ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Point);
                     IPoint point = geometryEntree as IPoint;
-                    newCroquis.addPoint(EspaceCollaboratifHelper.TransformPoint(point));
+                    newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(point));
                     break;
 
-                case esriGeometryType.esriGeometryPolygon:
-                    IPolygon polygon = geometryEntree as IPolygon;
+                case GeometryType.Polygon:
+                    Polygon polygon = geometryEntree as Polygon;
                     IPointCollection vertexPolygon = polygon as IPointCollection;
                     newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexPolygon, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone);
                     break;
 
-                case esriGeometryType.esriGeometryPolyline:
-                    IPolyline polyligne = geometryEntree as IPolyline;
+                case GeometryType.Polyline:
+                    Polyline polyligne = geometryEntree as Polyline;
                     IPointCollection vertexPolyligne = polyligne as IPointCollection;
                     newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexPolyligne, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
                     break;
             }
 
-            if (!newCroquis.isValid()) { return new ArcGisProEspaceCollaboratif.Core.Croquis(); }
+            if (!newCroquis.IsValid()) { return new ArcGisProEspaceCollaboratif.Core.Croquis(); }
             return newCroquis;
         }
 
@@ -1016,7 +1010,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     if (croquisUn.Type == ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Point || croquisUn.Type == ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte)
                     {
-                        return croquisUn.firstCoord();
+                        return croquisUn.FirstCoord();
                     }
                     else
                     {
@@ -1075,8 +1069,10 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le point sur lequel sera centrée la nouvelle remarque EspaceCollaboratif contenant le croquis <paramref name="croquisEntree"/>.</returns>
         public static ArcGisProEspaceCollaboratif.Core.Point PointApplicationEspaceCollaboratif(ArcGisProEspaceCollaboratif.Core.Croquis croquisEntree)
         {
-            List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Croquis>();
-            listCroquis.Add(croquisEntree);
+            List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Croquis>
+            {
+                croquisEntree
+            };
             return EspaceCollaboratifHelper.PointApplicationEspaceCollaboratif(listCroquis);
         }
 
