@@ -55,6 +55,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             return !( point1 == point2 ) ;
         }
 
+        public static implicit operator global::ArcGIS.Core.Geometry.MapPoint(Point v)
+        {
+            throw new NotImplementedException();
+        }
 
         public override bool Equals(Object obj)
         {

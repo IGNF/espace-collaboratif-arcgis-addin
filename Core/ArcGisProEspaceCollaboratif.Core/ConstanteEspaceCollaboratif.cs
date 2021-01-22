@@ -5,6 +5,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 {
     public class  ConstanteEspaceCollaboratif
     {
+
         //variable permettant de rendre indifférent à la culture (par exemple pour les nombre à virgule)
         public static CultureInfo invC = CultureInfo.InvariantCulture;
 
@@ -20,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const String EspaceCollaboratif_CLIENT_PROTOCOL = "_EspaceCollaboratif_AGIS_64512";
 
         // Définition donnant la version de ce programme.
-        public  const String EspaceCollaboratif_CLIENT_VERSION = "1_1_0";
+        public const String EspaceCollaboratif_CLIENT_VERSION = "1_1_0";
 
         public const String EspaceCollaboratif_GEOREM_GET = "georem_get";
         public const String EspaceCollaboratif_GEOREM_POST = "georem_post";

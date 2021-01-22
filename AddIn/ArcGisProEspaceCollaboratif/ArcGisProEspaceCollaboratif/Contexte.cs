@@ -5,8 +5,10 @@ using System.Xml;
 using System.Collections;
 
 using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.Geodatabase;
+//using ESRI.ArcGIS.Geodatabase;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Core.Data;
+using ArcGIS.Core.Internal.Data.DDL;
 using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
 
@@ -15,7 +17,7 @@ using System.Windows.Forms;
 
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
-using ArcGIS.Core.Data;
+
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -216,7 +218,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Remarque))
             {
-                IFeatureLayer fl = this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Remarque, false);
+                FeatureLayer fl = this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Remarque, false);
                 if (fl == null)
                 {
                     fl = EspaceCollaboratifHelper.CreerCalqueRemarqueEspaceCollaboratif(this.FeatureWorkspace, this.spatialReferenceEspaceCollaboratif);
@@ -351,6 +353,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             string folder = this.repertoireTravail;
             string nomFichierEspaceCollaboratif = this.fichierCarteTravail + "_EspaceCollaboratif";
+            string nomRepFicGdb = folder + "\\" + nomFichierEspaceCollaboratif + ".gdb";
 
 
             // Instantiate a file geodatabase workspace factory and create a file geodatabase.
@@ -361,27 +364,35 @@ namespace ArcGisProEspaceCollaboratif
             IWorkspaceName workspaceName = null;
             IWorkspace workspace = null;
 
-            bool fichierEspaceCollaboratifExistant = System.IO.Directory.Exists(folder + "\\" + nomFichierEspaceCollaboratif + ".gdb");
+            bool bFichierEspaceCollaboratifExistant = System.IO.Directory.Exists(nomRepFicGdb);
 
-            if (fichierEspaceCollaboratifExistant)
+            if (bFichierEspaceCollaboratifExistant)
             {
-                ESRI.ArcGIS.esriSystem.PropertySet fichierPropertySet = new ESRI.ArcGIS.esriSystem.PropertySet();
-                workspace = workspaceFactory.OpenFromFile(folder + "\\" + nomFichierEspaceCollaboratif + ".gdb", 0) as IWorkspace;
+                // Create a FileGeodatabaseConnectionPath with the name of the file geodatabase you wish to create
+                FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
 
-                logger.Debug("Ouvre geodatabase existante:" + folder + "\\" + nomFichierEspaceCollaboratif + ".gdb");
+                ESRI.ArcGIS.esriSystem.PropertySet fichierPropertySet = new ESRI.ArcGIS.esriSystem.PropertySet();
+                workspace = workspaceFactory.OpenFromFile(nomRepFicGdb, 0) as IWorkspace;
+
+                logger.Debug("Ouverture geodatabase existante : " + nomRepFicGdb);
             }
             else
             {
+                // Create and use the file geodatabase
+                FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
+                using (Geodatabase geodatabase = SchemaBuilder.CreateGeodatabase(fileGeodatabaseConnectionPath))
+                {
+                    
+                }
                 workspaceName = workspaceFactory.Create(folder, nomFichierEspaceCollaboratif, null, 0);
 
                 // Cast the workspace name object to the IName interface and open the workspace.
                 ESRI.ArcGIS.esriSystem.IName name = (ESRI.ArcGIS.esriSystem.IName)workspaceName;
                 workspace = (IWorkspace)name.Open();
 
-                logger.Debug("Création de la geodatabase:" + folder + "\\" + nomFichierEspaceCollaboratif + ".gdb");
+                logger.Debug("Création geodatabase :" + nomRepFicGdb);
 
             }
-
 
             IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
             return featureWorkspace;
@@ -502,7 +513,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         Polyline polylineCroquis = new Polyline() as Polyline;
                         Polygon polygonCroquis = new Polygon() as Polygon;
-                        Point pointCroquis = EspaceCollaboratifHelper.TransformPoint(unCroquis.Points.First());
+                        ArcGIS.Core.Geometry.MapPoint pointCroquis = EspaceCollaboratifHelper.TransformPoint(unCroquis.Points.First());
 
                         try
                         {
@@ -1172,7 +1183,7 @@ namespace ArcGisProEspaceCollaboratif
             while (feature != null)
             {
                 Geometry geometry = feature.Shape;
-                IPoint point = geometry as IPoint;
+                Point point = geometry as Point;
                 point.Project(this.spatialReferenceEspaceCollaboratif);
 
                 coordX.Add(point.X);

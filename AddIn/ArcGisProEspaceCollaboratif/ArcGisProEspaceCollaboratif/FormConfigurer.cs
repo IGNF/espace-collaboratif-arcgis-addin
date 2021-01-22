@@ -4,6 +4,7 @@ using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Core.Data;
+using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -187,7 +188,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Ajoute le calque et ses attributs à la liste des calques dans le configurateur
         /// </summary>
         /// <param name="calque"></param>
-        private void AddCalque(ILayer calque)
+        private void AddCalque(Layer calque)
         {
             ILayerFields fieldsCalque = calque as ILayerFields;
             this.treeViewAttributs.Nodes.Add(calque.Name);

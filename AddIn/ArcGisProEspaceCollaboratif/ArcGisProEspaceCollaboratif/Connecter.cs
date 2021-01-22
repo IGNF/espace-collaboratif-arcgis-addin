@@ -13,7 +13,7 @@ namespace ArcGisProEspaceCollaboratif
         protected override void OnClick()
         {
             //ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Se connecter à l'espace collaboratif", "Espace collaboratif");
-            logger.Debug("Click sur connexion au service de l'Espace collaboratif");
+            logger.Debug("Click sur le bouton de connexion au service de l'Espace collaboratif");
             try
             {
                 Contexte contexte = Contexte.Instance;

@@ -21,7 +21,6 @@ namespace ArcGisProEspaceCollaboratif.Core
        //niveau de log
        private readonly String level = "ALL";
 
-
         /// <summary>
         /// retourne l'instance du EspaceCollaboratifLogger
         /// </summary>
@@ -36,7 +35,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                         if (instance == null)
                         {
                             instance = new EspaceCollaboratifLogger();
-
                         }
                     }
                 }
@@ -49,19 +47,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Crée le fichier de configuration s'il n'existe pas et configure le chemin du XNLConfigurateur de log4Net
         /// </summary>
         private EspaceCollaboratifLogger()
-        {
-         
+        {        
             if (!Directory.Exists(logPath))
             {
                 Directory.CreateDirectory(logPath);
             }
             StartLog();
            
-            XmlConfigurator.Configure(new FileInfo(configFile));
-
-           
+            XmlConfigurator.Configure(new FileInfo(configFile));      
         }
-
 
         /// <summary>
         /// Création du fichier de configuration du log (log4net.config), s'il n'existe pas
@@ -69,7 +63,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         private void StartLog()
         {                    
             if (!File.Exists(configFile))
-
             {
                 String logConfig = "<log4net>\n" +
                                   "<appender name=\"RollingFile\" type=\"log4net.Appender.RollingFileAppender\">\n" +
@@ -90,11 +83,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                                   "</root>\n" +
                                 "</log4net>";
 
-
                 System.IO.File.WriteAllText(configFile, logConfig);
             }
 
-  
             //on ne garde que le fichier de log du jour courant
             DirectoryInfo d = new DirectoryInfo(logPath);
             FileInfo[] Files = d.GetFiles("*.log");
@@ -107,7 +98,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                     File.Delete(logPath + "\\" + file);
                 }
             }
-
         }
 
         /// <summary>
@@ -117,6 +107,5 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             return logPath;
         }
-
     }
 }
