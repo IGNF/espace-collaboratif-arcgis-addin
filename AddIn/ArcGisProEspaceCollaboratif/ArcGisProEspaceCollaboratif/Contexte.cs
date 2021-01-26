@@ -180,7 +180,17 @@ namespace ArcGisProEspaceCollaboratif
             string lineSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne;
             string pointSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Point;
 
-            string reportLayer = EspaceCollaboratifHelper.nom_Calque_Remarque;
+            string reportLayer = EspaceCollaboratifHelper.nom_Calque_Signalement;
+
+            // Signalements
+            if (!this.IsLayerInMap(reportLayer))
+            {
+                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + reportLayer))
+                {
+                    bool b = await EspaceCollaboratifHelper.CreerCalqueSignalementEspaceCollaboratif();
+                }
+                this.LoadLayer(pointSketchLayer);
+            }
 
             // Croquis polygones
             if (!this.IsLayerInMap(polygonSketchLayer))
