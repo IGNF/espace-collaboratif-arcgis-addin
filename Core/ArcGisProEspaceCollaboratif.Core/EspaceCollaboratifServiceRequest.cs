@@ -23,7 +23,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         public static bool ValidateRemoteCertificate(object sender, System.Security.Cryptography.X509Certificates.X509Certificate cert, X509Chain chain, SslPolicyErrors policyErrors)
         {
             bool result = false;
-            if (cert.Subject.Equals("C=FR, CN=*.ign.fr") )
+            string certificateSubject = cert.Subject;
+            if (certificateSubject.Contains("C=FR") && certificateSubject.Contains("CN=*.ign.fr") )
             {
                 result = true;
             }
