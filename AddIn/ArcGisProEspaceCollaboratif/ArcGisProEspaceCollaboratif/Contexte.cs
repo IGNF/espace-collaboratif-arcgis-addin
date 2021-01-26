@@ -12,7 +12,7 @@ using ArcGIS.Core.Internal.Data.DDL;
 //using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Core.Geoprocessing;
 
 using System.IO;
 using System.Windows.Forms;
@@ -20,7 +20,8 @@ using System.Threading.Tasks;
 
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
-
+using System.Threading;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -37,6 +38,7 @@ namespace ArcGisProEspaceCollaboratif
         //public ArcGIS.Desktop.Mapping.MapView Map;//mapView;
         //public ArcGIS.Desktop.Mapping.MapTool mapTool;
         //public IFeatureWorkspace FeatureWorkspace;
+        public string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
 
         public string repertoireTravail; // Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille.
         public string fichierCarteTravail; // Le fichier de la carte ArcGIS Pro sur laquelle on travaille.
@@ -104,7 +106,7 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        private void Init(MapView activeView)
+        protected async void Init(MapView activeView)
         {
             this.mapActiveView = activeView;
 
@@ -116,7 +118,7 @@ namespace ArcGisProEspaceCollaboratif
             Project project = Project.Current;
             if (project.Name.Length == 0)
             {
-                throw new Exception(@"Votre document mxd doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
+                throw new Exception(@"Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
             }
 
             this.repertoireTravail = System.IO.Path.GetDirectoryName(project.Path);
@@ -124,11 +126,11 @@ namespace ArcGisProEspaceCollaboratif
 
             this.CheckConfigFile();
 
-            // récupération ou création de RIPART.gdb
-// TO-DO            this.FeatureWorkspace = this.GetOrCreateFeatureWorkspace();
+            // récupération ou création de EspaceCollaboratif.gdb -> a priori inutile car une gdb est créée avec le projet ArcGIS
+   //         var bCreated = await GetOrCreateFileGeodatabase();
 
             //création ou chargement des couches ripart
-// TO-DO            this.CreateOrLoadEspaceCollaboratifLayer();
+            var bLayersLoaded = await CreateOrLoadReportLayers();
 
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
@@ -160,65 +162,54 @@ namespace ArcGisProEspaceCollaboratif
 
 
         /// <summary>
-        /// création ou chargement des couches de l'espace collaboratif
+        /// création ou chargement des couches de signalement de l'espace collaboratif
         /// </summary>
-/*        private void CreateOrLoadEspaceCollaboratifLayer()
+        private async Task<bool> CreateOrLoadReportLayers()
         {
 
             // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Fleche))
-            {
-                if (this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Croquis_Fleche) == null)
-                {
-                    Map.AddLayer(EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(EspaceCollaboratifHelper.nom_Calque_Croquis_Fleche,
-                                                                        this.FeatureWorkspace,
-                                                                        this.spatialReferenceEspaceCollaboratif,
-                                                                        ArcGIS.Core.Geometry.GeometryType.Polyline));
-                }
-            }
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Texte))
-            {
-                if (this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Croquis_Texte) == null)
-                {
-                    Map.AddLayer(EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(EspaceCollaboratifHelper.nom_Calque_Croquis_Texte,
-                                                                        this.FeatureWorkspace,
-                                                                        this.spatialReferenceEspaceCollaboratif,
-                                                                        ArcGIS.Core.Geometry.GeometryType.Point));
-                }
-            }
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone))
-            {
-                if (this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone) == null)
-                {
-                    Map.AddLayer(EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone,
-                                                                        this.FeatureWorkspace,
-                                                                        this.spatialReferenceEspaceCollaboratif,
-                                                                        ArcGIS.Core.Geometry.GeometryType.Polygon));
-                }
-            }
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne))
-            {
-                if (this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne) == null)
-                {
-                    Map.AddLayer(EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne,
-                                                                        this.FeatureWorkspace,
-                                                                        this.spatialReferenceEspaceCollaboratif,
-                                                                        ArcGIS.Core.Geometry.GeometryType.Polyline));
-                }
-            }
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Point))
-            {
 
-                if (this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Croquis_Point) == null)
-                {
-                    Map.AddLayer(EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(EspaceCollaboratifHelper.nom_Calque_Croquis_Point,
-                                                                        this.FeatureWorkspace,
-                                                                        this.spatialReferenceEspaceCollaboratif,
-                                                                        ArcGIS.Core.Geometry.GeometryType.Point));
-                }
+            string polygonSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone;
+            string lineSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne;
+            string pointSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Point;
 
+            string reportLayer = EspaceCollaboratifHelper.nom_Calque_Remarque;
+
+            // Croquis polygones
+            if (!this.IsLayerInMap(polygonSketchLayer))
+            {
+                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + polygonSketchLayer))
+                {
+                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(polygonSketchLayer, "POLYGON");
+                }
+                this.LoadLayer(polygonSketchLayer);
             }
-            if (!this.IsPresentLayerByName(EspaceCollaboratifHelper.nom_Calque_Remarque))
+
+            // Croquis lignes
+            if (!this.IsLayerInMap(lineSketchLayer))
+            {
+                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + lineSketchLayer))
+                {
+                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(lineSketchLayer, "POLYLINE");
+                }
+                this.LoadLayer(lineSketchLayer);
+            }
+
+            // Croquis points
+            if (!this.IsLayerInMap(pointSketchLayer))
+            {
+                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + pointSketchLayer))
+                {
+                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(pointSketchLayer, "POINT");
+                }
+                this.LoadLayer(pointSketchLayer);
+            }
+
+            return true;
+
+/*
+
+            if (!this.IsLayerInMap(EspaceCollaboratifHelper.nom_Calque_Remarque))
             {
                 FeatureLayer fl = this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Remarque, false);
                 if (fl == null)
@@ -259,20 +250,21 @@ namespace ArcGisProEspaceCollaboratif
                 }
 
             }
+            */
 
             // récupération ou création des couches
-            calquesEspaceCollaboratif.Clear();
+/*            calquesEspaceCollaboratif.Clear();
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Remarque) as FeatureLayer);
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Point) as FeatureLayer);
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne) as FeatureLayer);
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone) as FeatureLayer);
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Texte) as FeatureLayer);
             this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Fleche) as FeatureLayer);
-
-
-            ActiveView.Refresh();
-        }
 */
+
+            //this.activeView.Redraw();
+        }
+
 
 
 
@@ -281,7 +273,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="layerName">nom de la couche</param> Change en layerPath
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-/*        private FeatureLayer LoadLayer(String layerPath, bool doLoad = true)
+        private FeatureLayer LoadLayer(String layerName, bool doLoad = true)
         {
             //FeatureLayer result = null;
             //FeatureClass featclass;
@@ -291,20 +283,19 @@ namespace ArcGisProEspaceCollaboratif
             FeatureLayer result = null;
 
             //TO-DO : récupérer seulement le nom de la couche et pas le chemin complet
-            string layerName = layerPath;
+            string layerPath = this.gdbPath + "\\" + layerName ;
 
             try
             {
                 int indexNumber = 0;
                 System.Uri layerUri = new System.Uri(layerPath);
 
-
-
                 FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
                     layerUri,
-                    this.mapView.Map,
+                    this.mapActiveView.Map,
                     indexNumber,
-                    layerName);
+                    layerName
+                );
 
                 result = layer;
 
@@ -317,7 +308,7 @@ namespace ArcGisProEspaceCollaboratif
 
             return result;
         }
-*/
+
 
         /// <summary>
         /// Récupère un calque par son nom.
@@ -356,141 +347,135 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="name">Le nom du calque dont on veut connaître son existence.</param>
         /// <returns>True si le calque existe, False dans le cas contraire.</returns>
-/*        public bool IsPresentLayerByName(string layerName)
+        public bool IsLayerInMap(string layerName)
         {
-            int numberOfLayers = this.Map.LayerCount;
-            for (System.Int32 i = 0; i < numberOfLayers; i++)
+            IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
+            foreach (var layer in mapLayers)
             {
-                if (layerName == this.Map.get_Layer(i).Name)
-                { return true; }
+                if (layer.Name == layerName) return true;
             }
 
             return false;
         }
-*/
+
 
         /// <summary>
         /// Ouvre les fichiers géodatabase EspaceCollaboratif.gdb contenant les données de l'espace collaboratif dans la carte en cours.
         /// Si ces fichiers n'existent pas, ils sont préalablement créés dans le même répertoire où se situe la carte en cours.
         /// </summary>
         /// <returns>L'IFeatureWorkspace de l'espace de travail des calques dédiés à l'espace collaboratif.</returns>
-/*        private IFeatureWorkspace GetOrCreateFeatureWorkspace()
+/*       Remplace : private Geodatabase GetOrCreateFeatureWorkspace()
+         A priori inutile avec ArcGIS Pro car une geodatabase est automatiquement créée et associée au projet ArcGIS Pro -> on l'utilise pour
+         stocker les signalements (et à terme les couches guichets).*/
+
+        private async Task<bool> GetOrCreateFileGeodatabase()
         {
-            string folder = this.repertoireTravail;
-            string nomFichierEspaceCollaboratif = this.fichierCarteTravail + "_EspaceCollaboratif";
-            string nomRepFicGdb = folder + "\\" + nomFichierEspaceCollaboratif + ".gdb";
-
-
-            // Instantiate a file geodatabase workspace factory and create a file geodatabase.
-            // The Create method returns a workspace name object.
-            Type factoryType = Type.GetTypeFromProgID("esriDataSourcesGDB.FileGDBWorkspaceFactory");
-            IWorkspaceFactory workspaceFactory = (IWorkspaceFactory)Activator.CreateInstance(factoryType);
-
-            IWorkspaceName workspaceName = null;
-            IWorkspace workspace = null;
-
-            bool bFichierEspaceCollaboratifExistant = System.IO.Directory.Exists(nomRepFicGdb);
-
-            if (bFichierEspaceCollaboratifExistant)
+            try
             {
-                // Create a FileGeodatabaseConnectionPath with the name of the file geodatabase you wish to create
-                FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
-
-//                ESRI.ArcGIS.esriSystem.PropertySet fichierPropertySet = new ESRI.ArcGIS.esriSystem.PropertySet();
-//                workspace = workspaceFactory.OpenFromFile(nomRepFicGdb, 0) as IWorkspace;
-
-                logger.Debug("Ouverture geodatabase existante : " + nomRepFicGdb);
-            }
-            else
-            {
-                // Create and use the file geodatabase
-
-
-                FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
-                using (Geodatabase geodatabase = SchemaBuilder.CreateGeodatabase(fileGeodatabaseConnectionPath))
+                return await QueuedTask.Run(() =>
                 {
+
+                var fGdbPath = this.repertoireTravail;
+                var fGdbName = this.fichierCarteTravail + "_EspaceCollaboratif.gdb";
+
+                var fGdb = fGdbPath + "\\" + fGdbName;
+
+                // Si la gdb n'existe pas, on la crée
+                    if (!System.IO.Directory.Exists(fGdb))
+                    {
+                        var fGdbVersion = "Current";  // create the 'latest' version of file Geodatabase
+                        System.Diagnostics.Debug.WriteLine($@"create {fGdbPath} {fGdbName}");
+
+                        var parameters = Geoprocessing.MakeValueArray(fGdbPath, fGdbName, fGdbVersion);
+                        var cts = new CancellationTokenSource();
+                        var results = Geoprocessing.ExecuteToolAsync("management.CreateFileGDB", parameters, null, cts.Token,
+                            (eventName, o) =>
+                            {
+                                System.Diagnostics.Debug.WriteLine($@"GP event: {eventName}");
+                            });
+                        //return true;
+                    }
+
+                    // Sinon, on ouvre la gdb existante
+
+                    Geodatabase geodatabase = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fGdb)));
+                    return true;
                     
-                }
-                workspaceName = workspaceFactory.Create(folder, nomFichierEspaceCollaboratif, null, 0);
-
-                // Cast the workspace name object to the IName interface and open the workspace.
-                ESRI.ArcGIS.esriSystem.IName name = (ESRI.ArcGIS.esriSystem.IName)workspaceName;
-                workspace = (IWorkspace)name.Open();
-
-                logger.Debug("Création geodatabase :" + nomRepFicGdb);
-
+                });
             }
-
-            IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
-            return featureWorkspace;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return false;
+            }
         }
-*/
+
+
 
         /// <summary>
         // Vide les calques de l'espace collaboratif de tous leurs contenus.
         /// </summary>
- /*       public void EffacerCompletCalquesRipart()
-        {
-            this.CreateOrLoadEspaceCollaboratifLayer();
-            foreach (IFeatureLayer calqueRipart in this.calquesRipart)
-            {
-                IQueryFilter queryFilter = new QueryFilter();
-                ITable table = (ITable)calqueEspaceCollaboratif;
-                try
-                {
-                    if (table != null)
-                    {
+        /*       public void EffacerCompletCalquesRipart()
+               {
+                   this.CreateOrLoadEspaceCollaboratifLayer();
+                   foreach (IFeatureLayer calqueRipart in this.calquesRipart)
+                   {
+                       IQueryFilter queryFilter = new QueryFilter();
+                       ITable table = (ITable)calqueEspaceCollaboratif;
+                       try
+                       {
+                           if (table != null)
+                           {
 
-                        if (table.RowCount(queryFilter) != 0)
-                        {
-                            table.DeleteSearchedRows(queryFilter);
-                            this.ActiveView.Refresh();
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    logger.Error(e.Message + "\n" + e.StackTrace);
-                }
-            }
-        }
+                               if (table.RowCount(queryFilter) != 0)
+                               {
+                                   table.DeleteSearchedRows(queryFilter);
+                                   this.ActiveView.Refresh();
+                               }
+                           }
+                       }
+                       catch (Exception e)
+                       {
+                           logger.Error(e.Message + "\n" + e.StackTrace);
+                       }
+                   }
+               }
 
-*/
+       */
         /// <summary>
         // Efface de la carte en cours la remarque (et ses croquis associés s'ils existent) donnée par son identifiant.
         /// </summary>
         /// <param name="idRemarque">Le numéro de la remarque qu'on souhaite effacer de la carte en cours.</param>
-/*        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
-        {
-            int indexCalque = 0;
-
-            foreach (FeatureLayer calqueEspaceCollaboratif in this.calquesEspaceCollaboratif)
-            {
-                IQueryFilter queryFilter = new QueryFilter();
-
-                if (indexCalque == 0)
+        /*        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
                 {
-                    queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_IdRemarque + "=" + idRemarque;
-                }
-                else
-                {
-                    queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_LienRemarque + "=" + idRemarque;
-                }
+                    int indexCalque = 0;
 
-                ITable table = (ITable)calqueEspaceCollaboratif;
-                table.DeleteSearchedRows(queryFilter);
+                    foreach (FeatureLayer calqueEspaceCollaboratif in this.calquesEspaceCollaboratif)
+                    {
+                        IQueryFilter queryFilter = new QueryFilter();
 
-                indexCalque++;
-            }
-        }
-*/
+                        if (indexCalque == 0)
+                        {
+                            queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_IdRemarque + "=" + idRemarque;
+                        }
+                        else
+                        {
+                            queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_LienRemarque + "=" + idRemarque;
+                        }
+
+                        ITable table = (ITable)calqueEspaceCollaboratif;
+                        table.DeleteSearchedRows(queryFilter);
+
+                        indexCalque++;
+                    }
+                }
+        */
         /// <summary>
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="uneRemarque">La remarque Ripart qu'il faut placer sur la carte en cours.</param>
         public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
         {
-
             // on cast en featureLayer
             FeatureLayer featureLayer = this.calquesEspaceCollaboratif.First() as FeatureLayer;
             IFeatureClass featureClass = featureLayer.FeatureClass;
@@ -570,7 +555,7 @@ namespace ArcGisProEspaceCollaboratif
                                     break;
                             }
 
-                            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClassCroquis, featureCroquis, EspaceCollaboratifHelper.nom_Champ_LienRemarque, uneRemarque.Id);
+                            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClassCroquis, featureCroquis, EspaceCollaboratifHelper.nom_Champ_LienRemarque, unSignalement.Id);
                             EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClassCroquis, featureCroquis, EspaceCollaboratifHelper.nom_Champ_NomCroquis, unCroquis.Nom);
 
                             String attributs = "";
@@ -604,213 +589,146 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
- /*       public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> geometriesFiltres)
-        {
-            if (geometriesFiltres.Count == 0) { return new ArcGisProEspaceCollaboratif.Core.Box(); }
+        /*       public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> geometriesFiltres)
+               {
+                   if (geometriesFiltres.Count == 0) { return new ArcGisProEspaceCollaboratif.Core.Box(); }
 
-            IEnvelope2 bbox = (IEnvelope2)new Envelope();
+                   IEnvelope2 bbox = (IEnvelope2)new Envelope();
 
-            foreach (Geometry geometrie in geometriesFiltres)
-            {
-                IEnvelope bboxTemp = geometrie.Envelope;
-                bbox.Union(bboxTemp);
-            }
+                   foreach (Geometry geometrie in geometriesFiltres)
+                   {
+                       IEnvelope bboxTemp = geometrie.Envelope;
+                       bbox.Union(bboxTemp);
+                   }
 
-            return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
-        }
-*/
+                   return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
+               }
+       */
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe un unique object géométrique.
         /// </summary>
         /// <param name="geometrieFiltre">La Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe la Geometry de <paramref name="geometrieFiltre"/>.</returns>
-/*        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(Geometry geometrieFiltre)
-        {
-            List<Geometry> tempGeometriesFiltres = new List<Geometry>
-            {
-                geometrieFiltre
-            };
-            return this.GetBBox(tempGeometriesFiltres);
-        }
-*/
+        /*        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(Geometry geometrieFiltre)
+                {
+                    List<Geometry> tempGeometriesFiltres = new List<Geometry>
+                    {
+                        geometrieFiltre
+                    };
+                    return this.GetBBox(tempGeometriesFiltres);
+                }
+        */
 
         /// <summary>
         /// Zoom à l'écran sur une emprise donnée.
         /// </summary>
         /// <param name="emprise">L'object Ripart.Core.Box sur laquelle il faut faire le zoom à l'écran.</param>
- /*       public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
-        {
-            IEnvelope2 bbox = (IEnvelope2)new Envelope();
-            bbox.SpatialReference = this.spatialReferenceEspaceCollaboratif;
-            bbox.PutCoords(emprise.XMin, emprise.YMin, emprise.XMax, emprise.YMax);
-            this.ActiveView.Extent = bbox;
-            this.ActiveView.Refresh();
-            return;
-        }
-*/
+        /*       public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
+               {
+                   IEnvelope2 bbox = (IEnvelope2)new Envelope();
+                   bbox.SpatialReference = this.spatialReferenceEspaceCollaboratif;
+                   bbox.PutCoords(emprise.XMin, emprise.YMin, emprise.XMax, emprise.YMax);
+                   this.ActiveView.Extent = bbox;
+                   this.ActiveView.Refresh();
+                   return;
+               }
+       */
         /// <summary>
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste d'objects Geometry.
         /// </summary>
         /// <param name="geometries">La liste des objects IGeometry sur lesquels il faut faire le zoom à l'écran.</param>
- /*       public void Zoom(List<Geometry> geometries)
-        {
-            ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometries);
-            this.Zoom(bbox);
-            return;
-        }
-*/
+        /*       public void Zoom(List<Geometry> geometries)
+               {
+                   ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometries);
+                   this.Zoom(bbox);
+                   return;
+               }
+       */
         /// <summary>
         /// Zoom à l'écran sur l'étendue un object Geometry.
         /// </summary>
         /// <param name="geometrie">L'object IGeometry sur lequel il faut faire le zoom à l'écran.</param>
-/*        public void Zoom(Geometry geometrie)
-        {
-            ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometrie);
-            this.Zoom(bbox);
-            return;
-        }
-*/
+        /*        public void Zoom(Geometry geometrie)
+                {
+                    ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometrie);
+                    this.Zoom(bbox);
+                    return;
+                }
+        */
         /// <summary>
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de remarques Ripart.
         /// </summary>
         /// <param name="remarques">La liste des remarques Ripart sur lesquelles il faut faire le zoom à l'écran.</param>
- /*       public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
-        {
-            if (remarques.Count == 0) { return; }
+        /*       public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
+               {
+                   if (remarques.Count == 0) { return; }
 
-            List<double> coordX = new List<double>();
-            List<double> coordY = new List<double>();
+                   List<double> coordX = new List<double>();
+                   List<double> coordY = new List<double>();
 
-            foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
-            {
-                coordX.Add(remarque.Position.Longitude);
-                coordY.Add(remarque.Position.Latitude);
-            }
+                   foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
+                   {
+                       coordX.Add(remarque.Position.Longitude);
+                       coordY.Add(remarque.Position.Latitude);
+                   }
 
-            double supplementZoom = 5 / 100;
-            double supplementX = (coordX.Max() - coordX.Min()) * supplementZoom;
-            double supplementY = (coordY.Max() - coordY.Min()) * supplementZoom;
+                   double supplementZoom = 5 / 100;
+                   double supplementX = (coordX.Max() - coordX.Min()) * supplementZoom;
+                   double supplementY = (coordY.Max() - coordY.Min()) * supplementZoom;
 
-            ArcGisProEspaceCollaboratif.Core.Box bbox = new ArcGisProEspaceCollaboratif.Core.Box(coordX.Min() - supplementX, coordY.Min() - supplementY, coordX.Max() + supplementX, coordY.Max() + supplementY);
+                   ArcGisProEspaceCollaboratif.Core.Box bbox = new ArcGisProEspaceCollaboratif.Core.Box(coordX.Min() - supplementX, coordY.Min() - supplementY, coordX.Max() + supplementX, coordY.Max() + supplementY);
 
-            this.Zoom(bbox);
-            return;
-        }
-*/
+                   this.Zoom(bbox);
+                   return;
+               }
+       */
         /// <summary>
         /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques.
         /// </summary>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-/*        public List<Geometry> GetGeometryFiltreSpatial()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+        /*        public List<Geometry> GetGeometryFiltreSpatial()
+                {
+                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-            // Récupération de la liste des géométries servant pour le filtrage spatial à partir des objects sélectionnés dans la carte en cours.
-            geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_selection();
+                    // Récupération de la liste des géométries servant pour le filtrage spatial à partir des objects sélectionnés dans la carte en cours.
+                    geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_selection();
 
-            // Si la récupération par sélection est vide (car aucun object séléectionné ou aucun ayant la géométrie adéquate), alors on récupère les géométries contenues dans le calque définit par le fichier de paramètre.
-            if (geometryFiltreSpatial.Count == 0)
-            {
-                geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_XML();
-            }
+                    // Si la récupération par sélection est vide (car aucun object séléectionné ou aucun ayant la géométrie adéquate), alors on récupère les géométries contenues dans le calque définit par le fichier de paramètre.
+                    if (geometryFiltreSpatial.Count == 0)
+                    {
+                        geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_XML();
+                    }
 
-            // Si la récupération n'est pas vide, on zoom à l'écran sur celle-ci.
-            if (geometryFiltreSpatial.Count != 0)
-            {
-                this.Zoom(geometryFiltreSpatial);
-            }
+                    // Si la récupération n'est pas vide, on zoom à l'écran sur celle-ci.
+                    if (geometryFiltreSpatial.Count != 0)
+                    {
+                        this.Zoom(geometryFiltreSpatial);
+                    }
 
-            return geometryFiltreSpatial;
-        }
-*/
+                    return geometryFiltreSpatial;
+                }
+        */
         /// <summary>
         /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <param name="calqueFiltrage">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-/*        public List<Geometry> GetGeometryFiltreSpatial(string calqueFiltrage)
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            ILayer layerFiltrage = this.GetLayerByName(calqueFiltrage);
-
-            if (layerFiltrage == null) { return geometryFiltreSpatial; }
-
-            IFeatureLayer featureLayerFiltrageSpatial = layerFiltrage as IFeatureLayer;
-            IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
-            IQueryFilter filtreSpatial = new QueryFilter();
-
-            IFeatureCursor cursor = featureClassFiltrageSpatial.Search(
-                        filtreSpatial,
-                        false // important : sinon on n'obtient qu'un seul objet
-                    );
-            Feature featureFiltrageSpatial = cursor.NextFeature();
-
-            while (featureFiltrageSpatial != null)
-            {
-                Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
-                contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
-                geometryFiltreSpatial.Add(contourFiltrageSpatial);
-                featureFiltrageSpatial = cursor.NextFeature();
-            }
-
-            return geometryFiltreSpatial;
-        }
-*/
-        /// <summary>
-        /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
-        /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-/*        public List<Geometry> GetGeometryFiltreSpatial_from_XML()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            string nom_FichierParametre = EspaceCollaboratifHelper.XML_NameFile();
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(nom_FichierParametre);
-
-            // XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName("Zone_extraction");
-            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(EspaceCollaboratifHelper.XML_Suffixe(EspaceCollaboratifHelper.xml_Zone_extraction));
-
-            IEnumerator ienum;
-
-            // Parcour des calques contenant les objects de filtrage spatial d'après de le XML de paramétrage
-            for (int i = 0; i < elemCalqueExtraction.Count; i++)
-            {
-                string nomCalqueExtraction = elemCalqueExtraction[i].Attributes["calque"].Value;
-
-                if (nomCalqueExtraction.Length == 0)
-                { continue; }
-
-                ILayer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
-                if (calqueExtraction == null)
-                { continue; }
-
-                ienum = elemCalqueExtraction[i].GetEnumerator();
-
-                // Parcour objects de filtrage spatial au sein du même calque
-                while (ienum.MoveNext())
+        /*        public List<Geometry> GetGeometryFiltreSpatial(string calqueFiltrage)
                 {
-                    XmlNode noeud = (XmlNode)ienum.Current;
+                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-                    string idObjectExtraction = noeud.Attributes["ID"].Value;
-                    string valObjectExtraction = noeud.InnerText;
+                    ILayer layerFiltrage = this.GetLayerByName(calqueFiltrage);
 
-                    IFeatureLayer featureLayerFiltrageSpatial = calqueExtraction as IFeatureLayer;
+                    if (layerFiltrage == null) { return geometryFiltreSpatial; }
+
+                    IFeatureLayer featureLayerFiltrageSpatial = layerFiltrage as IFeatureLayer;
                     IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
-
-                    IQueryFilter filtreSpatial = new QueryFilter
-                    {
-
-                        // Recherche de l'object filtrant spatial d'après le nom et la valeur de son identifiant
-                        WhereClause = idObjectExtraction + "=" + valObjectExtraction
-                    };
+                    IQueryFilter filtreSpatial = new QueryFilter();
 
                     IFeatureCursor cursor = featureClassFiltrageSpatial.Search(
-                        filtreSpatial,
-                        false // important : sinon, on a un seul objet
-                    );
+                                filtreSpatial,
+                                false // important : sinon on n'obtient qu'un seul objet
+                            );
                     Feature featureFiltrageSpatial = cursor.NextFeature();
 
                     while (featureFiltrageSpatial != null)
@@ -821,41 +739,107 @@ namespace ArcGisProEspaceCollaboratif
                         featureFiltrageSpatial = cursor.NextFeature();
                     }
 
+                    return geometryFiltreSpatial;
                 }
+        */
+        /// <summary>
+        /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
+        /// </summary>
+        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
+        /*        public List<Geometry> GetGeometryFiltreSpatial_from_XML()
+                {
+                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-                ienum.Reset();
-            }
+            string nom_FichierParametre = EspaceCollaboratifHelper.XML_NameFile();
 
-            return geometryFiltreSpatial;
-        }
-*/
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(nom_FichierParametre);
+
+            // XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName("Zone_extraction");
+            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(EspaceCollaboratifHelper.XML_Suffixe(EspaceCollaboratifHelper.xml_Zone_extraction));
+                    IEnumerator ienum;
+
+                    // Parcour des calques contenant les objects de filtrage spatial d'après de le XML de paramétrage
+                    for (int i = 0; i < elemCalqueExtraction.Count; i++)
+                    {
+                        string nomCalqueExtraction = elemCalqueExtraction[i].Attributes["calque"].Value;
+
+                        if (nomCalqueExtraction.Length == 0)
+                        { continue; }
+
+                        ILayer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
+                        if (calqueExtraction == null)
+                        { continue; }
+
+                        ienum = elemCalqueExtraction[i].GetEnumerator();
+
+                        // Parcour objects de filtrage spatial au sein du même calque
+                        while (ienum.MoveNext())
+                        {
+                            XmlNode noeud = (XmlNode)ienum.Current;
+
+                            string idObjectExtraction = noeud.Attributes["ID"].Value;
+                            string valObjectExtraction = noeud.InnerText;
+
+                            IFeatureLayer featureLayerFiltrageSpatial = calqueExtraction as IFeatureLayer;
+                            IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
+
+                            IQueryFilter filtreSpatial = new QueryFilter
+                            {
+
+                                // Recherche de l'object filtrant spatial d'après le nom et la valeur de son identifiant
+                                WhereClause = idObjectExtraction + "=" + valObjectExtraction
+                            };
+
+                            IFeatureCursor cursor = featureClassFiltrageSpatial.Search(
+                                filtreSpatial,
+                                false // important : sinon, on a un seul objet
+                            );
+                            Feature featureFiltrageSpatial = cursor.NextFeature();
+
+                            while (featureFiltrageSpatial != null)
+                            {
+                                Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
+                                contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
+                                geometryFiltreSpatial.Add(contourFiltrageSpatial);
+                                featureFiltrageSpatial = cursor.NextFeature();
+                            }
+
+                        }
+
+                        ienum.Reset();
+                    }
+
+                    return geometryFiltreSpatial;
+                }
+        */
         /// <summary>
         /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-/*        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            // Obtention des objects sélectionnés
-            IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-            Feature feature = enumFeature.Next();
-
-            while (feature != null)
-            {
-                if (EspaceCollaboratifHelper.TestGeometrieFiltrageSpatial(feature))
+        /*        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
                 {
-                    Geometry contourFiltrageSpatial = feature.GetShape();
-                    contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
-                    geometryFiltreSpatial.Add(contourFiltrageSpatial);
+                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+
+                    // Obtention des objects sélectionnés
+                    IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
+                    Feature feature = enumFeature.Next();
+
+                    while (feature != null)
+                    {
+                        if (EspaceCollaboratifHelper.TestGeometrieFiltrageSpatial(feature))
+                        {
+                            Geometry contourFiltrageSpatial = feature.GetShape();
+                            contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
+                            geometryFiltreSpatial.Add(contourFiltrageSpatial);
+                        }
+
+                        feature = enumFeature.Next();
+                    }
+
+                    return geometryFiltreSpatial;
                 }
-
-                feature = enumFeature.Next();
-            }
-
-            return geometryFiltreSpatial;
-        }
-*/
+        */
 
 
         /// <summary>
