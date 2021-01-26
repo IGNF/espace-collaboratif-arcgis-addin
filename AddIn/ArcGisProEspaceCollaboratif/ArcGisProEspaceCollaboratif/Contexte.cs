@@ -12,6 +12,7 @@ using ArcGIS.Core.Internal.Data.DDL;
 //using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 
 using System.IO;
 using System.Windows.Forms;
@@ -30,9 +31,9 @@ namespace ArcGisProEspaceCollaboratif
 
         //public IActiveView ActiveView; // Les paramètres concernant l'affichage de la carte en cours.
         //public IMap Map; // Les paramètres cartographiques (projection) de la carte en cours
-        public Map map;
-        public MapView mapView;
-        public MapView activeView;
+        //public Map map;
+        public MapView mapActiveView;
+        //public MapView activeView;
         //public ArcGIS.Desktop.Mapping.MapView Map;//mapView;
         //public ArcGIS.Desktop.Mapping.MapTool mapTool;
         //public IFeatureWorkspace FeatureWorkspace;
@@ -75,23 +76,19 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-
         /// <summary>
         /// Constructeur pour un contexte à partir de la carte courante
         /// </summary>
         private Contexte()
         {
-             
             //IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
             //IActiveView activeView = mxDocument.ActiveView;
 
             this.spatialReferenceEspaceCollaboratif = SpatialReferenceBuilder.CreateSpatialReference(4326);
             //Project project = Project.Current; //Lien entre project et mapview ?
-            this.activeView = MapView.Active;
-            this.Init(this.activeView);
-
+            this.mapActiveView = MapView.Active;
+            this.Init(MapView.Active);
         }
-
 
         /// <summary>
         /// Constructeur à partir d'une vue active
@@ -103,15 +100,13 @@ namespace ArcGisProEspaceCollaboratif
             this.Init(activeView);
         }
 
-
         /// <summary>
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
         private void Init(MapView activeView)
         {
-            this.activeView = activeView;
-            //this.Map = activeView.FocusMap;
+            this.mapActiveView = activeView;
 
             this.LoginEspaceCollaboratif = "";
             this.PwdEspaceCollaboratif = "";
@@ -493,7 +488,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="uneRemarque">La remarque Ripart qu'il faut placer sur la carte en cours.</param>
-/*        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
+        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
         {
 
             // on cast en featureLayer
@@ -602,7 +597,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
         }
-*/
+
 
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe une liste d'objects géométriques.
@@ -770,13 +765,13 @@ namespace ArcGisProEspaceCollaboratif
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-            string nom_FichierParametre = EspaceCollaboratifHelper.EspaceCollaboratifXML_NameFile();
+            string nom_FichierParametre = EspaceCollaboratifHelper.XML_NameFile();
 
             XmlDocument doc = new XmlDocument();
             doc.Load(nom_FichierParametre);
 
             // XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName("Zone_extraction");
-            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(EspaceCollaboratifHelper.EspaceCollaboratifXML_Suffixe(EspaceCollaboratifHelper.xml_Zone_extraction));
+            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(EspaceCollaboratifHelper.XML_Suffixe(EspaceCollaboratifHelper.xml_Zone_extraction));
 
             IEnumerator ienum;
 
@@ -926,7 +921,6 @@ namespace ArcGisProEspaceCollaboratif
 
                     this.profil = uneConnexionEspaceCollaboratif.GetProfil();
                    
-
                     if (premiereConnexion)
                     {
                         this.loginWindow.Close();
@@ -949,7 +943,6 @@ namespace ArcGisProEspaceCollaboratif
                         popupEspaceCollaboratif.ShowDialog();
 
                         //EspaceCollaboratifHelper.Save_Login(this.LoginEspaceCollaboratif);
-             
                     }
                     return uneConnexionEspaceCollaboratif;
                 }
@@ -970,63 +963,140 @@ namespace ArcGisProEspaceCollaboratif
                         case "no_group":
                             this.loginWindow.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
                             break;
+
                         default:
                             MessageBox.Show("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante: " + this.URLHostEspaceCollaboratif +
                                             "\n\nVeuillez contacter le support de l'Espace collaboratif: \n" + erreurConnexion.Message.ToString() + ".", "IGN Espace collaboratif",
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                             break;
                     }
                 }
-               
-
             }
-
             this.loginWindow.Close();
             this.loginWindow = null;
             return null;
         }
 
-
-
         /// <summary>
         /// Transforme en croquis Ripart les object sélectionnés dans la carte en cours.
         /// </summary>
         /// <returns>Liste de croquis Ripart créés à partir des objects sélectionnés.</returns>
-/*        public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
+        public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
         {
-            ESRI.ArcGIS.esriSystem.IStatusBar mess; 
+            // TODO : on ne peut pas modifier la status bar dans arcgis pro,
+            // question Noémie, on remplace par quoi ?
+            /*ESRI.ArcGIS.esriSystem.IStatusBar mess; 
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
-            mess = application.StatusBar;
+            mess = application.StatusBar;*/
 
             List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Croquis>();
             System.Windows.Forms.TreeNode treeAttributs = EspaceCollaboratifHelper.Load_AttributsCroquis();
 
-            // Obtention des objects sélectionnés
-            IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
+            // Get the currently selected features in the map
+            QueuedTask.Run(() =>
+            {
+                if (this.mapActiveView == null)
+                {
+                    return null;
+                }
+                var selectedFeatures = this.mapActiveView.Map.GetSelection();
+                foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+                {
+                    //get the layer of the selected feature
+                    var featureLayer = kvp.Key as FeatureLayer;
+                    List<long> lOid = kvp.Value;
+                    foreach (long oid in lOid)
+                    {
+                        var feature = featureLayer.Inspect(oid);
+                        var geometryFeature = feature.Shape;
+                        var geometryFeatureType = geometryFeature.GeometryType;
+                        switch (geometryFeatureType)
+                        {
+                            default:
+                                System.Windows.Forms.MessageBox.Show("Géométrie non-prise en charge pour la transformer en croquis de l'Espace collaboratif.",
+                                    "IGN Espace collaboratif - WARNING",
+                                    System.Windows.Forms.MessageBoxButtons.OK,
+                                    System.Windows.Forms.MessageBoxIcon.Warning);
+                                break;
+
+                            case GeometryType.Point:
+                                ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
+                                ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(pointGeom);
+                                EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
+                                listCroquis.Add(croquisTemp);
+                                break;
+
+                                /*case GeometryType.Polyline:
+                                    for (int i = 0; i < collectionPolyline.GeometryCount; i++)
+                                    {
+                                        Geometry geomPath = collectionPolyline.Geometry[i];
+                                        IPath path = geomPath as IPath;
+                                        ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(path);
+                                        EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
+
+                                        if (collectionPolyline.GeometryCount > 1)
+                                        {
+                                            string multigeom = "" + (i + 1) + "/" + collectionPolyline.GeometryCount;
+                                            EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
+                                        }
+                                        listCroquis.Add(croquisTemp);
+                                    }
+                                    break;
+
+                                case GeometryType.Polygon:
+                                    IGeometryCollection collectionPolygon = feature.GetShape() as IGeometryCollection;
+
+                                    for (int i = 0; i < collectionPolygon.GeometryCount; i++)
+                                    {
+                                        IRing ring = collectionPolygon.Geometry[i] as IRing;
+
+                                        if (ring.IsExterior)
+                                        {
+                                            ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(ring);
+                                            EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
+
+                                            if (collectionPolygon.GeometryCount > 1)
+                                            {
+                                                string multigeom = "" + (i + 1) + "/" + collectionPolygon.GeometryCount;
+                                                EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
+                                            }
+                                            listCroquis.Add(croquisTemp);
+                                        }
+                                    }
+                                    break;*/
+                        }
+                    }
+                }
+            });
+                       
+
+                        
+
+
+
+                  
+        
+
+
+
+
+            /*IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
             IEnumFeatureSetup pEnumFeatureSetup = (IEnumFeatureSetup)enumFeature;
             pEnumFeatureSetup.AllFields = true;
 
             Feature feature = enumFeature.Next();
-
-            int total = this.Map.SelectionCount;
+            //int total = this.Map.SelectionCount;
             int step = 0;
 
-            mess.ShowProgressBar("Génération des croquis de l'Espace collaboratif à partir des objets sélectionnés...", 0, total, 1, true);
-            mess.ProgressBar.Position = 0;
-
-
+            //mess.ShowProgressBar("Génération des croquis de l'Espace collaboratif à partir des objets sélectionnés...", 0, total, 1, true);
+            //mess.ProgressBar.Position = 0;
             while (feature != null)
             {
                 step++;
-
-                mess.ProgressBar.Position = step;
-                mess.set_Message(0, "Génération des croquis de l'Espace collaboratif n°" + step + "/" + total + "...");
-
-
+                //mess.ProgressBar.Position = step;
+                //mess.set_Message(0, "Génération des croquis de l'Espace collaboratif n°" + step + "/" + total + "...");
                 Geometry geometryFeature = feature.GetShape() as Geometry;
                 geometryFeature.Project(this.spatialReferenceEspaceCollaboratif);
-
                 if (geometryFeature.GeometryType == ArcGIS.Core.Geometry.GeometryType.Point)
                 {
                     ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
@@ -1061,14 +1131,10 @@ namespace ArcGisProEspaceCollaboratif
                                     EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
                                 }
                                 listCroquis.Add(croquisTemp);
-
-
                             }
-
                             break;
 
                         case ArcGIS.Core.Geometry.GeometryType.Polygon:
-
                             courbe.Densify(250, 0);
                             IPolygon4 polygon = courbe as IPolygon4;
                             IGeometryCollection collectionPolygon = feature.GetShape() as IGeometryCollection;
@@ -1088,30 +1154,21 @@ namespace ArcGisProEspaceCollaboratif
                                         EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
                                     }
                                     listCroquis.Add(croquisTemp);
-
-
                                 }
-
-
                             }
-
                             break;
 
                         default:
                             System.Windows.Forms.MessageBox.Show("Géométrie non-prise en charge pour la transformer en croquis de l'Espace collaboratif.", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
                             break;
                     }
-
                 }
-
                 feature = enumFeature.Next();
             }
-
-            mess.HideProgressBar();
-
+            //mess.HideProgressBar();*/
             return listCroquis;
         }
-*/
+
         /// <summary>
         /// Renvoie la date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.
         /// </summary>

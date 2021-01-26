@@ -44,7 +44,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return double.IsNaN(this.Longitude) || double.IsNaN(this.Latitude);
         }
 
-
         public static bool operator ==(Point point1, Point point2)
         {
             return (point1.Longitude == point2.Longitude) && (point1.Latitude == point2.Latitude);
@@ -65,7 +64,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return (int)(this.Longitude + this.Latitude);
         } 
      
-
         /// <summary>
         /// Get point as WKT
         /// </summary>

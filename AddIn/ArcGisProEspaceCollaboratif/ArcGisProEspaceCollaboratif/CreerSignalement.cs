@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 
@@ -17,13 +16,13 @@ namespace ArcGisProEspaceCollaboratif
         {
             logger.Debug("Click sur le bouton de création d'un nouveau signalement");
 
-            /*try
+            try
             {
                 Contexte contexte = Contexte.Instance;
 
                 // Transformation des objets sélectionnés en croquis.
                 List<ArcGisProEspaceCollaboratif.Core.Croquis> futursCroquis = contexte.MakeCroquis_from_Selection();
-                  logger.Debug(futursCroquis.Count + " croquis générés.");
+                logger.Debug(futursCroquis.Count + " croquis générés.");
 
                 if (futursCroquis.Count == 0)
                 {
@@ -37,7 +36,7 @@ namespace ArcGisProEspaceCollaboratif
                 if (contexte.ripClient == null)
                 {   
                     // Établissement de la connexion avec le service Espace collaboratif.
-                    contexte.ripClient = (Client)contexte.GetConnexionRipart();
+                    contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
                     if (contexte.ripClient == null)
                     {
                         return;
@@ -130,7 +129,7 @@ namespace ArcGisProEspaceCollaboratif
                 System.Windows.Forms.MessageBox.Show(e.Message,
                  "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 logger.Error("Problème dans la création des signalements " + e.Message + "\n" + e.StackTrace);
-            }*/
+            }
         }
     }
 }
