@@ -4,14 +4,18 @@ using System.Linq;
 using System.Xml;
 using System.Collections;
 
-//using ESRI.ArcGIS.Geodatabase;
+//using ESRI.ArcGIS.Carto;
+//using ESRI.ArcGIS.GeoDatabase;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Internal.Data.DDL;
+//using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Core;
 
 using System.IO;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
@@ -81,14 +85,11 @@ namespace ArcGisProEspaceCollaboratif
             //IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
             //IActiveView activeView = mxDocument.ActiveView;
 
-            // Choix de coordonnées géographiques dans le système RGF1993 (identifiant EPSG: 2154)
-            //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironment();
-            //this.spatialReferenceEspaceCollaboratif = spatialReferenceFactory.CreateGeographicCoordinateSystem((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
             this.spatialReferenceEspaceCollaboratif = SpatialReferenceBuilder.CreateSpatialReference(4326);
             //Project project = Project.Current; //Lien entre project et mapview ?
             this.activeView = MapView.Active;
             this.Init(this.activeView);
-            //this.Init(activeView);
+
         }
 
 
@@ -107,7 +108,6 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        //private void Init(IActiveView activeView)
         private void Init(MapView activeView)
         {
             this.activeView = activeView;
@@ -117,24 +117,25 @@ namespace ArcGisProEspaceCollaboratif
             this.PwdEspaceCollaboratif = "";
             this.URLHostEspaceCollaboratif = "";
 
-            /*IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
-            if (mapDocument.DocumentFilename.Length == 0)
+            //IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
+            Project project = Project.Current;
+            if (project.Name.Length == 0)
             {
-                throw new Exception(@"Votre document mxd doit être enregistré avant de pouvoir utiliser l'extension RIPart");
+                throw new Exception(@"Votre document mxd doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
             }
 
-            this.repertoireTravail = System.IO.Path.GetDirectoryName(mapDocument.DocumentFilename);
-            this.fichierCarteTravail = System.IO.Path.GetFileNameWithoutExtension(mapDocument.DocumentFilename);*/
+            this.repertoireTravail = System.IO.Path.GetDirectoryName(project.Path);
+            this.fichierCarteTravail = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
 
             // récupération ou création de RIPART.gdb
-            //this.FeatureWorkspace = this.GetOrCreateFeatureWorkspace();
+// TO-DO            this.FeatureWorkspace = this.GetOrCreateFeatureWorkspace();
 
             //création ou chargement des couches ripart
-            //this.CreateOrLoadEspaceCollaboratifLayer();
+// TO-DO            this.CreateOrLoadEspaceCollaboratifLayer();
 
-            logger.Debug("initialisation du contexte et des éléments Ripart");
+            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
         
 
@@ -146,7 +147,7 @@ namespace ArcGisProEspaceCollaboratif
         public bool CheckConfigFile()
         {
 
-            /*if (!File.Exists(this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+            if (!File.Exists(this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
             {
                 try
                 {
@@ -157,7 +158,7 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Error(e.Message + "\n" + e.StackTrace);
                     return false;
                 }
-            }*/
+            }
 
             return true;
         }
@@ -166,7 +167,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// création ou chargement des couches de l'espace collaboratif
         /// </summary>
-        /*private void CreateOrLoadEspaceCollaboratifLayer()
+/*        private void CreateOrLoadEspaceCollaboratifLayer()
         {
 
             // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
@@ -276,33 +277,42 @@ namespace ArcGisProEspaceCollaboratif
 
             ActiveView.Refresh();
         }
-
+*/
 
 
 
         /// <summary>
         /// Essaie de charger une couche de la geodatabase
         /// </summary>
-        /// <param name="layerName">nom de la couche</param>
+        /// <param name="layerName">nom de la couche</param> Change en layerPath
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-        private FeatureLayer LoadLayer(String layerName, bool doLoad = true)
+/*        private FeatureLayer LoadLayer(String layerPath, bool doLoad = true)
         {
+            //FeatureLayer result = null;
+            //FeatureClass featclass;
+            //ArcGIS.Desktop.Mapping.LayerFactory layerFactory = ArcGIS.Desktop.Mapping.LayerFactory.Instance();
+            //ArcGIS.Desktop.Mapping.FeatureLayer featureLayer = (ArcGIS.Desktop.Mapping.FeatureLayer)layer;
+
             FeatureLayer result = null;
-            IFeatureClass featclass;
-            ArcGIS.Desktop.Mapping.Layer layer = new ArcGIS.Desktop.Mapping.Layer();
-            ArcGIS.Desktop.Mapping.FeatureLayer featureLayer = (ArcGIS.Desktop.Mapping.FeatureLayer)layer;
+
+            //TO-DO : récupérer seulement le nom de la couche et pas le chemin complet
+            string layerName = layerPath;
 
             try
             {
-                featclass = this.FeatureWorkspace.OpenFeatureClass(layerName);
-                featureLayer.FeatureClass = featclass;
-                featureLayer.Name = featclass.AliasName;
-                if (doLoad)
-                {
-                    Map.AddLayer((Layer)featureLayer);
-                }
+                int indexNumber = 0;
+                System.Uri layerUri = new System.Uri(layerPath);
 
-                result = featureLayer;
+
+
+                FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
+                    layerUri,
+                    this.mapView.Map,
+                    indexNumber,
+                    layerName);
+
+                result = layer;
+
             }
             catch (Exception e)
             {
@@ -312,14 +322,14 @@ namespace ArcGisProEspaceCollaboratif
 
             return result;
         }
-
+*/
 
         /// <summary>
         /// Récupère un calque par son nom.
         /// </summary>
         /// <param name="name">Le nom du calque qu'il faut récupérer.</param>
         /// <returns>Le calque ou null si non trouvé</returns>
-        public ILayer GetLayerByName(string name)
+/*      public ILayer GetLayerByName(string name)
         {
             // Enumération des calques et des groupes de calques.
             IEnumLayer listLayer = this.Map.get_Layers(null, true);
@@ -331,13 +341,27 @@ namespace ArcGisProEspaceCollaboratif
             }
             return null;
         }
+ */
 
+ /*       public Layer GetLayerByName(string name)
+        {
+            // Enumération des calques et des groupes de calques.
+            EnumLayer listLayer = this.Map.get_Layers(null, true);
+            Layer layer = listLayer.Next();
+            while (layer != null)
+            {
+                if (layer.Name.Equals(name)) { return layer; }
+                layer = listLayer.Next();
+            }
+            return null;
+        }
+*/
         /// <summary>
         /// Teste si l'existence d'un calque dans la carte en cours.Récupère un calque par son nom
         /// </summary>
         /// <param name="name">Le nom du calque dont on veut connaître son existence.</param>
         /// <returns>True si le calque existe, False dans le cas contraire.</returns>
-        public bool IsPresentLayerByName(string layerName)
+/*        public bool IsPresentLayerByName(string layerName)
         {
             int numberOfLayers = this.Map.LayerCount;
             for (System.Int32 i = 0; i < numberOfLayers; i++)
@@ -348,14 +372,14 @@ namespace ArcGisProEspaceCollaboratif
 
             return false;
         }
-
+*/
 
         /// <summary>
         /// Ouvre les fichiers géodatabase EspaceCollaboratif.gdb contenant les données de l'espace collaboratif dans la carte en cours.
         /// Si ces fichiers n'existent pas, ils sont préalablement créés dans le même répertoire où se situe la carte en cours.
         /// </summary>
         /// <returns>L'IFeatureWorkspace de l'espace de travail des calques dédiés à l'espace collaboratif.</returns>
-        private IFeatureWorkspace GetOrCreateFeatureWorkspace()
+/*        private IFeatureWorkspace GetOrCreateFeatureWorkspace()
         {
             string folder = this.repertoireTravail;
             string nomFichierEspaceCollaboratif = this.fichierCarteTravail + "_EspaceCollaboratif";
@@ -377,14 +401,16 @@ namespace ArcGisProEspaceCollaboratif
                 // Create a FileGeodatabaseConnectionPath with the name of the file geodatabase you wish to create
                 FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
 
-                ESRI.ArcGIS.esriSystem.PropertySet fichierPropertySet = new ESRI.ArcGIS.esriSystem.PropertySet();
-                workspace = workspaceFactory.OpenFromFile(nomRepFicGdb, 0) as IWorkspace;
+//                ESRI.ArcGIS.esriSystem.PropertySet fichierPropertySet = new ESRI.ArcGIS.esriSystem.PropertySet();
+//                workspace = workspaceFactory.OpenFromFile(nomRepFicGdb, 0) as IWorkspace;
 
                 logger.Debug("Ouverture geodatabase existante : " + nomRepFicGdb);
             }
             else
             {
                 // Create and use the file geodatabase
+
+
                 FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(new Uri(nomRepFicGdb));
                 using (Geodatabase geodatabase = SchemaBuilder.CreateGeodatabase(fileGeodatabaseConnectionPath))
                 {
@@ -403,12 +429,12 @@ namespace ArcGisProEspaceCollaboratif
             IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
             return featureWorkspace;
         }
-
+*/
 
         /// <summary>
         // Vide les calques de l'espace collaboratif de tous leurs contenus.
         /// </summary>
-        public void EffacerCompletCalquesRipart()
+ /*       public void EffacerCompletCalquesRipart()
         {
             this.CreateOrLoadEspaceCollaboratifLayer();
             foreach (IFeatureLayer calqueRipart in this.calquesRipart)
@@ -434,12 +460,12 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-
+*/
         /// <summary>
         // Efface de la carte en cours la remarque (et ses croquis associés s'ils existent) donnée par son identifiant.
         /// </summary>
         /// <param name="idRemarque">Le numéro de la remarque qu'on souhaite effacer de la carte en cours.</param>
-        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
+/*        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
         {
             int indexCalque = 0;
 
@@ -462,12 +488,12 @@ namespace ArcGisProEspaceCollaboratif
                 indexCalque++;
             }
         }
-
+*/
         /// <summary>
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="uneRemarque">La remarque Ripart qu'il faut placer sur la carte en cours.</param>
-        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
+/*        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
         {
 
             // on cast en featureLayer
@@ -513,9 +539,11 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         // on cast le featureLayer en fonction du type du croquis pour utiliser le bon calque associé
                         FeatureLayer featureLayerCroquis = this.calquesEspaceCollaboratif[(int)unCroquis.Type] as FeatureLayer;
-                        IFeatureClass featureClassCroquis = featureLayerCroquis.FeatureClass;
+                        //IFeatureClass featureClassCroquis = featureLayerCroquis.FeatureClass;
+                        FeatureClass featureClassCroquis = featureLayerCroquis.GetFeatureClass();
 
                         IFeature featureCroquis = featureClassCroquis.CreateFeature();
+                        //Feature featureCroquis = featureClassCroquis.CreateRow(); -> a mettre a la fin ?
 
                         Polyline polylineCroquis = new Polyline() as Polyline;
                         Polygon polygonCroquis = new Polygon() as Polygon;
@@ -574,14 +602,14 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
         }
-
+*/
 
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe une liste d'objects géométriques.
         /// </summary>
         /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
-        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> geometriesFiltres)
+ /*       public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> geometriesFiltres)
         {
             if (geometriesFiltres.Count == 0) { return new ArcGisProEspaceCollaboratif.Core.Box(); }
 
@@ -595,13 +623,13 @@ namespace ArcGisProEspaceCollaboratif
 
             return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
         }
-
+*/
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe un unique object géométrique.
         /// </summary>
         /// <param name="geometrieFiltre">La Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe la Geometry de <paramref name="geometrieFiltre"/>.</returns>
-        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(Geometry geometrieFiltre)
+/*        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(Geometry geometrieFiltre)
         {
             List<Geometry> tempGeometriesFiltres = new List<Geometry>
             {
@@ -609,13 +637,13 @@ namespace ArcGisProEspaceCollaboratif
             };
             return this.GetBBox(tempGeometriesFiltres);
         }
-
+*/
 
         /// <summary>
         /// Zoom à l'écran sur une emprise donnée.
         /// </summary>
         /// <param name="emprise">L'object Ripart.Core.Box sur laquelle il faut faire le zoom à l'écran.</param>
-        public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
+ /*       public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
         {
             IEnvelope2 bbox = (IEnvelope2)new Envelope();
             bbox.SpatialReference = this.spatialReferenceEspaceCollaboratif;
@@ -624,34 +652,34 @@ namespace ArcGisProEspaceCollaboratif
             this.ActiveView.Refresh();
             return;
         }
-
+*/
         /// <summary>
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste d'objects Geometry.
         /// </summary>
         /// <param name="geometries">La liste des objects IGeometry sur lesquels il faut faire le zoom à l'écran.</param>
-        public void Zoom(List<Geometry> geometries)
+ /*       public void Zoom(List<Geometry> geometries)
         {
             ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometries);
             this.Zoom(bbox);
             return;
         }
-
+*/
         /// <summary>
         /// Zoom à l'écran sur l'étendue un object Geometry.
         /// </summary>
         /// <param name="geometrie">L'object IGeometry sur lequel il faut faire le zoom à l'écran.</param>
-        public void Zoom(Geometry geometrie)
+/*        public void Zoom(Geometry geometrie)
         {
             ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometrie);
             this.Zoom(bbox);
             return;
         }
-
+*/
         /// <summary>
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de remarques Ripart.
         /// </summary>
         /// <param name="remarques">La liste des remarques Ripart sur lesquelles il faut faire le zoom à l'écran.</param>
-        public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
+ /*       public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
         {
             if (remarques.Count == 0) { return; }
 
@@ -673,12 +701,12 @@ namespace ArcGisProEspaceCollaboratif
             this.Zoom(bbox);
             return;
         }
-
+*/
         /// <summary>
         /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques.
         /// </summary>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        public List<Geometry> GetGeometryFiltreSpatial()
+/*        public List<Geometry> GetGeometryFiltreSpatial()
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
@@ -699,13 +727,13 @@ namespace ArcGisProEspaceCollaboratif
 
             return geometryFiltreSpatial;
         }
-
+*/
         /// <summary>
         /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <param name="calqueFiltrage">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        public List<Geometry> GetGeometryFiltreSpatial(string calqueFiltrage)
+/*        public List<Geometry> GetGeometryFiltreSpatial(string calqueFiltrage)
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
@@ -733,12 +761,12 @@ namespace ArcGisProEspaceCollaboratif
 
             return geometryFiltreSpatial;
         }
-
+*/
         /// <summary>
         /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        public List<Geometry> GetGeometryFiltreSpatial_from_XML()
+/*        public List<Geometry> GetGeometryFiltreSpatial_from_XML()
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
@@ -805,12 +833,12 @@ namespace ArcGisProEspaceCollaboratif
 
             return geometryFiltreSpatial;
         }
-
+*/
         /// <summary>
         /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
+/*        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
@@ -831,8 +859,8 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             return geometryFiltreSpatial;
-        }*/
-
+        }
+*/
 
 
         /// <summary>
@@ -844,6 +872,7 @@ namespace ArcGisProEspaceCollaboratif
 
             //this.URLHostEspaceCollaboratif = EspaceCollaboratifHelper.Load_Urlhost();
             this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
+//            this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
 
             logger.Debug("this.URLHostEspaceCollaboratif " + this.URLHostEspaceCollaboratif);
 
@@ -964,7 +993,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Transforme en croquis Ripart les object sélectionnés dans la carte en cours.
         /// </summary>
         /// <returns>Liste de croquis Ripart créés à partir des objects sélectionnés.</returns>
- /*       public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
+/*        public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
         {
             ESRI.ArcGIS.esriSystem.IStatusBar mess; 
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
@@ -1082,12 +1111,12 @@ namespace ArcGisProEspaceCollaboratif
 
             return listCroquis;
         }
-
+*/
         /// <summary>
         /// Renvoie la date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.
         /// </summary>
         /// <returns>La date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.</returns>
-        public System.DateTime Get_LastUpdate()
+/*        public System.DateTime Get_LastUpdate()
         {
             FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
             FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
@@ -1104,7 +1133,7 @@ namespace ArcGisProEspaceCollaboratif
                         string location = Convert.ToString(row[EspaceCollaboratifHelper.nom_Champ_DateMAJ]);
                         listDate.Add(DateTime.Parse(location));
                     }*/
- /*                   using (Feature feature = (Feature)rowCursor.Current)
+      /*              using (Feature feature = (Feature)rowCursor.Current)
                     {
                         listDate.Add(DateTime.Parse(feature.GetOriginalValue(index).ToString()));
                     }
@@ -1112,13 +1141,13 @@ namespace ArcGisProEspaceCollaboratif
             }
             return listDate.Max();
         }
-
+*/
         /// <summary>
         /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-        public int Count_Remarque_by_Statut(int statut)
+/*        public int Count_Remarque_by_Statut(int statut)
         {
             FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
             FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
@@ -1129,24 +1158,24 @@ namespace ArcGisProEspaceCollaboratif
            
             return featureClass.GetCount(queryFilter);
         }
-
+*/
         /// <summary>
         /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-        public int Count_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
+/*        public int Count_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
         {
             return this.Count_Remarque_by_Statut((int)statut);
         }
-
+*/
 
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 
         /// </summary>
         /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-        public void Select_Remarque_by_Statut(List<int> statut, bool zoom_to_selected_Remarque)
+/*        public void Select_Remarque_by_Statut(List<int> statut, bool zoom_to_selected_Remarque)
         {
             //if (statut.Count == 0) { return; }
 
@@ -1210,11 +1239,13 @@ namespace ArcGisProEspaceCollaboratif
 
             EspaceCollaboratifHelper.MessageBar(" " + coordX.Count + " remarque(s) sélectionnée(s).");
         }
+*/
+
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués.
         /// </summary>
         /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>       
-        public void Select_Remarque_by_Statut(List<int> statut)
+/*        public void Select_Remarque_by_Statut(List<int> statut)
         {
             this.Select_Remarque_by_Statut(statut, false);
         }
@@ -1234,20 +1265,23 @@ namespace ArcGisProEspaceCollaboratif
 
             this.Select_Remarque_by_Statut(statutInt, zoom_to_selected_Remarque);
         }
+*/
+
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 
         /// </summary>
         /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>     
-        public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut)
+/*        public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut)
         {
             this.Select_Remarque_by_Statut(statut);
         }
+*/
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-        public void Select_Remarque_by_Statut(int statut, bool zoom_to_selected_Remarque)
+/*        public void Select_Remarque_by_Statut(int statut, bool zoom_to_selected_Remarque)
         {
             List<int> statutList = new List<int>
             {
@@ -1256,30 +1290,35 @@ namespace ArcGisProEspaceCollaboratif
 
             this.Select_Remarque_by_Statut(statutList, zoom_to_selected_Remarque);
         }
+*/
+
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>        
-        public void Select_Remarque_by_Statut(int statut)
+/*        public void Select_Remarque_by_Statut(int statut)
         {
             this.Select_Remarque_by_Statut(statut, false);
         }
+*/
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut, bool zoom_to_selected_Remarque)
+/*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut, bool zoom_to_selected_Remarque)
         {
             this.Select_Remarque_by_Statut((int)statut, zoom_to_selected_Remarque);
         }
+*/
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>       
-        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
+/*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
         {
             this.Select_Remarque_by_Statut((int)statut, false);
-        }*/
+        }
+*/
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
-using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.ArcMapUI;
+//using ESRI.ArcGIS.Geodatabase;
+//using ESRI.ArcGIS.Carto;
+//using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Core.Data;
 using ArcGIS.Desktop.Mapping;
 
@@ -32,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif
 
         private void ConfigEspaceCollaboratif_Load(object sender, EventArgs e)
         {
-            this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
+           /* this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
 
             if (EspaceCollaboratifHelper.Load_Login().Length == 0)
             {
@@ -116,16 +116,16 @@ namespace ArcGisProEspaceCollaboratif
             else {
                 this.checkBoxGroup.Checked = false;
             }
-            this.lblGroup.Text = this.contexte.ripClient.GetProfil().Geogroupe.Nom;
+            this.lblGroup.Text = this.contexte.ripClient.GetProfil().Geogroupe.Nom;*/
 
-
+            
         }
 
         /// <summary>
         /// Complète treeViewAttributs avec les calques et leurs champs présents sur la carte en cours. 
         /// </summary>
         /// <param name="contexte">Le contexte de la carte en cours</param>        
-        public void SetTreeViewAttributs(Contexte contexte)
+ /*       public void SetTreeViewAttributs(Contexte contexte)
         {
             for (int numLayer = 0; numLayer < contexte.Map.LayerCount; numLayer++)
             {
@@ -160,13 +160,13 @@ namespace ArcGisProEspaceCollaboratif
 
             this.majAttributs = true;
         }
-
+*/
 
         /// <summary>
         /// Recherche récursive de tous les calques dans un groupLayer
         /// </summary>
         /// <param name="group">le groupe </param>
-        private void GetLayersInGroupLayer(ICompositeLayer group)
+  /*      private void GetLayersInGroupLayer(ICompositeLayer group)
         {
             for (int i = 0; i < group.Count; i++)
             {
@@ -182,13 +182,13 @@ namespace ArcGisProEspaceCollaboratif
 
             }
         }
-
+*/
 
         /// <summary>
         /// Ajoute le calque et ses attributs à la liste des calques dans le configurateur
         /// </summary>
         /// <param name="calque"></param>
-        private void AddCalque(Layer calque)
+ /*       private void AddCalque(Layer calque)
         {
             ILayerFields fieldsCalque = calque as ILayerFields;
             this.treeViewAttributs.Nodes.Add(calque.Name);
@@ -203,7 +203,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
         }
-
+*/
 
         /// <summary>
         /// Parcourt l'arbre des attributs pour retourner le numéro du noeud ayant le nom donné.

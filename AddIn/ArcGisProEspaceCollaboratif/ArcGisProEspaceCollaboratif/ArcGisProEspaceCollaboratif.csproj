@@ -135,6 +135,13 @@
     <Compile Include="Aide.cs" />
     <Compile Include="Contexte.cs" />
     <Compile Include="CreerSignalement.cs" />
+    <Compile Include="EspaceCollaboratifHelper.cs" />
+    <Compile Include="FormConfigurer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormConfigurer.designer.cs">
+      <DependentUpon>FormConfigurer.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormConnecter.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -178,6 +185,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormConfigurer.resx">
+      <DependentUpon>FormConfigurer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormConnecter.resx">
       <DependentUpon>FormConnecter.cs</DependentUpon>
     </EmbeddedResource>
