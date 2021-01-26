@@ -7,14 +7,16 @@ using System.Xml;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Core.Data;
 using ArcGIS.Desktop.Mapping;
-using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.esriSystem;
-using ESRI.ArcGIS.Geodatabase;
+//using ESRI.ArcGIS.Carto;
+//using ESRI.ArcGIS.esriSystem;
+//using ESRI.ArcGIS.Geodatabase;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
+
+
     /// <summary>
     /// Classe contenant des utilitaires pour le plugin
     /// </summary>
@@ -79,7 +81,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="remarqueTest">La remarque EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si la remarque à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Remarque remarqueTest, List<Geometry> geometrys)
+ /*       public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Remarque remarqueTest, List<Geometry> geometrys)
         {
             foreach (Geometry shape in geometrys)
             {
@@ -97,14 +99,14 @@ namespace ArcGisProEspaceCollaboratif
             }
             return false;
         }
-
+*/
         /// <summary>
         /// Définit toutes les caractéristiques pour le futur calque dédié à contenir les remarques EspaceCollaboratif.
         /// </summary>
         /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static IFeatureLayer CreerCalqueRemarqueEspaceCollaboratif(IFeatureWorkspace featureWorkspace, SpatialReference spatialReferenceCalque)
+/*        public static IFeatureLayer CreerCalqueRemarqueEspaceCollaboratif(IFeatureWorkspace featureWorkspace, SpatialReference spatialReferenceCalque)
         {
             // Instantiate a feature class description to get the required fields.
             IFeatureClassDescription fcDescription = new FeatureClassDescription() as IFeatureClassDescription;
@@ -196,7 +198,7 @@ namespace ArcGisProEspaceCollaboratif
         
             return featureLayer;
         }
-
+*/
 
         /// <summary>
         /// Définit toutes les caractéristiques pour le futur calque devant contenir un type géométrique donné de croquis EspaceCollaboratif.
@@ -206,7 +208,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <param name="type_CoucheCroquis">Le type géométrique du calque nouvellement créé.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static IFeatureLayer CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, IFeatureWorkspace workspaceTemp, ISpatialReference spatialReferenceCalque, GeometryType type_CoucheCroquis)
+/*        public static IFeatureLayer CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, IFeatureWorkspace workspaceTemp, ISpatialReference spatialReferenceCalque, GeometryType type_CoucheCroquis)
         {
             // Instantiate a feature class description to get the required fields.
             IFeatureClassDescription fcDescription_CoucheCroquis = new FeatureClassDescription() as IFeatureClassDescription;
@@ -271,7 +273,7 @@ namespace ArcGisProEspaceCollaboratif
 
             return featureLayer_Croquis;
         }
-
+*/
 
         /// <summary>
         /// Crée un nouveau champ aux caractéristiques souhaitées.
@@ -281,7 +283,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="typeChamp">Le type de donnée contenue dans le nouveau champ.</param>
         /// <param name="tailleLimite">La longueur maximale du nouveau champ.</param>
         /// <returns>Field à utliser lors de la définition d'un nouvel calque.</returns>
-        public static Field DefinirChamp(string nomChamp, FieldType typeChamp, int tailleLimite = 0)
+/*        public static Field DefinirChamp(string nomChamp, FieldType typeChamp, int tailleLimite = 0)
         {
             IField fieldSupp = new IField();
             IFieldEdit fieldEdit = (IFieldEdit)fieldSupp;
@@ -295,7 +297,7 @@ namespace ArcGisProEspaceCollaboratif
 
             return fieldSupp;
         }
-
+*/
 
         /// <summary>
         /// Limite la longueur d'une string pour ne pas dépasser la taille maximalle que ne peut contenir les attributs d'un calque.
@@ -322,7 +324,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="uneGeometrie">Une Geometry de départ pour définir la nature géométrique de la IGeometry en sortie.</param>
         /// <param name="unCroquis">Le croquis à transformer en IGeometry équivalent.</param>
         /// <returns>Une Geometry équivalente au croquis en entrée.</returns>
-        public static Geometry GeometryFromCroquis(Geometry uneGeometrie, ArcGisProEspaceCollaboratif.Core.Croquis unCroquis)
+/*        public static Geometry GeometryFromCroquis(Geometry uneGeometrie, ArcGisProEspaceCollaboratif.Core.Croquis unCroquis)
         {
             IPointCollection pointCollection = null;
             pointCollection = uneGeometrie as IPointCollection;
@@ -334,7 +336,7 @@ namespace ArcGisProEspaceCollaboratif
 
             return uneGeometrie;
         }
-
+*/
 
         /// <summary>
         /// Remplit un attribut d'un object EspaceCollaboratif sur la carte en cours.
@@ -343,7 +345,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="featureEspaceCollaboratif">La Feature de l'object EspaceCollaboratif sur lequel on veut compléter un attribut.</param>
         /// <param name="nomChamp">Le nom de l'attribut dans lequel on veut écrire.</param>
         /// <param name="valChamp">La valeur à écrire dans l'attribut de l'object EspaceCollaboratif. </param>
-        public static void CompleteChampEspaceCollaboratif(IFeatureClass featureClassEspaceCollaboratif, IFeature featureEspaceCollaboratif, string nomChamp, object valChamp)
+/*        public static void CompleteChampEspaceCollaboratif(IFeatureClass featureClassEspaceCollaboratif, IFeature featureEspaceCollaboratif, string nomChamp, object valChamp)
         {
             if (valChamp == null || nomChamp.Equals("")) { return; }
 
@@ -353,7 +355,7 @@ namespace ArcGisProEspaceCollaboratif
                 featureEspaceCollaboratif.set_Value(iFiedName, valChamp);
             }
         }
-
+*/
 
         /// <summary>
         /// Renvoie la longueur du plus long message contenu dans une liste de remarque EspaceCollaboratif.
@@ -415,7 +417,7 @@ namespace ArcGisProEspaceCollaboratif
             return maxLength;
         }
 
-
+/*
         /// <summary>
         /// Teste si la géometrie d'une Feature est utilisable ou non pour le filtrage spatial lors de l'importation des remarques EspaceCollaboratif.
         /// </summary>
@@ -696,6 +698,8 @@ namespace ArcGisProEspaceCollaboratif
                 return EspaceCollaboratifHelper.Milieux(arcEntree);
             }
         }
+*/
+
         /// <summary>
         /// Calcule le centroïde d'arc circulaire.
         /// Si l'arc est fermé, le centroïde calculé correspond au centroïde de la surface délimitée par cet arc.
@@ -703,12 +707,14 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="arcEntree">L'arc circulaire dont il faut calculer son centroïde.</param>
         /// <returns>Le centroïde calculé depuis <paramref name="arcEntree"/>.</returns>        
-        public static Point Centroid(ICircularArc arcEntree)
+/*        public static Point Centroid(ICircularArc arcEntree)
         {
             if (arcEntree.IsEmpty) { return null; }
             IEllipticArc arc = arcEntree as IEllipticArc;
             return Centroid(arc);
         }
+
+
         /// <summary>
         /// Calcule le centroïde d'une ligne.       
         /// Il s'agit du milieux de cette ligne.
@@ -869,7 +875,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             return newCroquis;
         }
-
+*/
 
         /// <summary>
         /// Teste si le champ donné d'un calque donné doit être mis ou non en attribut pour un futur croquis.
@@ -905,7 +911,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="feature">La feature initiale contenant les champs qu'on veut mettre en attribut dans le croquis.</param>
         /// <param name="treeLayerAndField">L'arborescence des calques et de leurs champs devant être mis en attribut pour le nouveau croquis.</param>
         /// <returns>Le <paramref name="croquis"/> complété d'attributs supplémentaires issus des propriétés de la <paramref name="feature"/>.</returns>
-        public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Croquis croquis, IFeature feature, System.Windows.Forms.TreeNode treeLayerAndField)
+/*        public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Croquis croquis, IFeature feature, System.Windows.Forms.TreeNode treeLayerAndField)
         {    
             // Parcours des champs de la feature.
             for (int i = 0; i < feature.Fields.FieldCount; i++)
@@ -929,7 +935,7 @@ namespace ArcGisProEspaceCollaboratif
             }
              
         }
-
+*/
 
         /// <summary>
         /// Ajoute à un croquis l'attribut composé du nom et de la valeur donnés en entrée.
@@ -938,11 +944,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="nom">Le nom de l'attribut à ajouter au croquis.</param>
         /// <param name="val">La valeur de l'attribut à ajouter au croquis.</param>
         /// <returns>Le <paramref name="croquis"/> complété de l'attribut supplémentaire issu de la paire <paramref name="nom"/> et <paramref name="val"/>.</returns>
-        public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Croquis croquis, string nom, string val)
+/*        public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Croquis croquis, string nom, string val)
         {
             croquis.AddAttribut(new ArcGisProEspaceCollaboratif.Core.Attribut(nom, val));
         }
-
+*/
 
         /// <summary>
         /// Génère un croquis EspaceCollaboratif à partir d'une géométrie Esri.
@@ -950,7 +956,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometryEntree">La géométrie dont il faut convertir en croquis EspaceCollaboratif.</param>        
         /// <returns>Le croquis EspaceCollaboratif issu depuis <paramref name="geometryEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Croquis MakeCroquis(Geometry geometryEntree)
+/*        public static ArcGisProEspaceCollaboratif.Core.Croquis MakeCroquis(Geometry geometryEntree)
         {
             ArcGisProEspaceCollaboratif.Core.Croquis newCroquis = new ArcGisProEspaceCollaboratif.Core.Croquis();
 
@@ -998,7 +1004,7 @@ namespace ArcGisProEspaceCollaboratif
             if (!newCroquis.IsValid()) { return new ArcGisProEspaceCollaboratif.Core.Croquis(); }
             return newCroquis;
         }
-
+*/
 
         /// <summary>
         /// Calcule le point d'application pour une nouvelle remarque EspaceCollaboratif à partir des croquis associées à cette future remarque.
@@ -1006,7 +1012,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="listCroquisEntree">La liste contenant les croquis EspaceCollaboratif de la future remarque EspaceCollaboratifs.</param>        
         /// <returns>Le point sur lequel sera centrée la nouvelle remarque EspaceCollaboratif contenant les croquis de <paramref name="listCroquisEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point PointApplicationEspaceCollaboratif(List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquisEntree)
+/*        public static ArcGisProEspaceCollaboratif.Core.Point PointApplicationEspaceCollaboratif(List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquisEntree)
         {
             switch (listCroquisEntree.Count)
             {
@@ -1070,13 +1076,14 @@ namespace ArcGisProEspaceCollaboratif
                     return EspaceCollaboratifHelper.TransformPoint(centroidCroquis[rang]);
             }
         }
+*/
         /// <summary>
         /// Calcule le point d'application pour une nouvelle remarque EspaceCollaboratif à partir d'un unique croquis EspaceCollaboratif associé à cette future remarque.
         /// Il s'agit du centroïde du croquis EspaceCollaboratif <paramref name="croquisEntree"/>.
         /// </summary>
         /// <param name="croquisEntree">Le croquis EspaceCollaboratif dont son centroïde sera le point d'application de la nouvelle remarque EspaceCollaboratif.</param>        
         /// <returns>Le point sur lequel sera centrée la nouvelle remarque EspaceCollaboratif contenant le croquis <paramref name="croquisEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point PointApplicationEspaceCollaboratif(ArcGisProEspaceCollaboratif.Core.Croquis croquisEntree)
+/*        public static ArcGisProEspaceCollaboratif.Core.Point PointApplicationEspaceCollaboratif(ArcGisProEspaceCollaboratif.Core.Croquis croquisEntree)
         {
             List<ArcGisProEspaceCollaboratif.Core.Croquis> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Croquis>
             {
@@ -1084,13 +1091,13 @@ namespace ArcGisProEspaceCollaboratif
             };
             return EspaceCollaboratifHelper.PointApplicationEspaceCollaboratif(listCroquis);
         }
-
+*/
 
         /// <summary>
         /// Affiche un message dans la barre d'état d''ArcMap.
         /// </summary>
         /// <param name="message">Le message à afficher dans la barre d'état d'ArcMap (en bas à gauche de l'écran.).</param>       
-        public static void MessageBar(string message)
+/*        public static void MessageBar(string message)
         {
 
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
@@ -1101,7 +1108,7 @@ namespace ArcGisProEspaceCollaboratif
 
             return;
         }
-
+*/
 
         /// <summary>
         /// Renvoie le chemin complet d'accès du fichier XML de paramétrage pour le fonctionnement de l'add-on EspaceCollaboratif pour ArcMap.
@@ -1110,8 +1117,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le chemin complet + nom du fichier du fichier de paramétrage.</returns>
         public static string EspaceCollaboratifXML_NameFile()
         {
-            IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
-            return System.IO.Path.GetDirectoryName(mapDocument.DocumentFilename) + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif;
+            //IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
+            string workDir = Contexte.Instance.repertoireTravail;
+
+            //return System.IO.Path.GetDirectoryName(mapDocument.DocumentFilename) + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif;
+            return System.IO.Path.GetFullPath(workDir) + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif;
         }
 
 
@@ -1536,11 +1546,11 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
         /// </summary>
         /// <param name="layer">Le calque dont on enregistre son nom dans le fichier de paramétrage pour le filtrage spatiale.</param>
-        public static void Save_CalqueFiltrage(ILayer layer)
+/*        public static void Save_CalqueFiltrage(ILayer layer)
         {
             EspaceCollaboratifXML_SetElement(EspaceCollaboratifHelper.xml_Zone_extraction, layer.Name);
         }
-
+*/
 
         /// <summary>
         /// Obtient à partir du XML de paramétrage, l'adresse du service EspaceCollaboratif contenue dans le fichier XML de paramétrage.
@@ -1558,6 +1568,8 @@ namespace ArcGisProEspaceCollaboratif
 
             return Urlhost;
         }
+ 
+
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, l'adresse du service EspaceCollaboratif.
         /// </summary>
@@ -1698,4 +1710,5 @@ namespace ArcGisProEspaceCollaboratif
 
        
     }
+    
 }
