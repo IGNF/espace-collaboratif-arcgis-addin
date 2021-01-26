@@ -4,12 +4,10 @@ using System.Linq;
 using System.Xml;
 using System.Collections;
 
-using ESRI.ArcGIS.Carto;
 //using ESRI.ArcGIS.Geodatabase;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Internal.Data.DDL;
-using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
 
 using System.IO;
@@ -26,11 +24,14 @@ namespace ArcGisProEspaceCollaboratif
         private static Contexte instance = null;
         private static readonly object padlock = new object();
 
-        public IActiveView ActiveView; // Les paramètres concernant l'affichage de la carte en cours.
-        public IMap Map; // Les paramètres cartographiques (projection) de la carte en cours
+        //public IActiveView ActiveView; // Les paramètres concernant l'affichage de la carte en cours.
+        //public IMap Map; // Les paramètres cartographiques (projection) de la carte en cours
+        public Map map;
+        public MapView mapView;
+        public MapView activeView;
         //public ArcGIS.Desktop.Mapping.MapView Map;//mapView;
-        public ArcGIS.Desktop.Mapping.MapTool mapTool;
-        public IFeatureWorkspace FeatureWorkspace;
+        //public ArcGIS.Desktop.Mapping.MapTool mapTool;
+        //public IFeatureWorkspace FeatureWorkspace;
 
         public string repertoireTravail; // Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille.
         public string fichierCarteTravail; // Le fichier de la carte ArcGIS Pro sur laquelle on travaille.
@@ -62,7 +63,7 @@ namespace ArcGisProEspaceCollaboratif
                         if (instance == null)
                         {
                             instance = new Contexte();
-                            logger.Debug("instance de contexte créée");
+                            logger.Debug("Instance de contexte créée");
                         }
                     }
                 }
@@ -77,14 +78,17 @@ namespace ArcGisProEspaceCollaboratif
         private Contexte()
         {
              
-            IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
-            IActiveView activeView = mxDocument.ActiveView;
+            //IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
+            //IActiveView activeView = mxDocument.ActiveView;
 
             // Choix de coordonnées géographiques dans le système RGF1993 (identifiant EPSG: 2154)
             //ISpatialReferenceFactory spatialReferenceFactory = new SpatialReferenceEnvironment();
             //this.spatialReferenceEspaceCollaboratif = spatialReferenceFactory.CreateGeographicCoordinateSystem((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
             this.spatialReferenceEspaceCollaboratif = SpatialReferenceBuilder.CreateSpatialReference(4326);
-            this.Init(activeView);
+            //Project project = Project.Current; //Lien entre project et mapview ?
+            this.activeView = MapView.Active;
+            this.Init(this.activeView);
+            //this.Init(activeView);
         }
 
 
@@ -92,7 +96,8 @@ namespace ArcGisProEspaceCollaboratif
         /// Constructeur à partir d'une vue active
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        private Contexte(IActiveView activeView)
+        //private Contexte(IActiveView activeView)
+        private Contexte(MapView activeView)
         {
             this.Init(activeView);
         }
@@ -102,31 +107,32 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        private void Init(IActiveView activeView)
+        //private void Init(IActiveView activeView)
+        private void Init(MapView activeView)
         {
-            this.ActiveView = activeView;
-            this.Map = activeView.FocusMap;
+            this.activeView = activeView;
+            //this.Map = activeView.FocusMap;
 
             this.LoginEspaceCollaboratif = "";
             this.PwdEspaceCollaboratif = "";
             this.URLHostEspaceCollaboratif = "";
 
-            IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
+            /*IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
             if (mapDocument.DocumentFilename.Length == 0)
             {
                 throw new Exception(@"Votre document mxd doit être enregistré avant de pouvoir utiliser l'extension RIPart");
             }
 
             this.repertoireTravail = System.IO.Path.GetDirectoryName(mapDocument.DocumentFilename);
-            this.fichierCarteTravail = System.IO.Path.GetFileNameWithoutExtension(mapDocument.DocumentFilename);
+            this.fichierCarteTravail = System.IO.Path.GetFileNameWithoutExtension(mapDocument.DocumentFilename);*/
 
             this.CheckConfigFile();
 
             // récupération ou création de RIPART.gdb
-            this.FeatureWorkspace = this.GetOrCreateFeatureWorkspace();
+            //this.FeatureWorkspace = this.GetOrCreateFeatureWorkspace();
 
             //création ou chargement des couches ripart
-            this.CreateOrLoadEspaceCollaboratifLayer();
+            //this.CreateOrLoadEspaceCollaboratifLayer();
 
             logger.Debug("initialisation du contexte et des éléments Ripart");
         }
@@ -140,7 +146,7 @@ namespace ArcGisProEspaceCollaboratif
         public bool CheckConfigFile()
         {
 
-            if (!File.Exists(this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+            /*if (!File.Exists(this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
             {
                 try
                 {
@@ -151,7 +157,7 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Error(e.Message + "\n" + e.StackTrace);
                     return false;
                 }
-            }
+            }*/
 
             return true;
         }
@@ -160,7 +166,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// création ou chargement des couches de l'espace collaboratif
         /// </summary>
-        private void CreateOrLoadEspaceCollaboratifLayer()
+        /*private void CreateOrLoadEspaceCollaboratifLayer()
         {
 
             // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
@@ -458,10 +464,10 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Dessine sur la carte en cours une remarque Ripart donnée (avec ses éventuels croquis associés).
+        /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="uneRemarque">La remarque Ripart qu'il faut placer sur la carte en cours.</param>
-        public void CreerPointRemarqueEspaceCollaboratif(ArcGisProEspaceCollaboratif.Core.Remarque uneRemarque)
+        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement unSignalement)
         {
 
             // on cast en featureLayer
@@ -470,34 +476,34 @@ namespace ArcGisProEspaceCollaboratif
             IFeature featureRemarque = featureClass.CreateFeature();
 
             // Placement géographique du point d'application de la remarque Ripart
-            featureRemarque.Shape = EspaceCollaboratifHelper.TransformPoint(uneRemarque.Position);
+            featureRemarque.Shape = EspaceCollaboratifHelper.TransformPoint(unSignalement.Position);
 
             // Remplissage des attributs de la remarque Ripart
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, uneRemarque.Id);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Auteur, uneRemarque.Auteur.Nom);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Departement, uneRemarque.Departement.Nom);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IDDepartement, uneRemarque.Departement.Id);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Commune, uneRemarque.Commune);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateCreation, uneRemarque.DateCreation);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateMAJ, uneRemarque.DateMiseAJour);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateValidation, uneRemarque.DateValidation);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Statut, (int)uneRemarque.Statut);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Themes, uneRemarque.concatenateThemes());
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Url, uneRemarque.Lien);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_UrlPrive, uneRemarque.LienPrive);
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Document, uneRemarque.getFirstDocument());
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Message, EspaceCollaboratifHelper.Limite(uneRemarque.Commentaire));
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Reponse, EspaceCollaboratifHelper.Limite(uneRemarque.concatenateReponse()));
-            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Autorisation, uneRemarque.Autorisation);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, unSignalement.Id);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Auteur, unSignalement.Auteur.Nom);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Departement, unSignalement.Departement.Nom);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IDDepartement, unSignalement.Departement.Id);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Commune, unSignalement.Commune);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateCreation, unSignalement.DateCreation);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateMAJ, unSignalement.DateMiseAJour);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateValidation, unSignalement.DateValidation);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Statut, (int)unSignalement.Statut);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Themes, unSignalement.ConcatenateThemes());
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Url, unSignalement.Lien);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_UrlPrive, unSignalement.LienPrive);
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Document, unSignalement.GetFirstDocument());
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Message, EspaceCollaboratifHelper.Limite(unSignalement.Commentaire));
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Reponse, EspaceCollaboratifHelper.Limite(unSignalement.ConcatenateReponse()));
+            EspaceCollaboratifHelper.CompleteChampEspaceCollaboratif(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Autorisation, unSignalement.Autorisation);
 
             featureRemarque.Store();
 
 
             //  Traitement du ou des croquis associé(s) à la remarque            
-            if (!uneRemarque.IsCroquisEmpty())
+            if (!unSignalement.IsCroquisEmpty())
             {
 
-                foreach (ArcGisProEspaceCollaboratif.Core.Croquis unCroquis in uneRemarque.Croquis)
+                foreach (ArcGisProEspaceCollaboratif.Core.Croquis unCroquis in unSignalement.Croquis)
                 {
                     if (unCroquis.Points.Count == 0)
                     {
@@ -525,15 +531,15 @@ namespace ArcGisProEspaceCollaboratif
                                     break;
 
                                 case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne:
-                                    featureCroquis.Shape = RipartHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
+                                    featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
                                     break;
 
                                 case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone:
-                                    featureCroquis.Shape = RipartHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
+                                    featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
                                     break;
 
                                 case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Fleche:
-                                    featureCroquis.Shape = RipartHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
+                                    featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
                                     break;
 
                                 case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte:
@@ -645,14 +651,14 @@ namespace ArcGisProEspaceCollaboratif
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de remarques Ripart.
         /// </summary>
         /// <param name="remarques">La liste des remarques Ripart sur lesquelles il faut faire le zoom à l'écran.</param>
-        public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Remarque> remarques)
+        public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
         {
             if (remarques.Count == 0) { return; }
 
             List<double> coordX = new List<double>();
             List<double> coordY = new List<double>();
 
-            foreach (ArcGisProEspaceCollaboratif.Core.Remarque remarque in remarques)
+            foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
             {
                 coordX.Add(remarque.Position.Longitude);
                 coordY.Add(remarque.Position.Latitude);
@@ -715,11 +721,11 @@ namespace ArcGisProEspaceCollaboratif
                         filtreSpatial,
                         false // important : sinon on n'obtient qu'un seul objet
                     );
-            IFeature featureFiltrageSpatial = cursor.NextFeature();
+            Feature featureFiltrageSpatial = cursor.NextFeature();
 
             while (featureFiltrageSpatial != null)
             {
-                Geometry contourFiltrageSpatial = featureFiltrageSpatial.Shape;
+                Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
                 contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
                 geometryFiltreSpatial.Add(contourFiltrageSpatial);
                 featureFiltrageSpatial = cursor.NextFeature();
@@ -782,11 +788,11 @@ namespace ArcGisProEspaceCollaboratif
                         filtreSpatial,
                         false // important : sinon, on a un seul objet
                     );
-                    IFeature featureFiltrageSpatial = cursor.NextFeature();
+                    Feature featureFiltrageSpatial = cursor.NextFeature();
 
                     while (featureFiltrageSpatial != null)
                     {
-                        Geometry contourFiltrageSpatial = featureFiltrageSpatial.Shape;
+                        Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
                         contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
                         geometryFiltreSpatial.Add(contourFiltrageSpatial);
                         featureFiltrageSpatial = cursor.NextFeature();
@@ -810,13 +816,13 @@ namespace ArcGisProEspaceCollaboratif
 
             // Obtention des objects sélectionnés
             IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-            IFeature feature = enumFeature.Next();
+            Feature feature = enumFeature.Next();
 
             while (feature != null)
             {
                 if (EspaceCollaboratifHelper.TestGeometrieFiltrageSpatial(feature))
                 {
-                    Geometry contourFiltrageSpatial = feature.Shape;
+                    Geometry contourFiltrageSpatial = feature.GetShape();
                     contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
                     geometryFiltreSpatial.Add(contourFiltrageSpatial);
                 }
@@ -825,18 +831,19 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             return geometryFiltreSpatial;
-        }
+        }*/
 
 
 
         /// <summary>
         /// Établit la connexion avec le service Ripart.
         /// </summary>
-        public ArcGisProEspaceCollaboratif.Core.IClient GetConnexionRipart()
+        public ArcGisProEspaceCollaboratif.Core.IClient GetConnexionEspaceCollaboratif()
         {
             logger.Debug("GetConnexionEspaceCollaboratif ");
 
-            this.URLHostEspaceCollaboratif = EspaceCollaboratifHelper.Load_Urlhost();
+            //this.URLHostEspaceCollaboratif = EspaceCollaboratifHelper.Load_Urlhost();
+            this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
 
             logger.Debug("this.URLHostEspaceCollaboratif " + this.URLHostEspaceCollaboratif);
 
@@ -845,7 +852,7 @@ namespace ArcGisProEspaceCollaboratif
             this.loginWindow = new FormConnecter();
 
             // Recherche du login par défaut dans le fichier XML de paramétrage
-            this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
+            //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
 
             // Lancement du formulaire de saisie du login et mot de passe                
             this.loginWindow.SetLogin(this.LoginEspaceCollaboratif);
@@ -858,7 +865,7 @@ namespace ArcGisProEspaceCollaboratif
                 if (this.LoginEspaceCollaboratif.Length == 0 || this.PwdEspaceCollaboratif.Length == 0)
                 {
                     // Recherche du login par défaut dans le fichier XML de paramétrage
-                    this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
+                    //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
 
                     // Lancement du formulaire de saisi du login et mot de passe                
                     this.loginWindow.SetLogin(this.LoginEspaceCollaboratif);
@@ -900,19 +907,19 @@ namespace ArcGisProEspaceCollaboratif
 
                         FormInfo popupEspaceCollaboratif = new FormInfo();
 
-                        popupEspaceCollaboratif.setLogo(profil.Logo);
+                        popupEspaceCollaboratif.SetLogo(profil.Logo);
 
-                        popupEspaceCollaboratif.setMessage("Connexion réussie à l'Espace collaboratif.");
-                        popupEspaceCollaboratif.addMessage("");
-                        popupEspaceCollaboratif.addMessage(" Serveur: " + this.URLHostEspaceCollaboratif);
-                        popupEspaceCollaboratif.addMessage(" Login: " + this.LoginEspaceCollaboratif);
-                        popupEspaceCollaboratif.addMessage(" Profil: " + profil.Titre);
-                        popupEspaceCollaboratif.addMessage(" Zone: " + profil.Zone);
+                        popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif.");
+                        popupEspaceCollaboratif.AddMessage("");
+                        popupEspaceCollaboratif.AddMessage(" Serveur: " + this.URLHostEspaceCollaboratif);
+                        popupEspaceCollaboratif.AddMessage(" Login: " + this.LoginEspaceCollaboratif);
+                        popupEspaceCollaboratif.AddMessage(" Profil: " + profil.Titre);
+                        popupEspaceCollaboratif.AddMessage(" Zone: " + profil.Zone);
 
                         popupEspaceCollaboratif.StartCountDown(10);
                         popupEspaceCollaboratif.ShowDialog();
 
-                        EspaceCollaboratifHelper.Save_Login(this.LoginEspaceCollaboratif);
+                        //EspaceCollaboratifHelper.Save_Login(this.LoginEspaceCollaboratif);
              
                     }
                     return uneConnexionEspaceCollaboratif;
@@ -935,7 +942,7 @@ namespace ArcGisProEspaceCollaboratif
                             this.loginWindow.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
                             break;
                         default:
-                            MessageBox.Show("Impossible d'accéder au service de l'Esapce collaboratif à l'adresse suivante: " + this.URLHostEspaceCollaboratif +
+                            MessageBox.Show("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante: " + this.URLHostEspaceCollaboratif +
                                             "\n\nVeuillez contacter le support de l'Espace collaboratif: \n" + erreurConnexion.Message.ToString() + ".", "IGN Espace collaboratif",
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -957,7 +964,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Transforme en croquis Ripart les object sélectionnés dans la carte en cours.
         /// </summary>
         /// <returns>Liste de croquis Ripart créés à partir des objects sélectionnés.</returns>
-        public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
+ /*       public List<ArcGisProEspaceCollaboratif.Core.Croquis> MakeCroquis_from_Selection()
         {
             ESRI.ArcGIS.esriSystem.IStatusBar mess; 
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
@@ -971,7 +978,7 @@ namespace ArcGisProEspaceCollaboratif
             IEnumFeatureSetup pEnumFeatureSetup = (IEnumFeatureSetup)enumFeature;
             pEnumFeatureSetup.AllFields = true;
 
-            IFeature feature = enumFeature.Next();
+            Feature feature = enumFeature.Next();
 
             int total = this.Map.SelectionCount;
             int step = 0;
@@ -985,32 +992,32 @@ namespace ArcGisProEspaceCollaboratif
                 step++;
 
                 mess.ProgressBar.Position = step;
-                mess.set_Message(0, "Génération des croquis de l'Esapce collaboratif n°" + step + "/" + total + "...");
+                mess.set_Message(0, "Génération des croquis de l'Espace collaboratif n°" + step + "/" + total + "...");
 
 
-                Geometry geometryFeature = feature.Shape as IGeometry;
+                Geometry geometryFeature = feature.GetShape() as Geometry;
                 geometryFeature.Project(this.spatialReferenceEspaceCollaboratif);
 
                 if (geometryFeature.GeometryType == ArcGIS.Core.Geometry.GeometryType.Point)
                 {
-                    Point pointGeom = geometryFeature as Point;
+                    ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
                     ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(pointGeom);
                     EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
                     listCroquis.Add(croquisTemp);
                 }
                 else
                 {
-                    IPolycurve3 courbe = feature.Shape as IPolycurve3;
+                    IPolycurve3 courbe = feature.GetShape() as IPolycurve3;
 
                     courbe.Project(this.spatialReferenceEspaceCollaboratif);
-                    ArcGIS.Core.Geometry.GeometryType type = feature.Shape.GeometryType;
+                    ArcGIS.Core.Geometry.GeometryType type = feature.GetShape().GeometryType;
 
                     switch (type)
                     {
                         case ArcGIS.Core.Geometry.GeometryType.Polyline:
                             courbe.DensifyByAngle(150.00, Math.PI / 180 * 2);
 
-                            IGeometryCollection collectionPolyline = feature.Shape as IGeometryCollection;
+                            IGeometryCollection collectionPolyline = feature.GetShape() as IGeometryCollection;
 
                             for (int i = 0; i < collectionPolyline.GeometryCount; i++)
                             {
@@ -1035,7 +1042,7 @@ namespace ArcGisProEspaceCollaboratif
 
                             courbe.Densify(250, 0);
                             IPolygon4 polygon = courbe as IPolygon4;
-                            IGeometryCollection collectionPolygon = feature.Shape as IGeometryCollection;
+                            IGeometryCollection collectionPolygon = feature.GetShape() as IGeometryCollection;
 
                             for (int i = 0; i < collectionPolygon.GeometryCount; i++)
                             {
@@ -1097,7 +1104,7 @@ namespace ArcGisProEspaceCollaboratif
                         string location = Convert.ToString(row[EspaceCollaboratifHelper.nom_Champ_DateMAJ]);
                         listDate.Add(DateTime.Parse(location));
                     }*/
-                    using (Feature feature = (Feature)rowCursor.Current)
+ /*                   using (Feature feature = (Feature)rowCursor.Current)
                     {
                         listDate.Add(DateTime.Parse(feature.GetOriginalValue(index).ToString()));
                     }
@@ -1178,12 +1185,12 @@ namespace ArcGisProEspaceCollaboratif
 
             // Obtention des objects sélectionnés
             IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-            IFeature feature = enumFeature.Next();
+            Feature feature = enumFeature.Next();
 
             while (feature != null)
             {
-                Geometry geometry = feature.Shape;
-                Point point = geometry as Point;
+                Geometry geometry = feature.GetShape();
+                ArcGIS.Core.Geometry.MapPoint point = geometry as ArcGIS.Core.Geometry.MapPoint;
                 point.Project(this.spatialReferenceEspaceCollaboratif);
 
                 coordX.Add(point.X);
@@ -1273,6 +1280,6 @@ namespace ArcGisProEspaceCollaboratif
         public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
         {
             this.Select_Remarque_by_Statut((int)statut, false);
-        }
+        }*/
     }
 }

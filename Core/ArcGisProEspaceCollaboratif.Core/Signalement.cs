@@ -7,22 +7,22 @@ using System.Web;
 namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
-    /// Classe représentant une remarque
+    /// Classe représentant un signalement
     /// </summary>
-    public class Remarque
+    public class Signalement
     {
         /// <summary>
-        /// Identifiant de la remarque
+        /// Identifiant du signalement
         /// </summary>
         public UInt64 Id;
         
         /// <summary>
-        /// Url public vers la remarque sur le site web de EspaceCollaboratif.
+        /// URL publique vers le signalement sur le site web de l'espace collaboratif.
         /// </summary>
         public String Lien;
 
         /// <summary>
-        /// Url vers la partie privée du site web de EspaceCollaboratif.
+        /// URL vers la partie privée du site web de l'Espace collaboratif.
         /// </summary>
         public String LienPrive;
 
@@ -32,48 +32,48 @@ namespace ArcGisProEspaceCollaboratif.Core
         public DateTime DateCreation;
 
         /// <summary>
-        /// La date de mise-à-jour de la remarque EspaceCollaboratif.
+        /// La date de mise-à-jour du signalement.
         /// </summary>
         public DateTime DateMiseAJour;
 
         /// <summary>
-        /// La date de validation de la remarque EspaceCollaboratif.
+        /// La date de validation du signalement.
         /// </summary>
         public DateTime DateValidation;
 
         /// <summary>
-        /// La position de la remarque EspaceCollaboratif (lon/lat)
+        /// La position du signalement (lon/lat)
         /// </summary>
         public Point Position = new Point() ;
 
         /// <summary>
-        /// Le statut de la remarque
+        /// Le statut du signalement
         /// </summary>
         public Statut Statut;
-       
-       
+
+
         /// <summary>
-        /// Le département où est située la remarque ( indicatif + nom)
+        /// Le département où est situé le signalement (indicatif + nom)
         /// </summary>
         public Groupe Departement;
 
         /// <summary>
-        /// La commune où est située la remarque (nom)
+        /// La commune où est situé le signalement (nom)
         /// </summary>
-        public String Commune;         
-        
-        /// <summary>
-        /// Le texte du message de la remarque EspaceCollaboratif.
-        /// </summary>
-        public String Commentaire; 
+        public String Commune;
 
         /// <summary>
-        /// L'auteur de la remarque
+        /// Le texte du message du signalement.
+        /// </summary>
+        public String Commentaire;
+
+        /// <summary>
+        /// L'auteur du signalement
         /// </summary>
         public Auteur Auteur;
 
         /// <summary>
-        ///	Définit les droits d'action de l'utilisateur en cours sur la remarque EspaceCollaboratif.
+        ///	Définit les droits d'action de l'utilisateur en cours sur le signalement.
         /// </summary>
         public String Autorisation;
 
@@ -83,12 +83,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         public String Id_partition;
 
         /// <summary>
-        /// Le groupe sous lequel l'auteur a crée la remarque EspaceCollaboratif. 
+        /// Le groupe sous lequel l'auteur a créé le signalement. 
         /// </summary>
         public Groupe Groupe;
 
         /// <summary>
-        /// les éventuelles réponses de la remarque EspaceCollaboratif.
+        /// les éventuelles réponses du signalement.
         /// </summary>
         public List<GeoReponse> Reponses = new List<GeoReponse>() ;
 
@@ -98,48 +98,50 @@ namespace ArcGisProEspaceCollaboratif.Core
         public List<Croquis> Croquis = new List<Croquis>();
 
         /// <summary>
-        /// Les éventuels documents attachés à la remarque EspaceCollaboratif
+        /// Les éventuels documents attachés au signalement
         /// </summary>
         public List<String> Documents = new List<String>();
 
         /// <summary>
-        /// Les éventuels thèmes attachés à la remarque EspaceCollaboratif
+        /// Les éventuels thèmes attachés au signalement
         /// </summary>
         public List<Theme> Themes = new List<Theme>();
-
 
         public String Hash;
 
         public String Source;
 
         /// <summary>
-        /// brief 2Getteur pour concaténer sur une seule ligne le nom de tous les thèmes contenus dans la remarque EspaceCollaboratif.
-        /// return Un texte qui est la concaténation des noms de tous les thèmes contenus dans la remarque EspaceCollaboratif. 
+        /// brief Getter pour concaténer sur une seule ligne le nom de tous les thèmes contenus dans le signalement.
+        /// return Un texte qui est la concaténation des noms de tous les thèmes contenus dans le signalement. 
         /// </summary>
         /// <returns></returns>
-        public String ConcatenateThemes() {
+        public String ConcatenateThemes()
+        {
             String result = "";
 
             for ( int i = 0; i < this.Themes.Count; i++ ){
-
-                if (i != 0) { result += ", "; }
+                if (i != 0)
+                {
+                    result += ", ";
+                }
                 result += this.Themes[i].Groupe.Nom;
-
             }
-            
             return result;
-            
         }
 
         /// <summary>
-        /// brief Test pour savoir s'il n'y a pas de croquis contenu dans la remarque EspaceCollaboratif (Vraie s'il n'y en a pas).
-        /// return True s'il n'y a pas de croquis associé à la remarque. False dans le cas contraire.
+        /// brief Test pour savoir s'il n'y a pas de croquis contenu dans le signalement (Vrai s'il n'y en a pas).
+        /// return True s'il n'y a pas de croquis associé au signalement. False dans le cas contraire.
         /// <returns></returns>
-        public bool IsCroquisEmpty() { return this.Croquis.Count == 0;  }
+        public bool IsCroquisEmpty()
+        {
+            return this.Croquis.Count == 0;
+        }
 
         /// <summary>
-        ///	\brief Getteur du nom de l'auteur de la remarque.
-        /// \return Le nom de l'auteur de la ramarque.
+        ///	\brief Getter du nom de l'auteur du signalement.
+        /// \return Le nom de l'auteur du signalement.
         /// <returns></returns>
         public String GetAuteurNom()
         {
@@ -149,8 +151,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        ///	\brief Getteur de l'Id de l'auteur de la remarque.
-        /// \return L'Id de l'auteur de la ramarque.
+        ///	\brief Getter de l'Id de l'auteur du signalement.
+        /// \return L'Id de l'auteur ddu signalement.
         /// <returns></returns>
         public String GetAuteurId()
         {
@@ -204,15 +206,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         concatenate += " le " + this.Reponses[i].Date.ToString();
                     }
-
                     concatenate += ".</font></b><br>";
                     concatenate += "<b>" + HttpUtility.UrlDecode(this.Utf8Encode(this.Reponses[i].Titre())) + "</b><br>";
                     concatenate += "" + HttpUtility.UrlDecode(this.Reponses[i].Reponse) + "</li><br><br>";
-                   
                 }
             }
-
-
             return concatenate;
         }
 
@@ -238,15 +236,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         concatenate += " le " + this.Reponses[i].Date.ToString();
                     }
-
                     concatenate += ".\n" + this.Reponses[i].Reponse + "\n";
                 }
             }
-
-
             return concatenate;
         }
-        
 
         /// <summary>
         /// Retourne les GeoReponse de la Remarque sous forme d'un XML.
@@ -254,7 +248,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns
         public System.Xml.Linq.XElement ReponsesEncodeToXML()
         {
-
             System.Xml.Linq.XElement reponsesXML = new System.Xml.Linq.XElement("GEOREM_GEOREP");
           
             foreach (ArcGisProEspaceCollaboratif.Core.GeoReponse uneGeoReponse in this.Reponses)
@@ -264,7 +257,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             
             return reponsesXML;
         }
-
 
         public void SetPosition(ArcGisProEspaceCollaboratif.Core.Point position)
         {
@@ -280,7 +272,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             this.Position = new ArcGisProEspaceCollaboratif.Core.Point();
         }
-
 
         public void SetCommentaire(String message)
         {
@@ -310,7 +301,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Documents.Clear();
         }
 
-
         public void AddCroquis(Croquis unCroquis)
         {
             this.Croquis.Add(unCroquis);
@@ -324,14 +314,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
         }
 
-
-
         public void AddGeoReponse(GeoReponse uneReponse)
         {
             this.Reponses.Add(uneReponse);
         }
-
-
 
         public void ClearCroquis()
         {
@@ -356,12 +342,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Themes.Clear();
         }
 
-
-
         public  String Utf8Encode(String str)
         {
             return Encoding.UTF8.GetString(Encoding.Default.GetBytes(str));
-        }
-       
+        }  
     }
 }

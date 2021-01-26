@@ -15,7 +15,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const int MAX_TAILLE_UPLOAD_FILE =  5000000;
 
         //nombre par défaut de remarques par page
-        public const int NB_DEFAULT_REMARQUES_PAGINATION = 100;
+        public const int NB_DEFAULT_SIGNALEMENTS_PAGINATION = 100;
 
         // Définition du protocole signant au près du service EspaceCollaboratif l'origine de ce programme. 
         public const String EspaceCollaboratif_CLIENT_PROTOCOL = "_EspaceCollaboratif_AGIS_64512";

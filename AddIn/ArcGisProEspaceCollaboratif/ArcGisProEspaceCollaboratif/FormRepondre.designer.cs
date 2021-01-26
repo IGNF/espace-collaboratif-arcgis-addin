@@ -34,7 +34,7 @@
             this.webBrowserReponseAncienne = new System.Windows.Forms.WebBrowser();
             this.label2 = new System.Windows.Forms.Label();
             this.webBrowserMessage = new System.Windows.Forms.WebBrowser();
-            this.labelIdRemarque = new System.Windows.Forms.Label();
+            this.labelIdSignalement = new System.Windows.Forms.Label();
             this.comboBoxStatut = new System.Windows.Forms.ComboBox();
             this.richTextBoxReponse = new System.Windows.Forms.RichTextBox();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -109,16 +109,16 @@
             // 
             // labelIdRemarque
             // 
-            this.labelIdRemarque.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelIdRemarque.AutoSize = true;
-            this.tableLayoutPanel.SetColumnSpan(this.labelIdRemarque, 2);
-            this.labelIdRemarque.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelIdRemarque.Location = new System.Drawing.Point(4, 47);
-            this.labelIdRemarque.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.labelIdRemarque.Name = "labelIdRemarque";
-            this.labelIdRemarque.Size = new System.Drawing.Size(325, 25);
-            this.labelIdRemarque.TabIndex = 3;
-            this.labelIdRemarque.Text = "Message de la remarque n°0000";
+            this.labelIdSignalement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelIdSignalement.AutoSize = true;
+            this.tableLayoutPanel.SetColumnSpan(this.labelIdSignalement, 2);
+            this.labelIdSignalement.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelIdSignalement.Location = new System.Drawing.Point(4, 47);
+            this.labelIdSignalement.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.labelIdSignalement.Name = "labelIdSignalement";
+            this.labelIdSignalement.Size = new System.Drawing.Size(325, 25);
+            this.labelIdSignalement.TabIndex = 3;
+            this.labelIdSignalement.Text = "Message du signalement n° 0000";
             // 
             // comboBoxStatut
             // 
@@ -149,7 +149,7 @@
             this.richTextBoxReponse.Size = new System.Drawing.Size(589, 122);
             this.richTextBoxReponse.TabIndex = 2;
             this.richTextBoxReponse.Text = "";
-            this.richTextBoxReponse.TextChanged += new System.EventHandler(this.richTextBoxReponse_TextChanged);
+            this.richTextBoxReponse.TextChanged += new System.EventHandler(this.RichTextBoxReponse_TextChanged);
             // 
             // tableLayoutPanel
             // 
@@ -161,7 +161,7 @@
             this.tableLayoutPanel.Controls.Add(this.label3, 0, 6);
             this.tableLayoutPanel.Controls.Add(this.richTextBoxReponse, 0, 7);
             this.tableLayoutPanel.Controls.Add(this.comboBoxStatut, 1, 0);
-            this.tableLayoutPanel.Controls.Add(this.labelIdRemarque, 0, 1);
+            this.tableLayoutPanel.Controls.Add(this.labelIdSignalement, 0, 1);
             this.tableLayoutPanel.Controls.Add(this.webBrowserMessage, 0, 2);
             this.tableLayoutPanel.Controls.Add(this.label2, 0, 3);
             this.tableLayoutPanel.Controls.Add(this.webBrowserReponseAncienne, 0, 4);
@@ -185,7 +185,7 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tableLayoutPanel.Size = new System.Drawing.Size(597, 578);
             this.tableLayoutPanel.TabIndex = 0;
-            this.tableLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel_Paint);
+            this.tableLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TableLayoutPanel_Paint);
             // 
             // label3
             // 
@@ -252,7 +252,7 @@
         private System.Windows.Forms.Label label3;
         public System.Windows.Forms.RichTextBox richTextBoxReponse;
         public System.Windows.Forms.ComboBox comboBoxStatut;
-        private System.Windows.Forms.Label labelIdRemarque;
+        private System.Windows.Forms.Label labelIdSignalement;
         private System.Windows.Forms.WebBrowser webBrowserMessage;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.WebBrowser webBrowserReponseAncienne;

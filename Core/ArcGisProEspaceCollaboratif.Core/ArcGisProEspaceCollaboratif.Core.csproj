@@ -60,7 +60,7 @@
     <Compile Include="Profil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Question.cs" />
-    <Compile Include="Remarque.cs" />
+    <Compile Include="Signalement.cs" />
     <Compile Include="EspaceCollaboratifServiceRequest.cs" />
     <Compile Include="EspaceCollaboratifLogger.cs" />
     <Compile Include="Statut.cs" />

@@ -37,14 +37,13 @@ namespace ArcGisProEspaceCollaboratif.Core
         //message d'erreur lors de la connexion ou d'un appel au service ("OK" ou message d'erreur)
         private String message = "";
 
-        //barre de progression durant le chargement des remarques
+        //barre de progression durant le chargement des signalements
         private System.Windows.Forms.ProgressBar progressbar= new System.Windows.Forms.ProgressBar();
 
         //logger
         readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
         private ILog logger = LogManager.GetLogger(typeof(Client));
        
-
         /// <summary>
         /// Constructeur
         /// Initialisation du client et connexion au service EspaceCollaboratif
@@ -59,12 +58,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.password = password;   
         }
 
-     
-
         /// <summary>
         /// Requête GET
         /// </summary>
-        /// <param name="uri">partie de l'url définissant la re^quête à effectuer</param>
+        /// <param name="uri">partie de l'url définissant la requête à effectuer</param>
         /// <param name="parameters">paramètres à envoyer en GET</param>
         /// <returns>Resultat de la requête (xml)</returns>
         public String MakeGetRequest(String uri, Dictionary<String, String> parameters)
@@ -116,7 +113,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             String res = null;
 
-           
             WebClient wclient = new WebClient();
             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
             wclient.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
@@ -136,7 +132,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             try
             {
                 res = wclient.UploadString(uri , paramString);
-               
             }
             catch (Exception e)
             {
@@ -146,9 +141,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return res;
         }
 
-   
- 
-        
         /// <summary>
         ///  Requête POST avec paramètres et fichier (multipart/form-data)
         /// </summary>
@@ -208,8 +200,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     rs.Write(boundarybytes, 0, boundarybytes.Length);
                 }
             }
-           
-
+ 
             byte[] trailer = System.Text.Encoding.UTF8.GetBytes("\r\n--" + boundary + "--\r\n");
             rs.Write(trailer, 0, trailer.Length);
             rs.Close();
@@ -241,8 +232,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return result;
         }
 
-
-
         /// <summary>
         /// retourne la version du service EspaceCollaboratif
         /// </summary>
@@ -251,7 +240,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             return this.version;
         }
-
 
         /// <summary>
         /// retourne le profil de l'utilisateur
@@ -265,7 +253,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             return this.profil;
         }
-
 
         /// <summary>
         /// Requête au service pour le profil de l'utilisateur
@@ -291,21 +278,19 @@ namespace ArcGisProEspaceCollaboratif.Core
             return profil;
         }
 
-
-
         /// <summary>
-        /// Retourne les remarques
+        /// Retourne les signalements
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<Remarque> GetGeoRems(Dictionary<string, string> parameters)
+        public List<Signalement> GetGeoRems(Dictionary<string, string> parameters)
         {     
-            List<Remarque> remarques = new List<Remarque>();
+            List<Signalement> signalements = new List<Signalement>();
 
-            //on stocke d'abord les objets Remarque dans un dictionnaire, pour éviter d'éventuels doublons.
-            SortedDictionary<UInt64, Remarque> dicoRems = new SortedDictionary<ulong, Remarque>();
+            //on stocke d'abord les objets Signalement dans un dictionnaire, pour éviter d'éventuels doublons.
+            SortedDictionary<UInt64, Signalement> dicoRems = new SortedDictionary<ulong, Signalement>();
         
-            Dictionary<String, String> totalAndDate = GetGeoRemsTotal(parameters,dicoRems);
+            Dictionary<String, String> totalAndDate = GetGeoSignalementsTotal(parameters,dicoRems);
             int total= Int32.Parse(totalAndDate["total"]);
             String sdate=totalAndDate["sdate"];    
 
@@ -314,24 +299,24 @@ namespace ArcGisProEspaceCollaboratif.Core
             {     
                parameters["updatingDate"] = sdate;
 
-               totalAndDate = GetGeoRemsTotal(parameters, dicoRems);
+               totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
                total = Int32.Parse(totalAndDate["total"]);
 
                sdate = totalAndDate["sdate"];     
              }
 
-            remarques = new List<Remarque>(dicoRems.Values);
+            signalements = new List<Signalement>(dicoRems.Values);
           
-            return remarques;
+            return signalements;
         }
 
         /// <summary>
-        /// Recherche les remarques et retourne le nombre total de remarques trouvées
+        /// Recherche les signalements et retourne le nombre total de signalements trouvés
         /// </summary>
         /// <param name="parameters"></param>
-        /// <param name="dicoRems"></param>
+        /// <param name="dicoSignalements"></param>
         /// <returns></returns>
-        private Dictionary<String, String> GetGeoRemsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Remarque> dicoRems)
+        private Dictionary<String, String> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Signalement> dicoSignalements)
         {
             int pagination = 100;
             int total = 0;
@@ -349,10 +334,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 total= xmlResponse.GetTotalResponse();
                 sdate = xmlResponse.GetDate();
-               
-                dicoRems = xmlResponse.ExtractRemarques(dicoRems);
 
-                pagination = dicoRems.Count;
+                dicoSignalements = xmlResponse.ExtractSignalements(dicoSignalements);
+
+                pagination = dicoSignalements.Count;
                 count = pagination;
 
                 this.progressbar.Maximum = pagination > total ? pagination : total;
@@ -367,7 +352,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (errMessage["code"].Equals("OK"))
                     {
-                        dicoRems = xmlResponse.ExtractRemarques(dicoRems);
+                        dicoSignalements = xmlResponse.ExtractSignalements(dicoSignalements);
                     }
 
                     this.progressbar.Increment(pagination);
@@ -382,8 +367,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return totalAndDate;
         }
 
-       
-
         /// <summary>
         /// Définition de la processBar
         /// </summary>
@@ -394,20 +377,19 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.progressbar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
         }
 
-
         /// <summary>
-        /// retourne une simple remarque, donnée par son identifiant
+        /// retourne un simple signalement, donné par son identifiant
         /// </summary>
-        /// <param name="idRemarque">identifiant de la remarque</param>
+        /// <param name="idSignalement">identifiant de la remarque</param>
         /// <returns>la remarque</returns>
-        public Remarque GetGeoRem(ulong idRemarque)
+        public Signalement GetGeoRem(ulong idSignalement)
         {
-            Remarque rem = new Remarque();
-            List<Remarque> remarques = new List<Remarque>();
+            Signalement signalement = new Signalement();
+            List<Signalement> signalements = new List<Signalement>();
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
         
-            var data = this.MakeGetRequest("/api/georem/georem_get/"+idRemarque.ToString()+".xml", null);
+            var data = this.MakeGetRequest("/api/georem/georem_get/" + idSignalement.ToString()+".xml", null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -418,50 +400,44 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 if (total == 1)
                 {
-                    remarques = xmlResponse.ExtractRemarques(remarques);
-                    rem = remarques[0];
-                    
+                    signalements = xmlResponse.ExtractSignalements(signalements);
+                    signalement = signalements[0]; 
                 }
             }
 
-            return rem;
-
+            return signalement;
         }
 
-     
-
         /// <summary>
-        /// Ajoute une réponse à une remarque
+        /// Ajoute une réponse à un signalement
         /// </summary>
-        /// <param name="remarque">La remarque</param>
+        /// <param name="signalement">Le signalement</param>
         /// <param name="reponse">la réponse</param>
         /// <returns>La remarque à laquelle a été ajoutée la réponse</returns>
-        public Remarque AddReponse(Remarque remarque, string reponse, string titreReponse)
+        public Signalement AddReponse(Signalement signalement, string reponse, string titreReponse)
         {
-            Remarque remModif = null;
+            Signalement signalementModif = null;
             try
             {
                 Dictionary<String, String> parameters = new Dictionary<String, String>
                 {
-                    { "id", remarque.Id.ToString() },
+                    { "id", signalement.Id.ToString() },
                     { "title", titreReponse },
                     { "content", reponse },
-                    { "status", (remarque.Statut).ToString().ToLower() }
+                    { "status", (signalement.Statut).ToString().ToLower() }
                 };
 
-                // String data = this.makePostRequest(this.url + "/api/georem/georep_post.xml", parameters,null);
                 String data = this.MakeMultiPartPostRequest(this.url + "/api/georem/georep_post.xml", parameters, null);
                
-
                 XmlResponse xmlResponse = new XmlResponse(data);
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Remarque> rems = new List<Remarque>();
-                    rems=xmlResponse.ExtractRemarques(rems);
-                    if (rems.Count == 1)
+                    List<Signalement> signalements = new List<Signalement>();
+                    signalements = xmlResponse.ExtractSignalements(signalements);
+                    if (signalements.Count == 1)
                     {
-                        remModif = rems[0];
+                        signalementModif = signalements[0];
                     }
                     else throw new Exception("Problème lors de l'ajout d'une réponse");
                 }
@@ -475,38 +451,36 @@ namespace ArcGisProEspaceCollaboratif.Core
                 throw new Exception(e.Message);
             }
 
-            return remarque;
+            return signalementModif;
         }
 
-
-
         /// <summary>
-        /// Ajout d'une nouvelle remarque
+        /// Ajout d'un nouveau signalement
         /// 
         /// </summary>
-        /// <param name="remarque">la remarque à créer</param>
-        /// <returns>La remarque créée (un objet Remarque)</returns>
-        public Remarque CreateRemarque(Remarque remarque)
+        /// <param name="signalement">le signalement à créer</param>
+        /// <returns>Le signalement créé (un objet signalement)</returns>
+        public Signalement CreateSignalement(Signalement signalement)
         {
-            Remarque rem = null;
+            Signalement signal = null;
             try
             {
                 Dictionary<String, String> parameters = new Dictionary<String, String>
                 {
                     { "version", ConstanteEspaceCollaboratif.EspaceCollaboratif_CLIENT_VERSION },
                     { "protocol", ConstanteEspaceCollaboratif.EspaceCollaboratif_CLIENT_PROTOCOL },
-                    { "comment", remarque.Commentaire }
+                    { "comment", signalement.Commentaire }
                 };
 
-                String geometry = "POINT(" + Convert.ToString(remarque.GetLongitude(), invC) +" "+
-                                 Convert.ToString(remarque.GetLatitude() , invC) + ")";
+                String geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) +" "+
+                                 Convert.ToString(signalement.GetLatitude() , invC) + ")";
                 parameters.Add("geometry", geometry);
 
                 // zone géographique 
                 parameters.Add("territory", this.GetProfil().Zone.ToString());
 
                 // Ajout des thèmes selectionnés 
-                List<Theme> themes = remarque.Themes;
+                List<Theme> themes = signalement.Themes;
                 if (themes != null && themes.Count > 0)
                 {
                     XDocument doc = new XDocument(new XElement("THEMES"));
@@ -520,9 +494,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //ajout des croquis
-                if (!remarque.IsCroquisEmpty())
+                if (!signalement.IsCroquisEmpty())
                 {
-                    List<Croquis> croquis = remarque.Croquis;
+                    List<Croquis> croquis = signalement.Croquis;
                     XNamespace gml = "http://www.opengis.net/gml";
 
                     XDocument doc = new XDocument(new XElement("CROQUIS",
@@ -537,7 +511,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //ajout des documents joints      
-                List<String> documents = remarque.Documents;
+                List<String> documents = signalement.Documents;
 
                 int docCount = 0;
 
@@ -566,11 +540,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Remarque> rems = new List<Remarque>();
-                    rems = xmlResponse.ExtractRemarques(rems);
-                    if (rems.Count == 1)
+                    List<Signalement> signalements = new List<Signalement>();
+                    signalements = xmlResponse.ExtractSignalements(signalements);
+                    if (signalements.Count == 1)
                     {
-                        rem = rems[0];
+                        signal = signalements[0];
                     }
                     else
                     {
@@ -590,11 +564,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 throw new Exception(e.Message);
             }
 
-            return rem;
+            return signal;
         }
-
-
-     
 
         /// <summary>
         /// Retourne la taille maximum d'un fichier uploadé
@@ -606,16 +577,13 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// retourne le nombre de remarques par page (valeur par défaut)
+        /// retourne le nombre de signalements par page (valeur par défaut)
         /// </summary>
         /// <returns></returns>
-        public int Get_NB_DEFAULT_REMARQUES_PAGINATION()
+        public int Get_NB_DEFAULT_SIGNALEMENTS_PAGINATION()
         {
-            return ConstanteEspaceCollaboratif.NB_DEFAULT_REMARQUES_PAGINATION;
+            return ConstanteEspaceCollaboratif.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
         }
-
-
-
 
         /// <summary>
         /// accesseur message       
@@ -631,9 +599,5 @@ namespace ArcGisProEspaceCollaboratif.Core
                  message = value;
              }
          }
-
-
-       
-
     }
 }

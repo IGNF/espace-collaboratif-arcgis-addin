@@ -18,7 +18,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 Contexte contexte = Contexte.Instance;
                 contexte.PwdEspaceCollaboratif = "";
-                ArcGisProEspaceCollaboratif.Core.IClient connexionTemp = contexte.GetConnexionRipart();
+                ArcGisProEspaceCollaboratif.Core.IClient connexionTemp = contexte.GetConnexionEspaceCollaboratif();
                 contexte.ripClient = (Client)connexionTemp;
             }
             catch (Exception e)

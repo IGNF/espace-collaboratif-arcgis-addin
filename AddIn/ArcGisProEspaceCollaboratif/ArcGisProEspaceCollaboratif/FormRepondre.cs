@@ -27,62 +27,62 @@ namespace ArcGisProEspaceCollaboratif
         {
         }
 
-        public void setStatut( uint statut )
+        public void SetStatut( uint statut )
         {
             this.comboBoxStatut.SelectedIndex = (int) statut;
         }
 
 
-        public void getStatut(ref ArcGisProEspaceCollaboratif.Core.Remarque remarque)
+        public void GetStatut(ref ArcGisProEspaceCollaboratif.Core.Signalement signalement)
         {
-            remarque.Statut = (ArcGisProEspaceCollaboratif.Core.Statut) this.comboBoxStatut.SelectedIndex;
+            signalement.Statut = (ArcGisProEspaceCollaboratif.Core.Statut) this.comboBoxStatut.SelectedIndex;
         }
 
 
-        public void setIdRemarque(string id)
+        public void SetIdRemarque(string id)
         {
-            this.labelIdRemarque.Text = "Message de la remarque n°" + id;
+            this.labelIdSignalement.Text = "Message du signalement n°" + id;
         }
 
-        public void setMessage(string message)
+        public void SetMessage(string message)
         {
             this.webBrowserMessage.DocumentText = message;
         }
 
-        public void setAnciennesReponses(string reponses)
+        public void SetAnciennesReponses(string reponses)
         {
             this.webBrowserReponseAncienne.DocumentText = reponses;
         }       
 
-        public void buttonRepondre_Click(object sender, EventArgs e)
+        public void ButtonRepondre_Click(object sender, EventArgs e)
         {
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
         }
 
-        public string getReponse()
+        public string GetReponse()
         {
             return this.richTextBoxReponse.Text;
         }
 
-        public string getTitre()
+        public string GetTitre()
         {
             return this.txtRespTitre.Text;
         }
 
-        private void richTextBoxReponse_TextChanged(object sender, EventArgs e)
+        private void RichTextBoxReponse_TextChanged(object sender, EventArgs e)
         {
             this.buttonRepondre.Enabled = ( richTextBoxReponse.TextLength != 0 );
         }
 
-        public void setFormulaire(ArcGisProEspaceCollaboratif.Core.Remarque remarque)
+        public void SetFormulaire(ArcGisProEspaceCollaboratif.Core.Signalement signalement)
         {
-            this.setIdRemarque( remarque.Id.ToString() );
-            this.setStatut((uint)remarque.Statut);
-            this.setMessage(remarque.getUrlDecodedComment());
-            this.setAnciennesReponses( remarque.concatenateReponseHTML() ); 
+            this.SetIdRemarque(signalement.Id.ToString() );
+            this.SetStatut((uint)signalement.Statut);
+            this.SetMessage(signalement.GetUrlDecodedComment());
+            this.SetAnciennesReponses(signalement.ConcatenateReponseHTML() ); 
         }
 
-        private void tableLayoutPanel_Paint(object sender, PaintEventArgs e)
+        private void TableLayoutPanel_Paint(object sender, PaintEventArgs e)
         {
 
         }

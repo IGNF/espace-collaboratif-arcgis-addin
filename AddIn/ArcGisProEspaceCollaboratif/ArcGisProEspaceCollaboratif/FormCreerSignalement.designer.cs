@@ -39,8 +39,8 @@
             this.tabOptions = new System.Windows.Forms.TabPage();
             this.tableLayoutPanelOption = new System.Windows.Forms.TableLayoutPanel();
             this.checkBoxDocument = new System.Windows.Forms.CheckBox();
-            this.radioButtonRemarqueMultiple = new System.Windows.Forms.RadioButton();
-            this.radioButtonRemarqueUnique = new System.Windows.Forms.RadioButton();
+            this.radioButtonSignalementMultiple = new System.Windows.Forms.RadioButton();
+            this.radioButtonSignalementUnique = new System.Windows.Forms.RadioButton();
             this.checkBoxCroquis = new System.Windows.Forms.CheckBox();
             this.listViewPJ = new System.Windows.Forms.ListView();
             this.buttonCreer = new System.Windows.Forms.Button();
@@ -154,7 +154,7 @@
             this.checkedListBoxThemes.Name = "checkedListBoxThemes";
             this.checkedListBoxThemes.Size = new System.Drawing.Size(905, 134);
             this.checkedListBoxThemes.TabIndex = 0;
-            this.checkedListBoxThemes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.checkedListBoxThemes_MouseUp);
+            this.checkedListBoxThemes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CheckedListBoxThemes_MouseUp);
             // 
             // tabOptions
             // 
@@ -173,8 +173,8 @@
             this.tableLayoutPanelOption.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanelOption.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanelOption.Controls.Add(this.checkBoxDocument, 0, 1);
-            this.tableLayoutPanelOption.Controls.Add(this.radioButtonRemarqueMultiple, 0, 3);
-            this.tableLayoutPanelOption.Controls.Add(this.radioButtonRemarqueUnique, 0, 2);
+            this.tableLayoutPanelOption.Controls.Add(this.radioButtonSignalementMultiple, 0, 3);
+            this.tableLayoutPanelOption.Controls.Add(this.radioButtonSignalementUnique, 0, 2);
             this.tableLayoutPanelOption.Controls.Add(this.checkBoxCroquis, 0, 0);
             this.tableLayoutPanelOption.Controls.Add(this.listViewPJ, 1, 1);
             this.tableLayoutPanelOption.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -208,31 +208,31 @@
             this.checkBoxDocument.TabIndex = 3;
             this.checkBoxDocument.Text = "Joindre un document.";
             this.checkBoxDocument.UseVisualStyleBackColor = true;
-            this.checkBoxDocument.CheckedChanged += new System.EventHandler(this.checkBoxDocument_CheckedChanged);
+            this.checkBoxDocument.CheckedChanged += new System.EventHandler(this.CheckBoxDocument_CheckedChanged);
             // 
             // radioButtonRemarqueMultiple
             // 
-            this.radioButtonRemarqueMultiple.AutoSize = true;
-            this.radioButtonRemarqueMultiple.Location = new System.Drawing.Point(246, 92);
-            this.radioButtonRemarqueMultiple.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButtonRemarqueMultiple.Name = "radioButtonRemarqueMultiple";
-            this.radioButtonRemarqueMultiple.Size = new System.Drawing.Size(271, 21);
-            this.radioButtonRemarqueMultiple.TabIndex = 2;
-            this.radioButtonRemarqueMultiple.Text = "Créer 1000 remarques distinctes.";
-            this.radioButtonRemarqueMultiple.UseVisualStyleBackColor = true;
+            this.radioButtonSignalementMultiple.AutoSize = true;
+            this.radioButtonSignalementMultiple.Location = new System.Drawing.Point(246, 92);
+            this.radioButtonSignalementMultiple.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButtonSignalementMultiple.Name = "radioButtonSignalementMultiple";
+            this.radioButtonSignalementMultiple.Size = new System.Drawing.Size(271, 21);
+            this.radioButtonSignalementMultiple.TabIndex = 2;
+            this.radioButtonSignalementMultiple.Text = "Créer 1000 signalements distincts.";
+            this.radioButtonSignalementMultiple.UseVisualStyleBackColor = true;
             // 
             // radioButtonRemarqueUnique
             // 
-            this.radioButtonRemarqueUnique.AutoSize = true;
-            this.radioButtonRemarqueUnique.Checked = true;
-            this.radioButtonRemarqueUnique.Location = new System.Drawing.Point(4, 92);
-            this.radioButtonRemarqueUnique.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.radioButtonRemarqueUnique.Name = "radioButtonRemarqueUnique";
-            this.radioButtonRemarqueUnique.Size = new System.Drawing.Size(234, 21);
-            this.radioButtonRemarqueUnique.TabIndex = 1;
-            this.radioButtonRemarqueUnique.TabStop = true;
-            this.radioButtonRemarqueUnique.Text = "Créer une remarque unique.";
-            this.radioButtonRemarqueUnique.UseVisualStyleBackColor = true;
+            this.radioButtonSignalementUnique.AutoSize = true;
+            this.radioButtonSignalementUnique.Checked = true;
+            this.radioButtonSignalementUnique.Location = new System.Drawing.Point(4, 92);
+            this.radioButtonSignalementUnique.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButtonSignalementUnique.Name = "radioButtonSignalementUnique";
+            this.radioButtonSignalementUnique.Size = new System.Drawing.Size(234, 21);
+            this.radioButtonSignalementUnique.TabIndex = 1;
+            this.radioButtonSignalementUnique.TabStop = true;
+            this.radioButtonSignalementUnique.Text = "Créer un signalement unique.";
+            this.radioButtonSignalementUnique.UseVisualStyleBackColor = true;
             // 
             // checkBoxCroquis
             // 
@@ -268,7 +268,7 @@
             this.listViewPJ.UseCompatibleStateImageBehavior = false;
             this.listViewPJ.View = System.Windows.Forms.View.SmallIcon;
             this.listViewPJ.Visible = false;
-            this.listViewPJ.DoubleClick += new System.EventHandler(this.listViewPJ_DoubleClick);
+            this.listViewPJ.DoubleClick += new System.EventHandler(this.ListViewPJ_DoubleClick);
             // 
             // buttonCreer
             // 
@@ -312,19 +312,19 @@
             this.richTextBoxMessage.Size = new System.Drawing.Size(921, 166);
             this.richTextBoxMessage.TabIndex = 14;
             this.richTextBoxMessage.Text = "";
-            this.richTextBoxMessage.TextChanged += new System.EventHandler(this.richTextBoxMessage_TextChanged);
+            this.richTextBoxMessage.TextChanged += new System.EventHandler(this.RichTextBoxMessage_TextChanged);
             // 
             // OpenFileDialog
             // 
             this.OpenFileDialog.FileName = "OpenFileDialog";
             this.OpenFileDialog.ReadOnlyChecked = true;
-            this.OpenFileDialog.Title = "Document à joindre pour la nouvelle remarque de l\'Espace collaboratif.";
+            this.OpenFileDialog.Title = "Document à joindre pour le nouveau signalement de l\'Espace collaboratif.";
             // 
             // toolTip
             // 
-            this.toolTip.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip_Popup);
+            this.toolTip.Popup += new System.Windows.Forms.PopupEventHandler(this.ToolTip_Popup);
             // 
-            // FormCreerEspaceCollaboratif
+            // FormCreerSignalement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -335,7 +335,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(575, 507);
-            this.Name = "FormCreerEspaceCollaboratif";
+            this.Name = "FormCreerSignalement";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Espace collaboratif : créer un nouveau signalement";
             this.tableLayoutPanel.ResumeLayout(false);
@@ -366,8 +366,8 @@
         private System.Windows.Forms.ListView listViewPJ;
         private System.Windows.Forms.TabPage tabOptions;
         private System.Windows.Forms.CheckBox checkBoxCroquis;
-        private System.Windows.Forms.RadioButton radioButtonRemarqueMultiple;
-        private System.Windows.Forms.RadioButton radioButtonRemarqueUnique;
+        private System.Windows.Forms.RadioButton radioButtonSignalementMultiple;
+        private System.Windows.Forms.RadioButton radioButtonSignalementUnique;
         private System.Windows.Forms.TabPage tabThemes;
         private System.Windows.Forms.CheckedListBox checkedListBoxThemes;
         private System.Windows.Forms.CheckBox checkBoxDocument;

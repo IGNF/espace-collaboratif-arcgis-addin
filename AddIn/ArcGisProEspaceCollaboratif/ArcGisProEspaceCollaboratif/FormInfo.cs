@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-
-
 namespace ArcGisProEspaceCollaboratif
 {
     public partial class FormInfo : Form
     {
         int tempo;
-
 
         public FormInfo()
         {
@@ -20,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Affiche un message dans l'espace réservé de la fenêtre d'informations de l'espace collaboratif.
         /// </summary>     
         /// <param name="message">Le message à afficher dans la fenêtre d'informations de l'espace collaboratif.</param>
-        public void setMessage(string message)
+        public void SetMessage(string message)
         {
             this.richTextBox.Text = message;
         }
@@ -29,7 +26,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Ajoute un message au message déjà affiché dans la fenêtre d'informations de l'espace collaboratif.
         /// </summary>     
         /// <param name="message">Le message à ajouter.</param>
-        public void addMessage(string message)
+        public void AddMessage(string message)
         {
             this.richTextBox.Text += "\n" + message;
         }
@@ -38,7 +35,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Affiche une image (logo) dans l'espace réservé de la fenêtre d'informations de l'espace collaboratif.
         /// </summary>     
         /// <param name="image">L'image à afficher dans la fenêtre d'informations de l'espace collaboratif.</param>
-        public void setLogo(string image)
+        public void SetLogo(string image)
         {
             this.LogoBox.ImageLocation = image;
         }
@@ -63,7 +60,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Événement lorsque le compte-à-rebours arrive à échéance.
         /// </summary>             
-        private void timer_Tick(object sender, EventArgs e)
+        private void Timer_Tick(object sender, EventArgs e)
         {
             tempo--;
 
@@ -77,7 +74,7 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-        private void buttonOK_Click(object sender, EventArgs e)
+        private void ButtonOK_Click(object sender, EventArgs e)
         {
             this.Close();
         }

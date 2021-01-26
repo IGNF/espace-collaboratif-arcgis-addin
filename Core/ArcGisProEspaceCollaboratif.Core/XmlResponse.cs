@@ -313,31 +313,25 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="remarques">la liste de remarques</param>
         /// <returns>la liste de remarques (dans l'ordre inverse d'identifiants)</returns>
-        public List<Remarque> ExtractRemarques(List<Remarque> remarques)
+        public List<Signalement> ExtractSignalements(List<Signalement> signalements)
         {
-            
-            SortedDictionary<UInt64, Remarque> dicRem = new SortedDictionary<ulong, Remarque>();
-         
-            dicRem= this.ExtractRemarques(dicRem);
+            SortedDictionary<UInt64, Signalement> dicSignalement = new SortedDictionary<ulong, Signalement>();
+            dicSignalement = this.ExtractSignalements(dicSignalement);
+            signalements = new List<Signalement>(dicSignalement.Values);
+            signalements.Reverse();
 
-            remarques = new List<Remarque>(dicRem.Values);
-
-            remarques.Reverse();
-
-            return remarques;
-
+            return signalements;
         }
-
 
         /// <summary>
         /// Extraction des remarques de la réponse xml
         /// </summary>
         /// <param name="remarques">SortedDictionary key:indentifiant de la remarque, value: la remarque</param>
         /// <returns>le dictionnaire de remarques</returns>
-        public SortedDictionary<UInt64, Remarque> ExtractRemarques(SortedDictionary<UInt64, Remarque> remarques)
+        public SortedDictionary<UInt64, Signalement> ExtractSignalements(SortedDictionary<UInt64, Signalement> signalements)
         {
 
-            Remarque rem = null;
+            Signalement rem = null;
             String remXpath = "/geors/GEOREM";
 
             try
@@ -348,7 +342,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 foreach (XPathNavigator val in iterator)
                 {
                     List<Theme> themes = new List<Theme>();
-                    rem = new Remarque();
+                    rem = new Signalement();
                     val.MoveToFollowing("ID_GEOREM", "");
                     rem.Id = Convert.ToUInt64(val.InnerXml);
 
@@ -451,11 +445,11 @@ namespace ArcGisProEspaceCollaboratif.Core
     
                      rem.Source = val.SelectSingleNode(val.Compile(remXpath + "/SOURCE")).Value;
 
-                     if (remarques.ContainsKey(rem.Id))
+                     if (signalements.ContainsKey(rem.Id))
                      {                 
-                         return remarques;
+                         return signalements;
                      }
-                     remarques.Add(rem.Id,rem);
+                     signalements.Add(rem.Id,rem);
                 }          
             }
 
@@ -465,20 +459,17 @@ namespace ArcGisProEspaceCollaboratif.Core
                 throw new Exception("Une erreur est survenue dans l'importation des remarques");
             }
 
-            return remarques;
+            return signalements;
         }
 
-
-
-
         /// <summary>
-        ///  Extrait les croquis d'une remarque et les ajoute dans l'objet Remarque 
+        ///  Extrait les croquis d'un signalement et les ajoute dans l'objet Signalement 
         ///  passé en paramètre
         /// </summary>
-        /// <param name="rem">un objet Remarque</param>
+        /// <param name="rem">un objet Signalement</param>
         /// <param name="val">xpathnavigator</param>
         /// <returns>XPathNodeIterator</returns>
-        private XPathNodeIterator GetCroquisForRem(Remarque rem, XPathNavigator val )
+        private XPathNodeIterator GetCroquisForRem(Signalement rem, XPathNavigator val )
         {
             val.MoveToParent();
             XPathNodeIterator it = val.Select("CROQUIS/objet");
@@ -559,11 +550,11 @@ namespace ArcGisProEspaceCollaboratif.Core
 
 
         /// <summary>
-        /// Extraction des documents attachés à une remarque
+        /// Extraction des documents attachés à un signalement
         /// </summary>
-        /// <param name="rem">la remarque</param>
-        /// <param name="val">XPathNavigator (le xml contenant la remarque)</param>
-        private void GetDoc(Remarque rem, XPathNavigator val)
+        /// <param name="rem">le signalement</param>
+        /// <param name="val">XPathNavigator (le xml contenant le signalement)</param>
+        private void GetDoc(Signalement rem, XPathNavigator val)
         {
             XPathNodeIterator it = val.Select("DOC");
               
@@ -580,7 +571,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="rem">la remarque</param>
         /// <param name="val">XPathNavigator (le xml contenant la remarque)</param>
-        private void GetGeoRep(Remarque rem, XPathNavigator val)
+        private void GetGeoRep(Signalement rem, XPathNavigator val)
         {
             XPathNodeIterator it = val.Select("GEOREP");
 
@@ -614,9 +605,9 @@ namespace ArcGisProEspaceCollaboratif.Core
 
 
         /// <summary>
-        /// Extraction des thèmes liés à une remarque
+        /// Extraction des thèmes liés à un signalement
         /// </summary>
-        /// <param name="valRem">XPathNavigator (le xml contenant la remarque)</param>
+        /// <param name="valRem">XPathNavigator (le xml contenant le signalement)</param>
         /// <returns>la liste de thèmes</returns>
         private List<Theme> GetGeomRemThemes(XPathNavigator valRem)
         {
@@ -643,7 +634,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception ex)
             {
                 logger.Error(ex.Message + "\n" + ex.StackTrace);
-                throw new Exception("Erreur dans l'extraction des thèmes de la remarque");
+                throw new Exception("Erreur dans l'extraction des thèmes du signalement");
 
             }
             return themes;           
