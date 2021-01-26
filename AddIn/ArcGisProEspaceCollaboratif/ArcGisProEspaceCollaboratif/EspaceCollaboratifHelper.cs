@@ -12,6 +12,12 @@ using ArcGIS.Desktop.Mapping;
 //using ESRI.ArcGIS.Geodatabase;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
+using ArcGIS.Core.Internal.Data.DDL;
+using System.Threading.Tasks;
+using ArcGIS.Desktop.Core.Geoprocessing;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
+using System.Windows.Forms;
+using ArcGIS.Desktop.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -208,72 +214,112 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <param name="type_CoucheCroquis">Le type géométrique du calque nouvellement créé.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        /*        public static IFeatureLayer CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, IFeatureWorkspace workspaceTemp, ISpatialReference spatialReferenceCalque, GeometryType type_CoucheCroquis)
+        public static async Task<bool> CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, string type_CoucheCroquis)
+        {
+
+            try
+            {
+                await QueuedTask.Run(() =>
                 {
-                    // Instantiate a feature class description to get the required fields.
-                    IFeatureClassDescription fcDescription_CoucheCroquis = new FeatureClassDescription() as IFeatureClassDescription;
-                    IObjectClassDescription ocDescription_CoucheCroquis = (IObjectClassDescription)fcDescription_CoucheCroquis;
-                    IFields fields_CoucheCroquis = ocDescription_CoucheCroquis.RequiredFields;
-                    IFieldsEdit fieldsEdit_CoucheCroquis = (IFieldsEdit)fields_CoucheCroquis;
-
-                    // -- on complete la définition de la géométrie
+                    List<object> arguments = new List<object>
                     {
-
-                        int shapeFieldIndex = fields_CoucheCroquis.FindField(fcDescription_CoucheCroquis.ShapeFieldName);
-                        IField shapeField_CoucheCroquis = fields_CoucheCroquis.get_Field(shapeFieldIndex);
-
-                        IGeometryDef geometryDef_CoucheCroquis = shapeField_CoucheCroquis.GeometryDef;
-                        IGeometryDefEdit geometryDefEdit_CoucheCroquis = (IGeometryDefEdit)geometryDef_CoucheCroquis;
-                        geometryDefEdit_CoucheCroquis.GeometryType_2 = type_CoucheCroquis;
-
-                        SpatialReference spatialReference_CoucheCroquis = spatialReferenceCalque;
-
-                        ISpatialReferenceResolution spatialReferenceResolution_CoucheCroquis = (ISpatialReferenceResolution)spatialReference_CoucheCroquis;
-                        spatialReferenceResolution_CoucheCroquis.ConstructFromHorizon();
-                        spatialReferenceResolution_CoucheCroquis.SetDefaultXYResolution();
-                        ISpatialReferenceTolerance spatialReferenceTolerance_CoucheCroquis = (ISpatialReferenceTolerance)spatialReference_CoucheCroquis;
-                        spatialReferenceTolerance_CoucheCroquis.SetDefaultXYTolerance();
-                        geometryDefEdit_CoucheCroquis.SpatialReference_2 = spatialReference_CoucheCroquis;
-
-                    } // -- fin def géométrie
+                        //Contexte.Instance.gdbSignalement.GetPath().ToString(), // store the results in the default geodatabase                   
+                        CoreModule.CurrentProject.DefaultGeodatabasePath,
+                        nomCoucheCroquis, // name of the feature class                    
+                        type_CoucheCroquis, // type of geometry                    
+                        "", // no template                    
+                        "DISABLED", // no z values                    
+                        "DISABLED" // no m values
+                      };
 
 
-                    // Ajoute le champ: Lien_remarque
-                    fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienRemarque, FieldType.Integer));
-                    fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_NomCroquis, FieldType.String));
-                    fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_Attributs, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
-                    fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienBDuni, FieldType.String));
+                    // spatial reference
+                    arguments.Add(Contexte.Instance.spatialReferenceEspaceCollaboratif);
+
+                    var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
+
+                    string fcName = CoreModule.CurrentProject.DefaultGeodatabasePath + "\\" + nomCoucheCroquis;
+                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_LienRemarque, "LONG"));
+                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_NomCroquis, "TEXT"));
+                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_Attributs, "TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()));
+                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_LienBDuni, "TEXT"));
+
+                });
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                return false;
+            }
+
+            // Instantiate a feature class description to get the required fields.
+/*
+            FeatureClassDescription fcDescription_CoucheCroquis = new FeatureClassDescription() as FeatureClassDescription;
+            IObjectClassDescription ocDescription_CoucheCroquis = (IObjectClassDescription)fcDescription_CoucheCroquis;
+            IFields fields_CoucheCroquis = ocDescription_CoucheCroquis.RequiredFields;
+            IFieldsEdit fieldsEdit_CoucheCroquis = (IFieldsEdit)fields_CoucheCroquis;
+
+            // -- on complete la définition de la géométrie
+            {
+
+                int shapeFieldIndex = fields_CoucheCroquis.FindField(fcDescription_CoucheCroquis.ShapeFieldName);
+                IField shapeField_CoucheCroquis = fields_CoucheCroquis.get_Field(shapeFieldIndex);
+
+                IGeometryDef geometryDef_CoucheCroquis = shapeField_CoucheCroquis.GeometryDef;
+                IGeometryDefEdit geometryDefEdit_CoucheCroquis = (IGeometryDefEdit)geometryDef_CoucheCroquis;
+                geometryDefEdit_CoucheCroquis.GeometryType_2 = type_CoucheCroquis;
+
+                SpatialReference spatialReference_CoucheCroquis = spatialReferenceCalque;
+
+                ISpatialReferenceResolution spatialReferenceResolution_CoucheCroquis = (ISpatialReferenceResolution)spatialReference_CoucheCroquis;
+                spatialReferenceResolution_CoucheCroquis.ConstructFromHorizon();
+                spatialReferenceResolution_CoucheCroquis.SetDefaultXYResolution();
+                ISpatialReferenceTolerance spatialReferenceTolerance_CoucheCroquis = (ISpatialReferenceTolerance)spatialReference_CoucheCroquis;
+                spatialReferenceTolerance_CoucheCroquis.SetDefaultXYTolerance();
+                geometryDefEdit_CoucheCroquis.SpatialReference_2 = spatialReference_CoucheCroquis;
+
+            } // -- fin def géométrie
+
+
+            // Ajoute le champ: Lien_remarque
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienRemarque, FieldType.Integer));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_NomCroquis, FieldType.String));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_Attributs, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
+            fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienBDuni, FieldType.String));
 
 
 
 
-                    // Use IFieldChecker to create a validated fields collection.
-                    IFieldChecker fieldChecker_CoucheCroquis = new FieldChecker();
-                    IEnumFieldError enumFieldError_CoucheCroquis = null;
-                    IFields validatedFields_CoucheCroquis = null;
-                    fieldChecker_CoucheCroquis.ValidateWorkspace = (IWorkspace)workspaceTemp;
-                    fieldChecker_CoucheCroquis.Validate(fields_CoucheCroquis, out enumFieldError_CoucheCroquis, out validatedFields_CoucheCroquis);
+            // Use IFieldChecker to create a validated fields collection.
+            IFieldChecker fieldChecker_CoucheCroquis = new FieldChecker();
+            IEnumFieldError enumFieldError_CoucheCroquis = null;
+            IFields validatedFields_CoucheCroquis = null;
+            fieldChecker_CoucheCroquis.ValidateWorkspace = (IWorkspace)workspaceTemp;
+            fieldChecker_CoucheCroquis.Validate(fields_CoucheCroquis, out enumFieldError_CoucheCroquis, out validatedFields_CoucheCroquis);
 
-                    //   this.debugForm.WriteLine("fcDescription.ShapeFieldName : " + fcDescription.ShapeFieldName);
-                    IFeatureClass featureClass_Croquis = workspaceTemp.CreateFeatureClass(
-                        nomCoucheCroquis, //featureClassName
-                        validatedFields_CoucheCroquis, // validatedFields
-                        ocDescription_CoucheCroquis.InstanceCLSID, // ocDescription.InstanceCLSID
-                        ocDescription_CoucheCroquis.ClassExtensionCLSID, // ocDescription.ClassExtensionCLSID
-                        esriFeatureType.esriFTSimple,
-                        fcDescription_CoucheCroquis.ShapeFieldName, // fcDescription.ShapeFieldName Attention, c'est dangereux!
-                        "" //configKeyword
-                    );
+            //   this.debugForm.WriteLine("fcDescription.ShapeFieldName : " + fcDescription.ShapeFieldName);
+            IFeatureClass featureClass_Croquis = workspaceTemp.CreateFeatureClass(
+                nomCoucheCroquis, //featureClassName
+                validatedFields_CoucheCroquis, // validatedFields
+                ocDescription_CoucheCroquis.InstanceCLSID, // ocDescription.InstanceCLSID
+                ocDescription_CoucheCroquis.ClassExtensionCLSID, // ocDescription.ClassExtensionCLSID
+                esriFeatureType.esriFTSimple,
+                fcDescription_CoucheCroquis.ShapeFieldName, // fcDescription.ShapeFieldName Attention, c'est dangereux!
+                "" //configKeyword
+            );
 
-                    IFeatureLayer featureLayer_Croquis = new FeatureLayer
-                    {
-                        FeatureClass = featureClass_Croquis,
-                        Name = featureClass_Croquis.AliasName
-                    };
+            IFeatureLayer featureLayer_Croquis = new FeatureLayer
+            {
+                FeatureClass = featureClass_Croquis,
+                Name = featureClass_Croquis.AliasName
+            };
 
-                    return featureLayer_Croquis;
-                }
-        */
+            return featureLayer_Croquis;
+*/
+        }
+        
 
         /// <summary>
         /// Crée un nouveau champ aux caractéristiques souhaitées.
