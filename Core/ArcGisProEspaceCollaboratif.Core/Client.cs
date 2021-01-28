@@ -496,13 +496,13 @@ namespace ArcGisProEspaceCollaboratif.Core
                 //ajout des croquis
                 if (!signalement.IsCroquisEmpty())
                 {
-                    List<Croquis> croquis = signalement.Croquis;
+                    List<Sketch> croquis = signalement.Sketch;
                     XNamespace gml = "http://www.opengis.net/gml";
 
                     XDocument doc = new XDocument(new XElement("CROQUIS",
                         new XAttribute(XNamespace.Xmlns + "gml", "http://www.opengis.net/gml")));
 
-                    foreach (Croquis cr in croquis)
+                    foreach (Sketch cr in croquis)
                     {
                         doc = cr.EncodeToXML(doc, gml);
                     }

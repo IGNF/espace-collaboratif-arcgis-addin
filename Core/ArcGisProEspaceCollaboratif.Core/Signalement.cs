@@ -95,7 +95,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// les éventuelles croquis de la remarque EspaceCollaboratif.
         /// </summary>
-        public List<Croquis> Croquis = new List<Croquis>();
+        public List<Sketch> Sketch = new List<Sketch>();
 
         /// <summary>
         /// Les éventuels documents attachés au signalement
@@ -136,7 +136,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         public bool IsCroquisEmpty()
         {
-            return this.Croquis.Count == 0;
+            return this.Sketch.Count == 0;
         }
 
         /// <summary>
@@ -301,14 +301,14 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Documents.Clear();
         }
 
-        public void AddCroquis(Croquis unCroquis)
+        public void AddCroquis(Sketch unCroquis)
         {
-            this.Croquis.Add(unCroquis);
+            this.Sketch.Add(unCroquis);
         }
 
-        public void AddCroquis(List<Croquis> listeCroquis)
+        public void AddCroquis(List<Sketch> listeCroquis)
         {
-            foreach (Croquis croquis in listeCroquis)
+            foreach (Sketch croquis in listeCroquis)
             {
                 this.AddCroquis(croquis);
             }
@@ -321,7 +321,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public void ClearCroquis()
         {
-            this.Croquis.Clear();
+            this.Sketch.Clear();
         }
 
         public void AddTheme(Theme unTheme)

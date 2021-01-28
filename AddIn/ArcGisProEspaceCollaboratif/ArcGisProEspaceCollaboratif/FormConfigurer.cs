@@ -304,10 +304,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-
-           
             EspaceCollaboratifHelper.Save_Urlhost(this.textBoxUrl.Text);
-
             
            if (!this.checkBoxLogin.Checked)
            {

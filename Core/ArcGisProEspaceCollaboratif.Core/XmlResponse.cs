@@ -477,9 +477,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             List<Point> points = new List<Point>();
             foreach (XPathNavigator v in it)
             {
-                Croquis croquis = new Croquis();
-                Croquis.CroquisType type =
-                    (Croquis.CroquisType)Enum.Parse(typeof(Croquis.CroquisType), v.GetAttribute("type", ""), true);
+                Sketch croquis = new Sketch();
+                Sketch.SketchType type =
+                    (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
 
                 String nomCr = EncodeToUTF8(v.SelectSingleNode("nom").Value);
 

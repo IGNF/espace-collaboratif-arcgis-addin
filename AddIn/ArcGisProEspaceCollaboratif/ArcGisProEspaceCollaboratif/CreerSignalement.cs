@@ -21,10 +21,10 @@ namespace ArcGisProEspaceCollaboratif
                 Contexte contexte = Contexte.Instance;
 
                 // Transformation des objets sélectionnés en croquis.
-                List<ArcGisProEspaceCollaboratif.Core.Croquis> futursCroquis = contexte.MakeCroquis_from_Selection();
-                logger.Debug(futursCroquis.Count + " croquis générés.");
+                List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = contexte.MakeCroquis_from_Selection();
+                logger.Debug(futursSketch.Count + " croquis générés.");
 
-                if (futursCroquis.Count == 0)
+                if (futursSketch.Count == 0)
                 {
                     string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
                     System.Windows.Forms.MessageBox.Show(message,
@@ -47,7 +47,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 // Lancement du formulaire pour créer une nouvelle remarque Ripart.
                 FormCreerSignalement formulaireCreation = new FormCreerSignalement();
-                formulaireCreation.SetFormulaire(futursCroquis.Count, contexte, contexte.ripClient);
+                formulaireCreation.SetFormulaire(futursSketch.Count, contexte, contexte.ripClient);
                 if (formulaireCreation.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
                     return;
@@ -69,12 +69,12 @@ namespace ArcGisProEspaceCollaboratif
                 if (formulaireCreation.OptionSingleSignalement())
                 {
                     // Positionnement du signalement unique par rapport à l'ensemble des croquis.
-                    signalementVirtuel.SetPosition(EspaceCollaboratifHelper.PointApplicationEspaceCollaboratif(futursCroquis));
+                    signalementVirtuel.SetPosition(EspaceCollaboratifHelper.CalculatePointReport(futursSketch));
 
                     // Si option de joindre un croquis au nouveau signalement.
                     if (formulaireCreation.OptionWithCroquis())
                     {
-                        signalementVirtuel.AddCroquis(futursCroquis);
+                        signalementVirtuel.AddCroquis(futursSketch);
                     }
 
                     // Création du nouveau signalement
@@ -94,10 +94,10 @@ namespace ArcGisProEspaceCollaboratif
                     // Parcours des croquis un par un
                     List<ulong> listIdNouveauxSignalements = new List<ulong>();
 
-                    foreach (ArcGisProEspaceCollaboratif.Core.Croquis croquis in futursCroquis)
+                    foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in futursSketch)
                     {
                         // Positionnement de la remarque par rapport au croquis un par un.
-                        signalementVirtuel.SetPosition(EspaceCollaboratifHelper.PointApplicationEspaceCollaboratif(croquis));
+                        signalementVirtuel.SetPosition(EspaceCollaboratifHelper.CalculatePointReport(croquis));
                         signalementVirtuel.ClearCroquis();
 
                         // Si option de joindre un croquis à la nouvelle remarque.
