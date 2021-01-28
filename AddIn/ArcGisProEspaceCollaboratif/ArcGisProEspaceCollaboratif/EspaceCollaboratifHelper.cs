@@ -32,8 +32,6 @@ namespace ArcGisProEspaceCollaboratif
         public const String nom_Fichier_Parametres_EspaceCollaboratif = "EspaceCollaboratif.xml";
 
         public const String nom_Calque_Signalement = "Signalement_EspaceCollaboratif";
-        public const String nom_Calque_Croquis_Fleche = "Croquis_EspaceCollaboratif_Fleche";
-        public const String nom_Calque_Croquis_Texte = "Croquis_EspaceCollaboratif_Texte";
         public const String nom_Calque_Croquis_Polygone = "Croquis_EspaceCollaboratif_Polygone";
         public const String nom_Calque_Croquis_Ligne = "Croquis_EspaceCollaboratif_Ligne";
         public const String nom_Calque_Croquis_Point = "Croquis_EspaceCollaboratif_Point";
@@ -173,99 +171,6 @@ namespace ArcGisProEspaceCollaboratif
                 });
                 return true;
             }
-            
-            /*
-                    // Instantiate a feature class description to get the required fields.
-                    IFeatureClassDescription fcDescription = new FeatureClassDescription() as IFeatureClassDescription;
-                    IObjectClassDescription ocDescription = (IObjectClassDescription)fcDescription;
-                    IFields fields = ocDescription.RequiredFields;
-                    IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
-                    // -- on complete la définition de la géométrie
-                    {
-                        int shapeFieldIndex = fields.FindField(fcDescription.ShapeFieldName);
-                        IField shapeField = fields.get_Field(shapeFieldIndex);
-
-                        IGeometryDef geometryDef = shapeField.GeometryDef;
-                        IGeometryDefEdit geometryDefEdit = (IGeometryDefEdit)geometryDef;
-                        geometryDefEdit.GeometryType_2 = GeometryType.Point; // Ici on choisit une géométrie de point pour le nouveau calque.
-
-                        SpatialReference spatialReference = spatialReferenceCalque;
-                        ISpatialReferenceResolution spatialReferenceResolution = (ISpatialReferenceResolution)spatialReference;
-                        spatialReferenceResolution.ConstructFromHorizon();
-                        spatialReferenceResolution.SetDefaultXYResolution();
-                        ISpatialReferenceTolerance spatialReferenceTolerance = (ISpatialReferenceTolerance)spatialReference;
-                        spatialReferenceTolerance.SetDefaultXYTolerance();
-                        geometryDefEdit.SpatialReference_2 = spatialReference;
-
-                    } // -- fin def géométrie
-
-
-                    // Ajoute le champ: numéro de la remarque
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_IdRemarque, FieldType.Integer));
-                    // Ajoute le champ: nom de l'auteur de la remarque
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Auteur, FieldType.String, 50));
-                    // Ajoute le champ: nom de la commune où est située la remarque
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Commune, FieldType.String));
-                    // Ajoute le champ: nom du département où est située la remarque
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Departement, FieldType.String, 23));
-                    // Ajoute le champ: indicatif département où est située la remarque
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_IDDepartement, FieldType.String, 3));
-                    // Ajoute le champ: date de création
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_DateCreation, FieldType.Date));
-                    // Ajoute le champ: date de mise à jour
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_DateMAJ, FieldType.Date));
-                    // Ajoute le champ: date de validation
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_DateValidation, FieldType.Date));
-                    // Ajoute le champ: thèmes
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Themes, FieldType.String));
-                    // Ajoute le champ: statut
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Statut, FieldType.Integer));
-
-                    // Ajoute le champ: message            
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Message, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
-
-                    // Ajoute le champ: réponse
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Reponse, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
-
-                    // Ajoute le champ: lien public.
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Url, FieldType.String));
-                    // Ajoute le champ: lien privé.
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_UrlPrive, FieldType.String));
-
-                    // Ajoute le champ: document.
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Document, FieldType.String));
-                    // Ajoute le champ: autorisation
-                    fieldsEdit.AddField(DefinirChamp(nom_Champ_Autorisation, FieldType.String));
-
-                    // Use IFieldChecker to create a validated fields collection.
-                    IFieldChecker fieldChecker = new FieldChecker();
-                    IEnumFieldError enumFieldError = null;
-                    IFields validatedFields = null;
-                    fieldChecker.ValidateWorkspace = (IWorkspace)featureWorkspace;
-                    fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
-
-                    //   this.debugForm.WriteLine("fcDescription.ShapeFieldName : " + fcDescription.ShapeFieldName);
-                    IFeatureClass featureClass = featureWorkspace.CreateFeatureClass(
-                        EspaceCollaboratifHelper.nom_Calque_Remarque, //featureClassName
-                        validatedFields, // validatedFields
-                        ocDescription.InstanceCLSID, // ocDescription.InstanceCLSID
-                        ocDescription.ClassExtensionCLSID, // ocDescription.ClassExtensionCLSID
-                        esriFeatureType.esriFTSimple,
-                        fcDescription.ShapeFieldName, // fcDescription.ShapeFieldName Attention, c'est dangereux!
-                        "" //configKeyword
-                    );
-
-                    FeatureLayer featureLayer = new FeatureLayer
-                    {
-                        FeatureClass = featureClass,
-                        Name = featureClass.AliasName
-                    };
-
-                    ILayer layer = featureLayer;
-
-                    return featureLayer;
-
-            */
             
             catch (Exception ex)
             {

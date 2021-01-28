@@ -48,7 +48,9 @@ namespace ArcGisProEspaceCollaboratif
         public string PwdEspaceCollaboratif; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
 
         //public List<IFeatureLayer> calquesEspaceCollaboratif = new List<IFeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
-        public List<FeatureLayer> calquesEspaceCollaboratif = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
+        //public List<FeatureLayer> calquesEspaceCollaboratif = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
+        public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
+
         //public ISpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif.
         public ArcGIS.Core.Geometry.SpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif
         public FormConnecter loginWindow; // Le login à utiliser pour connecter au service de l'espace collaboratif.
@@ -221,64 +223,18 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 this.LoadLayer(pointSketchLayer);
             }
+          
+
+            // Ajout des couches à la liste collaboratifSpaceLayers
+            this.collaborativeSpaceLayers.Clear();
+            this.collaborativeSpaceLayers.Add(GetLayerByName(reportLayer) as FeatureLayer);
+            this.collaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer) as FeatureLayer);
+            this.collaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer) as FeatureLayer);
+            this.collaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer) as FeatureLayer);
 
             return true;
 
-/*
-
-            if (!this.IsLayerInMap(EspaceCollaboratifHelper.nom_Calque_Remarque))
-            {
-                FeatureLayer fl = this.LoadLayer(EspaceCollaboratifHelper.nom_Calque_Remarque, false);
-                if (fl == null)
-                {
-                    fl = EspaceCollaboratifHelper.CreerCalqueRemarqueEspaceCollaboratif(this.FeatureWorkspace, this.spatialReferenceEspaceCollaboratif);
-                }
-
-
-                //importation du fichier lyr  
-                //vérifie que le fichier Remarque_EspaceCollaboratif.lyr existe dans le répertoire de travail. Sinon le copie depuis EspaceCollaboratifDir
-                if (!File.Exists(this.repertoireTravail + "/" + EspaceCollaboratifHelper.calque_Remarque_Lyr))
-                {
-                    if (!File.Exists(EspaceCollaboratifHelper.EspaceCollaboratifAssemblyDir + EspaceCollaboratifHelper.calque_Remarque_Lyr))
-                    {
-                        MessageBox.Show(@"Le fichier " + EspaceCollaboratifHelper.EspaceCollaboratifAssemblyDir + EspaceCollaboratifHelper.calque_Remarque_Lyr + @" n'existe pas.Le style du calque des remarques ne peut donc pas être chargé.", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                        Map.AddLayer(fl);
-                    }
-                    else
-                    {
-                        File.Copy(EspaceCollaboratifHelper.EspaceCollaboratifAssemblyDir + EspaceCollaboratifHelper.calque_Remarque_Lyr, this.repertoireTravail + "/" + EspaceCollaboratifHelper.calque_Remarque_Lyr);
-
-
-                    }
-                }
-                ESRI.ArcGIS.Catalog.IGxLayer gxLayer = new ESRI.ArcGIS.Catalog.GxLayer();
-                ESRI.ArcGIS.Catalog.IGxFile gxFile = (ESRI.ArcGIS.Catalog.IGxFile)gxLayer;
-
-                // set du path du fichier lyr
-                gxFile.Path = this.repertoireTravail + "/" + EspaceCollaboratifHelper.calque_Remarque_Lyr;
-
-                if (!(gxLayer.Layer == null))
-                {
-                    IGeoFeatureLayer f = (IGeoFeatureLayer)gxLayer.Layer;
-                    IGeoFeatureLayer fr = (IGeoFeatureLayer)fl;
-                    fr.Renderer = f.Renderer;
-
-                    Map.AddLayer(fr);
-                }
-
-            }
-            */
-
-            // récupération ou création des couches
-/*            calquesEspaceCollaboratif.Clear();
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Remarque) as FeatureLayer);
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Point) as FeatureLayer);
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne) as FeatureLayer);
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone) as FeatureLayer);
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Texte) as FeatureLayer);
-            this.calquesEspaceCollaboratif.Add(GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Croquis_Fleche) as FeatureLayer);
-*/
-
+            // Ne semble pas nécessaire - à confirmer et supprimer
             //this.activeView.Redraw();
         }
 
@@ -292,14 +248,10 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
         private FeatureLayer LoadLayer(String layerName, bool doLoad = true)
         {
-            //FeatureLayer result = null;
-            //FeatureClass featclass;
-            //ArcGIS.Desktop.Mapping.LayerFactory layerFactory = ArcGIS.Desktop.Mapping.LayerFactory.Instance();
-            //ArcGIS.Desktop.Mapping.FeatureLayer featureLayer = (ArcGIS.Desktop.Mapping.FeatureLayer)layer;
 
             FeatureLayer result = null;
 
-            //TO-DO : récupérer seulement le nom de la couche et pas le chemin complet
+            // Chemin complet de la couche
             string layerPath = this.gdbPath + "\\" + layerName ;
 
             try
@@ -307,6 +259,7 @@ namespace ArcGisProEspaceCollaboratif
                 int indexNumber = 0;
                 System.Uri layerUri = new System.Uri(layerPath);
 
+                // Création de la nouvelle couche (objet layer à partir d'une feature class existante)
                 FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
                     layerUri,
                     this.mapView.Map,
@@ -315,7 +268,6 @@ namespace ArcGisProEspaceCollaboratif
                 );
 
                 result = layer;
-
             }
             catch (Exception e)
             {
@@ -332,33 +284,20 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="name">Le nom du calque qu'il faut récupérer.</param>
         /// <returns>Le calque ou null si non trouvé</returns>
-/*      public ILayer GetLayerByName(string name)
+        public Layer GetLayerByName(string layerName)
         {
-            // Enumération des calques et des groupes de calques.
-            IEnumLayer listLayer = this.Map.get_Layers(null, true);
-            Layer layer = listLayer.Next();
-            while (layer != null)
+            // Enumération des couches et groupes de couches
+            IReadOnlyList<Layer> mapLayers = this.activeView.Map.GetLayersAsFlattenedList();
+            foreach (var layer in mapLayers)
             {
-                if (layer.Name.Equals(name)) { return layer; }
-                layer = listLayer.Next();
+                if (layer.Name == layerName)
+                    return layer;
             }
-            return null;
-        }
- */
 
- /*       public Layer GetLayerByName(string name)
-        {
-            // Enumération des calques et des groupes de calques.
-            EnumLayer listLayer = this.Map.get_Layers(null, true);
-            Layer layer = listLayer.Next();
-            while (layer != null)
-            {
-                if (layer.Name.Equals(name)) { return layer; }
-                layer = listLayer.Next();
-            }
             return null;
         }
-*/
+
+
         /// <summary>
         /// Teste si l'existence d'un calque dans la carte en cours.Récupère un calque par son nom
         /// </summary>
@@ -375,6 +314,9 @@ namespace ArcGisProEspaceCollaboratif
             return false;
         }
 
+        //
+        // INUTILE si on travaille dans la gdb créée automatiquement avec le projet ArcGIS Pro
+        // A CONFIRMER ET SUPPRIMER
 
         /// <summary>
         /// Ouvre les fichiers géodatabase EspaceCollaboratif.gdb contenant les données de l'espace collaboratif dans la carte en cours.

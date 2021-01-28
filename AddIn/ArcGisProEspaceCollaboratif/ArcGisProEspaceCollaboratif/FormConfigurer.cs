@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 //using ESRI.ArcGIS.Geodatabase;
 //using ESRI.ArcGIS.Carto;
@@ -32,7 +33,7 @@ namespace ArcGisProEspaceCollaboratif
 
         private void ConfigEspaceCollaboratif_Load(object sender, EventArgs e)
         {
-           /* this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
+           this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
 
             if (EspaceCollaboratifHelper.Load_Login().Length == 0)
             {
@@ -69,28 +70,20 @@ namespace ArcGisProEspaceCollaboratif
 
             string calqueFiltrageDefaut = EspaceCollaboratifHelper.Load_CalqueFiltrage();
 
-            IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
-            IActiveView activeView = mxDocument.ActiveView;
+            // Récupération des couches et attributs
+            IReadOnlyList<Layer> mapLayers = contexte.activeView.Map.GetLayersAsFlattenedList();
+            List<String> collabSpaceLayers = new List<String>();
+            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Signalement);
+            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone);
+            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne);
+            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Point);
 
-            Map map = mxDocument.ActiveView.FocusMap as Map;
-
-            IEnumLayer listLayer = map.get_Layers(null, true); // Enumération des calques et des groupes de calques.
-            ILayer layer = listLayer.Next();
-
-            while (layer != null)
+            foreach (var layer in mapLayers)
             {
-                IFeatureLayer fl = layer as IFeatureLayer;
+                if (!collabSpaceLayers.Contains(layer.Name))
+                    this.comboBoxCalque.Items.Add(layer.Name);
+            }
 
-                if (fl != null && !(layer.Name.Equals(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone)))
-                {   // On ne retient que les calques de type surfacique.
-                    if (fl.FeatureClass.ShapeType == ArcGIS.Core.Geometry.GeometryType.Polygon)
-                    {
-                        this.comboBoxCalque.Items.Add(layer.Name);
-                    }
-                }
-
-                layer = listLayer.Next();
-            }        
 
             if (calqueFiltrageDefaut.Length == 0)
             {
@@ -116,7 +109,9 @@ namespace ArcGisProEspaceCollaboratif
             else {
                 this.checkBoxGroup.Checked = false;
             }
-            this.lblGroup.Text = this.contexte.ripClient.GetProfil().Geogroupe.Nom;*/
+
+            // A récupérer dans le fichier de paramètres et non dans ripClient
+            //this.lblGroup.Text = this.contexte.ripClient.GetProfil().Geogroupe.Nom;
 
             
         }
@@ -125,9 +120,9 @@ namespace ArcGisProEspaceCollaboratif
         /// Complète treeViewAttributs avec les calques et leurs champs présents sur la carte en cours. 
         /// </summary>
         /// <param name="contexte">Le contexte de la carte en cours</param>        
- /*       public void SetTreeViewAttributs(Contexte contexte)
+       public void SetTreeViewAttributs(Contexte contexte)
         {
-            for (int numLayer = 0; numLayer < contexte.Map.LayerCount; numLayer++)
+/*            for (int numLayer = 0; numLayer < contexte.Map.LayerCount; numLayer++)
             {
                 ILayer calque = contexte.Map.get_Layer(numLayer);
 
@@ -159,8 +154,9 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             this.majAttributs = true;
-        }
 */
+        }
+
 
         /// <summary>
         /// Recherche récursive de tous les calques dans un groupLayer
