@@ -124,9 +124,6 @@
   <data name="document-dossier-g3844-vert-papier-icone-7258-48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\document-dossier-g3844-vert-papier-icone-7258-48.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="connect" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\connect.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="document-dossier-g100-orange-papier-icone-4442-64" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\document-dossier-g100-orange-papier-icone-4442-64.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -135,9 +132,6 @@
   </data>
   <data name="Fatcow-Farm-Fresh-Connect" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Fatcow-Farm-Fresh-Connect.ico;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="baguetteRipatCroquis" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\baguetteRipatCroquis.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="document-dossier-g3796-vert-papier-icone-7172-48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\document-dossier-g3796-vert-papier-icone-7172-48.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

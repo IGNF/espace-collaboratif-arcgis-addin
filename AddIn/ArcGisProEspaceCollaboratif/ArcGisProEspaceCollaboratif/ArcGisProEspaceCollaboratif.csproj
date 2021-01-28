@@ -205,47 +205,48 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\About.png" />
-    <Resource Include="Images\answer.png" />
-    <Resource Include="Images\Book.png" />
-    <Resource Include="Images\cleaning.jpg" />
-    <Resource Include="Images\config.png" />
-    <Resource Include="Images\connect.png" />
-    <Resource Include="Images\connect1.png" />
-    <Resource Include="Images\create.png" />
-    <Resource Include="Images\Log.png" />
-    <Resource Include="Images\logo_IGN.png" />
-    <Resource Include="Images\map-black.png" />
-    <Resource Include="Images\map-blue.png" />
-    <Resource Include="Images\map-green.png" />
-    <Resource Include="Images\map-red.png" />
-    <Resource Include="Images\map-yellow.png" />
-    <Resource Include="Images\point-blue.png" />
-    <Resource Include="Images\point-violet.png" />
-    <Resource Include="Images\s1.png" />
-    <Resource Include="Images\s2.png" />
-    <Resource Include="Images\s3.png" />
-    <Resource Include="Images\s4.png" />
-    <Resource Include="Images\s5.png" />
-    <Resource Include="Images\s6.png" />
-    <Resource Include="Images\s7.png" />
-    <Resource Include="Images\s8.png" />
-    <Resource Include="Images\search.png" />
-    <Resource Include="Images\showAttributTable.png" />
-    <Resource Include="Images\test_tube.png" />
-    <Resource Include="Images\update.png" />
+    <AddInContent Include="Images\About.png" />
+    <AddInContent Include="Images\answer.png" />
+    <AddInContent Include="Images\Book.png" />
+    <AddInContent Include="Images\config.png" />
+    <AddInContent Include="Images\connect.png" />
+    <AddInContent Include="Images\connect1.png" />
+    <AddInContent Include="Images\create.png" />
+    <AddInContent Include="Images\Log.png" />
+    <AddInContent Include="Images\logo_IGN.png" />
+    <AddInContent Include="Images\map-black.png" />
+    <AddInContent Include="Images\map-blue.png" />
+    <AddInContent Include="Images\map-green.png" />
+    <AddInContent Include="Images\map-red.png" />
+    <AddInContent Include="Images\map-yellow.png" />
+    <AddInContent Include="Images\point-blue.png" />
+    <AddInContent Include="Images\point-violet.png" />
+    <AddInContent Include="Images\s1.png" />
+    <AddInContent Include="Images\s2.png" />
+    <AddInContent Include="Images\s3.png" />
+    <AddInContent Include="Images\s4.png" />
+    <AddInContent Include="Images\s5.png" />
+    <AddInContent Include="Images\s6.png" />
+    <AddInContent Include="Images\s7.png" />
+    <AddInContent Include="Images\s8.png" />
+    <AddInContent Include="Images\search.png" />
+    <AddInContent Include="Images\showAttributTable.png" />
+    <AddInContent Include="Images\test_tube.png" />
+    <AddInContent Include="Images\update.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\ajax_loader_green_256.gif" />
-    <Resource Include="Resources\baguetteRipatCroquis.png" />
-    <Resource Include="Resources\connect.png" />
-    <Resource Include="Resources\document-dossier-g100-orange-papier-icone-4442-64.png" />
-    <Resource Include="Resources\document-dossier-g3796-vert-papier-icone-7172-48.png" />
-    <Resource Include="Resources\document-dossier-g3844-orange-papier-icone-4826-64.png" />
-    <Resource Include="Resources\document-dossier-g3844-vert-papier-icone-7258-48.png" />
-    <Resource Include="Resources\document81.png" />
-    <Resource Include="Resources\Fatcow-Farm-Fresh-Connect.ico" />
-    <Resource Include="Resources\LogoIGN.gif" />
+    <AddInContent Include="Resources\ajax_loader_green_256.gif" />
+    <AddInContent Include="Images\baguetteCroquis.png" />
+    <AddInContent Include="Resources\document-dossier-g100-orange-papier-icone-4442-64.png" />
+    <AddInContent Include="Resources\document-dossier-g3796-vert-papier-icone-7172-48.png" />
+    <AddInContent Include="Resources\document-dossier-g3844-orange-papier-icone-4826-64.png" />
+    <AddInContent Include="Resources\document-dossier-g3844-vert-papier-icone-7258-48.png" />
+    <AddInContent Include="Resources\document81.png" />
+    <AddInContent Include="Resources\Fatcow-Farm-Fresh-Connect.ico" />
+    <AddInContent Include="Resources\LogoIGN.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cleaning.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--

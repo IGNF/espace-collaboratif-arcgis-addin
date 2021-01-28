@@ -71,12 +71,14 @@ namespace ArcGisProEspaceCollaboratif
             string calqueFiltrageDefaut = EspaceCollaboratifHelper.Load_CalqueFiltrage();
 
             // Récupération des couches et attributs
-            IReadOnlyList<Layer> mapLayers = contexte.activeView.Map.GetLayersAsFlattenedList();
-            List<String> collabSpaceLayers = new List<String>();
-            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Signalement);
-            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone);
-            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne);
-            collabSpaceLayers.Add(EspaceCollaboratifHelper.nom_Calque_Croquis_Point);
+            IReadOnlyList<Layer> mapLayers = contexte.mapActiveView.Map.GetLayersAsFlattenedList();
+            List<String> collabSpaceLayers = new List<String>
+            {
+                EspaceCollaboratifHelper.nom_Calque_Signalement,
+                EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone,
+                EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne,
+                EspaceCollaboratifHelper.nom_Calque_Croquis_Point
+            };
 
             foreach (var layer in mapLayers)
             {

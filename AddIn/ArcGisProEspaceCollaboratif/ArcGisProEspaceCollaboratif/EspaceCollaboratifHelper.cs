@@ -1481,11 +1481,11 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
         /// </summary>
         /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
-        /*        public static string Load_Login()
-                {
-                    return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Login);
-                }
-        */
+        public static string Load_Login()
+        {
+            return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Login);
+        }
+        
         /// <summary>
         ///  Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le login à utiliser pour se connecter au service EspaceCollaboratif.
         /// </summary>
@@ -1504,26 +1504,26 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la taille de la pagination pour l'importation des remarques.
         /// </summary>
         /// <returns>La taille de pagination contenue dans le fichier de paramétrage. Renvoie 0 si cette valeur est absente.</returns>
-        /*        public static int Load_Pagination()
-                {
-                    string pagination = EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Pagination);
+        public static int Load_Pagination()
+        {
+            string pagination = EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Pagination);
 
-                    if (pagination.Equals(""))
-                    {
-                        return 0;
-                    }
+            if (pagination.Equals(""))
+            {
+                return 0;
+            }
 
-                    try
-                    {
-                        return int.Parse(pagination);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex.Message);
-                        return 0;
-                    }
-                }
-        */
+            try
+            {
+                return int.Parse(pagination);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message);
+                return 0;
+            }
+        }
+        
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des remarques.
         /// </summary>
@@ -1553,11 +1553,11 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit la valeur du tag "Import_pour_groupe" du fichier XML de paramétrage.
         /// </summary>
         /// <returns></returns>
-        /*        public static string Load_Group()
-                {
-                    return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Group);
-                }
-        */
+        public static string Load_Group()
+        {
+            return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Group);
+        }
+        
         /// <summary>
         ///  Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, "Import_pour_groupe"
         /// </summary>
@@ -1577,28 +1577,28 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date pour laquelle on extrait que les remaques postérieures à celle-ci.
         /// </summary>
         /// <returns>La date d'extration stockée dans le fichier de paramétrage.</returns>
-        /*       public static System.DateTime Load_DateExtraction()
-               {
-                   string dateExtration = EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_DateExtraction);
+        public static System.DateTime Load_DateExtraction()
+        {
+            string dateExtration = EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_DateExtraction);
 
-                   try
-                   {
-                       if (dateExtration.Length != 0)
-                       {
-                           return Convert.ToDateTime(dateExtration);
-                       }
-                       else
-                       {
-                           return Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut);
-                       }
-                   }
-                   catch
-                   {
-                       System.Windows.Forms.MessageBox.Show("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = ''" + dateExtration + "''.", "IGN EspaceCollaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                       return Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut);
-                   }
-               }
-       */
+            try
+            {
+                if (dateExtration.Length != 0)
+                {
+                    return Convert.ToDateTime(dateExtration);
+                }
+                else
+                {
+                    return Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut);
+                }
+            }
+            catch
+            {
+                System.Windows.Forms.MessageBox.Show("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = ''" + dateExtration + "''.", "IGN EspaceCollaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                return Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut);
+            }
+        }
+       
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des remarques.
         /// </summary>
@@ -1626,11 +1626,11 @@ namespace ArcGisProEspaceCollaboratif
         /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des remarques.
         /// </summary>
         /// <returns>Le nom du calque pour le filtrage spatiale stocké dans le fichier de paramétrage.</returns>
-        /*        public static string Load_CalqueFiltrage()
-                {
-                    return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Zone_extraction);
-                }
-        */
+        public static string Load_CalqueFiltrage()
+        {
+            return EspaceCollaboratifHelper.XML_FirstElement(EspaceCollaboratifHelper.xml_Zone_extraction);
+        }
+        
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
         /// </summary>

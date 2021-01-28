@@ -48,7 +48,7 @@ namespace ArcGisProEspaceCollaboratif
         public string PwdEspaceCollaboratif; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
 
         //public List<IFeatureLayer> calquesEspaceCollaboratif = new List<IFeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
-        //public List<FeatureLayer> calquesEspaceCollaboratif = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
+        public List<FeatureLayer> calquesEspaceCollaboratif = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
         public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
 
         //public ISpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif.
@@ -279,7 +279,7 @@ namespace ArcGisProEspaceCollaboratif
         public Layer GetLayerByName(string layerName)
         {
             // Enumération des couches et groupes de couches
-            IReadOnlyList<Layer> mapLayers = this.activeView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName)

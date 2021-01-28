@@ -55,22 +55,22 @@
         <button id="ArcGisProEspaceCollaboratif_SupprimerSignalements" keytip="W" caption="Supprimer" className="SupprimerSignalements" loadOnClick="true" smallImage="Images\cleaning.png" largeImage="Images\cleaning.png">
           <tooltip heading="Suppression">Supprimer les signalements de la carte en cours<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_VoirObjetsAssocies" keytip="W" caption="Voir les objets associés" className="VoirObjetsAssocies" loadOnClick="true" smallImage="Images\baguetteRipartCroquis.png" largeImage="Images\baguetteRipartCroquis.png">
+        <button id="ArcGisProEspaceCollaboratif_VoirObjetsAssocies" keytip="W" caption="Voir les objets associés" className="VoirObjetsAssocies" loadOnClick="true" smallImage="Images\baguetteRipartCroquis.png" largeImage="Images\baguetteCroquis.png">
           <tooltip heading="Visualisation">Voir les objets associés<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_ChargerCouches" keytip="W" caption="Charger" className="ChargerCouches" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen32.png">
           <tooltip heading="Chargement">Charger les couches de mon groupe<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Configurer" keytip="W" caption="Configurer" className="HelpConfigure" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen32.png">
+        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Configurer" keytip="W" caption="Configurer" className="HelpConfigure" loadOnClick="true" smallImage="Images/config.png" largeImage="Images/config.png">
           <tooltip heading="Configuration">Configurer l'add-in<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Ouvrir_Manuel" keytip="W" caption="Ouvrir manuel" className="Aide_ouvrirmanuel" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen32.png">
+        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Ouvrir_Manuel" keytip="W" caption="Ouvrir manuel" className="Aide_ouvrirmanuel" loadOnClick="true" smallImage="Images/Book.png" largeImage="Images/Book.png">
           <tooltip heading="Ouverture fichier">Ouvrir le manuel utilisateur de l'add-in<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Ouvrir_Log" keytip="W" caption="Ouvrir log" className="Aide_ouvrirlog" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen32.png">
+        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Ouvrir_Log" keytip="W" caption="Ouvrir log" className="Aide_ouvrirlog" loadOnClick="true" smallImage="Images/Log.png" largeImage="Images/Log.png">
           <tooltip heading="Ouverture fichier">Ouvrir le fichier de log de l'add-in<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Apropos" keytip="W" caption="A propos" className="Aide_apropos" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonGreen32.png">
+        <button id="ArcGisProEspaceCollaboratif_Aide_Items_Apropos" keytip="W" caption="A propos" className="Aide_apropos" loadOnClick="true" smallImage="Images/About.png" largeImage="Images/About.png">
           <tooltip heading="Informations">A propos de l'add-in<disabledText /></tooltip>
         </button>
       </controls>
