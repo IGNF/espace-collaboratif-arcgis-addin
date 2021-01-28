@@ -48,7 +48,13 @@
             this.checkBoxCroquis = new System.Windows.Forms.CheckBox();
             this.checkBoxGroup = new System.Windows.Forms.CheckBox();
             this.lblGroup = new System.Windows.Forms.Label();
+            this.checkBoxProxy = new System.Windows.Forms.CheckBox();
+            this.labelGroupeActif = new System.Windows.Forms.Label();
+            this.labelCleGeoportail = new System.Windows.Forms.Label();
+            this.textBoxProxy = new System.Windows.Forms.TextBox();
+            this.textBoxGroupeActif = new System.Windows.Forms.TextBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.textBoxCleGeoportail = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPagination)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDate)).BeginInit();
@@ -79,6 +85,12 @@
             this.tableLayoutPanel.Controls.Add(this.checkBoxCroquis, 0, 7);
             this.tableLayoutPanel.Controls.Add(this.checkBoxGroup, 0, 6);
             this.tableLayoutPanel.Controls.Add(this.lblGroup, 1, 6);
+            this.tableLayoutPanel.Controls.Add(this.checkBoxProxy, 0, 8);
+            this.tableLayoutPanel.Controls.Add(this.labelCleGeoportail, 0, 10);
+            this.tableLayoutPanel.Controls.Add(this.textBoxProxy, 1, 8);
+            this.tableLayoutPanel.Controls.Add(this.textBoxGroupeActif, 1, 9);
+            this.tableLayoutPanel.Controls.Add(this.labelGroupeActif, 0, 9);
+            this.tableLayoutPanel.Controls.Add(this.textBoxCleGeoportail, 1, 10);
             this.tableLayoutPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.tableLayoutPanel.Location = new System.Drawing.Point(1, 3);
             this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(4);
@@ -98,7 +110,6 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel.Size = new System.Drawing.Size(1258, 638);
             this.tableLayoutPanel.TabIndex = 0;
-            this.tableLayoutPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.TableLayoutPanel_Paint);
             // 
             // comboBoxCalque
             // 
@@ -345,6 +356,67 @@
             this.lblGroup.TabIndex = 19;
             this.lblGroup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // checkBoxProxy
+            // 
+            this.checkBoxProxy.AutoSize = true;
+            this.checkBoxProxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxProxy.Location = new System.Drawing.Point(3, 488);
+            this.checkBoxProxy.Name = "checkBoxProxy";
+            this.checkBoxProxy.Size = new System.Drawing.Size(78, 24);
+            this.checkBoxProxy.TabIndex = 20;
+            this.checkBoxProxy.Text = "Proxy";
+            this.checkBoxProxy.UseVisualStyleBackColor = true;
+            // 
+            // labelGroupeActif
+            // 
+            this.labelGroupeActif.AutoSize = true;
+            this.labelGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelGroupeActif.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelGroupeActif.Location = new System.Drawing.Point(3, 527);
+            this.labelGroupeActif.Name = "labelGroupeActif";
+            this.labelGroupeActif.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.labelGroupeActif.Size = new System.Drawing.Size(113, 20);
+            this.labelGroupeActif.TabIndex = 21;
+            this.labelGroupeActif.Text = "Groupe actif";
+            // 
+            // labelCleGeoportail
+            // 
+            this.labelCleGeoportail.AutoSize = true;
+            this.labelCleGeoportail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCleGeoportail.Location = new System.Drawing.Point(3, 560);
+            this.labelCleGeoportail.Name = "labelCleGeoportail";
+            this.labelCleGeoportail.Size = new System.Drawing.Size(130, 20);
+            this.labelCleGeoportail.TabIndex = 22;
+            this.labelCleGeoportail.Text = "Clé Géoportail";
+            this.labelCleGeoportail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // textBoxProxy
+            // 
+            this.tableLayoutPanel.SetColumnSpan(this.textBoxProxy, 3);
+            this.textBoxProxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxProxy.Location = new System.Drawing.Point(397, 488);
+            this.textBoxProxy.Name = "textBoxProxy";
+            this.textBoxProxy.Size = new System.Drawing.Size(857, 27);
+            this.textBoxProxy.TabIndex = 23;
+            // 
+            // textBoxGroupeActif
+            // 
+            this.tableLayoutPanel.SetColumnSpan(this.textBoxGroupeActif, 3);
+            this.textBoxGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxGroupeActif.Location = new System.Drawing.Point(397, 530);
+            this.textBoxGroupeActif.Name = "textBoxGroupeActif";
+            this.textBoxGroupeActif.Size = new System.Drawing.Size(857, 27);
+            this.textBoxGroupeActif.TabIndex = 24;
+            // 
+            // textBoxCleGeoportail
+            // 
+            this.tableLayoutPanel.SetColumnSpan(this.textBoxCleGeoportail, 3);
+            this.textBoxCleGeoportail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxCleGeoportail.Location = new System.Drawing.Point(397, 563);
+            this.textBoxCleGeoportail.Name = "textBoxCleGeoportail";
+            this.textBoxCleGeoportail.Size = new System.Drawing.Size(857, 27);
+            this.textBoxCleGeoportail.TabIndex = 25;
+            // 
             // FormConfigurer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -391,5 +463,11 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.CheckBox checkBoxGroup;
         private System.Windows.Forms.Label lblGroup;
+        private System.Windows.Forms.CheckBox checkBoxProxy;
+        private System.Windows.Forms.Label labelGroupeActif;
+        private System.Windows.Forms.Label labelCleGeoportail;
+        private System.Windows.Forms.TextBox textBoxProxy;
+        private System.Windows.Forms.TextBox textBoxGroupeActif;
+        private System.Windows.Forms.TextBox textBoxCleGeoportail;
     }
 }

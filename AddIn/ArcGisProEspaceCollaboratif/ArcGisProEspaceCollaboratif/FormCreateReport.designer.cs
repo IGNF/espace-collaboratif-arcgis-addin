@@ -1,6 +1,6 @@
 ﻿namespace ArcGisProEspaceCollaboratif
 {
-    partial class FormCreerSignalement
+    partial class FormCreateReport
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCreerSignalement));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCreateReport));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.groupImageProfil = new System.Windows.Forms.GroupBox();
             this.pictureProfil = new System.Windows.Forms.PictureBox();
@@ -95,9 +95,9 @@
             this.groupImageProfil.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupImageProfil.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupImageProfil.Location = new System.Drawing.Point(4, 4);
-            this.groupImageProfil.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupImageProfil.Margin = new System.Windows.Forms.Padding(4);
             this.groupImageProfil.Name = "groupImageProfil";
-            this.groupImageProfil.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupImageProfil.Padding = new System.Windows.Forms.Padding(4);
             this.groupImageProfil.Size = new System.Drawing.Size(921, 115);
             this.groupImageProfil.TabIndex = 0;
             this.groupImageProfil.TabStop = false;
@@ -108,7 +108,7 @@
             this.pictureProfil.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.pictureProfil.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureProfil.Location = new System.Drawing.Point(4, 19);
-            this.pictureProfil.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureProfil.Margin = new System.Windows.Forms.Padding(4);
             this.pictureProfil.Name = "pictureProfil";
             this.pictureProfil.Size = new System.Drawing.Size(136, 92);
             this.pictureProfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -123,7 +123,7 @@
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl.Location = new System.Drawing.Point(4, 127);
-            this.tabControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabControl.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl.MinimumSize = new System.Drawing.Size(481, 92);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -135,9 +135,9 @@
             this.tabThemes.AutoScroll = true;
             this.tabThemes.Controls.Add(this.checkedListBoxThemes);
             this.tabThemes.Location = new System.Drawing.Point(4, 26);
-            this.tabThemes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabThemes.Margin = new System.Windows.Forms.Padding(4);
             this.tabThemes.Name = "tabThemes";
-            this.tabThemes.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabThemes.Padding = new System.Windows.Forms.Padding(4);
             this.tabThemes.Size = new System.Drawing.Size(913, 142);
             this.tabThemes.TabIndex = 0;
             this.tabThemes.Text = "Thèmes";
@@ -150,7 +150,7 @@
             this.checkedListBoxThemes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkedListBoxThemes.FormattingEnabled = true;
             this.checkedListBoxThemes.Location = new System.Drawing.Point(4, 4);
-            this.checkedListBoxThemes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkedListBoxThemes.Margin = new System.Windows.Forms.Padding(4);
             this.checkedListBoxThemes.Name = "checkedListBoxThemes";
             this.checkedListBoxThemes.Size = new System.Drawing.Size(905, 134);
             this.checkedListBoxThemes.TabIndex = 0;
@@ -160,9 +160,9 @@
             // 
             this.tabOptions.Controls.Add(this.tableLayoutPanelOption);
             this.tabOptions.Location = new System.Drawing.Point(4, 26);
-            this.tabOptions.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tabOptions.Margin = new System.Windows.Forms.Padding(4);
             this.tabOptions.Name = "tabOptions";
-            this.tabOptions.Size = new System.Drawing.Size(789, 142);
+            this.tabOptions.Size = new System.Drawing.Size(913, 142);
             this.tabOptions.TabIndex = 2;
             this.tabOptions.Text = "Options";
             this.tabOptions.UseVisualStyleBackColor = true;
@@ -179,7 +179,7 @@
             this.tableLayoutPanelOption.Controls.Add(this.listViewPJ, 1, 1);
             this.tableLayoutPanelOption.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelOption.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanelOption.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanelOption.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanelOption.Name = "tableLayoutPanelOption";
             this.tableLayoutPanelOption.RowCount = 4;
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -195,14 +195,14 @@
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanelOption.Size = new System.Drawing.Size(789, 142);
+            this.tableLayoutPanelOption.Size = new System.Drawing.Size(913, 142);
             this.tableLayoutPanelOption.TabIndex = 5;
             // 
             // checkBoxDocument
             // 
             this.checkBoxDocument.AutoSize = true;
             this.checkBoxDocument.Location = new System.Drawing.Point(4, 33);
-            this.checkBoxDocument.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkBoxDocument.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDocument.Name = "checkBoxDocument";
             this.checkBoxDocument.Size = new System.Drawing.Size(187, 21);
             this.checkBoxDocument.TabIndex = 3;
@@ -210,25 +210,25 @@
             this.checkBoxDocument.UseVisualStyleBackColor = true;
             this.checkBoxDocument.CheckedChanged += new System.EventHandler(this.CheckBoxDocument_CheckedChanged);
             // 
-            // radioButtonRemarqueMultiple
+            // radioButtonSignalementMultiple
             // 
             this.radioButtonSignalementMultiple.AutoSize = true;
-            this.radioButtonSignalementMultiple.Location = new System.Drawing.Point(246, 92);
-            this.radioButtonSignalementMultiple.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButtonSignalementMultiple.Location = new System.Drawing.Point(255, 92);
+            this.radioButtonSignalementMultiple.Margin = new System.Windows.Forms.Padding(4);
             this.radioButtonSignalementMultiple.Name = "radioButtonSignalementMultiple";
-            this.radioButtonSignalementMultiple.Size = new System.Drawing.Size(271, 21);
+            this.radioButtonSignalementMultiple.Size = new System.Drawing.Size(280, 21);
             this.radioButtonSignalementMultiple.TabIndex = 2;
             this.radioButtonSignalementMultiple.Text = "Créer 1000 signalements distincts.";
             this.radioButtonSignalementMultiple.UseVisualStyleBackColor = true;
             // 
-            // radioButtonRemarqueUnique
+            // radioButtonSignalementUnique
             // 
             this.radioButtonSignalementUnique.AutoSize = true;
             this.radioButtonSignalementUnique.Checked = true;
             this.radioButtonSignalementUnique.Location = new System.Drawing.Point(4, 92);
-            this.radioButtonSignalementUnique.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButtonSignalementUnique.Margin = new System.Windows.Forms.Padding(4);
             this.radioButtonSignalementUnique.Name = "radioButtonSignalementUnique";
-            this.radioButtonSignalementUnique.Size = new System.Drawing.Size(234, 21);
+            this.radioButtonSignalementUnique.Size = new System.Drawing.Size(243, 21);
             this.radioButtonSignalementUnique.TabIndex = 1;
             this.radioButtonSignalementUnique.TabStop = true;
             this.radioButtonSignalementUnique.Text = "Créer un signalement unique.";
@@ -240,7 +240,7 @@
             this.checkBoxCroquis.Checked = true;
             this.checkBoxCroquis.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCroquis.Location = new System.Drawing.Point(4, 4);
-            this.checkBoxCroquis.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.checkBoxCroquis.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCroquis.Name = "checkBoxCroquis";
             this.checkBoxCroquis.Size = new System.Drawing.Size(170, 21);
             this.checkBoxCroquis.TabIndex = 0;
@@ -263,7 +263,7 @@
             this.listViewPJ.MultiSelect = false;
             this.listViewPJ.Name = "listViewPJ";
             this.listViewPJ.Scrollable = false;
-            this.listViewPJ.Size = new System.Drawing.Size(762, 30);
+            this.listViewPJ.Size = new System.Drawing.Size(886, 30);
             this.listViewPJ.TabIndex = 2;
             this.listViewPJ.UseCompatibleStateImageBehavior = false;
             this.listViewPJ.View = System.Windows.Forms.View.SmallIcon;
@@ -280,7 +280,7 @@
             this.buttonCreer.Enabled = false;
             this.buttonCreer.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonCreer.Location = new System.Drawing.Point(4, 519);
-            this.buttonCreer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonCreer.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCreer.MinimumSize = new System.Drawing.Size(481, 0);
             this.buttonCreer.Name = "buttonCreer";
             this.buttonCreer.Size = new System.Drawing.Size(921, 30);
@@ -306,7 +306,7 @@
             this.tableLayoutPanel.SetColumnSpan(this.richTextBoxMessage, 4);
             this.richTextBoxMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxMessage.Location = new System.Drawing.Point(4, 345);
-            this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBoxMessage.MinimumSize = new System.Drawing.Size(480, 91);
             this.richTextBoxMessage.Name = "richTextBoxMessage";
             this.richTextBoxMessage.Size = new System.Drawing.Size(921, 166);
@@ -324,18 +324,18 @@
             // 
             this.toolTip.Popup += new System.Windows.Forms.PopupEventHandler(this.ToolTip_Popup);
             // 
-            // FormCreerSignalement
+            // FormCreateReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(929, 553);
             this.Controls.Add(this.tableLayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(575, 507);
-            this.Name = "FormCreerSignalement";
+            this.Name = "FormCreateReport";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Espace collaboratif : créer un nouveau signalement";
             this.tableLayoutPanel.ResumeLayout(false);

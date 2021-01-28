@@ -86,7 +86,6 @@ namespace ArcGisProEspaceCollaboratif
                     this.comboBoxCalque.Items.Add(layer.Name);
             }
 
-
             if (calqueFiltrageDefaut.Length == 0)
             {
                 this.checkBoxCalque.Checked = false;
@@ -96,7 +95,6 @@ namespace ArcGisProEspaceCollaboratif
             {
                 this.comboBoxCalque.SelectedIndex = this.comboBoxCalque.FindStringExact(calqueFiltrageDefaut);
             }
-
 
             if (EspaceCollaboratifHelper.Load_AttributsCroquis().Nodes.Count >0)
             {
@@ -304,62 +302,67 @@ namespace ArcGisProEspaceCollaboratif
         {
             EspaceCollaboratifHelper.Save_Urlhost(this.textBoxUrl.Text);
             
-           if (!this.checkBoxLogin.Checked)
-           {
-               this.textBoxLogin.Text = "";
-           }
-           EspaceCollaboratifHelper.Save_Login(this.textBoxLogin.Text);
+            if (!this.checkBoxLogin.Checked)
+            {
+                this.textBoxLogin.Text = "";
+            }
+            EspaceCollaboratifHelper.Save_Login(this.textBoxLogin.Text);
 
-           if (this.checkBoxPagination.Checked)
-           {
-               EspaceCollaboratifHelper.Save_Pagination((uint)this.numericUpDownPagination.Value);
-           }
-           else
-           {
-               EspaceCollaboratifHelper.Save_Pagination(0);
-           }
+            if (this.checkBoxPagination.Checked)
+            {
+                EspaceCollaboratifHelper.Save_Pagination((uint)this.numericUpDownPagination.Value);
+            }
+            else
+            {
+                EspaceCollaboratifHelper.Save_Pagination(0);
+            }
 
-           if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
-           {
-               EspaceCollaboratifHelper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
-           }
-           else
-           {
-               EspaceCollaboratifHelper.Save_CalqueFiltrage("");
-           }
+            if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
+            {
+                EspaceCollaboratifHelper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
+            }
+            else
+            {
+                EspaceCollaboratifHelper.Save_CalqueFiltrage("");
+            }
 
-           if (this.checkBoxDate.Checked)
-           {
-               EspaceCollaboratifHelper.Save_DateExtraction(this.dateTimePicker.Value.Date);
-           }
-           else
-           {
-               EspaceCollaboratifHelper.Save_DateExtraction(Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut));
-           }
+            if (this.checkBoxDate.Checked)
+            {
+                EspaceCollaboratifHelper.Save_DateExtraction(this.dateTimePicker.Value.Date);
+            }
+            else
+            {
+                EspaceCollaboratifHelper.Save_DateExtraction(Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut));
+            }
 
-           if (this.checkBoxGroup.Checked)
-           {
-               EspaceCollaboratifHelper.Save_Group("true");
-           }
-           else
-           {
-               EspaceCollaboratifHelper.Save_Group("false");
-           }
+            if (this.checkBoxGroup.Checked)
+            {
+                EspaceCollaboratifHelper.Save_Group("true");
+            }
+            else
+            {
+                EspaceCollaboratifHelper.Save_Group("false");
+            }
 
-           this.majAttributs = false;
-           if (this.checkBoxCroquis.Checked)
-           {
-               this.SaveAttributs();
-           }
-           else
-           {
-               EspaceCollaboratifHelper.Save_AttributsCroquis(new TreeNode());
-           }
-           
-            
+            this.majAttributs = false;
+            if (this.checkBoxCroquis.Checked)
+            {
+                this.SaveAttributs();
+            }
+            else
+            {
+                EspaceCollaboratifHelper.Save_AttributsCroquis(new TreeNode());
+            }
+
+            if (this.checkBoxProxy.Checked)
+            {
+                EspaceCollaboratifHelper.Save_Proxy(this.checkBoxProxy.Text);
+            }
+
+            EspaceCollaboratifHelper.Save_CleGeoportail(this.textBoxCleGeoportail.Text);
+            EspaceCollaboratifHelper.Save_GroupeActif(this.textBoxGroupeActif.Text);
 
             this.Close();
-
         }
 
         /// <summary>
@@ -496,11 +499,6 @@ namespace ArcGisProEspaceCollaboratif
                 this.UpdateCheckNode(level);
             }
             this.majAttributs = true;
-        }
-
-        private void TableLayoutPanel_Paint(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }

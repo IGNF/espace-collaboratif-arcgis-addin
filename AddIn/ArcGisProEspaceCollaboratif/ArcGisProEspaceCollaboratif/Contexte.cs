@@ -924,7 +924,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Transforme en croquis Ripart les object sélectionnés dans la carte en cours.
         /// </summary>
         /// <returns>Liste de croquis Ripart créés à partir des objects sélectionnés.</returns>
-        public List<ArcGisProEspaceCollaboratif.Core.Sketch> MakeCroquis_from_Selection()
+        public List<ArcGisProEspaceCollaboratif.Core.Sketch > MakeCroquis_from_Selection()
         {
             // TODO : on ne peut pas modifier la status bar dans arcgis pro,
             // question Noémie, on remplace par quoi ?
@@ -941,7 +941,7 @@ namespace ArcGisProEspaceCollaboratif
             System.Windows.Forms.TreeNode treeAttributs = EspaceCollaboratifHelper.Load_AttributsCroquis();
 
             // Get the currently selected features in the map
-            QueuedTask.Run(() =>
+            QueuedTask.Run(()=>
             {
                 var selectedFeatures = this.mapActiveView.Map.GetSelection();
                 foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
@@ -1017,103 +1017,6 @@ namespace ArcGisProEspaceCollaboratif
                 }
             });
                        
-
-                        
-
-
-
-                  
-        
-
-
-
-
-            /*IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-            IEnumFeatureSetup pEnumFeatureSetup = (IEnumFeatureSetup)enumFeature;
-            pEnumFeatureSetup.AllFields = true;
-
-            Feature feature = enumFeature.Next();
-            //int total = this.Map.SelectionCount;
-            int step = 0;
-
-            //mess.ShowProgressBar("Génération des croquis de l'Espace collaboratif à partir des objets sélectionnés...", 0, total, 1, true);
-            //mess.ProgressBar.Position = 0;
-            while (feature != null)
-            {
-                step++;
-                //mess.ProgressBar.Position = step;
-                //mess.set_Message(0, "Génération des croquis de l'Espace collaboratif n°" + step + "/" + total + "...");
-                Geometry geometryFeature = feature.GetShape() as Geometry;
-                geometryFeature.Project(this.spatialReferenceEspaceCollaboratif);
-                if (geometryFeature.GeometryType == ArcGIS.Core.Geometry.GeometryType.Point)
-                {
-                    ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
-                    ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(pointGeom);
-                    EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
-                    listCroquis.Add(croquisTemp);
-                }
-                else
-                {
-                    IPolycurve3 courbe = feature.GetShape() as IPolycurve3;
-
-                    courbe.Project(this.spatialReferenceEspaceCollaboratif);
-                    ArcGIS.Core.Geometry.GeometryType type = feature.GetShape().GeometryType;
-
-                    switch (type)
-                    {
-                        case ArcGIS.Core.Geometry.GeometryType.Polyline:
-                            courbe.DensifyByAngle(150.00, Math.PI / 180 * 2);
-
-                            IGeometryCollection collectionPolyline = feature.GetShape() as IGeometryCollection;
-
-                            for (int i = 0; i < collectionPolyline.GeometryCount; i++)
-                            {
-                                Geometry geomPath = collectionPolyline.Geometry[i];
-                                IPath path = geomPath as IPath;
-                                ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(path);
-                                EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
-
-                                if (collectionPolyline.GeometryCount > 1)
-                                {
-                                    string multigeom = "" + (i + 1) + "/" + collectionPolyline.GeometryCount;
-                                    EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
-                                }
-                                listCroquis.Add(croquisTemp);
-                            }
-                            break;
-
-                        case ArcGIS.Core.Geometry.GeometryType.Polygon:
-                            courbe.Densify(250, 0);
-                            IPolygon4 polygon = courbe as IPolygon4;
-                            IGeometryCollection collectionPolygon = feature.GetShape() as IGeometryCollection;
-
-                            for (int i = 0; i < collectionPolygon.GeometryCount; i++)
-                            {
-                                IRing ring = collectionPolygon.Geometry[i] as IRing;
-
-                                if (ring.IsExterior)
-                                {
-                                    ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(ring);
-                                    EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
-
-                                    if (collectionPolygon.GeometryCount > 1)
-                                    {
-                                        string multigeom = "" + (i + 1) + "/" + collectionPolygon.GeometryCount;
-                                        EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
-                                    }
-                                    listCroquis.Add(croquisTemp);
-                                }
-                            }
-                            break;
-
-                        default:
-                            System.Windows.Forms.MessageBox.Show("Géométrie non-prise en charge pour la transformer en croquis de l'Espace collaboratif.", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                            break;
-                    }
-                }
-                feature = enumFeature.Next();
-            }
-            //mess.HideProgressBar();*/
             return listCroquis;
         }
 

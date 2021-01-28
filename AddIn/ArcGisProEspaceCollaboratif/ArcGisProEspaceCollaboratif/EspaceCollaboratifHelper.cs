@@ -70,6 +70,10 @@ namespace ArcGisProEspaceCollaboratif
         public const String xml_BaliseNomCalque = "Calque_Nom";
         public const String xml_BaliseChampCalque = "Calque_Champ";
         public const String xml_Group = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Import_pour_groupe";
+        public const String xml_Proxy = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/Proxy";
+        public const String xml_CleGeoPortail = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/cle_geoportail";
+        public const String xml_GroupeActif = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/groupe_actif";
+        public const String xml_GroupePrefere = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/groupe_prefere";
 
         public const String dateDefaut = "01/01/1900";
         public const int longueurMaxChamp = 5000;
@@ -1257,14 +1261,14 @@ namespace ArcGisProEspaceCollaboratif
         /// Dans le fichier de paramétrage, la balise est conservée, mais elle est vidée de ses éléments qui étaient inclus auparavant.
         /// </summary>
         /// <param name="balise">Le chemin complet de la balise à rechercher à l'intérieur du fichier de paramétrage, à l'intérieur de laquelle il faut effacer tous ses éléments.</param>       
- /*       public static void XML_ClearElements(string balise)
+        public static void XML_ClearElements(string balise)
         {
             XmlDocument paramsXML = EspaceCollaboratifHelper.XML_Load();
             XmlNode noeud = paramsXML.SelectSingleNode(balise);
             noeud.RemoveAll();
             paramsXML.Save(EspaceCollaboratifHelper.XML_NameFile());
         }
-*/
+
 
         /// <summary>
         /// Supprime à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap, la balise indiquée en entrée.
@@ -1353,7 +1357,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="root">L'emplacement dans le fichier paramètre où on veut ajouter le nouvel élément.</param>
         /// <param name="elementName">Le nom de l'élément à ajouter.</param>
         /// <param name="elementVal">La valeur de l'élément à ajouter.</param>
- /*       public static void XML_InsertElement(string root, string elementName, string elementVal)
+        public static void XML_InsertElement(string root, string elementName, string elementVal)
         {
             XmlDocument paramsXML = EspaceCollaboratifHelper.XML_Load();
             XmlNode noeudRoot = paramsXML.SelectSingleNode(root);
@@ -1365,7 +1369,7 @@ namespace ArcGisProEspaceCollaboratif
             noeudRoot.AppendChild(noeud);
             paramsXML.Save(EspaceCollaboratifHelper.XML_NameFile());
         }
-*/
+
 
         /// <summary>
         /// Renvoie le premier élément indiqué l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
@@ -1419,28 +1423,28 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="listeElement">La liste contenant les éléments à stocker dans le fichier de paramétrage.</param>
         /// <param name="chemin">Le chemin d'accès au sein du fichier de paramétrage où il faut ajouter les éléments.</param>
-        /*       public static void XML_WriteElement(List<string> listeElement, string chemin)
-               {
-                   if (chemin.Length == 0) { return; }
-                   string pathElement = EspaceCollaboratifHelper.XML_Prefixe(chemin);
+        public static void XML_WriteElement(List<string> listeElement, string chemin)
+        {
+            if (chemin.Length == 0) { return; }
+            string pathElement = EspaceCollaboratifHelper.XML_Prefixe(chemin);
 
-                   if (EspaceCollaboratifHelper.XML_HasElement(pathElement))
-                   {
-                       EspaceCollaboratifHelper.XML_ClearElements(pathElement);
-                   }
-                   else
-                   {
-                       EspaceCollaboratifHelper.XML_AddElement(pathElement);
-                   }
+            if (EspaceCollaboratifHelper.XML_HasElement(pathElement))
+            {
+                EspaceCollaboratifHelper.XML_ClearElements(pathElement);
+            }
+            else
+            {
+                EspaceCollaboratifHelper.XML_AddElement(pathElement);
+            }
 
-                   foreach (string element in listeElement)
-                   {
-                       EspaceCollaboratifHelper.XML_InsertElement(pathElement,
-                                                             EspaceCollaboratifHelper.XML_Suffixe(chemin),
-                                                             element);
-                   }
-               }        
-       */
+            foreach (string element in listeElement)
+            {
+                EspaceCollaboratifHelper.XML_InsertElement(pathElement,
+                                                        EspaceCollaboratifHelper.XML_Suffixe(chemin),
+                                                        element);
+            }
+        }        
+       
 
         /// <summary>
         /// Renvoie la liste des thèmes préférés contenus à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
@@ -1455,27 +1459,27 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde les thèmes préférés dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
-        /*        public static void Save_PreferedThemes(List<String> preferedThemes)
-                {
-                    EspaceCollaboratifHelper.XML_WriteElement(preferedThemes, EspaceCollaboratifHelper.xml_Themes);
-                }
-        */
+        public static void Save_PreferedThemes(List<String> preferedThemes)
+        {
+            EspaceCollaboratifHelper.XML_WriteElement(preferedThemes, EspaceCollaboratifHelper.xml_Themes);
+        }
+        
         /// <summary>
         /// Sauvegarde les thèmes préférés dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
-        /*        public static void Save_PreferedThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
-                {
-                    List<String> ListThemes = new List<string>();
+        public static void Save_PreferedThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
+        {
+            List<String> ListThemes = new List<string>();
 
-                    foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
-                    {
-                        ListThemes.Add(theme.Groupe.Nom);
-                    }
+            foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
+            {
+                ListThemes.Add(theme.Groupe.Nom);
+            }
 
-                    EspaceCollaboratifHelper.Save_PreferedThemes(ListThemes);
-                }
-        */
+            EspaceCollaboratifHelper.Save_PreferedThemes(ListThemes);
+        }
+        
 
         /// <summary>
         /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
@@ -1721,6 +1725,46 @@ namespace ArcGisProEspaceCollaboratif
             EspaceCollaboratifHelper.Save_AfficherCroquis(true);
         }
 
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le proxy dans le cas d'une connexion partenariale extérieure au service EspaceCollaboratif.
+        /// </summary>
+        /// <param name="proxy">L e nom du proxy à enregistrer dans le fichier de paramétrage.</param>
+        public static void Save_Proxy(string proxy)
+        {
+            if (!XML_HasElement(xml_Proxy))
+            {
+                XML_AddElement(xml_Proxy);
+            }
+            XML_SetElement(xml_Proxy, proxy);
+        }
+
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la clé Géoportail de l'utilisateur.
+        /// </summary>
+        /// <param name="cle">La clé Géoportail à enregistrer dans le fichier de paramétrage.</param>
+        public static void Save_CleGeoportail(string cle)
+        {
+            if (!XML_HasElement(xml_CleGeoPortail))
+            {
+                XML_AddElement(xml_CleGeoPortail);
+            }
+
+            XML_SetElement(xml_CleGeoPortail, cle);
+        }
+
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du groupe actif de l'utilisateur du service EspaceCollaboratif.
+        /// </summary>
+        /// <param name="groupeActif">Le nom du groupe actif de l'utilisateur du service EspaceCollaboratif à enregistrer dans le fichier de paramétrage.</param>
+        public static void Save_GroupeActif(string groupeActif)
+        {
+            if (!XML_HasElement(xml_GroupeActif))
+            {
+                XML_AddElement(xml_GroupeActif);
+            }
+
+            XML_SetElement(xml_GroupeActif, groupeActif);
+        }
 
         /// <summary>
         /// Renvoie depuis le fichier XML de paramétrage, la liste des calques et de leurs champs qu'il faut mettre en attribut dans la génération des croquis EspaceCollaboratif.

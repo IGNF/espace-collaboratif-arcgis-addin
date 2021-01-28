@@ -5,20 +5,20 @@ using System.Windows.Forms;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    public partial class FormCreerSignalement : Form
+    public partial class FormCreateReport : Form
     {
 
         public List<String> listePJ = new List<String>(); // Liste des fichiers en pièce-jointe
         public int maxSizePJ; // Taille maximalle des fichiers en pièce-jointe
         public List<ArcGisProEspaceCollaboratif.Core.Theme> listeTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>(); // Liste de thèmes sélectionnables.
 
-        public FormCreerSignalement()
+        public FormCreateReport()
         {
             InitializeComponent();
             listePJ = new List<String>();          
             this.toolTip.SetToolTip(this.checkedListBoxThemes, "Sélectionnez les thèmes auxquels vous souhaitez associer le nouveau signalement.");
             this.toolTip.SetToolTip(this.richTextBoxMessage, "Rédigez ici le message pour le nouveau signalement.");
-            this.toolTip.SetToolTip(this.buttonCreer, "Créer le nouveau signalement.\n Nécéssite au moins qu'un thème soit associé et qu'un message ait été rédigé.");
+            this.toolTip.SetToolTip(this.buttonCreer, "Créer le nouveau signalement.\n Nécessite au moins qu'un thème soit associé et qu'un message ait été rédigé.");
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>La liste des thèmes à affecter au nouveau signalement.</returns>
         public List<ArcGisProEspaceCollaboratif.Core.Theme> GetSelectedThemes()
         {
-            /*            List<ArcGisProEspaceCollaboratif.Core.Theme> selectedTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>();  
+                        List<ArcGisProEspaceCollaboratif.Core.Theme> selectedTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>();  
 
                         for (int i = 0; i < this.checkedListBoxThemes.Items.Count; i++)
                         {
@@ -206,7 +206,7 @@ namespace ArcGisProEspaceCollaboratif
                         }
 
                         EspaceCollaboratifHelper.Save_PreferedThemes(selectedTheme);
-                        return selectedTheme;*/
+                        return selectedTheme;
             return null;
         }
 
