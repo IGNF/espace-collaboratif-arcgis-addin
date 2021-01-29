@@ -22,6 +22,7 @@ using log4net;
 using ArcGisProEspaceCollaboratif.Core;
 using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Editing;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -366,33 +367,31 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         // Vide les calques de l'espace collaboratif de tous leurs contenus.
         /// </summary>
-        /*       public void EffacerCompletCalquesRipart()
-               {
-                   this.CreateOrLoadEspaceCollaboratifLayer();
-                   foreach (IFeatureLayer calqueRipart in this.calquesRipart)
-                   {
-                       IQueryFilter queryFilter = new QueryFilter();
-                       ITable table = (ITable)calqueEspaceCollaboratif;
-                       try
-                       {
-                           if (table != null)
-                           {
+        public async Task<bool> EmptyCollaborativeSpaceLayers()
+        {
+            try
+            {
+                return await QueuedTask.Run(() =>
+                {
+                    //this.CreateOrLoadEspaceCollaboratifLayer();
+                    foreach (FeatureLayer layer in this.calquesEspaceCollaboratif)
+                    {
+                        FeatureClass fcCollabSpace = layer.GetFeatureClass();
+                        var result = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
+                    }
 
-                               if (table.RowCount(queryFilter) != 0)
-                               {
-                                   table.DeleteSearchedRows(queryFilter);
-                                   this.ActiveView.Refresh();
-                               }
-                           }
-                       }
-                       catch (Exception e)
-                       {
-                           logger.Error(e.Message + "\n" + e.StackTrace);
-                       }
-                   }
-               }
+                    return true;
+                });
 
-       */
+            }
+            catch (Exception e)
+            {
+                logger.Error(e.Message + "\n" + e.StackTrace);
+                return false;
+            }
+
+        }
+
         /// <summary>
         // Efface de la carte en cours la remarque (et ses croquis associés s'ils existent) donnée par son identifiant.
         /// </summary>
@@ -425,120 +424,165 @@ namespace ArcGisProEspaceCollaboratif
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
-        public void CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement newReport)
+        public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement newReport)
         {
             try
             {
-                FeatureLayer featureLayer = this.calquesEspaceCollaboratif.First() as FeatureLayer;
-                FeatureClass featureClass = featureLayer.GetFeatureClass();
-                QueuedTask.Run(() =>
+                return await QueuedTask.Run(() =>
                 {
-                    Dictionary<string, string> dico = new Dictionary<string, string>
+
+                    FeatureLayer reportLayer = this.GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Signalement) as FeatureLayer;
+                    FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
+
+                    EditOperation editOperation = new EditOperation();
+                    editOperation.Callback(context =>
                     {
-                        { EspaceCollaboratifHelper.nom_Champ_IdRemarque, newReport.Id.ToString() },
-                        { EspaceCollaboratifHelper.nom_Champ_Auteur, newReport.Auteur.Nom },
-                        { EspaceCollaboratifHelper.nom_Champ_Departement, newReport.Departement.Nom },
-                        { EspaceCollaboratifHelper.nom_Champ_IDDepartement, newReport.Departement.Id},
-                        { EspaceCollaboratifHelper.nom_Champ_Commune, newReport.Commune },
-                        { EspaceCollaboratifHelper.nom_Champ_DateCreation, newReport.DateCreation.ToString() },
-                        { EspaceCollaboratifHelper.nom_Champ_DateMAJ, newReport.DateMiseAJour.ToString() },
-                        { EspaceCollaboratifHelper.nom_Champ_DateValidation, newReport.DateValidation.ToString() },
-                        { EspaceCollaboratifHelper.nom_Champ_Statut, newReport.Statut.ToString() },
-                        { EspaceCollaboratifHelper.nom_Champ_Themes, newReport.ConcatenateThemes()},
-                        { EspaceCollaboratifHelper.nom_Champ_Url, newReport.Lien},
-                        { EspaceCollaboratifHelper.nom_Champ_UrlPrive, newReport.LienPrive},
-                        { EspaceCollaboratifHelper.nom_Champ_Document, newReport.GetFirstDocument() },
-                        { EspaceCollaboratifHelper.nom_Champ_Message, EspaceCollaboratifHelper.Limite(newReport.Commentaire)},
-                        { EspaceCollaboratifHelper.nom_Champ_Reponse, EspaceCollaboratifHelper.Limite(newReport.ConcatenateReponse())},
-                        { EspaceCollaboratifHelper.nom_Champ_Autorisation, newReport.Autorisation }
-                    };
-                    RowBuffer rowBuffer = EspaceCollaboratifHelper.UpdateReportFields(dico);
-                    Feature featureSignalement = featureClass.CreateRow(rowBuffer);
+                        RowBuffer rowBuffer = null;
+                        Feature featureSignalement = null;
 
-                    // Placement géographique du point d'application de la remarque Ripart
-                    featureSignalement.SetShape(EspaceCollaboratifHelper.TransformPoint(newReport.Position));
-
-                    featureSignalement.Store();
-                });
-
-                //  Traitement du ou des croquis associé(s) au signalement     
-                if (!newReport.IsCroquisEmpty())
-                {
-                    foreach (ArcGisProEspaceCollaboratif.Core.Sketch oneSketch in newReport.Sketch)
-                    {
-                        if (oneSketch.Points.Count == 0)
+                        try
                         {
-                            //   this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
-                            continue;
-                        }
-                        else
-                        {
-                            QueuedTask.Run(() =>
+                            FeatureClassDefinition reportFcDefinition = reportFeatureClass.GetDefinition();
+
+                            rowBuffer = reportFeatureClass.CreateRowBuffer();
+
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IdRemarque] = newReport.Id;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Auteur] = newReport.Auteur.Nom;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Commune] = newReport.Commune;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Departement] = newReport.Departement.Nom;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IDDepartement] = newReport.Departement.Id;                           
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateCreation] = newReport.DateCreation;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateMAJ] = newReport.DateMiseAJour;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateValidation] = newReport.DateValidation;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Statut] = newReport.Statut;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Themes] = newReport.ConcatenateThemes();
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Url] = newReport.Lien;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_UrlPrive] = newReport.LienPrive;
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Document] = newReport.GetFirstDocument();
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Message] = EspaceCollaboratifHelper.Limite(newReport.Commentaire);
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Reponse] = EspaceCollaboratifHelper.Limite(newReport.ConcatenateReponse());
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Autorisation] = newReport.Autorisation;
+
+
+                            featureSignalement = reportFeatureClass.CreateRow(rowBuffer);
+                            featureSignalement.SetShape(EspaceCollaboratifHelper.TransformPoint(newReport.Position));
+
+                            featureSignalement.Store();
+
+                            //To Indicate that the attribute table has to be updated
+                            context.Invalidate(featureSignalement);
+
+
+                            //TO-DO Récupérer les croquis
+/*
+                            //  Traitement du ou des croquis associé(s) au signalement     
+                            if (!newReport.IsCroquisEmpty())
                             {
-                                // on cast le featureLayer en fonction du type du croquis pour utiliser le bon calque associé
-                                FeatureLayer featureLayerCroquis = this.calquesEspaceCollaboratif[(int)oneSketch.Type] as FeatureLayer;
-                                FeatureClass featureClassCroquis = featureLayerCroquis.GetFeatureClass();
-                                QueuedTask.Run(() =>
+                                foreach (ArcGisProEspaceCollaboratif.Core.Sketch oneSketch in newReport.Sketch)
                                 {
-                                    String attributs = "";
-                                    foreach (ArcGisProEspaceCollaboratif.Core.Attribut attribut in oneSketch.Attributs)
+                                    if (oneSketch.Points.Count == 0)
                                     {
-                                        attributs += attribut.Nom + " = '" + attribut.Valeur + "' | ";
+                                        //   this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
+                                        continue;
                                     }
-
-                                    if (oneSketch.Attributs.Count != 0)
+                                    else
                                     {
-                                        attributs = attributs.Substring(0, attributs.Length - 3);
-                                    }
+                                        QueuedTask.Run(() =>
+                                        {
+                                        // on cast le featureLayer en fonction du type du croquis pour utiliser le bon calque associé
+                                        FeatureLayer featureLayerCroquis = this.calquesEspaceCollaboratif[(int)oneSketch.Type] as FeatureLayer;
+                                        FeatureClass featureClassCroquis = featureLayerCroquis.GetFeatureClass();
+                                        QueuedTask.Run(() =>
+                                        {
+                                            String attributs = "";
+                                            foreach (ArcGisProEspaceCollaboratif.Core.Attribut attribut in oneSketch.Attributs)
+                                            {
+                                                attributs += attribut.Nom + " = '" + attribut.Valeur + "' | ";
+                                            }
 
-                                    Dictionary<string, string> dico = new Dictionary<string, string>
-                                    {
-                                        { EspaceCollaboratifHelper.nom_Champ_LienRemarque, newReport.Id.ToString() },
-                                        { EspaceCollaboratifHelper.nom_Champ_NomCroquis, oneSketch.Nom },
-                                        { EspaceCollaboratifHelper.nom_Champ_Attributs, EspaceCollaboratifHelper.Limite(attributs) }
-                                    };
-                                    RowBuffer rowBuffer = EspaceCollaboratifHelper.UpdateReportFields(dico);
-                                    Feature featureCroquis = featureClassCroquis.CreateRow(rowBuffer);
+                                            if (oneSketch.Attributs.Count != 0)
+                                            {
+                                                attributs = attributs.Substring(0, attributs.Length - 3);
+                                            }
 
-                                    //Polyline polylineCroquis = new Polyline() as Polyline;
-                                    //Polygon polygonCroquis = new Polygon() as Polygon;
-                                    ArcGIS.Core.Geometry.MapPoint pointCroquis = EspaceCollaboratifHelper.TransformPoint(oneSketch.Points.First());
-                                    // Construction géométrique du croquis en fonction de son type et à partir du vecteur de vertex du croquis.
-                                    switch (oneSketch.Type)
-                                    {
-                                        default:
-                                            break;
+                                            Dictionary<string, string> dico = new Dictionary<string, string>
+                                                            {
+                                                            { EspaceCollaboratifHelper.nom_Champ_LienRemarque, newReport.Id.ToString() },
+                                                            { EspaceCollaboratifHelper.nom_Champ_NomCroquis, oneSketch.Nom },
+                                                            { EspaceCollaboratifHelper.nom_Champ_Attributs, EspaceCollaboratifHelper.Limite(attributs) }
+                                                            };
+                                            RowBuffer rowBuffer = EspaceCollaboratifHelper.UpdateReportFields(dico);
+                                            Feature featureCroquis = featureClassCroquis.CreateRow(rowBuffer);
 
-                                        case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point:
-                                            featureCroquis.SetShape(pointCroquis);
-                                            break;
+                                            //Polyline polylineCroquis = new Polyline() as Polyline;
+                                            //Polygon polygonCroquis = new Polygon() as Polygon;
+                                            ArcGIS.Core.Geometry.MapPoint pointCroquis = EspaceCollaboratifHelper.TransformPoint(oneSketch.Points.First());
+                                            // Construction géométrique du croquis en fonction de son type et à partir du vecteur de vertex du croquis.
+                                            switch (oneSketch.Type)
+                                            {
+                                                default:
+                                                    break;
 
-                                            /*case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne:
-                                                featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
-                                                break;
+                                                case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point:
+                                                    featureCroquis.SetShape(pointCroquis);
+                                                    break;
+*/
+                                                    /*case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne:
+                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
+                                                        break;
 
-                                            case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone:
-                                                featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
-                                                break;
+                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone:
+                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
+                                                        break;
 
-                                            case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Fleche:
-                                                featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
-                                                break;
+                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Fleche:
+                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
+                                                        break;
 
-                                            case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte:
-                                                featureCroquis.Shape = pointCroquis;
-                                                break;*/
-                                    }
-                                    featureCroquis.Store();
-                                });
-                            });
+                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte:
+                                                        featureCroquis.Shape = pointCroquis;
+                                                        break;*/
+                                                    /*                                        }
+                                                                                            featureCroquis.Store();
+                                                                                        });
+                                                                                    });
+                                                                                }
+                                                                            }
+                                                                        }*/
+
+
+
+
+
+
+                                            }
+                        catch (GeodatabaseException exObj)
+                        {
+                            Console.WriteLine(exObj);
                         }
-                    }
-                }
+                        finally
+                        {
+                            if (rowBuffer != null)
+                                rowBuffer.Dispose();
+
+                            if (featureSignalement != null)
+                                featureSignalement.Dispose();
+                        }
+                    }, reportFeatureClass);
+
+                    bool editResult = editOperation.Execute();
+
+                    // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
+                    Project.Current.SaveEditsAsync();
+
+                    return true;
+                });
             }
+
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.ToString());
+                return false;
             }
         }
 
