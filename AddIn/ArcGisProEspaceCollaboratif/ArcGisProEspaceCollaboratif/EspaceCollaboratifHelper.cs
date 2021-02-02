@@ -18,6 +18,7 @@ using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Windows.Forms;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Core.CIM;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -83,6 +84,37 @@ namespace ArcGisProEspaceCollaboratif
         private readonly ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(EspaceCollaboratifHelper));
 
+        // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
+        public static Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        {
+            { nom_Champ_IdRemarque,     new KeyValuePair<string,string> ("LONG","")      },
+            { nom_Champ_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
+            { nom_Champ_Commune,        new KeyValuePair<string,string> ("TEXT", "")     },
+            { nom_Champ_Departement,    new KeyValuePair<string,string> ("TEXT", "23")   },
+            { nom_Champ_IDDepartement,  new KeyValuePair<string,string> ("TEXT", "3")    },
+            { nom_Champ_DateCreation,   new KeyValuePair<string,string> ("DATE", "")     },
+            { nom_Champ_DateMAJ,        new KeyValuePair<string,string> ("DATE", "")     },
+            { nom_Champ_DateValidation, new KeyValuePair<string,string> ("DATE", "")     },
+            { nom_Champ_Themes,         new KeyValuePair<string,string> ("TEXT", "")     },
+            { nom_Champ_Statut,         new KeyValuePair<string,string> ("LONG", "")     },
+            { nom_Champ_Message,        new KeyValuePair<string,string> ("TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()) },
+            { nom_Champ_Reponse,        new KeyValuePair<string,string> ("TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()) },
+            { nom_Champ_Url,            new KeyValuePair<string,string> ("TEXT", "")     },
+            { nom_Champ_UrlPrive,       new KeyValuePair<string,string> ("TEXT", "")     },
+            { nom_Champ_Document,       new KeyValuePair<string,string> ("TEXT", "")     },
+            { nom_Champ_Autorisation,   new KeyValuePair<string,string> ("TEXT", "")     }
+
+        };
+
+        // Dictionnaire des attributs des couches croquis (avec types et contraintes)
+        public static Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        {
+            { nom_Champ_LienRemarque, new KeyValuePair<string,string> ("LONG", "") },
+            { nom_Champ_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
+            { nom_Champ_Attributs, new KeyValuePair<string, string>("TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()) },
+            { nom_Champ_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
+        };
+
         /// <summary>
         /// Teste si la remarque donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
         /// </summary>    
@@ -114,64 +146,76 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static async Task<bool> CreerCalqueSignalementEspaceCollaboratif()
+        public static async Task<bool> LoadOrCreateCollaborativeSpaceLayer(string fcName, string fcType, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition, string symbolName = "")
         {
             try
             {
                 await QueuedTask.Run(() =>
                 {
-                    string fcReportName = EspaceCollaboratifHelper.nom_Calque_Signalement;
-                    List<object> arguments = new List<object>
+
+                    Contexte contexte = Contexte.Instance;
+                    
+                    // On vérifie si la feature class existe déjà dans la geodatabase du projet
+                    string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
+                    FeatureLayer collabSpaceLayer;
+
+                    Uri gdbUri = new Uri(uriString: gdbPath);
+                    Geodatabase gdbCollaborativeSpace = new Geodatabase(new FileGeodatabaseConnectionPath(gdbUri));
+
+                    bool bFcExists = ExistsFcInGdb(fcName, gdbCollaborativeSpace);
+
+                    // Si la feature class existe et est déjà chargée dans la carte, on sort
+                    if (bFcExists && Contexte.Instance.IsLayerInMap(fcName))
+                        return;
+
+                    // Si la feature class n'existe pas dans la geodatabase du projet, on la crée
+                    if (!bFcExists)
                     {
-                        //Contexte.Instance.gdbSignalement.GetPath().ToString(), // store the results in the default geodatabase                   
-                        CoreModule.CurrentProject.DefaultGeodatabasePath,
-                        fcReportName, // name of the feature class                    
-                        "POINT", // type of geometry                    
-                        "", // no template                    
-                        "DISABLED", // no z values                    
-                        "DISABLED" // no m values
-                    };
 
+                        List<object> arguments = new List<object>
+                        {
+                            gdbPath, // Chemin de la geodatabase
+                            fcName, // Nom de la feature class à créer                   
+                            fcType, // type de géométrie                    
+                            "", // no template                    
+                            "DISABLED", // no z values                    
+                            "DISABLED" // no m values
+                        };
 
-                    // spatial reference
-                    arguments.Add(Contexte.Instance.spatialReferenceEspaceCollaboratif);
+                        // Ajout de la référence spatiale
+                        arguments.Add(contexte.spatialReferenceEspaceCollaboratif);
 
-                    var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
+                        // Création de la feature class
+                        var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
 
-                    // Ajout des champs à la nouvelle feature class des signalements
-                    string fcReportPath = CoreModule.CurrentProject.DefaultGeodatabasePath + "\\" + fcReportName;
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_IdRemarque, "LONG"));
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Auteur, "TEXT", "50"));
-                    // Ajoute le champ: nom de la commune où est située la remarque
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Commune, "TEXT"));
-                    // Ajoute le champ: nom du département où est située la remarque
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Departement, "TEXT", "23"));
-                    // Ajoute le champ: indicatif département où est située la remarque
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_IDDepartement, "TEXT", "3"));
-                    // Ajoute le champ: date de création
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_DateCreation, "DATE"));
-                    // Ajoute le champ: date de mise à jour
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_DateMAJ, "DATE"));
-                    // Ajoute le champ: date de validation
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_DateValidation, "DATE"));
-                    // Ajoute le champ: thèmes
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Themes, "TEXT"));
-                    // Ajoute le champ: statut
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Statut, "LONG"));
-                    // Ajoute le champ: message            
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Message, "TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()));
-                    // Ajoute le champ: réponse
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Reponse, "TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()));
-                    // Ajoute le champ: lien public.
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Url, "TEXT"));
-                    // Ajoute le champ: lien privé.
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_UrlPrive, "TEXT"));
-                    // Ajoute le champ: document.
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Document, "TEXT"));
-                    // Ajoute le champ: autorisation
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcReportPath, nom_Champ_Autorisation, "TEXT"));
+                        // Ajout des champs à la nouvelle feature class
+                        string fcPath = CoreModule.CurrentProject.DefaultGeodatabasePath + "\\" + fcName;
+                        AddFieldsToFc(fcPath, fcAttributesDict);
 
+                        // La nouvelle feature class est chargée automatiquement dans la carte.
+                        // On récupère le FeatureLayer correspondant.
+                        collabSpaceLayer = contexte.GetLayerByName(fcName);
+                    }
 
+                    // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
+                    else
+                    {
+                        // Ouverture de la feature class
+                        FeatureClass collabSpaceFc = gdbCollaborativeSpace.OpenDataset<FeatureClass>(fcName);
+
+                        // Ajout en tant que FeatureLayer à la carte
+                        collabSpaceLayer = LayerFactory.Instance.CreateFeatureLayer(
+                            collabSpaceFc,
+                            contexte.mapActiveView.Map,
+                            layerPosition,
+                            fcName
+                        );
+                    }
+
+                    // Application d'une symbologie - Ne traite actuellement que les signalements
+                    if (symbolName != "")
+                        SetLayerStyle(collabSpaceLayer, symbolName);
+                    
                 });
                 return true;
             }
@@ -183,119 +227,56 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
+
+
         /// <summary>
-        /// Définit toutes les caractéristiques pour le futur calque devant contenir un type géométrique donné de croquis EspaceCollaboratif.
+        /// Ajoute les champs indiqués dans le dictionnaire à la feature class en entrée.
         /// </summary>
-        /// <param name="nomCoucheCroquis">Le nom du calque à créer.</param>
-        /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
-        /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
-        /// <param name="type_CoucheCroquis">Le type géométrique du calque nouvellement créé.</param>
-        /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static async Task<bool> CreerCalqueCroquisEspaceCollaboratif(String nomCoucheCroquis, string type_CoucheCroquis)
+        /// <param name="fcPath">Chemin de la feature class dans laquelle les champs doivent être ajoutés.</param>
+        /// <param name="fcAttributesDict">Dictionnaire contenant le nom, le type et la longueur éventuelle des champs à traiter.</param>
+        /// <returns></returns>
+        public static void AddFieldsToFc(string fcPath, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict)
         {
-            try
+            foreach (KeyValuePair<string, KeyValuePair<string, string>> kvp in fcAttributesDict)
             {
-                await QueuedTask.Run(() =>
-                {
-                    List<object> arguments = new List<object>
-                    {
-                        //Contexte.Instance.gdbSignalement.GetPath().ToString(), // store the results in the default geodatabase                   
-                        CoreModule.CurrentProject.DefaultGeodatabasePath,
-                        nomCoucheCroquis, // name of the feature class                    
-                        type_CoucheCroquis, // type of geometry                    
-                        "", // no template                    
-                        "DISABLED", // no z values                    
-                        "DISABLED" // no m values
-                      };
+                string fieldName = kvp.Key;
+                string fieldType = kvp.Value.Key;
+                string fieldLength = kvp.Value.Value;
 
-
-                    // spatial reference
-                    arguments.Add(Contexte.Instance.spatialReferenceEspaceCollaboratif);
-
-                    var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
-
-                    string fcName = CoreModule.CurrentProject.DefaultGeodatabasePath + "\\" + nomCoucheCroquis;
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_LienRemarque, "LONG"));
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_NomCroquis, "TEXT"));
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_Attributs, "TEXT", EspaceCollaboratifHelper.longueurMaxChamp.ToString()));
-                    Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcName, nom_Champ_LienBDuni, "TEXT"));
-
-                });
-                return true;
+                Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcPath, fieldName, fieldType, fieldLength));
             }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                return false;
-            }
-
-            // Instantiate a feature class description to get the required fields.
-            /*
-                        FeatureClassDescription fcDescription_CoucheCroquis = new FeatureClassDescription() as FeatureClassDescription;
-                        IObjectClassDescription ocDescription_CoucheCroquis = (IObjectClassDescription)fcDescription_CoucheCroquis;
-                        IFields fields_CoucheCroquis = ocDescription_CoucheCroquis.RequiredFields;
-                        IFieldsEdit fieldsEdit_CoucheCroquis = (IFieldsEdit)fields_CoucheCroquis;
-
-                        // -- on CompleteChampRipart la définition de la géométrie
-                        {
-
-                            int shapeFieldIndex = fields_CoucheCroquis.FindField(fcDescription_CoucheCroquis.ShapeFieldName);
-                            IField shapeField_CoucheCroquis = fields_CoucheCroquis.get_Field(shapeFieldIndex);
-
-                            IGeometryDef geometryDef_CoucheCroquis = shapeField_CoucheCroquis.GeometryDef;
-                            IGeometryDefEdit geometryDefEdit_CoucheCroquis = (IGeometryDefEdit)geometryDef_CoucheCroquis;
-                            geometryDefEdit_CoucheCroquis.GeometryType_2 = type_CoucheCroquis;
-
-                            SpatialReference spatialReference_CoucheCroquis = spatialReferenceCalque;
-
-                            ISpatialReferenceResolution spatialReferenceResolution_CoucheCroquis = (ISpatialReferenceResolution)spatialReference_CoucheCroquis;
-                            spatialReferenceResolution_CoucheCroquis.ConstructFromHorizon();
-                            spatialReferenceResolution_CoucheCroquis.SetDefaultXYResolution();
-                            ISpatialReferenceTolerance spatialReferenceTolerance_CoucheCroquis = (ISpatialReferenceTolerance)spatialReference_CoucheCroquis;
-                            spatialReferenceTolerance_CoucheCroquis.SetDefaultXYTolerance();
-                            geometryDefEdit_CoucheCroquis.SpatialReference_2 = spatialReference_CoucheCroquis;
-
-                        } // -- fin def géométrie
-
-
-                        // Ajoute le champ: Lien_remarque
-                        fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienRemarque, FieldType.Integer));
-                        fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_NomCroquis, FieldType.String));
-                        fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_Attributs, FieldType.String, EspaceCollaboratifHelper.longueurMaxChamp));
-                        fieldsEdit_CoucheCroquis.AddField(DefinirChamp(nom_Champ_LienBDuni, FieldType.String));
-
-
-
-
-                        // Use IFieldChecker to create a validated fields collection.
-                        IFieldChecker fieldChecker_CoucheCroquis = new FieldChecker();
-                        IEnumFieldError enumFieldError_CoucheCroquis = null;
-                        IFields validatedFields_CoucheCroquis = null;
-                        fieldChecker_CoucheCroquis.ValidateWorkspace = (IWorkspace)workspaceTemp;
-                        fieldChecker_CoucheCroquis.Validate(fields_CoucheCroquis, out enumFieldError_CoucheCroquis, out validatedFields_CoucheCroquis);
-
-                        //   this.debugForm.WriteLine("fcDescription.ShapeFieldName : " + fcDescription.ShapeFieldName);
-                        IFeatureClass featureClass_Croquis = workspaceTemp.CreateFeatureClass(
-                            nomCoucheCroquis, //featureClassName
-                            validatedFields_CoucheCroquis, // validatedFields
-                            ocDescription_CoucheCroquis.InstanceCLSID, // ocDescription.InstanceCLSID
-                            ocDescription_CoucheCroquis.ClassExtensionCLSID, // ocDescription.ClassExtensionCLSID
-                            esriFeatureType.esriFTSimple,
-                            fcDescription_CoucheCroquis.ShapeFieldName, // fcDescription.ShapeFieldName Attention, c'est dangereux!
-                            "" //configKeyword
-                        );
-
-                        IFeatureLayer featureLayer_Croquis = new FeatureLayer
-                        {
-                            FeatureClass = featureClass_Croquis,
-                            Name = featureClass_Croquis.AliasName
-                        };
-
-                        return featureLayer_Croquis;
-            */
         }
 
+
+        /// <summary>
+        /// Applique un symbole à une couche ponctuelle.
+        /// </summary>
+        /// <param name="fcLayer">FeatureLayer à laquelle le symbole doit être appliqué.</param>
+        /// <param name="symbolName">Nom du symbole à appliquer.</param>
+        /// <returns></returns>
+        public static void SetLayerStyle(FeatureLayer fcLayer, string symbolName)
+        {
+            // Get all styles in the project
+            var styles = Project.Current.GetItems<StyleProjectItem>();
+
+            // Get a specific style in the project
+            StyleProjectItem style = styles.First(s => s.Name == "ArcGIS 2D");
+
+            // Get the Push Pin 1 symbol
+            var pt_ssi = style.SearchSymbols(StyleItemType.PointSymbol, symbolName).FirstOrDefault();
+
+            // Create a new renderer definition and reference the symbol
+            SimpleRendererDefinition srDef = new SimpleRendererDefinition();
+            srDef.SymbolTemplate = pt_ssi.Symbol.MakeSymbolReference();
+
+            // Create the renderer and apply the definition
+            CIMSimpleRenderer ssRenderer = (CIMSimpleRenderer)fcLayer.CreateRenderer(srDef);
+
+            // Update the feature layer renderer
+            fcLayer.SetRenderer(ssRenderer);
+        }
+
+ 
 
         /// <summary>
         /// Crée un nouveau champ aux caractéristiques souhaitées.
@@ -322,6 +303,30 @@ namespace ArcGisProEspaceCollaboratif
         */
 
         /// <summary>
+        /// Vérifie si une feature class existe dans une geodatabase.
+        /// </summary>
+        /// <param name="fcName"> Nom de la feature class à chercher.
+        /// <param name="gdbPath"> Chemin de la geodatabase.
+        /// <returns>Vrai si la feature class existe dans la geodatabase, Faux sinon.</returns>
+        public static bool ExistsFcInGdb(string fcName, Geodatabase gdbCollaborativeSpace)
+        {
+
+            IReadOnlyList<FeatureClassDefinition> fcdList = gdbCollaborativeSpace.GetDefinitions<FeatureClassDefinition>();
+
+            bool bExists = false;
+            foreach (FeatureClassDefinition fcd in fcdList)
+            {
+                if (fcd.GetName() == fcName)
+                {
+                    bExists = true;
+                    break;
+                }
+            }
+            return bExists;
+        }
+
+
+        /// <summary>
         /// Limite la longueur d'une string pour ne pas dépasser la taille maximale que ne peut contenir les attributs d'un calque.
         /// La taille maximale est défini par la constante EspaceCollaboratifHelper.longueurMaxChamp.
         /// </summary>
@@ -345,17 +350,18 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="uneGeometrie">Une Geometry de départ pour définir la nature géométrique de la IGeometry en sortie.</param>
         /// <param name="unCroquis">Le croquis à transformer en IGeometry équivalent.</param>
         /// <returns>Une Geometry équivalente au croquis en entrée.</returns>
-        /*public static Geometry GeometryFromCroquis(Geometry uneGeometrie, ArcGisProEspaceCollaboratif.Core.Croquis unCroquis)
+        public static List<MapPoint> GetPointCollectionFromSketch(Sketch currSketch)
         {
-            IPointCollection pointCollection = null;
-            pointCollection = uneGeometrie as IPointCollection;
+            List<MapPoint> pointCollection = new List<MapPoint>();
 
-            foreach (ArcGisProEspaceCollaboratif.Core.Point unVertexCroquis in unCroquis.Points)
+            foreach (Point sketchVertex in currSketch.Points)
             {
-                pointCollection.AddPoint(EspaceCollaboratifHelper.TransformPoint(unVertexCroquis));
+                pointCollection.Add(EspaceCollaboratifHelper.TransformPoint(sketchVertex));
             }
 
-          */
+            return pointCollection;
+        }
+          
 
         /// <summary>
         /// Remplit un attribut d'un objet Espace collaboratif sur la carte en cours.
@@ -822,7 +828,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             // Si le croquis se résume à un ponctuel
-            if (sketchIn.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point || sketchIn.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Texte)
+            if (sketchIn.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point)
             {
                 return EspaceCollaboratifHelper.TransformPoint(sketchIn.FirstCoord());
             }
@@ -1034,7 +1040,7 @@ namespace ArcGisProEspaceCollaboratif
                             originalValue = originalValue.Substring(0, originalValue.Length - 9);
                         }
                     }
-                    croquis.AddAttribut(field.Name, originalValue);
+                    croquis.AddAttribute(field.Name, originalValue);
                 });
             }
         }
@@ -1048,21 +1054,21 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le <paramref name="croquis"/> complété de l'attribut supplémentaire issu de la paire <paramref name="nom"/> et <paramref name="val"/>.</returns>
         public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Sketch croquis, string nom, string val)
         {
-            croquis.AddAttribut(new ArcGisProEspaceCollaboratif.Core.Attribut(nom, val));
+            croquis.AddAttribute(new ArcGisProEspaceCollaboratif.Core.Attribut(nom, val));
         }
 
         /// <summary>
         /// Génère un croquis pour l'Espace collaboratif à partir d'une géométrie ArcGIS pro.
         /// La géométrie du nouveau croquis est celle issue de la conversion de la géométrie donnée en entrée.
         /// </summary>
-        /// <param name="geometryEnter">La géométrie dont il faut convertir en croquis de l'Espace collaboratif.</param>        
+        /// <param name="geometry">La géométrie qu'il faut convertir en croquis de l'Espace collaboratif.</param>        
         /// <returns>Le croquis de l'Espace collaboratif issu depuis <paramref name="geometryEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(Geometry geometryEnter)
+        public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(Geometry geometry)
         {
             ArcGisProEspaceCollaboratif.Core.Sketch newSketch = new ArcGisProEspaceCollaboratif.Core.Sketch();
 
             // Selon le type géométrique de la géométrie à traiter.
-            switch (geometryEnter.GeometryType)
+            switch (geometry.GeometryType)
             {
                 /*case esriGeometryType.esriGeometryRing:
                     IRing ring = geometryEntree as IRing;
@@ -1085,16 +1091,17 @@ namespace ArcGisProEspaceCollaboratif
 
                 case GeometryType.Point:
                     newSketch.SetType(ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point);
-                    MapPoint point = geometryEnter as MapPoint;
+                    MapPoint point = geometry as MapPoint;
                     newSketch.AddPoint(EspaceCollaboratifHelper.TransformPoint(point));
                     break;
 
-                /*case GeometryType.Polygon:
-                    Polygon polygon = geometryEntree as Polygon;
-                    IPointCollection vertexPolygon = polygon as IPointCollection;
-                    newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexPolygon, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone);
-                    break;*/
-
+/*                case GeometryType.Polygon:
+                    newSketch.SetType(ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygon);
+                    Polygon polygon = geometry as Polygon;
+                    ReadOnlyPointCollection vertexPolygon = geometry as ReadOnlyPointCollection;
+                    newSketch = EspaceCollaboratifHelper.PointCollectionToSketch(vertexPolygon, ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygon);
+                    break;
+*/
                 /*case GeometryType.Polyline:
                     Polyline polyligne = geometryEntree as Polyline;
                     IPointCollection vertexPolyligne = polyligne as IPointCollection;
@@ -1123,8 +1130,7 @@ namespace ArcGisProEspaceCollaboratif
                 case 1:
                     ArcGisProEspaceCollaboratif.Core.Sketch sketchOne = listSketchs.First();
 
-                    if (sketchOne.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point ||
-                        sketchOne.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Texte)
+                    if (sketchOne.Type == ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point)
                     {
                         return sketchOne.FirstCoord();
                     }

@@ -195,19 +195,19 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>La liste des thèmes à affecter au nouveau signalement.</returns>
         public List<ArcGisProEspaceCollaboratif.Core.Theme> GetSelectedThemes()
         {
-                        List<ArcGisProEspaceCollaboratif.Core.Theme> selectedTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>();  
+            List<ArcGisProEspaceCollaboratif.Core.Theme> selectedTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>();  
 
-                        for (int i = 0; i < this.checkedListBoxThemes.Items.Count; i++)
-                        {
-                            if (this.checkedListBoxThemes.GetItemChecked(i))
-                            {
-                                selectedTheme.Add(  this.listeTheme[ i ] );
-                            }
-                        }
+            for (int i = 0; i < this.checkedListBoxThemes.Items.Count; i++)
+            {
+                if (this.checkedListBoxThemes.GetItemChecked(i))
+                {
+                    selectedTheme.Add(  this.listeTheme[ i ] );
+                }
+            }
 
-                        EspaceCollaboratifHelper.Save_PreferedThemes(selectedTheme);
-                        return selectedTheme;
-            return null;
+            EspaceCollaboratifHelper.Save_PreferedThemes(selectedTheme);
+            return selectedTheme;
+
         }
 
         /// <summary>

@@ -492,7 +492,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         Nom = EncodeToUTF8(att.GetAttribute("name", "")),
                         Valeur = EncodeToUTF8(att.InnerXml)
                     };
-                    croquis.AddAttribut(attribut);
+                    croquis.AddAttribute(attribut);
                 }
                   
                 v.MoveToFollowing("geometrie", "");
@@ -542,7 +542,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 croquis.Type = type;
-                croquis.Nom = nomCr;
+                croquis.Name = nomCr;
                 rem.AddCroquis(croquis);
             }
             return it;

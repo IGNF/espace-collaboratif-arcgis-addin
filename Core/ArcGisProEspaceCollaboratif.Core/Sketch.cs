@@ -12,10 +12,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             Vide = 0,
             Point,    /*!< Pour un point du croquis. */
-            Ligne,    /*!< Pour une polyligne du croquis. */
-            Polygone, /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */
-            Texte,    /*!< Pour un un champ texte du croquis. */
-            Fleche    /*!< Pour une flêche du croquis. */
+            Ligne,    /*!< Pour une polyligne du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
+            Polygone, /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
         };
 
         /// <summary>
@@ -26,12 +24,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Nom du croquis
         /// </summary>
-        public String Nom;
+        public String Name;
 
         /// <summary>
         /// La liste des attributs (clé,valeur)
         /// </summary>
-        public List<Attribut> Attributs = new List<Attribut>();
+        public List<Attribut> Attributes = new List<Attribut>();
 
         /// <summary>
         /// La liste des points composant le croquis (coordonnées)
@@ -54,9 +52,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="nom">nom du croquis</param>
         /// <param name="type">type du croquis</param>
-        public Sketch(String nom, SketchType type)
+        public Sketch(String name, SketchType type)
         {
-            this.Nom = nom;
+            this.Name = name;
             this.Type = type;
         }
 
@@ -64,12 +62,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Constructeur initialisant le nom, le type du croquis et la liste de Points définissant
         /// la géométrie
         /// </summary>
-        /// <param name="nom">nom du croquis</param>
+        /// <param name="name">nom du croquis</param>
         /// <param name="type">type du croquis</param>
         /// <param name="points">liste de Point </param>
-        public Sketch(String nom, SketchType type, List<Point> points)
+        public Sketch(String name, SketchType type, List<Point> points)
         {
-            this.Nom = nom;
+            this.Name = name;
             this.Type = type;
             this.Points = points;
         }
@@ -78,15 +76,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Constructeur initialisant le nom, le type du croquis, la liste de Points définissant
         /// la géométrie et les attributs
         /// </summary>
-        /// <param name="nom">nom du croquis</param>
+        /// <param name="name">nom du croquis</param>
         /// <param name="type">type du croquis</param>
         /// <param name="attributs">liste d'Attributs lié au croquis</param>
-        public Sketch(String nom, SketchType type, List<Point> points, List<Attribut> attributs)
+        public Sketch(String name, SketchType type, List<Point> points, List<Attribut> attributes)
         {
-            this.Nom = nom;
+            this.Name = name;
             this.Type = type;
             this.Points = points;
-            this.Attributs = attributs;
+            this.Attributes = attributes;
         }
 
         /// <summary>
@@ -125,19 +123,19 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Ajoute un attribut à la liste des attributs du croquis
         /// </summary>
         /// <param name="attribut">l'objet Attribut</param>
-        public void AddAttribut(Attribut attribut)
+        public void AddAttribute(Attribut attribute)
         {
-            this.Attributs.Add(attribut);
+            this.Attributes.Add(attribute);
         }
 
         /// <summary>
         /// Ajoute un attribut à la liste des attributs du croquis
         /// </summary>
-        /// <param name="cle">nom de l'attribut</param>
-        /// <param name="valeur">valeur de l'attribut</param>
-        public void AddAttribut(String cle, String valeur)
+        /// <param name="key">nom de l'attribut</param>
+        /// <param name="value">valeur de l'attribut</param>
+        public void AddAttribute(String key, String value)
         {
-            this.Attributs.Add(new Attribut(cle, valeur));
+            this.Attributes.Add(new Attribut(key, value));
         }
 
         /// <summary>
@@ -153,7 +151,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public void ClearAttributs()
         {
-            this.Attributs.Clear();
+            this.Attributes.Clear();
         }
 
         /// <summary>
@@ -191,9 +189,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="i">l'index du de l'attribut </param>
         /// <returns>l'objet Attribut</returns>
-        public Attribut GetAttribut(int i)
+        public Attribut GetAttribute(int i)
         {
-            return this.Attributs[i];
+            return this.Attributes[i];
         }
 
 
@@ -233,7 +231,7 @@ namespace ArcGisProEspaceCollaboratif.Core
        
         public bool IsOpenLine()
         {
-            return ((this.Type == SketchType.Fleche || this.Type == SketchType.Ligne) && !(this.IsClosed()));
+            return (this.Type == SketchType.Ligne && !(this.IsClosed()));
         }
 
 
@@ -246,7 +244,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 return false;
             }
            
-            if ( ( this.Type == SketchType.Point || this.Type == SketchType.Texte ) && nPoints != 1 )
+            if (this.Type == SketchType.Point && nPoints != 1 )
             {
                 return false; 
             }
@@ -269,7 +267,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             
             XElement objet= new  XElement("objet", new XAttribute("type", this.Type.ToString()),
-                                       new  XElement("nom", this.Nom) );
+                                       new  XElement("nom", this.Name) );
 
             XElement geom =  new  XElement("geometrie");
 
@@ -281,13 +279,13 @@ namespace ArcGisProEspaceCollaboratif.Core
             coord = coord.Substring(0, coord.Length-1);
 
             switch ( this.Type) {
-                case SketchType.Ligne: case SketchType.Fleche:
+                case SketchType.Ligne: 
                     geom.Add(new XElement(gml +"LineString",
                                 new XElement(gml + "coordinates", coord)
                             ));
                     break;
 
-                case SketchType.Point: case SketchType.Texte:
+                case SketchType.Point: 
                     geom.Add(new XElement(gml + "Point",
                                  new XElement(gml + "coordinates", coord)
                              ));
@@ -310,7 +308,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             //Ajout des attributs
             XElement xattributs=new XElement("attributs"); ;
-            foreach (Attribut att in this.Attributs)
+            foreach (Attribut att in this.Attributes)
             {
                 XElement xattribut = new XElement("attribut");
                 xattribut.Add(new XAttribute("name", att.Nom), att.Valeur);

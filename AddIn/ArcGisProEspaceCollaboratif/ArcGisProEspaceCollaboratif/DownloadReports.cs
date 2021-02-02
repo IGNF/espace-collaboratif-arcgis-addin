@@ -6,6 +6,7 @@ using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework.Contracts;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
@@ -22,172 +23,175 @@ namespace ArcGisProEspaceCollaboratif
         }
 
 
-        protected override void OnClick()
+        protected override async void OnClick()
         {
             StatusBar mess;
             FormProgressDownload attenteChargement = new FormProgressDownload();
 
             try
             {
-                Contexte contexte = Contexte.Instance;
-
-                // Test de la présence du fichier XML de paramétrage
-                if (!System.IO.File.Exists(EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+                await QueuedTask.Run(async() =>
                 {
-                    System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service Ripart.\n\nLe fichier '" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.repertoireTravail + "'", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                    return;
-                }
+                    Contexte contexte = Contexte.Instance;
 
-                DialogResult result1;
-                DialogResult result2;
-                bool courtcircuite = false;
-                string calqueFiltrage = EspaceCollaboratifHelper.Load_CalqueFiltrage();
-                if (calqueFiltrage.Length == 0)
-                {
-                    result1 = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage Ripart, le nom du calque à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-                    if (result1 != DialogResult.Yes)
-                    { return; }
+                    // Test de la présence du fichier XML de paramétrage
+                    if (!System.IO.File.Exists(EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+                    {
+                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service Ripart.\n\nLe fichier '" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.repertoireTravail + "'", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        return;
+                    }
 
-                    courtcircuite = true;
-                }
+                    DialogResult result1;
+                    DialogResult result2;
+                    bool courtcircuite = false;
+                    string calqueFiltrage = EspaceCollaboratifHelper.Load_CalqueFiltrage();
+                    if (calqueFiltrage.Length == 0)
+                    {
+                        result1 = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage Ripart, le nom du calque à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                        if (result1 != DialogResult.Yes)
+                        { return; }
 
-                Layer layerFiltrage = contexte.GetLayerByName(calqueFiltrage);
-/*
-                if (layerFiltrage == null && courtcircuite == false)
-                {
-                    result2 = MessageBox.Show("La carte en cours ne contient pas le calque '" + calqueFiltrage + "' définit pour être le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-                    if (result2 != DialogResult.Yes)
-                    { return; }
+                        courtcircuite = true;
+                    }
 
-                    courtcircuite = true;
-                }
+                    Layer layerFiltrage = contexte.GetLayerByName(calqueFiltrage);
+                    /*
+                                    if (layerFiltrage == null && courtcircuite == false)
+                                    {
+                                        result2 = MessageBox.Show("La carte en cours ne contient pas le calque '" + calqueFiltrage + "' définit pour être le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                                        if (result2 != DialogResult.Yes)
+                                        { return; }
 
-                List<Geometry> geometryFiltreSpatial = contexte.GetGeometryFiltreSpatial(calqueFiltrage);
+                                        courtcircuite = true;
+                                    }
 
-                if (geometryFiltreSpatial.Count == 0 && courtcircuite == false)
-                {
-                    if (MessageBox.Show("Le calque '" + calqueFiltrage + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != DialogResult.Yes)
-                    { return; }
-                }
+                                    List<Geometry> geometryFiltreSpatial = contexte.GetGeometryFiltreSpatial(calqueFiltrage);
 
-
-                ArcGisProEspaceCollaboratif.Core.Box BBoxFiltrageSpatial = contexte.GetBBox(geometryFiltreSpatial);
-*/
-                if (contexte.ripClient == null)
-                {
-                    contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                    if (contexte.ripClient == null) return;
-                }
-/*
-                ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
-                mess = application.StatusBar;
-                mess.set_Message(0, "Requête auprès du service Ripart ...");
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-                attenteChargement.Show();
-                attenteChargement.setText("Téléchargement des remarques depuis le serveur: \n" + contexte.URLHostEspaceCollaboratif);
-
-                contexte.ripClient.setProgressBar(attenteChargement.getProgressBar());
-                attenteChargement.Refresh();
-*/
-                contexte.EmptyCollaborativeSpaceLayers();
-
-                Dictionary<string, string> parameters = new Dictionary<string, string>();
-                int groupeId = -1;
-                if (EspaceCollaboratifHelper.Load_Group() == "true")
-                {
-                    groupeId = Convert.ToInt32(contexte.profil.Geogroupe.Id);
-                    parameters.Add("group", groupeId.ToString());
-                }
+                                    if (geometryFiltreSpatial.Count == 0 && courtcircuite == false)
+                                    {
+                                        if (MessageBox.Show("Le calque '" + calqueFiltrage + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != DialogResult.Yes)
+                                        { return; }
+                                    }
 
 
-/*
-                if (!courtcircuite)
-                {
-                    parameters.Add("box", BBoxFiltrageSpatial.boxToString());
-                }
-*/
-                String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", EspaceCollaboratifHelper.Load_DateExtraction());
-                parameters.Add("updatingDate", sdate);
-                parameters.Add("territory", contexte.profil.Zone.ToString());
+                                    ArcGisProEspaceCollaboratif.Core.Box BBoxFiltrageSpatial = contexte.GetBBox(geometryFiltreSpatial);
+                    */
+                    if (contexte.ripClient == null)
+                    {
+                        contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.ripClient == null) return;
+                    }
+                    /*
+                                    ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
+                                    mess = application.StatusBar;
+                                    mess.set_Message(0, "Requête auprès du service Ripart ...");
+                                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+                                    attenteChargement.Show();
+                                    attenteChargement.setText("Téléchargement des remarques depuis le serveur: \n" + contexte.URLHostEspaceCollaboratif);
 
-                // création de la liste des remarques.  
-                List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques = contexte.ripClient.GetGeoRems(parameters);
+                                    contexte.ripClient.setProgressBar(attenteChargement.getProgressBar());
+                                    attenteChargement.Refresh();
+                    */
+                    contexte.EmptyCollaborativeSpaceLayers();
 
-                attenteChargement.getProgressBar().Maximum = remarques.Count;
-                attenteChargement.getProgressBar().Step = 1;
+                    Dictionary<string, string> parameters = new Dictionary<string, string>();
+                    int groupeId = -1;
+                    if (EspaceCollaboratifHelper.Load_Group() == "true")
+                    {
+                        groupeId = Convert.ToInt32(contexte.profil.Geogroupe.Id);
+                        parameters.Add("group", groupeId.ToString());
+                    }
 
-                // Filtrage spatial affiné des remarques.
-//                if (!BBoxFiltrageSpatial.IsEmpty())
-//                {
+
+                    /*
+                                    if (!courtcircuite)
+                                    {
+                                        parameters.Add("box", BBoxFiltrageSpatial.boxToString());
+                                    }
+                    */
+                    String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", EspaceCollaboratifHelper.Load_DateExtraction());
+                    parameters.Add("updatingDate", sdate);
+                    parameters.Add("territory", contexte.profil.Zone.ToString());
+
+                    // création de la liste des remarques.  
+                    List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques = contexte.ripClient.GetGeoRems(parameters);
+
+                    attenteChargement.getProgressBar().Maximum = remarques.Count;
+                    attenteChargement.getProgressBar().Step = 1;
+
+                    // Filtrage spatial affiné des remarques.
+                    //                if (!BBoxFiltrageSpatial.IsEmpty())
+                    //                {
                     List<ArcGisProEspaceCollaboratif.Core.Signalement> remarqueAConserver = new List<ArcGisProEspaceCollaboratif.Core.Signalement>();
 
                     foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarqueTest in remarques)
                     {
-//                        if (EspaceCollaboratifHelper.IsInGeometry(remarqueTest, geometryFiltreSpatial))
-//                        {
-                            remarqueAConserver.Add(remarqueTest);
-//                        }
+                        //                        if (EspaceCollaboratifHelper.IsInGeometry(remarqueTest, geometryFiltreSpatial))
+                        //                        {
+                        remarqueAConserver.Add(remarqueTest);
+                        //                        }
                     }
 
                     remarques = remarqueAConserver;
-//                }
+                    //                }
 
-//                contexte.Zoom(remarques);
-/*
-                int countBar = 0;
-                attenteChargement.setMaxProgressor(remarques.Count);
+                    //                contexte.Zoom(remarques);
+                    /*
+                                    int countBar = 0;
+                                    attenteChargement.setMaxProgressor(remarques.Count);
 
-                attenteChargement.setBar(1);
+                                    attenteChargement.setBar(1);
 
-                mess.ProgressBar.Position = 0;
-                mess.ShowProgressBar("Implantation des remarques Ripart", 0, remarques.Count, 1, false);
+                                    mess.ProgressBar.Position = 0;
+                                    mess.ShowProgressBar("Implantation des remarques Ripart", 0, remarques.Count, 1, false);
 
-                mess.Visible = true;
-*/
+                                    mess.Visible = true;
+                    */
 
-                // Implantation des remarques importées et filtrées sur la carte.
-                foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
-                {
+                    // Implantation des remarques importées et filtrées sur la carte.
+                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
+                    {
 
-//                    countBar++;
-//                    attenteChargement.nextProgressor("Placement sur la carte en cours de la remarque: \n#" + countBar + "/" + remarques.Count + ".");
-                    contexte.CreerPointSignalement(remarque);
-//                    contexte.activeView.Refresh();
-//                    mess.StepProgressBar();
-                }
+                        //                    countBar++;
+                        //                    attenteChargement.nextProgressor("Placement sur la carte en cours de la remarque: \n#" + countBar + "/" + remarques.Count + ".");
+                        await contexte.CreerPointSignalement(remarque);
+                        //                    contexte.activeView.Refresh();
+                        //                    mess.StepProgressBar();
+                    }
 
-//                mess.ProgressBar.Hide();
+                    //                mess.ProgressBar.Hide();
 
-                attenteChargement.Close();
-                /*
-                                int remarquesNouvelles = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Submit);
-                                int remarquesEnCours = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending0) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending1) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending2);
-                                int remarquesRejetees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject0);
-                                int remarquesValidees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid0);
+                    attenteChargement.Close();
+                    /*
+                                    int remarquesNouvelles = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Submit);
+                                    int remarquesEnCours = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending0) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending1) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending2);
+                                    int remarquesRejetees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject0);
+                                    int remarquesValidees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid0);
 
-                                string message = "Extraction réussie avec succès de " + countBar + " remarque(s) Ripart depuis le serveur";
+                                    string message = "Extraction réussie avec succès de " + countBar + " remarque(s) Ripart depuis le serveur";
 
-                                mess.set_Message(0, message + " !");
+                                    mess.set_Message(0, message + " !");
 
-                                message += " avec la répartition suivante:";
-                                message += "\n _ " + remarquesNouvelles + " remarque(s) nouvelle(s).";
-                                message += "\n _ " + remarquesEnCours + " remarque(s) en cours de traitement.";
-                                message += "\n _ " + remarquesValidees + " remarque(s) validée(s).";
-                                message += "\n _ " + remarquesRejetees + " remarque(s) rejetée(s).";
+                                    message += " avec la répartition suivante:";
+                                    message += "\n _ " + remarquesNouvelles + " remarque(s) nouvelle(s).";
+                                    message += "\n _ " + remarquesEnCours + " remarque(s) en cours de traitement.";
+                                    message += "\n _ " + remarquesValidees + " remarque(s) validée(s).";
+                                    message += "\n _ " + remarquesRejetees + " remarque(s) rejetée(s).";
 
-                                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
 
-                                System.Windows.Forms.MessageBox.Show(message, "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-                */
-                System.Windows.Forms.MessageBox.Show("Import terminé", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-
+                                    System.Windows.Forms.MessageBox.Show(message, "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    */
+                    System.Windows.Forms.MessageBox.Show("Import terminé", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                });
             }
+
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.StackTrace);
                 mess = null;
                 attenteChargement.Close();
-                MessageBox.Show(e.Message, "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 
             }
         }

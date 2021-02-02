@@ -23,6 +23,8 @@ using ArcGisProEspaceCollaboratif.Core;
 using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
+using static ArcGisProEspaceCollaboratif.Core.Sketch;
+using ArcGIS.Core.CIM;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -49,7 +51,6 @@ namespace ArcGisProEspaceCollaboratif
         public string PwdEspaceCollaboratif; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
 
         //public List<IFeatureLayer> calquesEspaceCollaboratif = new List<IFeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
-        public List<FeatureLayer> calquesEspaceCollaboratif = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
         public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
 
         //public ISpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif.
@@ -178,45 +179,38 @@ namespace ArcGisProEspaceCollaboratif
             string reportLayer = EspaceCollaboratifHelper.nom_Calque_Signalement;
 
             // Signalements
-            if (!this.IsLayerInMap(reportLayer))
-            {
-                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + reportLayer))
-                {
-                    bool b = await EspaceCollaboratifHelper.CreerCalqueSignalementEspaceCollaboratif();
-                }
-                this.LoadLayer(pointSketchLayer);
-            }
+            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+                reportLayer,
+                "POINT",
+                EspaceCollaboratifHelper.reportAttributes, 
+                0, 
+                "Tear pin 2"
+                );
 
-            // Croquis polygones
-            if (!this.IsLayerInMap(polygonSketchLayer))
-            {
-                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + polygonSketchLayer))
-                {
-                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(polygonSketchLayer, "POLYGON");
-                }
-                this.LoadLayer(polygonSketchLayer);
-            }
+            // Croquis ponctuels
+            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+                pointSketchLayer,
+                "POINT",
+                EspaceCollaboratifHelper.sketchAttributes,
+                1
+                );
 
-            // Croquis lignes
-            if (!this.IsLayerInMap(lineSketchLayer))
-            {
-                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + lineSketchLayer))
-                {
-                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(lineSketchLayer, "POLYLINE");
-                }
-                this.LoadLayer(lineSketchLayer);
-            }
+            // Croquis linéaires
+            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+                lineSketchLayer,
+                "POLYLINE",
+                EspaceCollaboratifHelper.sketchAttributes,
+                2
+                );
 
-            // Croquis points
-            if (!this.IsLayerInMap(pointSketchLayer))
-            {
-                if (!System.IO.Directory.Exists(this.gdbPath + "\\" + pointSketchLayer))
-                {
-                    bool b = await EspaceCollaboratifHelper.CreerCalqueCroquisEspaceCollaboratif(pointSketchLayer, "POINT");
-                }
-                this.LoadLayer(pointSketchLayer);
-            }
-          
+            // Croquis linéaires
+            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+                polygonSketchLayer,
+                "POLYGON",
+                EspaceCollaboratifHelper.sketchAttributes,
+                3
+                );
+
 
             // Ajout des couches à la liste collaboratifSpaceLayers
             this.collaborativeSpaceLayers.Clear();
@@ -239,7 +233,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="layerName">nom de la couche</param> Change en layerPath
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-        private FeatureLayer LoadLayer(String layerName, bool doLoad = true)
+/*        private FeatureLayer LoadLayer(String layerName, string symbolName = "")
         {
 
             FeatureLayer result = null;
@@ -260,6 +254,9 @@ namespace ArcGisProEspaceCollaboratif
                     layerName
                 );
 
+                if (symbolName != "")
+                    setReportLayerStyle(result, symbolName);
+                
                 result = layer;
             }
             catch (Exception e)
@@ -270,6 +267,8 @@ namespace ArcGisProEspaceCollaboratif
 
             return result;
         }
+*/
+        
 
 
         /// <summary>
@@ -277,14 +276,14 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="name">Le nom du calque qu'il faut récupérer.</param>
         /// <returns>Le calque ou null si non trouvé</returns>
-        public Layer GetLayerByName(string layerName)
+        public FeatureLayer GetLayerByName(string layerName)
         {
             // Enumération des couches et groupes de couches
             IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName)
-                    return layer;
+                    return layer as FeatureLayer;
             }
 
             return null;
@@ -367,27 +366,19 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         // Vide les calques de l'espace collaboratif de tous leurs contenus.
         /// </summary>
-        public async Task<bool> EmptyCollaborativeSpaceLayers()
+        public void EmptyCollaborativeSpaceLayers()
         {
             try
             {
-                return await QueuedTask.Run(() =>
+                foreach (FeatureLayer layer in this.collaborativeSpaceLayers)
                 {
-                    //this.CreateOrLoadEspaceCollaboratifLayer();
-                    foreach (FeatureLayer layer in this.calquesEspaceCollaboratif)
-                    {
-                        FeatureClass fcCollabSpace = layer.GetFeatureClass();
-                        var result = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
-                    }
-
-                    return true;
-                });
-
+                    FeatureClass fcCollabSpace = layer.GetFeatureClass();
+                    var result = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
+                }
             }
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.StackTrace);
-                return false;
             }
 
         }
@@ -431,26 +422,29 @@ namespace ArcGisProEspaceCollaboratif
                 return await QueuedTask.Run(() =>
                 {
 
-                    FeatureLayer reportLayer = this.GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Signalement) as FeatureLayer;
+                    FeatureLayer reportLayer = this.GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
                     EditOperation editOperation = new EditOperation();
                     editOperation.Callback(context =>
                     {
                         RowBuffer rowBuffer = null;
-                        Feature featureSignalement = null;
+                        Feature featureReport = null;
 
                         try
                         {
+                            // Création de l'objet signalement dans la couche des signalements avec tous ses attributs
+                            // On récupère le schéma de la classe
                             FeatureClassDefinition reportFcDefinition = reportFeatureClass.GetDefinition();
 
+                            // Préparation des attributs de l'objet signalement à créer
                             rowBuffer = reportFeatureClass.CreateRowBuffer();
 
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_IdRemarque] = newReport.Id;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_Auteur] = newReport.Auteur.Nom;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_Commune] = newReport.Commune;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_Departement] = newReport.Departement.Nom;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IDDepartement] = newReport.Departement.Id;                           
+                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IDDepartement] = newReport.Departement.Id;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateCreation] = newReport.DateCreation;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateMAJ] = newReport.DateMiseAJour;
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateValidation] = newReport.DateValidation;
@@ -463,99 +457,19 @@ namespace ArcGisProEspaceCollaboratif
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_Reponse] = EspaceCollaboratifHelper.Limite(newReport.ConcatenateReponse());
                             rowBuffer[EspaceCollaboratifHelper.nom_Champ_Autorisation] = newReport.Autorisation;
 
+                            // Création de l'objet signalement dans la classe des signalements
+                            featureReport = reportFeatureClass.CreateRow(rowBuffer);
 
-                            featureSignalement = reportFeatureClass.CreateRow(rowBuffer);
-                            featureSignalement.SetShape(EspaceCollaboratifHelper.TransformPoint(newReport.Position));
+                            // Remplissage de sa géométrie
+                            featureReport.SetShape(EspaceCollaboratifHelper.TransformPoint(newReport.Position));
 
-                            featureSignalement.Store();
+                            // Enregristrement
+                            featureReport.Store();
 
                             //To Indicate that the attribute table has to be updated
-                            context.Invalidate(featureSignalement);
+                            context.Invalidate(featureReport);
+                        }
 
-
-                            //TO-DO Récupérer les croquis
-/*
-                            //  Traitement du ou des croquis associé(s) au signalement     
-                            if (!newReport.IsCroquisEmpty())
-                            {
-                                foreach (ArcGisProEspaceCollaboratif.Core.Sketch oneSketch in newReport.Sketch)
-                                {
-                                    if (oneSketch.Points.Count == 0)
-                                    {
-                                        //   this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        QueuedTask.Run(() =>
-                                        {
-                                        // on cast le featureLayer en fonction du type du croquis pour utiliser le bon calque associé
-                                        FeatureLayer featureLayerCroquis = this.calquesEspaceCollaboratif[(int)oneSketch.Type] as FeatureLayer;
-                                        FeatureClass featureClassCroquis = featureLayerCroquis.GetFeatureClass();
-                                        QueuedTask.Run(() =>
-                                        {
-                                            String attributs = "";
-                                            foreach (ArcGisProEspaceCollaboratif.Core.Attribut attribut in oneSketch.Attributs)
-                                            {
-                                                attributs += attribut.Nom + " = '" + attribut.Valeur + "' | ";
-                                            }
-
-                                            if (oneSketch.Attributs.Count != 0)
-                                            {
-                                                attributs = attributs.Substring(0, attributs.Length - 3);
-                                            }
-
-                                            Dictionary<string, string> dico = new Dictionary<string, string>
-                                                            {
-                                                            { EspaceCollaboratifHelper.nom_Champ_LienRemarque, newReport.Id.ToString() },
-                                                            { EspaceCollaboratifHelper.nom_Champ_NomCroquis, oneSketch.Nom },
-                                                            { EspaceCollaboratifHelper.nom_Champ_Attributs, EspaceCollaboratifHelper.Limite(attributs) }
-                                                            };
-                                            RowBuffer rowBuffer = EspaceCollaboratifHelper.UpdateReportFields(dico);
-                                            Feature featureCroquis = featureClassCroquis.CreateRow(rowBuffer);
-
-                                            //Polyline polylineCroquis = new Polyline() as Polyline;
-                                            //Polygon polygonCroquis = new Polygon() as Polygon;
-                                            ArcGIS.Core.Geometry.MapPoint pointCroquis = EspaceCollaboratifHelper.TransformPoint(oneSketch.Points.First());
-                                            // Construction géométrique du croquis en fonction de son type et à partir du vecteur de vertex du croquis.
-                                            switch (oneSketch.Type)
-                                            {
-                                                default:
-                                                    break;
-
-                                                case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point:
-                                                    featureCroquis.SetShape(pointCroquis);
-                                                    break;
-*/
-                                                    /*case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne:
-                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
-                                                        break;
-
-                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone:
-                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
-                                                        break;
-
-                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Fleche:
-                                                        featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
-                                                        break;
-
-                                                    case ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Texte:
-                                                        featureCroquis.Shape = pointCroquis;
-                                                        break;*/
-                                                    /*                                        }
-                                                                                            featureCroquis.Store();
-                                                                                        });
-                                                                                    });
-                                                                                }
-                                                                            }
-                                                                        }*/
-
-
-
-
-
-
-                                            }
                         catch (GeodatabaseException exObj)
                         {
                             Console.WriteLine(exObj);
@@ -565,12 +479,37 @@ namespace ArcGisProEspaceCollaboratif
                             if (rowBuffer != null)
                                 rowBuffer.Dispose();
 
-                            if (featureSignalement != null)
-                                featureSignalement.Dispose();
+                            if (featureReport != null)
+                                featureReport.Dispose();
                         }
                     }, reportFeatureClass);
 
                     bool editResult = editOperation.Execute();
+
+
+                    //Récupération des croquis associés au signalement
+
+                    //  Traitement du ou des croquis associé(s) au signalement     
+                    if (!newReport.IsCroquisEmpty())
+                    {
+                        foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketch)
+                        {
+                            if (currSketch.Points.Count == 0)
+                            {
+                                //   this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
+                                continue;
+                            }
+                            else
+                            {
+                                // on cast le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
+                                FeatureLayer sketchFeatureLayer = this.collaborativeSpaceLayers[(int)currSketch.Type] as FeatureLayer;
+                                FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
+
+                                // Création de l'objet croquis dans la classe correpondant à son type
+                                CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
+                            }
+                        }
+                    }
 
                     // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
                     Project.Current.SaveEditsAsync();
@@ -585,6 +524,85 @@ namespace ArcGisProEspaceCollaboratif
                 return false;
             }
         }
+
+
+        public bool CreateSketchObject(ArcGisProEspaceCollaboratif.Core.Sketch currSketch, FeatureClass sketchFeatureClass, ulong idNewReport)
+        {
+            EditOperation editOperation = new EditOperation();
+            editOperation.Callback(context =>
+            {
+                RowBuffer rowBuffer = null;
+                Feature sketchFeature = null;
+
+                try
+                {
+                    // Récupération des attributs du croquis transmis par l'API (champ attributes)
+                    String attributes = "";
+                    foreach (ArcGisProEspaceCollaboratif.Core.Attribut attribut in currSketch.Attributes)
+                        attributes += attribut.Nom + " = '" + attribut.Valeur + "' | ";
+
+                    if (currSketch.Attributes.Count != 0)
+                        attributes = attributes.Substring(0, attributes.Length - 3);
+
+                    // Préparation des attributs de l'objet croquis à créer
+                    rowBuffer = sketchFeatureClass.CreateRowBuffer();
+
+                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_LienRemarque] = idNewReport;
+                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_NomCroquis] = currSketch.Name;
+                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_Attributs] = EspaceCollaboratifHelper.Limite(attributes);
+
+                    // Création de l'objet signalement dans la classe des signalements
+                    sketchFeature = sketchFeatureClass.CreateRow(rowBuffer);
+
+                    // Remplissage de sa géométrie
+                    ArcGIS.Core.Geometry.MapPoint sketchPoint = EspaceCollaboratifHelper.TransformPoint(currSketch.Points.First());
+                    switch (currSketch.Type)
+                    {
+                        default:
+                            break;
+
+                        case SketchType.Point:
+                            sketchFeature.SetShape(sketchPoint);
+                            break;
+
+                        case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Ligne:
+                            Polyline sketchLine = PolylineBuilder.CreatePolyline(EspaceCollaboratifHelper.GetPointCollectionFromSketch(currSketch));
+                            sketchFeature.SetShape(sketchLine);
+                            break;
+
+                        case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygone:
+                            Polygon sketchPolygon = PolygonBuilder.CreatePolygon(EspaceCollaboratifHelper.GetPointCollectionFromSketch(currSketch));
+                            sketchFeature.SetShape(sketchPolygon);
+                            break;
+
+                    }
+
+                    // Enregristrement
+                    sketchFeature.Store();
+
+                    //To Indicate that the attribute table has to be updated
+                    context.Invalidate(sketchFeature);
+                }
+
+                catch (GeodatabaseException exObj)
+                {
+                    Console.WriteLine(exObj);
+                }
+                finally
+                {
+                    if (rowBuffer != null)
+                        rowBuffer.Dispose();
+
+                    if (sketchFeature != null)
+                        sketchFeature.Dispose();
+                }
+            }, sketchFeatureClass);
+
+            bool editResult = editOperation.Execute();
+            return editResult;
+        }
+
+
 
 
         /// <summary>
