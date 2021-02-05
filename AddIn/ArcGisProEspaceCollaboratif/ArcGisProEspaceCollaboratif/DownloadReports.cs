@@ -214,34 +214,36 @@ namespace ArcGisProEspaceCollaboratif
             var createFeatures = new EditOperation();
 
             // Remplissage des attributs de la remarque Ripart
-            var newReportAttributes = new Dictionary<string, object>();
-            newReportAttributes.Add("SHAPE", EspaceCollaboratifHelper.TransformPoint(report.Position));
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes());
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_Url, report.Lien);
-            newReportAttributes.Add(EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive);
-/*
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes());
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Url, report.Lien);
-            EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive);
-*/
+            var newReportAttributes = new Dictionary<string, object>
+            {
+                { "SHAPE", EspaceCollaboratifHelper.TransformPoint(report.Position) },
+                { EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id },
+                { EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom },
+                { EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom },
+                { EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id },
+                { EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune },
+                { EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation },
+                { EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour },
+                { EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation },
+                { EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut },
+                { EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes() },
+                { EspaceCollaboratifHelper.nom_Champ_Url, report.Lien },
+                { EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive }
+            };
+            /*
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes());
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Url, report.Lien);
+                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive);
+            */
 
             createFeatures.Create(reportLayer, newReportAttributes);
 
