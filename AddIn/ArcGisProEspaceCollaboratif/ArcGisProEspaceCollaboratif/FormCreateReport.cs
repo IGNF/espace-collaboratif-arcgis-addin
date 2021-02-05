@@ -205,7 +205,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
-            EspaceCollaboratifHelper.Save_PreferedThemes(selectedTheme);
+            Helper.Save_PreferedThemes(selectedTheme);
             return selectedTheme;
 
         }

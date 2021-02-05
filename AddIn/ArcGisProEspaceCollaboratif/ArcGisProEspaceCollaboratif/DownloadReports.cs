@@ -18,14 +18,14 @@ namespace ArcGisProEspaceCollaboratif
         private readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
 
-        public DownloadReports()
+        /*public DownloadReports()
         {
-        }
+        }*/
 
 
         protected override async void OnClick()
         {
-            StatusBar mess;
+            //StatusBar mess;
             FormProgressDownload attenteChargement = new FormProgressDownload();
 
             try
@@ -34,24 +34,34 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     Contexte contexte = Contexte.Instance;
 
-                    // Test de la présence du fichier XML de paramétrage
-                    if (!System.IO.File.Exists(EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+                    // Est-ce que l'utilisateur s'est connecté ?
+                    if (contexte.ripClient == null)
                     {
-                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service Ripart.\n\nLe fichier '" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.repertoireTravail + "'", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.ripClient == null) return;
+                    }
+
+                    // Chargement ou non des couches liées aux signalements
+                    await contexte.CreateOrLoadReportLayers();
+
+                    // Test de la présence du fichier XML de paramétrage
+                    if (!System.IO.File.Exists(Helper.nom_Fichier_Parametres_EspaceCollaboratif))
+                    {
+                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '" + Helper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.repertoireTravail + "'", "IGN Espace collaboratif - ERROR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                         return;
                     }
 
                     DialogResult result1;
-                    DialogResult result2;
-                    bool courtcircuite = false;
-                    string calqueFiltrage = EspaceCollaboratifHelper.Load_CalqueFiltrage();
+                    //DialogResult result2;
+                    //bool courtcircuite = false;
+                    string calqueFiltrage = Helper.Load_CalqueFiltrage();
                     if (calqueFiltrage.Length == 0)
                     {
-                        result1 = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage Ripart, le nom du calque à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                        result1 = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif, le nom du calque à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des signalements sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Espace collaboratif - QUESTION", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
                         if (result1 != DialogResult.Yes)
                         { return; }
 
-                        courtcircuite = true;
+                        //courtcircuite = true;
                     }
 
                     Layer layerFiltrage = contexte.GetLayerByName(calqueFiltrage);
@@ -76,11 +86,7 @@ namespace ArcGisProEspaceCollaboratif
 
                                     ArcGisProEspaceCollaboratif.Core.Box BBoxFiltrageSpatial = contexte.GetBBox(geometryFiltreSpatial);
                     */
-                    if (contexte.ripClient == null)
-                    {
-                        contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.ripClient == null) return;
-                    }
+                    
                     /*
                                     ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
                                     mess = application.StatusBar;
@@ -96,7 +102,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     Dictionary<string, string> parameters = new Dictionary<string, string>();
                     int groupeId = -1;
-                    if (EspaceCollaboratifHelper.Load_Group() == "true")
+                    if (Helper.Load_Group() == "true")
                     {
                         groupeId = Convert.ToInt32(contexte.profil.Geogroupe.Id);
                         parameters.Add("group", groupeId.ToString());
@@ -109,30 +115,30 @@ namespace ArcGisProEspaceCollaboratif
                                         parameters.Add("box", BBoxFiltrageSpatial.boxToString());
                                     }
                     */
-                    String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", EspaceCollaboratifHelper.Load_DateExtraction());
+                    String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
                     parameters.Add("updatingDate", sdate);
                     parameters.Add("territory", contexte.profil.Zone.ToString());
 
-                    // création de la liste des remarques.  
-                    List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques = contexte.ripClient.GetGeoRems(parameters);
+                    // création de la liste des signalements.  
+                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalements = contexte.ripClient.GetGeoRems(parameters);
 
-                    attenteChargement.getProgressBar().Maximum = remarques.Count;
-                    attenteChargement.getProgressBar().Step = 1;
+                    attenteChargement.GetProgressBar().Maximum = signalements.Count;
+                    attenteChargement.GetProgressBar().Step = 1;
 
                     // Filtrage spatial affiné des remarques.
                     //                if (!BBoxFiltrageSpatial.IsEmpty())
                     //                {
-                    List<ArcGisProEspaceCollaboratif.Core.Signalement> remarqueAConserver = new List<ArcGisProEspaceCollaboratif.Core.Signalement>();
+                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalementAConserver = new List<ArcGisProEspaceCollaboratif.Core.Signalement>();
 
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarqueTest in remarques)
+                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement signalementTest in signalements)
                     {
                         //                        if (EspaceCollaboratifHelper.IsInGeometry(remarqueTest, geometryFiltreSpatial))
                         //                        {
-                        remarqueAConserver.Add(remarqueTest);
+                        signalementAConserver.Add(signalementTest);
                         //                        }
                     }
 
-                    remarques = remarqueAConserver;
+                    signalements = signalementAConserver;
                     //                }
 
                     //                contexte.Zoom(remarques);
@@ -149,7 +155,7 @@ namespace ArcGisProEspaceCollaboratif
                     */
 
                     // Implantation des remarques importées et filtrées sur la carte.
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
+                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in signalements)
                     {
 
                         //                    countBar++;
@@ -182,16 +188,16 @@ namespace ArcGisProEspaceCollaboratif
 
                                     System.Windows.Forms.MessageBox.Show(message, "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                     */
-                    System.Windows.Forms.MessageBox.Show("Import terminé", "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    System.Windows.Forms.MessageBox.Show("Import terminé", "IGN Espace collaboratif - INFORMATION", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                 });
             }
 
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.StackTrace);
-                mess = null;
+                //mess = null;
                 attenteChargement.Close();
-                MessageBox.Show(e.Message, "IGN Espace collaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 
             }
         }
@@ -199,11 +205,11 @@ namespace ArcGisProEspaceCollaboratif
 
         // INUTILE - on utilise la fonction présente dans Contexte
 
-        protected void creerPointRemarqueRipart(ArcGisProEspaceCollaboratif.Core.Signalement report, List<FeatureLayer> mapLayers)
+        protected void CreerPointRemarqueRipart(ArcGisProEspaceCollaboratif.Core.Signalement report, List<FeatureLayer> mapLayers)
         {
 
             // on cast en featureLayer
-            FeatureLayer reportLayer = Contexte.Instance.GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Signalement) as FeatureLayer;
+            FeatureLayer reportLayer = Contexte.Instance.GetLayerByName(Helper.nom_Calque_Signalement) as FeatureLayer;
             //FeatureClass featureClass = featureLayer.GetFeatureClass();
 
             //Feature featureRemarque = featureClass.CreateRow();
@@ -216,19 +222,19 @@ namespace ArcGisProEspaceCollaboratif
             // Remplissage des attributs de la remarque Ripart
             var newReportAttributes = new Dictionary<string, object>
             {
-                { "SHAPE", EspaceCollaboratifHelper.TransformPoint(report.Position) },
-                { EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id },
-                { EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom },
-                { EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom },
-                { EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id },
-                { EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune },
-                { EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation },
-                { EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour },
-                { EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation },
-                { EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut },
-                { EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes() },
-                { EspaceCollaboratifHelper.nom_Champ_Url, report.Lien },
-                { EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive }
+                { "SHAPE", Helper.TransformPoint(report.Position) },
+                { Helper.nom_Champ_IdRemarque, report.Id },
+                { Helper.nom_Champ_Auteur, report.Auteur.Nom },
+                { Helper.nom_Champ_Departement, report.Departement.Nom },
+                { Helper.nom_Champ_IDDepartement, report.Departement.Id },
+                { Helper.nom_Champ_Commune, report.Commune },
+                { Helper.nom_Champ_DateCreation, report.DateCreation },
+                { Helper.nom_Champ_DateMAJ, report.DateMiseAJour },
+                { Helper.nom_Champ_DateValidation, report.DateValidation },
+                { Helper.nom_Champ_Statut, (int)report.Statut },
+                { Helper.nom_Champ_Themes, report.ConcatenateThemes() },
+                { Helper.nom_Champ_Url, report.Lien },
+                { Helper.nom_Champ_UrlPrive, report.LienPrive }
             };
             /*
                         EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id);

@@ -17,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif
             try
             {
                 Contexte contexte = Contexte.Instance;
-                contexte.PwdEspaceCollaboratif = "";
+                contexte.Password = "";
                 ArcGisProEspaceCollaboratif.Core.IClient connexionTemp = contexte.GetConnexionEspaceCollaboratif();
                 contexte.ripClient = (Client)connexionTemp;
             }

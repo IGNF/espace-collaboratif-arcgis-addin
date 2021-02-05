@@ -136,7 +136,7 @@
     <Compile Include="Contexte.cs" />
     <Compile Include="CreerSignalement.cs" />
     <Compile Include="DownloadReports.cs" />
-    <Compile Include="EspaceCollaboratifHelper.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="FormConfigurer.cs">
       <SubType>Form</SubType>
     </Compile>

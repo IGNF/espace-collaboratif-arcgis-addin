@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif
                 if (!contexte.CheckConfigFile())
                 {
                     System.Windows.Forms.MessageBox.Show(@"Le fichier " + contexte.repertoireTravail +
-                                    EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif + @" n'existe pas");
+                                    Helper.nom_Fichier_Parametres_EspaceCollaboratif + @" n'existe pas");
 
                 }
 

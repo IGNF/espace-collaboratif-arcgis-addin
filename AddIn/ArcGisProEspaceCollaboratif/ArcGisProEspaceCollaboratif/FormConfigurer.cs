@@ -33,9 +33,9 @@ namespace ArcGisProEspaceCollaboratif
 
         private void ConfigEspaceCollaboratif_Load(object sender, EventArgs e)
         {
-           this.textBoxUrl.Text = EspaceCollaboratifHelper.Load_Urlhost();
+           this.textBoxUrl.Text = Helper.Load_Urlhost();
 
-            if (EspaceCollaboratifHelper.Load_Login().Length == 0)
+            if (Helper.Load_Login().Length == 0)
             {
                 this.checkBoxLogin.Checked = false;
                 this.textBoxLogin.Enabled = false;
@@ -43,20 +43,20 @@ namespace ArcGisProEspaceCollaboratif
             else
             {
                 this.checkBoxLogin.Checked = true;
-                this.textBoxLogin.Text = EspaceCollaboratifHelper.Load_Login();
+                this.textBoxLogin.Text = Helper.Load_Login();
             }
 
-            this.numericUpDownPagination.Value = EspaceCollaboratifHelper.Load_Pagination();
-            if (EspaceCollaboratifHelper.Load_Pagination() == 0)
+            this.numericUpDownPagination.Value = Helper.Load_Pagination();
+            if (Helper.Load_Pagination() == 0)
             {
                 this.checkBoxPagination.Checked = false;
                 this.numericUpDownPagination.Enabled = false;
             }
 
             this.dateTimePicker.Value = System.DateTime.Now;
-            this.dateTimePicker.MinDate = Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut).Date;
-            System.DateTime dateDefaut = EspaceCollaboratifHelper.Load_DateExtraction();
-            if (dateDefaut.Date == Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut).Date)
+            this.dateTimePicker.MinDate = Convert.ToDateTime(Helper.dateDefaut).Date;
+            System.DateTime dateDefaut = Helper.Load_DateExtraction();
+            if (dateDefaut.Date == Convert.ToDateTime(Helper.dateDefaut).Date)
             {
                 this.dateTimePicker.Enabled = false;
                 this.numericUpDownDate.Enabled = false;
@@ -68,16 +68,16 @@ namespace ArcGisProEspaceCollaboratif
                 this.dateTimePicker.Text = dateDefaut.ToShortDateString();
             }
 
-            string calqueFiltrageDefaut = EspaceCollaboratifHelper.Load_CalqueFiltrage();
+            string calqueFiltrageDefaut = Helper.Load_CalqueFiltrage();
 
             // Récupération des couches et attributs
             IReadOnlyList<Layer> mapLayers = contexte.mapActiveView.Map.GetLayersAsFlattenedList();
             List<String> collabSpaceLayers = new List<String>
             {
-                EspaceCollaboratifHelper.nom_Calque_Signalement,
-                EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone,
-                EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne,
-                EspaceCollaboratifHelper.nom_Calque_Croquis_Point
+                Helper.nom_Calque_Signalement,
+                Helper.nom_Calque_Croquis_Polygone,
+                Helper.nom_Calque_Croquis_Ligne,
+                Helper.nom_Calque_Croquis_Point
             };
 
             foreach (var layer in mapLayers)
@@ -96,13 +96,13 @@ namespace ArcGisProEspaceCollaboratif
                 this.comboBoxCalque.SelectedIndex = this.comboBoxCalque.FindStringExact(calqueFiltrageDefaut);
             }
 
-            if (EspaceCollaboratifHelper.Load_AttributsCroquis().Nodes.Count >0)
+            if (Helper.Load_AttributsCroquis().Nodes.Count >0)
             {
                 this.checkBoxCroquis.Checked = true;
             }
             this.checkBoxCroquis.Text = "Calques sources et champs à mettre en\nattribut pour les nouveaux croquis de l'espace collaboratif :";
 
-            if (EspaceCollaboratifHelper.Load_Group() =="true")
+            if (Helper.Load_Group() =="true")
             {
                 this.checkBoxGroup.Checked = true;
             }
@@ -300,48 +300,48 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            EspaceCollaboratifHelper.Save_Urlhost(this.textBoxUrl.Text);
+            Helper.Save_Urlhost(this.textBoxUrl.Text);
             
             if (!this.checkBoxLogin.Checked)
             {
                 this.textBoxLogin.Text = "";
             }
-            EspaceCollaboratifHelper.Save_Login(this.textBoxLogin.Text);
+            Helper.Save_Login(this.textBoxLogin.Text);
 
             if (this.checkBoxPagination.Checked)
             {
-                EspaceCollaboratifHelper.Save_Pagination((uint)this.numericUpDownPagination.Value);
+                Helper.Save_Pagination((uint)this.numericUpDownPagination.Value);
             }
             else
             {
-                EspaceCollaboratifHelper.Save_Pagination(0);
+                Helper.Save_Pagination(0);
             }
 
             if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
             {
-                EspaceCollaboratifHelper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
+                Helper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
             }
             else
             {
-                EspaceCollaboratifHelper.Save_CalqueFiltrage("");
+                Helper.Save_CalqueFiltrage("");
             }
 
             if (this.checkBoxDate.Checked)
             {
-                EspaceCollaboratifHelper.Save_DateExtraction(this.dateTimePicker.Value.Date);
+                Helper.Save_DateExtraction(this.dateTimePicker.Value.Date);
             }
             else
             {
-                EspaceCollaboratifHelper.Save_DateExtraction(Convert.ToDateTime(EspaceCollaboratifHelper.dateDefaut));
+                Helper.Save_DateExtraction(Convert.ToDateTime(Helper.dateDefaut));
             }
 
             if (this.checkBoxGroup.Checked)
             {
-                EspaceCollaboratifHelper.Save_Group("true");
+                Helper.Save_Group("true");
             }
             else
             {
-                EspaceCollaboratifHelper.Save_Group("false");
+                Helper.Save_Group("false");
             }
 
             this.majAttributs = false;
@@ -351,16 +351,16 @@ namespace ArcGisProEspaceCollaboratif
             }
             else
             {
-                EspaceCollaboratifHelper.Save_AttributsCroquis(new TreeNode());
+                Helper.Save_AttributsCroquis(new TreeNode());
             }
 
             if (this.checkBoxProxy.Checked)
             {
-                EspaceCollaboratifHelper.Save_Proxy(this.checkBoxProxy.Text);
+                Helper.Save_Proxy(this.checkBoxProxy.Text);
             }
 
-            EspaceCollaboratifHelper.Save_CleGeoportail(this.textBoxCleGeoportail.Text);
-            EspaceCollaboratifHelper.Save_GroupeActif(this.textBoxGroupeActif.Text);
+            Helper.Save_CleGeoportail(this.textBoxCleGeoportail.Text);
+            Helper.Save_GroupeActif(this.textBoxGroupeActif.Text);
 
             this.Close();
         }
@@ -474,7 +474,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
-            EspaceCollaboratifHelper.Save_AttributsCroquis(attributs);
+            Helper.Save_AttributsCroquis(attributs);
         }
 
 

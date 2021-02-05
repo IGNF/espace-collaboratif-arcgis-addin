@@ -23,21 +23,9 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     Contexte contexte = Contexte.Instance;
 
-                    // Transformation des objets sélectionnés en croquis.
-                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = contexte.MakeCroquis_from_Selection();
-                    logger.Debug(futursSketch.Count + " croquis générés.");
-
-                    if (futursSketch.Count == 0)
-                    {
-                        string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
-                        System.Windows.Forms.MessageBox.Show(message,
-                            "IGN Espace collaboratif - WARNING", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-                        logger.Debug(message);
-                        return;
-                    }
-
+                    // Il faut s'être connecté au service pour la créer un signalement
                     if (contexte.ripClient == null)
-                    {   
+                    {
                         // Établissement de la connexion avec le service Espace collaboratif.
                         contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
                         if (contexte.ripClient == null)
@@ -46,7 +34,28 @@ namespace ArcGisProEspaceCollaboratif
                         }
                     }
 
-                    EspaceCollaboratifHelper.MessageBar("Création d'un nouveau signalement");
+                    // Est-ce que la couche signalement existe dans la carte ?
+                    bool bRes = contexte.IsLayerInMap(Helper.nom_Calque_Signalement);
+                    if (!bRes)
+                    {
+                        string message = "Pas de couche Signalement dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et et télécharger les signalements.";
+                        System.Windows.Forms.MessageBox.Show(message,
+                            "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        logger.Debug(message);
+                        return;
+                    } 
+
+                    // Transformation des objets sélectionnés en croquis.
+                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = contexte.MakeCroquis_from_Selection();
+                    logger.Debug(futursSketch.Count + " croquis générés.");
+                    if (futursSketch.Count == 0)
+                    {
+                        string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
+                        System.Windows.Forms.MessageBox.Show(message,
+                            "IGN Espace collaboratif - WARNING", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                        logger.Debug(message);
+                        return;
+                    }
 
                     // Lancement du formulaire pour créer une nouvelle remarque Ripart.
                     FormCreateReport formulaireCreation = new FormCreateReport();
@@ -72,7 +81,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (formulaireCreation.OptionSingleSignalement())
                     {
                         // Positionnement du signalement unique par rapport à l'ensemble des croquis.
-                        signalementVirtuel.SetPosition(EspaceCollaboratifHelper.CalculatePointReport(futursSketch));
+                        signalementVirtuel.SetPosition(Helper.CalculatePointReport(futursSketch));
 
                         // Si option de joindre un croquis au nouveau signalement.
                         if (formulaireCreation.OptionWithCroquis())
@@ -82,7 +91,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         // Création du nouveau signalement
                         ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.ripClient.CreateSignalement(signalementVirtuel);
-                        contexte.CreerPointSignalement(signalementNouveau);
+                        await contexte.CreerPointSignalement(signalementNouveau);
 
                         FormInfo popupInfo = new FormInfo();
                         popupInfo.SetLogo(contexte.ripClient.GetProfil().Logo);
@@ -100,7 +109,7 @@ namespace ArcGisProEspaceCollaboratif
                         foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in futursSketch)
                         {
                             // Positionnement de la remarque par rapport au croquis un par un.
-                            signalementVirtuel.SetPosition(EspaceCollaboratifHelper.CalculatePointReport(croquis));
+                            signalementVirtuel.SetPosition(Helper.CalculatePointReport(croquis));
                             signalementVirtuel.ClearCroquis();
 
                             // Si option de joindre un croquis à la nouvelle remarque.
@@ -111,7 +120,7 @@ namespace ArcGisProEspaceCollaboratif
 
                             // Création de la nouvelle remarque.
                             ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.ripClient.CreateSignalement(signalementVirtuel);
-                            contexte.CreerPointSignalement(signalementNouveau);
+                            await contexte.CreerPointSignalement(signalementNouveau);
 
                             listIdNouveauxSignalements.Add(signalementNouveau.Id);
                         }

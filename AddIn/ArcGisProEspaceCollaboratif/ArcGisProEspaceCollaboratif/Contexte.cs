@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Collections;
-
-//using ESRI.ArcGIS.Carto;
-//using ESRI.ArcGIS.GeoDatabase;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Internal.Data.DDL;
-//using ESRI.ArcGIS.ArcMapUI;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
-
 using System.IO;
 using System.Windows.Forms;
 using System.Threading.Tasks;
-
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
 using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
-using ArcGIS.Core.CIM;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -33,28 +23,19 @@ namespace ArcGisProEspaceCollaboratif
         private static Contexte instance = null;
         private static readonly object padlock = new object();
 
-        //public IActiveView ActiveView; // Les paramètres concernant l'affichage de la carte en cours.
-        //public IMap Map; // Les paramètres cartographiques (projection) de la carte en cours
-        //public Map map;
         public MapView mapActiveView;
-        //public MapView activeView;
-        //public ArcGIS.Desktop.Mapping.MapView Map;//mapView;
-        //public ArcGIS.Desktop.Mapping.MapTool mapTool;
-        //public IFeatureWorkspace FeatureWorkspace;
         public string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
 
         public string repertoireTravail; // Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille.
         public string fichierCarteTravail; // Le fichier de la carte ArcGIS Pro sur laquelle on travaille.
 
-        public string URLHostEspaceCollaboratif; // l'URL d'accès au service de l'espace collaboratif.
-        public string LoginEspaceCollaboratif; // Le login à utiliser pour se connecter au service de l'espace collaboratif.
-        public string PwdEspaceCollaboratif; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
+        public string URLHost; // l'URL d'accès au service de l'espace collaboratif.
+        public string Login; // Le login à utiliser pour se connecter au service de l'espace collaboratif.
+        public string Password; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
 
-        //public List<IFeatureLayer> calquesEspaceCollaboratif = new List<IFeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
         public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
 
-        //public ISpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif.
-        public ArcGIS.Core.Geometry.SpatialReference spatialReferenceEspaceCollaboratif; // Le système géodésique employé par le service de l'espace collaboratif
+        public ArcGIS.Core.Geometry.SpatialReference spatialReference; // Le système géodésique employé par le service de l'espace collaboratif
         public FormConnecter loginWindow; // Le login à utiliser pour connecter au service de l'espace collaboratif.
 
         private readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
@@ -87,12 +68,6 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         private Contexte()
         {
-            //IMxDocument mxDocument = ArcMap.Application.Document as IMxDocument;
-            //IActiveView activeView = mxDocument.ActiveView;
-
-            this.spatialReferenceEspaceCollaboratif = SpatialReferenceBuilder.CreateSpatialReference(4326);
-            //Project project = Project.Current; //Lien entre project et mapview ?
-            this.mapActiveView = MapView.Active;
             this.Init(MapView.Active);
         }
 
@@ -110,15 +85,14 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        public async void Init(MapView activeView)
+        public void Init(MapView activeView)
         {
             this.mapActiveView = activeView;
+            this.spatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            this.Login = "";
+            this.Password = "";
+            this.URLHost = "";
 
-            this.LoginEspaceCollaboratif = "";
-            this.PwdEspaceCollaboratif = "";
-            this.URLHostEspaceCollaboratif = "";
-
-            //IMapDocument mapDocument = ArcMap.Application.Document as IMapDocument;
             Project project = Project.Current;
             if (project.Name.Length == 0)
             {
@@ -130,28 +104,26 @@ namespace ArcGisProEspaceCollaboratif
 
             this.CheckConfigFile();
 
-            // récupération ou création de EspaceCollaboratif.gdb -> a priori inutile car une gdb est créée avec le projet ArcGIS
-   //         var bCreated = await GetOrCreateFileGeodatabase();
-
             //création ou chargement des couches ripart
-            var bLayersLoaded = await CreateOrLoadReportLayers();
+            //TODO : question Noémie pourquoi cette création ici ?
+            //var bLayersLoaded = CreateOrLoadReportLayers();
 
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
-            /// <summary>
-            /// Teste si le fichier de configuration EspaceCollaboratif.xml n'existe pas dans le répertoire de travail, on le copie 
-            /// du répertoire d'installation 
-            /// </summary>
-            /// <returns>True si il existe le fichier de configuration EspaceCollaboratif.xml à côté de la carte en cours.</returns>
-            public bool CheckConfigFile()
+        /// <summary>
+        /// Teste si le fichier de configuration espaceco.xml n'existe pas dans le répertoire de travail, on le copie 
+        /// du répertoire d'installation 
+        /// </summary>
+        /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
+        public bool CheckConfigFile()
         {
-
-            if (!File.Exists(this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif))
+            string fileConfiguration = this.repertoireTravail + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
+            if (!File.Exists(fileConfiguration))
             {
                 try
                 {
-                    File.Copy(EspaceCollaboratifHelper.EspaceCollaboratifAssemblyDir + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif, this.repertoireTravail + "\\" + EspaceCollaboratifHelper.nom_Fichier_Parametres_EspaceCollaboratif);
+                    File.Copy(Helper.EspaceCollaboratifAssemblyDir + Helper.nom_Fichier_Parametres_EspaceCollaboratif, fileConfiguration);
                 }
                 catch (Exception e)
                 {
@@ -159,58 +131,52 @@ namespace ArcGisProEspaceCollaboratif
                     return false;
                 }
             }
-
             return true;
         }
-
 
         /// <summary>
         /// création ou chargement des couches de signalement de l'espace collaboratif
         /// </summary>
-        private async Task<bool> CreateOrLoadReportLayers()
+        public async Task CreateOrLoadReportLayers()
         {
-
             // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
-
-            string polygonSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Polygone;
-            string lineSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Ligne;
-            string pointSketchLayer = EspaceCollaboratifHelper.nom_Calque_Croquis_Point;
-
-            string reportLayer = EspaceCollaboratifHelper.nom_Calque_Signalement;
+            string polygonSketchLayer = Helper.nom_Calque_Croquis_Polygone;
+            string lineSketchLayer = Helper.nom_Calque_Croquis_Ligne;
+            string pointSketchLayer = Helper.nom_Calque_Croquis_Point;
+            string reportLayer = Helper.nom_Calque_Signalement;
 
             // Signalements
-            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+            await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 reportLayer,
                 "POINT",
-                EspaceCollaboratifHelper.reportAttributes, 
+                Helper.reportAttributes, 
                 0, 
                 "Tear pin 2"
                 );
 
             // Croquis ponctuels
-            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+            await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 pointSketchLayer,
                 "POINT",
-                EspaceCollaboratifHelper.sketchAttributes,
+                Helper.sketchAttributes,
                 1
                 );
 
             // Croquis linéaires
-            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+            await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 lineSketchLayer,
                 "POLYLINE",
-                EspaceCollaboratifHelper.sketchAttributes,
+                Helper.sketchAttributes,
                 2
                 );
 
             // Croquis linéaires
-            await EspaceCollaboratifHelper.LoadOrCreateCollaborativeSpaceLayer(
+            await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 polygonSketchLayer,
                 "POLYGON",
-                EspaceCollaboratifHelper.sketchAttributes,
+                Helper.sketchAttributes,
                 3
                 );
-
 
             // Ajout des couches à la liste collaboratifSpaceLayers
             this.collaborativeSpaceLayers.Clear();
@@ -219,14 +185,7 @@ namespace ArcGisProEspaceCollaboratif
             this.collaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer) as FeatureLayer);
             this.collaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer) as FeatureLayer);
 
-            return true;
-
-            // Ne semble pas nécessaire - à confirmer et supprimer
-            //this.activeView.Redraw();
         }
-
-
-
 
         /// <summary>
         /// Essaie de charger une couche de la geodatabase
@@ -291,10 +250,10 @@ namespace ArcGisProEspaceCollaboratif
 
 
         /// <summary>
-        /// Teste si l'existence d'un calque dans la carte en cours.Récupère un calque par son nom
+        /// Teste l'existence d'une couche dans la carte en cours.
         /// </summary>
-        /// <param name="name">Le nom du calque dont on veut connaître son existence.</param>
-        /// <returns>True si le calque existe, False dans le cas contraire.</returns>
+        /// <param name="name">Le nom de la couche dont on veut connaître l'existence.</param>
+        /// <returns>true si la couche existe, false dans le cas contraire.</returns>
         public bool IsLayerInMap(string layerName)
         {
             IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
@@ -302,7 +261,6 @@ namespace ArcGisProEspaceCollaboratif
             {
                 if (layer.Name == layerName) return true;
             }
-
             return false;
         }
 
@@ -422,7 +380,7 @@ namespace ArcGisProEspaceCollaboratif
                 return await QueuedTask.Run(() =>
                 {
 
-                    FeatureLayer reportLayer = this.GetLayerByName(EspaceCollaboratifHelper.nom_Calque_Signalement);
+                    FeatureLayer reportLayer = this.GetLayerByName(Helper.nom_Calque_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
                     EditOperation editOperation = new EditOperation();
@@ -440,28 +398,28 @@ namespace ArcGisProEspaceCollaboratif
                             // Préparation des attributs de l'objet signalement à créer
                             rowBuffer = reportFeatureClass.CreateRowBuffer();
 
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IdRemarque] = newReport.Id;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Auteur] = newReport.Auteur.Nom;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Commune] = newReport.Commune;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Departement] = newReport.Departement.Nom;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_IDDepartement] = newReport.Departement.Id;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateCreation] = newReport.DateCreation;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateMAJ] = newReport.DateMiseAJour;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_DateValidation] = newReport.DateValidation;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Statut] = newReport.Statut;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Themes] = newReport.ConcatenateThemes();
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Url] = newReport.Lien;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_UrlPrive] = newReport.LienPrive;
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Document] = newReport.GetFirstDocument();
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Message] = EspaceCollaboratifHelper.Limite(newReport.Commentaire);
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Reponse] = EspaceCollaboratifHelper.Limite(newReport.ConcatenateReponse());
-                            rowBuffer[EspaceCollaboratifHelper.nom_Champ_Autorisation] = newReport.Autorisation;
+                            rowBuffer[Helper.nom_Champ_IdRemarque] = newReport.Id;
+                            rowBuffer[Helper.nom_Champ_Auteur] = newReport.Auteur.Nom;
+                            rowBuffer[Helper.nom_Champ_Commune] = newReport.Commune;
+                            rowBuffer[Helper.nom_Champ_Departement] = newReport.Departement.Nom;
+                            rowBuffer[Helper.nom_Champ_IDDepartement] = newReport.Departement.Id;
+                            rowBuffer[Helper.nom_Champ_DateCreation] = newReport.DateCreation;
+                            rowBuffer[Helper.nom_Champ_DateMAJ] = newReport.DateMiseAJour;
+                            rowBuffer[Helper.nom_Champ_DateValidation] = newReport.DateValidation;
+                            rowBuffer[Helper.nom_Champ_Statut] = newReport.Statut;
+                            rowBuffer[Helper.nom_Champ_Themes] = newReport.ConcatenateThemes();
+                            rowBuffer[Helper.nom_Champ_Url] = newReport.Lien;
+                            rowBuffer[Helper.nom_Champ_UrlPrive] = newReport.LienPrive;
+                            rowBuffer[Helper.nom_Champ_Document] = newReport.GetFirstDocument();
+                            rowBuffer[Helper.nom_Champ_Message] = Helper.Limite(newReport.Commentaire);
+                            rowBuffer[Helper.nom_Champ_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
+                            rowBuffer[Helper.nom_Champ_Autorisation] = newReport.Autorisation;
 
                             // Création de l'objet signalement dans la classe des signalements
                             featureReport = reportFeatureClass.CreateRow(rowBuffer);
 
                             // Remplissage de sa géométrie
-                            featureReport.SetShape(EspaceCollaboratifHelper.TransformPoint(newReport.Position));
+                            featureReport.SetShape(Helper.TransformPoint(newReport.Position));
 
                             // Enregristrement
                             featureReport.Store();
@@ -547,15 +505,15 @@ namespace ArcGisProEspaceCollaboratif
                     // Préparation des attributs de l'objet croquis à créer
                     rowBuffer = sketchFeatureClass.CreateRowBuffer();
 
-                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_LienRemarque] = idNewReport;
-                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_NomCroquis] = currSketch.Name;
-                    rowBuffer[EspaceCollaboratifHelper.nom_Champ_Attributs] = EspaceCollaboratifHelper.Limite(attributes);
+                    rowBuffer[Helper.nom_Champ_LienRemarque] = idNewReport;
+                    rowBuffer[Helper.nom_Champ_NomCroquis] = currSketch.Name;
+                    rowBuffer[Helper.nom_Champ_Attributs] = Helper.Limite(attributes);
 
                     // Création de l'objet signalement dans la classe des signalements
                     sketchFeature = sketchFeatureClass.CreateRow(rowBuffer);
 
                     // Remplissage de sa géométrie
-                    ArcGIS.Core.Geometry.MapPoint sketchPoint = EspaceCollaboratifHelper.TransformPoint(currSketch.Points.First());
+                    ArcGIS.Core.Geometry.MapPoint sketchPoint = Helper.TransformPoint(currSketch.Points.First());
                     switch (currSketch.Type)
                     {
                         default:
@@ -566,12 +524,12 @@ namespace ArcGisProEspaceCollaboratif
                             break;
 
                         case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Ligne:
-                            Polyline sketchLine = PolylineBuilder.CreatePolyline(EspaceCollaboratifHelper.GetPointCollectionFromSketch(currSketch));
+                            Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
                             sketchFeature.SetShape(sketchLine);
                             break;
 
                         case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygone:
-                            Polygon sketchPolygon = PolygonBuilder.CreatePolygon(EspaceCollaboratifHelper.GetPointCollectionFromSketch(currSketch));
+                            Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
                             sketchFeature.SetShape(sketchPolygon);
                             break;
 
@@ -871,10 +829,10 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("GetConnexionEspaceCollaboratif ");
 
             //this.URLHostEspaceCollaboratif = EspaceCollaboratifHelper.Load_Urlhost();
-            this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
+            this.URLHost = "https://espacecollaboratif.ign.fr";
 //            this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
 
-            logger.Debug("this.URLHostEspaceCollaboratif " + this.URLHostEspaceCollaboratif);
+            logger.Debug("this.URLHostEspaceCollaboratif " + this.URLHost);
 
             bool premiereConnexion = false;
 
@@ -884,20 +842,20 @@ namespace ArcGisProEspaceCollaboratif
             //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
 
             // Lancement du formulaire de saisie du login et mot de passe                
-            this.loginWindow.SetLogin(this.LoginEspaceCollaboratif);
+            this.loginWindow.SetLogin(this.Login);
 
 
             for (int tentativeConnexion = 0; tentativeConnexion < 3; tentativeConnexion++)          
             {
                 logger.Debug("tentative de connexion ");
                 // Si il n'y a pas de login ou de mot de passe enregistré, on lance le formulaire de saisi LogEspaceCollaboratif
-                if (this.LoginEspaceCollaboratif.Length == 0 || this.PwdEspaceCollaboratif.Length == 0)
+                if (this.Login.Length == 0 || this.Password.Length == 0)
                 {
                     // Recherche du login par défaut dans le fichier XML de paramétrage
                     //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
 
                     // Lancement du formulaire de saisi du login et mot de passe                
-                    this.loginWindow.SetLogin(this.LoginEspaceCollaboratif);
+                    this.loginWindow.SetLogin(this.Login);
 
                     // On s'arrrête là si l'utilisateur a cliqué sur le bouton "abandonner"
                     if (this.loginWindow.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -909,8 +867,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Récupération du login et mot de passe introduits.
-                    this.LoginEspaceCollaboratif = this.loginWindow.GetLogin();
-                    this.PwdEspaceCollaboratif = this.loginWindow.GetPassword();
+                    this.Login = this.loginWindow.GetLogin();
+                    this.Password = this.loginWindow.GetPassword();
 
                     premiereConnexion = true;
                 }
@@ -919,9 +877,9 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     // Création de la connexion au serveur.
                     ArcGisProEspaceCollaboratif.Core.IClient uneConnexionEspaceCollaboratif = new Client(
-                        this.URLHostEspaceCollaboratif,
-                        this.LoginEspaceCollaboratif,
-                        this.PwdEspaceCollaboratif
+                        this.URLHost,
+                        this.Login,
+                        this.Password
                     );
 
                     this.profil = uneConnexionEspaceCollaboratif.GetProfil();
@@ -939,8 +897,8 @@ namespace ArcGisProEspaceCollaboratif
 
                         popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif.");
                         popupEspaceCollaboratif.AddMessage("");
-                        popupEspaceCollaboratif.AddMessage(" Serveur: " + this.URLHostEspaceCollaboratif);
-                        popupEspaceCollaboratif.AddMessage(" Login: " + this.LoginEspaceCollaboratif);
+                        popupEspaceCollaboratif.AddMessage(" Serveur: " + this.URLHost);
+                        popupEspaceCollaboratif.AddMessage(" Login: " + this.Login);
                         popupEspaceCollaboratif.AddMessage(" Profil: " + profil.Titre);
                         popupEspaceCollaboratif.AddMessage(" Zone: " + profil.Zone);
 
@@ -953,7 +911,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception erreurConnexion)
                 {
-                    this.PwdEspaceCollaboratif = "";
+                    this.Password = "";
 
                     switch (erreurConnexion.Message.ToString())
                     {
@@ -962,7 +920,7 @@ namespace ArcGisProEspaceCollaboratif
 
                             break;
                         case "Login inconnu":
-                            this.loginWindow.Notifier("''" + this.LoginEspaceCollaboratif + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
+                            this.loginWindow.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
                             break;
 
                         case "no_group":
@@ -970,7 +928,7 @@ namespace ArcGisProEspaceCollaboratif
                             break;
 
                         default:
-                            MessageBox.Show("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante: " + this.URLHostEspaceCollaboratif +
+                            MessageBox.Show("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante: " + this.URLHost +
                                             "\n\nVeuillez contacter le support de l'Espace collaboratif: \n" + erreurConnexion.Message.ToString() + ".", "IGN Espace collaboratif",
                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
@@ -1000,7 +958,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             List<ArcGisProEspaceCollaboratif.Core.Sketch> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
-            System.Windows.Forms.TreeNode treeAttributs = EspaceCollaboratifHelper.Load_AttributsCroquis();
+            System.Windows.Forms.TreeNode treeAttributs = Helper.Load_AttributsCroquis();
 
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
@@ -1029,7 +987,7 @@ namespace ArcGisProEspaceCollaboratif
 
                                 case GeometryType.Point:
                                     ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
-                                    ArcGisProEspaceCollaboratif.Core.Sketch croquisTemp = EspaceCollaboratifHelper.MakeSketch(pointGeom);
+                                    ArcGisProEspaceCollaboratif.Core.Sketch croquisTemp = Helper.MakeSketch(pointGeom);
                                     //TODO Ajouter les champs du croquis
                                     //EspaceCollaboratifHelper.AddAttributs(croquisTemp, feature, treeAttributs);
                                     listCroquis.Add(croquisTemp);
