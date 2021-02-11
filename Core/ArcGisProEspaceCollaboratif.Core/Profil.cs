@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
-    /// Classe représentqnt le profil de l'utilisateur
+    /// Classe représentant le profil de l'utilisateur
     /// </summary>
     public class Profil
     {
@@ -14,32 +13,32 @@ namespace ArcGisProEspaceCollaboratif.Core
         public Auteur Auteur;
                 
         /// <summary>
-        /// Nom du Geogroupe
+        /// ID & Nom du Geogroupe
         /// </summary>
-        public Groupe Geogroupe;
+        public Groupe groupe;
 
         /// <summary>
         /// Titre du Geogroupe
         /// </summary>
-        public String Titre;
+        public string Titre;
         
         /// <summary>
         /// Statut (privilèges) du profil
         /// </summary>
-        public String Statut;
+        public string Statut;
 
         /// <summary>
         /// Lien vers le logo du profil
         /// </summary>
-        public String Logo;
+        public string Logo;
 
         /// <summary>
         /// Filtre du profil
         /// </summary>
-        public String Filtre;
+        public string Filter;
 
         /// <summary>
-        /// La zone géographique de travail du profil
+        /// La zone géographique de travail
         /// </summary>
         public ZoneGeographique Zone;
 
@@ -51,20 +50,24 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Les éventuels thèmes attachés au profil
         /// </summary>
-        public List<Theme> Themes = new List<Theme>();
-
+        public List<Theme> Themes;
 
         /// <summary>
-        /// identifiant geoprofil
+        /// Les thèmes filtrés attachés au profil
         /// </summary>
-        public String Id_Geoprofil;
+        public List<string> filteredThemes;
 
-       
+        /// <summary>
+        /// Identifiant geoprofil
+        /// </summary>
+        public string Id_Geoprofil;
 
+        /// <summary>
+        /// Les différents groupes de l'utilisateur
+        /// </summary>
+        public List<GeoGroupe> geogroupes;
 
-
-
-         
-
+        /// La liste des couches Geoportail visible avec la clé geoportail utilisateur
+        public Dictionary<string,string> layersCleGeoportail;
     }
 }

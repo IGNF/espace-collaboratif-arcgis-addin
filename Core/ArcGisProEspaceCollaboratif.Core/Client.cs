@@ -41,7 +41,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private System.Windows.Forms.ProgressBar progressbar= new System.Windows.Forms.ProgressBar();
 
         //logger
-        readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
+        readonly Logger riplogger = Logger.Instance;
         private ILog logger = LogManager.GetLogger(typeof(Client));
        
         /// <summary>
@@ -72,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
             client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
             System.Net.ServicePointManager.ServerCertificateValidationCallback =
-                new System.Net.Security.RemoteCertificateValidationCallback(EspaceCollaboratifServiceRequest.ValidateRemoteCertificate);
+                new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);
 
             String paramString = "";
             if (parameters != null)
@@ -467,8 +467,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 Dictionary<String, String> parameters = new Dictionary<String, String>
                 {
-                    { "version", ConstanteEspaceCollaboratif.EspaceCollaboratif_CLIENT_VERSION },
-                    { "protocol", ConstanteEspaceCollaboratif.EspaceCollaboratif_CLIENT_PROTOCOL },
+                    { "version", Constantes.EspaceCollaboratif_CLIENT_VERSION },
+                    { "protocol", Constantes.EspaceCollaboratif_CLIENT_PROTOCOL },
                     { "comment", signalement.Commentaire }
                 };
 
@@ -487,7 +487,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     String attributes = "";
                     foreach (Theme t in themes)
                     { 
-                        attributes += "\"" + t.Groupe.Id + "::" + t.Groupe.Nom + "\"=>\"1\",";
+                        attributes += "\"" + t.groupe.Id + "::" + t.groupe.Nom + "\"=>\"1\",";
                     }
                     attributes = attributes.Substring(0, attributes.Length - 1);
                     parameters.Add("attributes", attributes);
@@ -522,10 +522,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         docCount++;
                         FileStream fs = File.Open(document, FileMode.Open);
-                        if (fs.Length > ConstanteEspaceCollaboratif.MAX_TAILLE_UPLOAD_FILE)
+                        if (fs.Length > Constantes.MAX_TAILLE_UPLOAD_FILE)
                         {
                             throw new Exception("Le fichier " + document + " est de taille supérieure à " +
-                                                 ConstanteEspaceCollaboratif.MAX_TAILLE_UPLOAD_FILE);
+                                                 Constantes.MAX_TAILLE_UPLOAD_FILE);
                         }
                        
                         fs.Close();
@@ -573,7 +573,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         public int Get_MAX_TAILLE_UPLOAD_FILE()
         {
-            return ConstanteEspaceCollaboratif.MAX_TAILLE_UPLOAD_FILE;
+            return Constantes.MAX_TAILLE_UPLOAD_FILE;
         }
 
         /// <summary>
@@ -582,7 +582,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         public int Get_NB_DEFAULT_SIGNALEMENTS_PAGINATION()
         {
-            return ConstanteEspaceCollaboratif.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
+            return Constantes.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
         }
 
         /// <summary>

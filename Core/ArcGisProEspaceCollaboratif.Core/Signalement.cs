@@ -125,7 +125,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     result += ", ";
                 }
-                result += this.Themes[i].Groupe.Nom;
+                result += this.Themes[i].groupe.Nom;
             }
             return result;
         }

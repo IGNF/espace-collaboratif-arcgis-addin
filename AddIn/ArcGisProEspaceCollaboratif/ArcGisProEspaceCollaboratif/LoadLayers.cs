@@ -19,7 +19,7 @@ using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class ChargerCouches : Button
+    internal class LoadLayers : Button
     {
         protected override void OnClick()
         {

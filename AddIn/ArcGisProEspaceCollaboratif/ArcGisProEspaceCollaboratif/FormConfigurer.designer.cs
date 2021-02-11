@@ -49,12 +49,12 @@
             this.checkBoxGroup = new System.Windows.Forms.CheckBox();
             this.lblGroup = new System.Windows.Forms.Label();
             this.checkBoxProxy = new System.Windows.Forms.CheckBox();
-            this.labelGroupeActif = new System.Windows.Forms.Label();
             this.labelCleGeoportail = new System.Windows.Forms.Label();
             this.textBoxProxy = new System.Windows.Forms.TextBox();
             this.textBoxGroupeActif = new System.Windows.Forms.TextBox();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.labelGroupeActif = new System.Windows.Forms.Label();
             this.textBoxCleGeoportail = new System.Windows.Forms.TextBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPagination)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDate)).BeginInit();
@@ -367,18 +367,6 @@
             this.checkBoxProxy.Text = "Proxy";
             this.checkBoxProxy.UseVisualStyleBackColor = true;
             // 
-            // labelGroupeActif
-            // 
-            this.labelGroupeActif.AutoSize = true;
-            this.labelGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelGroupeActif.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.labelGroupeActif.Location = new System.Drawing.Point(3, 527);
-            this.labelGroupeActif.Name = "labelGroupeActif";
-            this.labelGroupeActif.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.labelGroupeActif.Size = new System.Drawing.Size(113, 20);
-            this.labelGroupeActif.TabIndex = 21;
-            this.labelGroupeActif.Text = "Groupe actif";
-            // 
             // labelCleGeoportail
             // 
             this.labelCleGeoportail.AutoSize = true;
@@ -407,6 +395,18 @@
             this.textBoxGroupeActif.Name = "textBoxGroupeActif";
             this.textBoxGroupeActif.Size = new System.Drawing.Size(857, 27);
             this.textBoxGroupeActif.TabIndex = 24;
+            // 
+            // labelGroupeActif
+            // 
+            this.labelGroupeActif.AutoSize = true;
+            this.labelGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelGroupeActif.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.labelGroupeActif.Location = new System.Drawing.Point(3, 527);
+            this.labelGroupeActif.Name = "labelGroupeActif";
+            this.labelGroupeActif.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.labelGroupeActif.Size = new System.Drawing.Size(113, 20);
+            this.labelGroupeActif.TabIndex = 21;
+            this.labelGroupeActif.Text = "Groupe actif";
             // 
             // textBoxCleGeoportail
             // 

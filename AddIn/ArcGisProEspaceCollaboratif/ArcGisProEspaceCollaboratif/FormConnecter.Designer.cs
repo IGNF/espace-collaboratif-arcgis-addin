@@ -116,11 +116,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.LogoBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
-
         private System.Windows.Forms.TextBox InputLoginEspaceCollaboratif;
         private System.Windows.Forms.Label labelInputLoginEspaceCollaboratif;
         private System.Windows.Forms.Label labelInputPasswordEspaceCollaboratif;
@@ -130,10 +128,5 @@
         private System.Windows.Forms.Button buttonAbort;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label lblErreur;
-
-        
-
-        
-
     }
 }

@@ -10,7 +10,7 @@ namespace ArcGisProEspaceCollaboratif
 
         private System.Drawing.Size formSize; 
 
-        ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
+        ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
         private static readonly ILog logger = LogManager.GetLogger(typeof(FormConnecter));
        
 
@@ -35,13 +35,17 @@ namespace ArcGisProEspaceCollaboratif
         /// Renvoie le login saisi dans le formulaire pour se connecter au service de l'espace collaboratif.
         /// </summary>     
         /// <returns>Le login pour se connecter au service de l'espace collaboratif.</returns>
-        public String GetLogin() { return this.InputLoginEspaceCollaboratif.Text; }
+        public String GetLogin() {
+            return this.InputLoginEspaceCollaboratif.Text;
+        }
 
         /// <summary>
         /// Renvoie le mot de passe saisi dans le formulaire pour se connecter au service de l'espace collaboratif.
         /// </summary>     
         /// <returns>Le mot de passe pour se connecter au service de l'espace collaboratif.</returns>
-        public String GetPassword() { return this.InputPasswordEspaceCollaboratif.Text; }              
+        public String GetPassword() {
+            return this.InputPasswordEspaceCollaboratif.Text;
+        }              
 
         /// <summary>
         /// Pré-remplit d'un login par défaut le formulaire pour se connecter au service de l'espace collaboratif.
@@ -69,17 +73,14 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>   
         private void InputLoginEspaceCollaboratif_TextChanged(object sender, EventArgs e)
         {
-           
             this.buttonConnect.Enabled = this.InputLoginEspaceCollaboratif.TextLength != 0 && this.InputPasswordEspaceCollaboratif.TextLength != 0;
-            
         }
 
         /// <summary>
         /// Action après changement du mot de passe saisi dans le formulaire de connection au service de l'espace collaboratif.
         /// </summary>   
         private void InputPasswordEspaceCollaboratif_TextChanged(object sender, EventArgs e)
-        {
-          
+        {       
             if (InputLoginEspaceCollaboratif.TextLength != 0 && InputPasswordEspaceCollaboratif.TextLength != 0)
             {
                 this.buttonConnect.Enabled = true;
@@ -96,8 +97,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         private void LogEspaceCollaboratif_Close(object sender, EventArgs e)
-        {
-            
+        {   
             this.lblErreur.Visible = false;
         }
 

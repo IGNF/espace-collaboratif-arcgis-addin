@@ -7,10 +7,10 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe qui initialise le logger
     /// </summary>
-    public  class EspaceCollaboratifLogger 
+    public  class Logger 
     {
-       //instance unique de EspaceCollaboratifLogger
-       private static EspaceCollaboratifLogger instance;
+       //instance unique de Logger
+       private static Logger instance;
        private static readonly object padlock = new object();
 
        //le fichier de configuration du log
@@ -22,9 +22,9 @@ namespace ArcGisProEspaceCollaboratif.Core
        private readonly String level = "ALL";
 
         /// <summary>
-        /// retourne l'instance du EspaceCollaboratifLogger
+        /// retourne l'instance du Logger
         /// </summary>
-        public static EspaceCollaboratifLogger Instance
+        public static Logger Instance
         {
             get
             {
@@ -34,7 +34,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         if (instance == null)
                         {
-                            instance = new EspaceCollaboratifLogger();
+                            instance = new Logger();
                         }
                     }
                 }
@@ -46,7 +46,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Constructeur
         /// Crée le fichier de configuration s'il n'existe pas et configure le chemin du XNLConfigurateur de log4Net
         /// </summary>
-        private EspaceCollaboratifLogger()
+        private Logger()
         {        
             if (!Directory.Exists(logPath))
             {

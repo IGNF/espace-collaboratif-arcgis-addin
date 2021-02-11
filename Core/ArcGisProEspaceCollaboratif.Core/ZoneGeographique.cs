@@ -3,7 +3,7 @@
     public enum ZoneGeographique
     {
         /// <summary>
-        /// non définit
+        /// Non défini
         /// </summary>
         UNDEFINED,
         /// <summary>
@@ -11,7 +11,7 @@
         /// </summary>
         FXX,
         /// <summary>
-        /// Terres Articques Australes.
+        /// Terres australes et antarctiques françaises.
         /// </summary>
         ATF,
         /// <summary>
@@ -19,7 +19,7 @@
         /// </summary>
         GLP,
         /// <summary>
-        /// Guyanne
+        /// Guyane
         /// </summary>
         GUF,
         /// <summary>
@@ -31,11 +31,11 @@
         /// </summary>
         MYT,
         /// <summary>
-        /// Nouvelle Caledonie
+        /// Nouvelle-Calédonie
         /// </summary>
         NCL,
         /// <summary>
-        /// Polynesie Française
+        /// Polynésie Française
         /// </summary>
         PYF,
         /// <summary>
@@ -51,4 +51,55 @@
         /// </summary>
         WLF
     }
+    /*public System.Collections.Generic.Dictionary<int, string> ZoneGeographique = new System.Collections.Generic.Dictionary<int, string>
+    {
+        /// <summary>
+        /// Non défini
+        /// </summary>
+        { 0, "UNDEFINED" },
+        /// <summary>
+        /// France métropolitaine (Corse incluse).
+        /// </summary>
+        { 1, "FXX" },
+        /// <summary>
+        /// Terres australes et antarctiques françaises.
+        /// </summary>
+        { 2, "ATF" },
+        /// <summary>
+        /// Guadeloupe
+        /// </summary>
+        { 3, "GLP" },
+        /// <summary>
+        /// Guyane
+        /// </summary>
+        { 4, "GUF" },
+        /// <summary>
+        /// Martinique
+        /// </summary>
+	    { 5, "MTQ" },
+        /// <summary>
+        /// Mayotte
+        /// </summary>
+        { 6, "MYT" },
+        /// <summary>
+        /// Nouvelle-Calédonie
+        /// </summary>
+        { 7, "NCL" },
+        /// <summary>
+        /// Polynésie Française
+        /// </summary>
+        { 8, "PYF" },
+        /// <summary>
+        /// Réunion
+        /// </summary>
+        { 9, "REU" },
+        /// <summary>
+        /// Saint-Pierre et Miquelon
+        /// </summary>
+        { 10, "SPM" },
+        /// <summary>
+        /// Wallis et Futuna
+        /// </summary>
+        { 11, "WLF" }
+    }*/
 }

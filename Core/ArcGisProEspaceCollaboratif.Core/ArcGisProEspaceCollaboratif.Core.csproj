@@ -51,7 +51,9 @@
     <Compile Include="Auteur.cs" />
     <Compile Include="Box.cs" />
     <Compile Include="Client.cs" />
-    <Compile Include="ConstanteEspaceCollaboratif.cs" />
+    <Compile Include="Constantes.cs" />
+    <Compile Include="GeoGroupe.cs" />
+    <Compile Include="LayerGateway.cs" />
     <Compile Include="Sketch.cs" />
     <Compile Include="GeoReponse.cs" />
     <Compile Include="Groupe.cs" />
@@ -61,10 +63,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Question.cs" />
     <Compile Include="Signalement.cs" />
-    <Compile Include="EspaceCollaboratifServiceRequest.cs" />
-    <Compile Include="EspaceCollaboratifLogger.cs" />
+    <Compile Include="ServiceRequest.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Statut.cs" />
     <Compile Include="Theme.cs" />
+    <Compile Include="ThemeAttribut.cs" />
     <Compile Include="XmlResponse.cs" />
     <Compile Include="ZoneGeographique.cs" />
   </ItemGroup>

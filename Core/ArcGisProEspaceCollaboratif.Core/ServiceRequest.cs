@@ -7,10 +7,10 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe pour les requêtes http vers le service EspaceCollaboratif
     /// </summary>
-    class EspaceCollaboratifServiceRequest
+    class ServiceRequest
     {
-        private static readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
-        static readonly ILog logger = LogManager.GetLogger(typeof(EspaceCollaboratifServiceRequest));
+        private static readonly Logger riplogger = Logger.Instance;
+        static readonly ILog logger = LogManager.GetLogger(typeof(ServiceRequest));
 
         /// <summary>
         /// Callback pour validation du certificat SSL

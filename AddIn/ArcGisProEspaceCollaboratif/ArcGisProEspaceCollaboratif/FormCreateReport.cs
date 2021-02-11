@@ -31,7 +31,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             ArcGisProEspaceCollaboratif.Core.Profil profil = iclient.GetProfil();
 
-            this.groupImageProfil.Text = "Profil: " + profil.Geogroupe.Nom;
+            this.groupImageProfil.Text = "Profil: " + profil.groupe.Nom;
             this.pictureProfil.ImageLocation = profil.Logo;
             this.maxSizePJ = iclient.Get_MAX_TAILLE_UPLOAD_FILE();
             this.OpenFileDialog.InitialDirectory = contexte.repertoireTravail;
@@ -48,7 +48,7 @@ namespace ArcGisProEspaceCollaboratif
                 foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in profil.Themes)
                 {
                     this.listeTheme.Add(theme);
-                    this.checkedListBoxThemes.Items.Add(theme.Groupe.Nom);
+                    this.checkedListBoxThemes.Items.Add(theme.groupe.Nom);
                 }
             }
 

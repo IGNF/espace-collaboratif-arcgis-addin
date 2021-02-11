@@ -274,7 +274,7 @@ namespace ArcGisProEspaceCollaboratif.Core
          
             string coord="";
             foreach (Point pt in this.Points){
-                coord += Convert.ToString(pt.Longitude, ConstanteEspaceCollaboratif.invC) + "," + Convert.ToString(pt.Latitude, ConstanteEspaceCollaboratif.invC) + " ";
+                coord += Convert.ToString(pt.Longitude, Constantes.invC) + "," + Convert.ToString(pt.Latitude, Constantes.invC) + " ";
             }
             coord = coord.Substring(0, coord.Length-1);
 

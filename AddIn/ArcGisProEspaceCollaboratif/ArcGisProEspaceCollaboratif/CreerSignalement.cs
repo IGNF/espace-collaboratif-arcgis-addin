@@ -10,7 +10,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class CreerSignalement : Button
     {
-        private readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
+        private readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreerSignalement));
 
         protected override async void OnClick()

@@ -15,7 +15,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
-        private readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
+        private readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
 
         /*public DownloadReports()
@@ -104,7 +104,7 @@ namespace ArcGisProEspaceCollaboratif
                     int groupeId = -1;
                     if (Helper.Load_Group() == "true")
                     {
-                        groupeId = Convert.ToInt32(contexte.profil.Geogroupe.Id);
+                        groupeId = Convert.ToInt32(contexte.profil.groupe.Id);
                         parameters.Add("group", groupeId.ToString());
                     }
 

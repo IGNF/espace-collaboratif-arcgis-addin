@@ -32,13 +32,14 @@ namespace ArcGisProEspaceCollaboratif
         public string URLHost; // l'URL d'accès au service de l'espace collaboratif.
         public string Login; // Le login à utiliser pour se connecter au service de l'espace collaboratif.
         public string Password; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
+        public string cleGeoportail; // La clé Geoportail de l'utilisateur
 
         public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
 
         public ArcGIS.Core.Geometry.SpatialReference spatialReference; // Le système géodésique employé par le service de l'espace collaboratif
-        public FormConnecter loginWindow; // Le login à utiliser pour connecter au service de l'espace collaboratif.
+        public FormConnecter formConnection; // Le login à utiliser pour connecter au service de l'espace collaboratif.
 
-        private readonly EspaceCollaboratifLogger riplogger = EspaceCollaboratifLogger.Instance;
+        private readonly Logger riplogger = Logger.Instance;
         static ILog logger = LogManager.GetLogger(typeof(Contexte));
 
         public Profil profil=null;
@@ -827,87 +828,88 @@ namespace ArcGisProEspaceCollaboratif
         public ArcGisProEspaceCollaboratif.Core.IClient GetConnexionEspaceCollaboratif()
         {
             logger.Debug("GetConnexionEspaceCollaboratif ");
-
-            //this.URLHostEspaceCollaboratif = EspaceCollaboratifHelper.Load_Urlhost();
-            this.URLHost = "https://espacecollaboratif.ign.fr";
-//            this.URLHostEspaceCollaboratif = "https://espacecollaboratif.ign.fr";
-
-            logger.Debug("this.URLHostEspaceCollaboratif " + this.URLHost);
-
-            bool premiereConnexion = false;
-
-            this.loginWindow = new FormConnecter();
-
+            this.cleGeoportail = Helper.Load_CleGeoportail();
+            this.URLHost = Helper.Load_Urlhost();
+            logger.Debug("URLHost : " + this.URLHost);
+            this.formConnection = new FormConnecter();
             // Recherche du login par défaut dans le fichier XML de paramétrage
-            //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
-
-            // Lancement du formulaire de saisie du login et mot de passe                
-            this.loginWindow.SetLogin(this.Login);
-
-
+            this.Login = Helper.Load_Login();
+            bool firstConnection = false;
             for (int tentativeConnexion = 0; tentativeConnexion < 3; tentativeConnexion++)          
             {
-                logger.Debug("tentative de connexion ");
-                // Si il n'y a pas de login ou de mot de passe enregistré, on lance le formulaire de saisi LogEspaceCollaboratif
+                logger.Debug("Tentative de connexion ");
+                // S'il n'y a pas de login enregistré, on lance le formulaire de connexion
                 if (this.Login.Length == 0 || this.Password.Length == 0)
                 {
-                    // Recherche du login par défaut dans le fichier XML de paramétrage
-                    //this.LoginEspaceCollaboratif = EspaceCollaboratifHelper.Load_Login();
-
                     // Lancement du formulaire de saisi du login et mot de passe                
-                    this.loginWindow.SetLogin(this.Login);
+                    this.formConnection.SetLogin(this.Login);
 
-                    // On s'arrrête là si l'utilisateur a cliqué sur le bouton "abandonner"
-                    if (this.loginWindow.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    // On s'arrête là si l'utilisateur a cliqué sur le bouton "abandonner"
+                    if (this.formConnection.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     {
-                        this.loginWindow.Close();
-                        this.loginWindow = null;
-
+                        this.formConnection.Close();
+                        this.formConnection = null;
                         return null;
                     }
 
                     // Récupération du login et mot de passe introduits.
-                    this.Login = this.loginWindow.GetLogin();
-                    this.Password = this.loginWindow.GetPassword();
-
-                    premiereConnexion = true;
+                    this.Login = this.formConnection.GetLogin();
+                    this.Password = this.formConnection.GetPassword();
+                }
+                else
+                {
+                    firstConnection = true;
                 }
 
                 try
                 {
+                    if (!firstConnection)
+                    {
+                        continue;
+                    }
+
                     // Création de la connexion au serveur.
-                    ArcGisProEspaceCollaboratif.Core.IClient uneConnexionEspaceCollaboratif = new Client(
+                    ArcGisProEspaceCollaboratif.Core.IClient connexionServer = new Client(
                         this.URLHost,
                         this.Login,
                         this.Password
                     );
+                    logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
+                    this.profil = connexionServer.GetProfil();
+                    this.formConnection.Close();
+                    this.formConnection = null;
 
-                    this.profil = uneConnexionEspaceCollaboratif.GetProfil();
-                   
-                    if (premiereConnexion)
+                    FormInfo popupEspaceCollaboratif = new FormInfo();
+                    // Le logo du groupe auquel l'utilisateur appartient
+                    string repLogo = this.URLHost + profil.Logo;
+                    popupEspaceCollaboratif.SetLogo(repLogo);
+                    popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif");
+                    popupEspaceCollaboratif.AddMessage("");
+                    popupEspaceCollaboratif.AddMessage(" Serveur : " + this.URLHost);
+                    popupEspaceCollaboratif.AddMessage(" Login : " + this.Login);
+                    popupEspaceCollaboratif.AddMessage(" Groupe : " + profil.Titre);
+                    if (profil.Zone == ZoneGeographique.UNDEFINED)
                     {
-                        this.loginWindow.Close();
-                        this.loginWindow = null;
-
-                        logger.Info("Création de la connexion au serveur " + uneConnexionEspaceCollaboratif.ToString());
-
-                        FormInfo popupEspaceCollaboratif = new FormInfo();
-
-                        popupEspaceCollaboratif.SetLogo(profil.Logo);
-
-                        popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif.");
-                        popupEspaceCollaboratif.AddMessage("");
-                        popupEspaceCollaboratif.AddMessage(" Serveur: " + this.URLHost);
-                        popupEspaceCollaboratif.AddMessage(" Login: " + this.Login);
-                        popupEspaceCollaboratif.AddMessage(" Profil: " + profil.Titre);
-                        popupEspaceCollaboratif.AddMessage(" Zone: " + profil.Zone);
-
-                        popupEspaceCollaboratif.StartCountDown(10);
-                        popupEspaceCollaboratif.ShowDialog();
-
-                        //EspaceCollaboratifHelper.Save_Login(this.LoginEspaceCollaboratif);
+                        string zoneExtraction = Helper.Load_CalqueFiltrage();
+                        if (zoneExtraction == "" || zoneExtraction.Length == 0)
+                        {
+                            popupEspaceCollaboratif.AddMessage(" Zone : pas de zone définie");
+                        }
+                        else
+                        {
+                            popupEspaceCollaboratif.AddMessage(" Zone : " + zoneExtraction);
+                        }
                     }
-                    return uneConnexionEspaceCollaboratif;
+                    else
+                    {
+                        popupEspaceCollaboratif.AddMessage(" Zone : " + profil.Zone);
+                    }
+                    popupEspaceCollaboratif.AddMessage(" Clé Géoportail : " + this.cleGeoportail);
+                    popupEspaceCollaboratif.StartCountDown(10);
+                    popupEspaceCollaboratif.ShowDialog();
+
+                    Helper.Save_Login(this.Login);
+                    return connexionServer;
                 }
                 catch (Exception erreurConnexion)
                 {
@@ -916,15 +918,15 @@ namespace ArcGisProEspaceCollaboratif
                     switch (erreurConnexion.Message.ToString())
                     {
                         case "(401) Unauthorized":
-                            this.loginWindow.Notifier("Login et/ou mot de passe incorrects");
+                            this.formConnection.Notifier("Login et/ou mot de passe incorrects");
 
                             break;
                         case "Login inconnu":
-                            this.loginWindow.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
+                            this.formConnection.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
                             break;
 
                         case "no_group":
-                            this.loginWindow.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
+                            this.formConnection.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
                             break;
 
                         default:
@@ -935,8 +937,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
             }
-            this.loginWindow.Close();
-            this.loginWindow = null;
+            this.formConnection.Close();
+            this.formConnection = null;
             return null;
         }
 

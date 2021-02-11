@@ -130,7 +130,7 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChargerCouches.cs" />
+    <Compile Include="LoadLayers.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
     <Compile Include="Contexte.cs" />
@@ -198,6 +198,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormConnecter.resx">
       <DependentUpon>FormConnecter.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FormCreateReport.resx">
       <DependentUpon>FormCreateReport.cs</DependentUpon>

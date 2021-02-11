@@ -1,28 +1,29 @@
-﻿using System;
-
-namespace ArcGisProEspaceCollaboratif.Core
+﻿namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
-    /// Un groupe EspaceCollaboratif
+    /// Un groupe de l'Espace collaboratif
     /// </summary>
     public class Groupe
     {
         /// <summary>
         /// L'identifiant du groupe
         /// </summary>
-        public String Id;
+        public string id;
         /// <summary>
         /// Le nom du groupe
         /// </summary>
-        public String Nom;
+        public string nom;
+
+        public string Id { get; set; }
+        public string Nom { get; set; }
 
         /// <summary>
         /// constructeur
         /// </summary>
         public Groupe()
         {
-            this.Id = "";
-            this.Nom = "";
+            id = string.Empty;
+            nom = string.Empty;
         }
 
         /// <summary>
@@ -30,13 +31,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="id">identifiant du groupe</param>
         /// <param name="nom">nom du groupe</param>
-        public Groupe(String id, String nom)
+        public Groupe(string id, string nom)
         {
-            this.Id  = id;
-            this.Nom = nom;
+            this.id  = id;
+            this.nom = nom;
         }
-       
-
-
     }
 }

@@ -72,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif
 
         public static String EspaceCollaboratifAssemblyDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\";
 
-        private readonly ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger riplogger = ArcGisProEspaceCollaboratif.Core.EspaceCollaboratifLogger.Instance;
+        private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
@@ -1461,7 +1461,7 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
             {
-                ListThemes.Add(theme.Groupe.Nom);
+                ListThemes.Add(theme.groupe.Nom);
             }
 
             Helper.Save_PreferedThemes(ListThemes);
@@ -1723,6 +1723,20 @@ namespace ArcGisProEspaceCollaboratif
                 XML_AddElement(xml_Proxy);
             }
             XML_SetElement(xml_Proxy, proxy);
+        }
+
+        /// <summary>
+        /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
+        /// </summary>
+        /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
+        public static string Load_CleGeoportail()
+        {
+            string cle = Helper.XML_FirstElement(Helper.xml_CleGeoPortail);
+            if (cle.Length == 0)
+            {
+                cle = ArcGisProEspaceCollaboratif.Core.Constantes.DEMO;
+            }
+            return cle;
         }
 
         /// <summary>

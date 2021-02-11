@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
-    public class  ConstanteEspaceCollaboratif
+    public class Constantes
     {
 
         //variable permettant de rendre indifférent à la culture (par exemple pour les nombre à virgule)
@@ -32,5 +32,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const String EspaceCollaboratif_QUESTION_GET = "geoquestion_get";
 
         public const String HELP_FILE_URL = "http://logiciels.ign.fr/IMG/pdf/add-in-EspaceCollaboratif_1-0.pdf";
+
+        public const String DEMO = "Démonstration";
+        public const String CLEGEOPORTAILSTANDARD = "choisirgeoportail";
     }
 }

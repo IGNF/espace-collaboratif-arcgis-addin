@@ -80,10 +80,10 @@ namespace ArcGisProEspaceCollaboratif.Core
 
 
         public String BoxToString(){
-            String strBox = Convert.ToString(this.XMin, ConstanteEspaceCollaboratif.invC)+ "," +
-                            Convert.ToString(this.YMin, ConstanteEspaceCollaboratif.invC) + "," +
-                            Convert.ToString(this.XMax, ConstanteEspaceCollaboratif.invC) + "," +
-                            Convert.ToString(this.YMax, ConstanteEspaceCollaboratif.invC) ;
+            String strBox = Convert.ToString(this.XMin, Constantes.invC)+ "," +
+                            Convert.ToString(this.YMin, Constantes.invC) + "," +
+                            Convert.ToString(this.XMax, Constantes.invC) + "," +
+                            Convert.ToString(this.YMax, Constantes.invC) ;
             return strBox;
         }
 
