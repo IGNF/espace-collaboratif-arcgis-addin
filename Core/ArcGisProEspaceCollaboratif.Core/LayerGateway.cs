@@ -6,51 +6,37 @@
     public class LayerGateway
     {
         // <TYPE> GeoPortail </TYPE>
-        public string type;
+        public string Type { get; set; }
 
         // <NOM> ORTHOIMAGERY.ORTHOPHOTOS </NOM>
-        public string nom;
+        public string Nom { get; set; }
 
         // <DESCRIPTION> Photographies aériennes </DESCRIPTION>
-        public string description;
-        
+        public string Description { get; set; }
+
         // <MINZOOM> 0 </MINZOOM>
-        public int minzoom;
+        public int Minzoom { get; set; }
 
         // <MAXZOOM> 20 </MAXZOOM>
-        public int maxzoom;
-        
+        public int Maxzoom { get; set; }
+
         // <EXTENT> -180, -86, 180, 84 </EXTENT>
-        public string extent;
-        
+        public string Extent { get; set; }
+
         // <ROLE> Droit utilisateur sur la couche </ROLE>
-        public string role;
-        
+        public string Role { get; set; }
+
         // <VISIBILITY> 1 </VISIBILITY>
-        public int visibility;
+        public int Visibility { get; set; }
 
         // <OPACITY> 1 </OPACITY>
-        public int opacity;
+        public int Opacity { get; set; }
 
         // <TILEZOOM>
-        public string tilezoom;
+        public int Tilezoom { get; set; }
 
         // <URL>
-        public string url;
+        public string Url { get; set; }
 
-        public LayerGateway()
-        {
-            type = string.Empty;
-            nom = string.Empty;
-            description = string.Empty;
-            minzoom = 0;
-            maxzoom = 20;
-            extent = string.Empty;
-            role = string.Empty;
-            visibility = 1;
-            opacity = 1;
-            tilezoom = string.Empty;
-            url = string.Empty;
-        }
     }
 }

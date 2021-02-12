@@ -487,7 +487,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     String attributes = "";
                     foreach (Theme t in themes)
                     { 
-                        attributes += "\"" + t.groupe.Id + "::" + t.groupe.Nom + "\"=>\"1\",";
+                        attributes += "\"" + t.Groupe.Id + "::" + t.Groupe.Nom + "\"=>\"1\",";
                     }
                     attributes = attributes.Substring(0, attributes.Length - 1);
                     parameters.Add("attributes", attributes);

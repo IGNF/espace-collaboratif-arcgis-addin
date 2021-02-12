@@ -8,30 +8,21 @@ namespace ArcGisProEspaceCollaboratif.Core
     public class GeoGroupe
     {
         // ID Geogroupe
-        public string id;
+        public string Id { get; set; }
 
         // Nom du Geogroupe
-        public string nom;
+        public string Nom { get; set; }
 
         // Couches visibles sur les cartes de ce groupe (dans l'ordre dans lequel les superposer)
-        public List<LayerGateway> layers;
+        public List<LayerGateway> Layers { get; set; }
 
         // Thèmes du groupe
-        public List<Theme> themes;
+        public List<Theme> Themes { get; set; }
 
         // Thèmes filtrés du groupe
-        public List<Theme> filteredThemes;
+        public List<string> FilteredThemes{ get; set; }
 
-        public string georemComment;
+        public string CommentaireGeorem { get; set; }
 
-        public GeoGroupe()
-        {
-            id = string.Empty;
-            nom = string.Empty;
-            layers = new List<LayerGateway>();
-            themes = new List<Theme>();
-            filteredThemes = new List<Theme>();
-            georemComment = string.Empty;
-        }
     }
 }

@@ -7,14 +7,6 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class ThemeAttribut
     {
-        public string theme;
-        public string nom;
-        public string valeur;
-        public string defaultVal;
-        public List<string> valeurs;
-        public string type;
-        public string obligatoire;
-
         public string Theme { get; set; }
         public string Nom { get; set; }
         public string Valeur { get; set; }

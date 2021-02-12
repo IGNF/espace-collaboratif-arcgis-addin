@@ -48,7 +48,7 @@ namespace ArcGisProEspaceCollaboratif
                 foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in profil.Themes)
                 {
                     this.listeTheme.Add(theme);
-                    this.checkedListBoxThemes.Items.Add(theme.groupe.Nom);
+                    this.checkedListBoxThemes.Items.Add(theme.Groupe.Nom);
                 }
             }
 

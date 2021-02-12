@@ -1461,7 +1461,7 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
             {
-                ListThemes.Add(theme.groupe.Nom);
+                ListThemes.Add(theme.Groupe.Nom);
             }
 
             Helper.Save_PreferedThemes(ListThemes);

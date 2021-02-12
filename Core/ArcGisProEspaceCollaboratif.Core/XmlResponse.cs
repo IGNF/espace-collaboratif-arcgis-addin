@@ -256,9 +256,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 profil.Themes = themes;
                 profil.filteredThemes = filteredThemes;
 
-                // Les infos de tous les geogroupes de l'utilisateur
+                // Les infos sur tous les geogroupes de l'utilisateur
                 profil.geogroupes = GetGeoGroupes();
-
             }
             catch (Exception ex)
             {
@@ -268,128 +267,129 @@ namespace ArcGisProEspaceCollaboratif.Core
             return profil;
         }
 
-        /*
-             def getInfosGeogroupe(self):
-        """Extraction des infos utilisateur sur ses geogroupes
-        :return les infos
-        """
-        infosgeogroupes = []
+        public int TransformStringOrInt(string ToTransform, ref string newString, bool toInt)
+        {
+            int newInt = 0;
+            if (string.IsNullOrEmpty(ToTransform))
+            {
+                newString = "";
+            }
+            else
+            {
+                if (toInt)
+                {
+                    newInt = Int32.Parse(ToTransform);
+                }
+                if (newString != null)
+                {
+                    newString = EncodeToUTF8(ToTransform);
+                }
+            }
+            
+            return newInt;
+        }
 
-        try:
-            # informations sur le geogroupe
-            nodesGr = self.root.findall('GEOGROUPE')
-            for nodegr in nodesGr:
-                infosgeogroupe = InfosGeogroupe()
-                infosgeogroupe.groupe = Groupe()
-                infosgeogroupe.groupe.nom = (nodegr.find('NOM')).text
-                infosgeogroupe.groupe.id = (nodegr.find('ID_GEOGROUPE')).text
-
-                # Récupération du commentaire par défaut des signalements
-                infosgeogroupe.georemComment = nodegr.find('COMMENTAIRE_GEOREM').text
-
-                # Récupération des layers du groupe
-                for nodelayer in nodegr.findall('LAYERS/LAYER'):
-                    layer = Layer()
-                    layer.type = nodelayer.find('TYPE').text
-                    layer.nom = nodelayer.find('NOM').text
-                    layer.description = nodelayer.find('DESCRIPTION').text
-                    layer.minzoom = nodelayer.find('MINZOOM').text
-                    layer.maxzoom = nodelayer.find('MAXZOOM').text
-                    layer.extent = nodelayer.find('EXTENT').text
-                    # cas particulier de la balise <ROLE> qui n'existe
-                    # que dans la base de qualification
-                    role = nodelayer.find('ROLE')
-                    if role is not None:
-                        layer.role = role.text
-                    layer.visibility = nodelayer.find('VISIBILITY').text
-                    layer.opacity = nodelayer.find('OPACITY').text
-                    tilezoom = nodelayer.find('TILEZOOM')
-                    if tilezoom is not None:
-                        layer.tilezoom = tilezoom.text
-                    url = nodelayer.find('URL')
-                    if url is not None:
-                        layer.url = url.text
-
-                    infosgeogroupe.layers.append(layer)
-
-                # Récupération des thèmes du groupe
-                themesAttDict = {}
-
-                try:
-
-                    thAttributs = []
-                    thAttNodes = nodegr.findall('THEMES/ATTRIBUT')
-                    for attNode in thAttNodes:
-
-                        nomTh = ClientHelper.notNoneValue(attNode.find('NOM').text)
-                        nomAtt = attNode.find('ATT').text
-                        thAttribut = ThemeAttribut(nomTh, nomAtt, None)
-
-                        attType = attNode.find('TYPE').text
-                        thAttribut.setType(attType)
-
-                        attObligatoire = attNode.find('OBLIGATOIRE')
-                        if attObligatoire is not None:
-                            thAttribut.setObligatoire()
-
-                        for val in attNode.findall('VALEURS/VAL'):
-                            thAttribut.addValeur(val.text)
-
-                        for val in attNode.findall('VALEURS/DEFAULTVAL'):
-                            thAttribut.defaultval = val.text
-
-                        thAttributs.append(thAttribut)
-                        if nomTh not in themesAttDict:
-                            themesAttDict[nomTh] = []
-                        themesAttDict[nomTh].append(thAttribut)
-
-                    nodes = nodegr.findall('THEMES/THEME')
-
-                    # Récupérer les thèmes à afficher dans le profil (balise <FILTER>)
-                    # Exemple : [{"group_id":375,"themes":["Test_signalement","test leve",
-                    # "Theme_table_bool_TestEcriture"]},{"group_id":1,"themes":["Bati"]}]
-
-                    filterDict = nodegr.find('FILTER').text
-                    groupFilters = re.findall('\{.*?\}',filterDict)
-                    filteredThemes = self.getFilteredThemes(groupFilters, infosgeogroupe.groupe.id)
-                    infosgeogroupe.filteredThemes = filteredThemes
-
-                    for node in nodes:
-                        theme = Theme()
-                        theme.groupe = Groupe()
-
-                        nom = (node.find('NOM')).text
-                        theme.groupe.nom = nom
-                        if nom in filteredThemes:
-                             theme.isFiltered = True
-
-                        theme.groupe.id = infosgeogroupe.groupe.id
-                        if ClientHelper.notNoneValue(theme.groupe.nom) in themesAttDict:
-                            theme.attributs.extend(themesAttDict[ClientHelper.notNoneValue(theme.groupe.nom)])
-
-                        infosgeogroupe.themes.append(theme)
-
-                except Exception as e:
-                    self.logger.error(str(e))
-                    raise Exception("Erreur dans la récupération des thèmes du groupe")
-
-                infosgeogroupes.append(infosgeogroupe)
-
-        except Exception as e:
-            self.logger.error(str(e))
-            raise Exception("Erreur dans la récupération des informations sur le GEOGROUPE")
-
-        return infosgeogroupes
-        */
-
-        ///
-        ///
+        /// <summary>
+        /// Récupération des infos sur les balises <GEOGROUPE>
+        /// </summary>
+        /// <returns></returns>
         public List<GeoGroupe> GetGeoGroupes()
         {
             List<GeoGroupe> listGeoGroupe = new List<GeoGroupe>();
+            try
+            {
+                nav.MoveToRoot();
+                XPathExpression expr = nav.Compile("/geors/GEOGROUPE");
+                XPathNodeIterator iterator = nav.Select(expr);
+                foreach (XPathNavigator val in iterator)
+                {
+                    // Infos générales sur le GeoGroupe
+                    GeoGroupe tmpGeoGroupe = new GeoGroupe
+                    {
+                        Id = EncodeToUTF8(val.SelectSingleNode("ID_GEOGROUPE").Value),
+                        Nom = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
+                        CommentaireGeorem = EncodeToUTF8(val.SelectSingleNode("COMMENTAIRE_GEOREM").Value),
+                        Layers = new List<LayerGateway>()
+                    };
 
+                    // Récupération des attributs des thèmes du GeoGroupe
+                    XPathNodeIterator attiterator = val.Select("THEMES/ATTRIBUT");
+                    ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = GetThemesAttributes(attiterator);
+
+                    // Récupérer uniquement les thèmes du guichet passés à travers le filtre
+                    XPathNodeIterator filtreIterator = val.Select("FILTER");
+                    tmpGeoGroupe.FilteredThemes = GetFilteredThemes(filtreIterator, tmpGeoGroupe.Id);
+
+                    XPathNodeIterator themeiterator = val.Select("THEMES/THEME");
+                    List<Theme> themes = new List<Theme>();
+                    foreach (XPathNavigator th in themeiterator)
+                    {
+                        Theme tmpTheme = new Theme()
+                        {
+                            Groupe = new Groupe()
+                        };
+
+                        string nom = EncodeToUTF8(th.SelectSingleNode("NOM").Value);
+                        tmpTheme.Groupe.Nom = nom;
+                        if (tmpGeoGroupe.FilteredThemes.Contains(nom))
+                        {
+                            tmpTheme.Filtered = true;
+                        }
+                        if (themesAttributesDict.ContainsKey(nom))
+                        {
+                            List<ThemeAttribut> tmp = new List<ThemeAttribut>();
+                            themesAttributesDict.TryGetValue(nom, out tmp);
+                            tmpTheme.Attributs = tmp;
+                        }
+                        tmpTheme.Groupe.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
+                        themes.Add(tmpTheme);
+                    }
+                    tmpGeoGroupe.Themes = themes;
+
+                    // Récupération des layers
+                    XPathNodeIterator layersIterator = val.Select("LAYERS/LAYER");
+                    List<LayerGateway> layersGateway = new List<LayerGateway>();
+                    foreach (XPathNavigator lay in layersIterator)
+                    {
+                        LayerGateway layerGateway = new LayerGateway
+                        {
+                            Type = EncodeToUTF8(lay.SelectSingleNode("TYPE").Value),
+                            Nom = EncodeToUTF8(lay.SelectSingleNode("NOM").Value),
+                            Description = EncodeToUTF8(lay.SelectSingleNode("DESCRIPTION").Value),
+                            Minzoom = Int32.Parse(lay.SelectSingleNode("MINZOOM").Value),
+                            Maxzoom = Int32.Parse(lay.SelectSingleNode("MAXZOOM").Value),
+                            Extent = EncodeToUTF8(lay.SelectSingleNode("EXTENT").Value),
+                            Role = EncodeToUTF8(lay.SelectSingleNode("ROLE").Value)
+                        };
+
+                        string newString = null;
+                        layerGateway.Visibility = TransformStringOrInt(lay.SelectSingleNode("VISIBILITY").Value, ref newString, true);
+                        layerGateway.Opacity = Int32.Parse(lay.SelectSingleNode("OPACITY").Value);
+
+                        XPathNavigator tilezoom = lay.SelectSingleNode("TILEZOOM");
+                        if (tilezoom != null)
+                        {
+                            layerGateway.Tilezoom = TransformStringOrInt(tilezoom.Value, ref newString, true);
+                        }
+                        XPathNavigator url = lay.SelectSingleNode("URL");
+                        if (url != null)
+                        {
+                            layerGateway.Url = EncodeToUTF8(url.Value);
+                        }
+                        layersGateway.Add(layerGateway);
+                    }
+                    tmpGeoGroupe.Layers = layersGateway;
+                    listGeoGroupe.Add(tmpGeoGroupe);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
+                throw new Exception("Récupération des infos des GeoGroupes associés au profil");
+            }
             return listGeoGroupe;
         }
+
         /// <summary>
         /// Conversion des caractères spéciaux de l'API
         /// </summary>
@@ -431,7 +431,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="groupFilters"></param>
         /// <param name="idGeogroupe"></param>
         /// <returns></returns>
-        public List<string> GetFilteredThemes(MatchCollection groupFilters, string idGeogroupe)
+        public List<string> GetFilter(MatchCollection groupFilters, string idGeogroupe)
         {
             List<string> filteredThemes = new List<string>();
             foreach (Match groupFilter in groupFilters)
@@ -476,6 +476,61 @@ namespace ArcGisProEspaceCollaboratif.Core
             return filteredThemes;
         }
 
+        public ConcurrentDictionary<string, List<ThemeAttribut>> GetThemesAttributes(XPathNodeIterator iterator)
+        {
+            ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = new ConcurrentDictionary<string, List<ThemeAttribut>>();
+            foreach (XPathNavigator val in iterator)
+            {
+                ThemeAttribut themeAttribut = new ThemeAttribut
+                {
+                    Theme = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
+                    Nom = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
+                    Type = EncodeToUTF8(val.SelectSingleNode("TYPE").Value),
+                    Valeurs = new List<string>()
+                };
+                XPathNavigator obligatoire = val.SelectSingleNode("OBLIGATOIRE");
+                if (obligatoire != null)
+                {
+                    themeAttribut.Obligatoire = obligatoire.Value;
+                }
+
+                XPathNavigator valVALEURS = val.SelectSingleNode("VALEURS");
+                XPathNodeIterator valIt = valVALEURS.SelectChildren(XPathNodeType.Element);
+                List<string> lTmp = new List<string>();
+                foreach (XPathNavigator valeurs in valIt)
+                {
+                    if (valeurs.Name == "DEFAULTVAL")
+                    {
+                        themeAttribut.DefaultVal = EncodeToUTF8(valeurs.InnerXml);
+                    }
+                    if (valeurs.Name == "VAL")
+                    {
+                        lTmp.Add(EncodeToUTF8(valeurs.InnerXml));
+                    }
+                }
+                themeAttribut.Valeurs = lTmp;
+                themesAttributesDict.AddOrUpdate(themeAttribut.Theme, new List<ThemeAttribut> { themeAttribut }, (nomTheme, attTheme) => { attTheme.Add(themeAttribut); return attTheme; });
+            };
+            return themesAttributesDict;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filtreIterator"></param>
+        /// <returns></returns>
+        public List<string> GetFilteredThemes(XPathNodeIterator filtreIterator, string idGeogroupe)
+        {
+            List<string> listFilter = new List<string>();
+            if (filtreIterator.MoveNext())
+            {
+                string sfiltre = EncodeToUTF8(filtreIterator.Current.InnerXml);
+                MatchCollection collection = Regex.Matches(sfiltre, "\\{.*?\\}");
+                listFilter = GetFilter(collection, idGeogroupe);
+            }
+            return listFilter;
+        }
+
         /// <summary>
         /// Extraction des thèmes associés au profil
         /// </summary>
@@ -484,64 +539,30 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             try
             {
-                ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = new ConcurrentDictionary<string, List<ThemeAttribut>>();
                 nav.MoveToRoot();
                 XPathExpression expr = nav.Compile("/geors/THEMES/ATTRIBUT");
                 XPathNodeIterator iterator = nav.Select(expr);
-                foreach (XPathNavigator val in iterator)
-                {
-                    ThemeAttribut themeAttribut = new ThemeAttribut
-                    {
-                        Theme = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
-                        Nom = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
-                        Type = EncodeToUTF8(val.SelectSingleNode("TYPE").Value),
-                        Valeurs = new List<string>()
-                    };
-
-                    XPathNavigator obligatoire = val.SelectSingleNode("OBLIGATOIRE");
-                    if (obligatoire != null)
-                    {
-                        themeAttribut.Obligatoire = obligatoire.Value;
-                    }
-
-                    XPathNavigator valVALEURS = val.SelectSingleNode("VALEURS");
-                    XPathNodeIterator valIt = valVALEURS.SelectChildren(XPathNodeType.Element);
-                    List<string> lTmp = new List<string>();
-                    foreach (XPathNavigator valeurs in valIt)
-                    {
-                        if (valeurs.Name == "DEFAULTVAL")
-                        {
-                            themeAttribut.DefaultVal = EncodeToUTF8(valeurs.InnerXml);
-                        }
-                        if (valeurs.Name == "VAL")
-                        {
-                            lTmp.Add(EncodeToUTF8(valeurs.InnerXml));
-                        }
-                    }
-                    themeAttribut.Valeurs = lTmp;
-                    themesAttributesDict.AddOrUpdate(themeAttribut.Theme, new List<ThemeAttribut> { themeAttribut }, (nomTheme, attTheme) => { attTheme.Add(themeAttribut); return attTheme; });
-                }
+                ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = GetThemesAttributes(iterator);
 
                 // Récupération du filtre sur les thèmes
                 nav.MoveToRoot();
                 XPathExpression filtreExpr = nav.Compile("/geors/PROFIL/FILTRE");
                 XPathNodeIterator filtreIterator = nav.Select(filtreExpr);
-                if (filtreIterator.MoveNext())
-                {
-                    string sfiltre = EncodeToUTF8(filtreIterator.Current.InnerXml);
-                    MatchCollection collection = Regex.Matches(sfiltre, "\\{.*?\\}");
-                    filteredThemes = GetFilteredThemes(collection, "");
-                }
-
+                filteredThemes = GetFilteredThemes(filtreIterator, "");
+                
                 // Récupération des thèmes avec leurs attributs et le filtre
                 nav.MoveToRoot();
                 XPathExpression themeExpr = nav.Compile("/geors/THEMES/THEME");
                 XPathNodeIterator themeIterator = nav.Select(themeExpr);
                 foreach (XPathNavigator val in themeIterator)
                 {
-                    Theme tmpTheme = new Theme();
+                    Theme tmpTheme = new Theme()
+                    {
+                        Groupe = new Groupe()
+                    };
+
                     string nom = EncodeToUTF8(val.SelectSingleNode("NOM").Value);
-                    tmpTheme.groupe.Nom = nom;
+                    tmpTheme.Groupe.Nom = nom;
                     if (filteredThemes.Contains(nom))
                     {
                         tmpTheme.Filtered = true;
@@ -552,7 +573,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         themesAttributesDict.TryGetValue(nom, out tmp);
                         tmpTheme.Attributs = tmp;
                     }
-                    tmpTheme.groupe.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
+                    tmpTheme.Groupe.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
 
                     themes.Add(tmpTheme);
                 }
@@ -617,8 +638,10 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                         Theme theme = new Theme
                         {
-                            groupe = new Groupe(idGroupe, nomGroupe)
+                            Groupe = new Groupe()
                         };
+                        theme.Groupe.Id = idGroupe;
+                        theme.Groupe.Nom = nomGroupe;
                         themes.Add(theme);
                     }
 
@@ -879,11 +902,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     Theme theme = new Theme
                     {
-                        groupe = new Groupe()
+                        Groupe = new Groupe()
                     };
 
-                    theme.groupe.Nom = val.SelectSingleNode(valRem.Compile(remXpath + "/NOM")).Value;
-                    theme.groupe.Id = val.SelectSingleNode(valRem.Compile(remXpath + "/ID_GEOGROUPE")).Value;
+                    theme.Groupe.Nom = val.SelectSingleNode(valRem.Compile(remXpath + "/NOM")).Value;
+                    theme.Groupe.Id = val.SelectSingleNode(valRem.Compile(remXpath + "/ID_GEOGROUPE")).Value;
                     themes.Add(theme);    
                 }
             }
