@@ -277,7 +277,6 @@ namespace ArcGisProEspaceCollaboratif
 /*       Remplace : private Geodatabase GetOrCreateFeatureWorkspace()
          A priori inutile avec ArcGIS Pro car une geodatabase est automatiquement créée et associée au projet ArcGIS Pro -> on l'utilise pour
          stocker les signalements (et à terme les couches guichets).*/
-
         private async Task<bool> GetOrCreateFileGeodatabase()
         {
             try
@@ -875,9 +874,28 @@ namespace ArcGisProEspaceCollaboratif
                         this.Password
                     );
                     logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
-                    this.profil = connexionServer.GetProfil();
                     this.formConnection.Close();
                     this.formConnection = null;
+
+                    // Récupération du profil utilisateur
+                    this.profil = connexionServer.GetProfil();
+
+                    if (this.profil.geogroupes.Count < 1)
+                    {
+                        if (this.profil.Titre == "défaut")
+                        {
+                            Helper.Save_GroupeActif("Aucun");
+                        }
+                        else
+                        {
+                            Helper.Save_GroupeActif(this.profil.groupe.Nom);
+                        }
+                    }
+                    else
+                    {
+                        FormGroupChoice FormGroupChoice = new FormGroupChoice(this.cleGeoportail);
+                        FormGroupChoice.ShowDialog();
+                    }        
 
                     FormInfo popupEspaceCollaboratif = new FormInfo();
                     // Le logo du groupe auquel l'utilisateur appartient

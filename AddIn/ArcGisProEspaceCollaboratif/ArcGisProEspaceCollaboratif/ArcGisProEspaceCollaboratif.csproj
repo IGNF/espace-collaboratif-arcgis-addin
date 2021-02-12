@@ -130,6 +130,12 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormGroupChoice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormGroupChoice.Designer.cs">
+      <DependentUpon>FormGroupChoice.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadLayers.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
@@ -202,6 +208,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCreateReport.resx">
       <DependentUpon>FormCreateReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormGroupChoice.resx">
+      <DependentUpon>FormGroupChoice.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormInfo.resx">
       <DependentUpon>FormInfo.cs</DependentUpon>
