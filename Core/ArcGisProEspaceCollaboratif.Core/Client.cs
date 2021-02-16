@@ -26,7 +26,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         //private readonly Auteur auteur=null;
 
         //version du service
-        private readonly String version="";
+        private readonly String version = "";
 
         //le profil de l'utilisateur
         private Profil profil;
@@ -35,15 +35,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
 
         //message d'erreur lors de la connexion ou d'un appel au service ("OK" ou message d'erreur)
-        private String message = "";
+        public string Message { get; set; }
 
         //barre de progression durant le chargement des signalements
-        private System.Windows.Forms.ProgressBar progressbar= new System.Windows.Forms.ProgressBar();
+        private System.Windows.Forms.ProgressBar progressbar = new System.Windows.Forms.ProgressBar();
 
         //logger
         readonly Logger riplogger = Logger.Instance;
         private ILog logger = LogManager.GetLogger(typeof(Client));
-       
+
         /// <summary>
         /// Constructeur
         /// Initialisation du client et connexion au service EspaceCollaboratif
@@ -55,7 +55,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             this.url = url;
             this.login = login;
-            this.password = password;   
+            this.password = password;
         }
 
         /// <summary>
@@ -64,15 +64,17 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="uri">partie de l'url définissant la requête à effectuer</param>
         /// <param name="parameters">paramètres à envoyer en GET</param>
         /// <returns>Resultat de la requête (xml)</returns>
-        public String MakeGetRequest(String uri, Dictionary<String, String> parameters)
+        public String MakeGetRequest(String url, Dictionary<String, String> parameters)
         {
             String res = null;
 
             WebClient client = new WebClient();
             String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
             client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
+            /*System.Net.ServicePointManager.ServerCertificateValidationCallback =
+                new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);*/
             System.Net.ServicePointManager.ServerCertificateValidationCallback =
-                new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);
+                new System.Net.Security.RemoteCertificateValidationCallback(delegate { return true; });
 
             String paramString = "";
             if (parameters != null)
@@ -84,7 +86,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             try
             {
-                res = paramString == "" ? client.DownloadString(this.url + uri) : client.DownloadString(this.url + uri + "?" + paramString);
+                res = paramString == "" ? client.DownloadString(url) : client.DownloadString(url + "?" + paramString);
             }
             catch (Exception e)
             {
@@ -126,18 +128,18 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
             }
             paramString = paramString.Substring(0, paramString.Length - 1);
-         
+
             wclient.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded; charset=utf-8";
-          
+
             try
             {
-                res = wclient.UploadString(uri , paramString);
+                res = wclient.UploadString(uri, paramString);
             }
             catch (Exception e)
             {
                 Console.Write(e.Message);
             }
-            
+
             return res;
         }
 
@@ -148,7 +150,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters">parameters to send</param>
         /// <param name="docs">files to upload</param>
         /// <returns></returns>
- 
+
         public String MakeMultiPartPostRequest(String url, Dictionary<String, String> parameters, Dictionary<String, String> docs)
         {
             String result = "";
@@ -159,7 +161,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             wr.ContentType = "multipart/form-data; boundary=" + boundary;
             wr.Method = "POST";
             wr.KeepAlive = true;
-        
+
             String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
             wr.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
@@ -200,7 +202,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     rs.Write(boundarybytes, 0, boundarybytes.Length);
                 }
             }
- 
+
             byte[] trailer = System.Text.Encoding.UTF8.GetBytes("\r\n--" + boundary + "--\r\n");
             rs.Write(trailer, 0, trailer.Length);
             rs.Close();
@@ -249,7 +251,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             if (this.profil == null)
             {
-                this.profil= this.GetProfilFromService();
+                this.profil = this.GetProfilFromService();
             }
             return this.profil;
         }
@@ -260,21 +262,21 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns>le profil de l'utilisateur</returns>
         private Profil GetProfilFromService()
         {
-            Profil profil = null;
+            Profil profil = new Profil();
             String data = "";
 
-            data = this.MakeGetRequest("/api/georem/geoaut_get.xml", null);
+            data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.url), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
 
             if (errMessage["code"].Equals("OK"))
             {
-                profil = xmlResponse.ExtractProfil();              
+                profil = xmlResponse.ExtractProfil();
             }
-           else {
+            else {
                 throw new Exception(errMessage["code"]);
-               }
+            }
             return profil;
         }
 
@@ -284,29 +286,29 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters"></param>
         /// <returns></returns>
         public List<Signalement> GetGeoRems(Dictionary<string, string> parameters)
-        {     
+        {
             List<Signalement> signalements = new List<Signalement>();
 
             //on stocke d'abord les objets Signalement dans un dictionnaire, pour éviter d'éventuels doublons.
             SortedDictionary<UInt64, Signalement> dicoRems = new SortedDictionary<ulong, Signalement>();
-        
-            Dictionary<String, String> totalAndDate = GetGeoSignalementsTotal(parameters,dicoRems);
-            int total= Int32.Parse(totalAndDate["total"]);
-            String sdate=totalAndDate["sdate"];    
+
+            Dictionary<String, String> totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
+            int total = Int32.Parse(totalAndDate["total"]);
+            String sdate = totalAndDate["sdate"];
 
             //Mise-à-jour éventuelle à partir du dateTime du début de la requête
             while (total > 1)
-            {     
-               parameters["updatingDate"] = sdate;
+            {
+                parameters["updatingDate"] = sdate;
 
-               totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
-               total = Int32.Parse(totalAndDate["total"]);
+                totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
+                total = Int32.Parse(totalAndDate["total"]);
 
-               sdate = totalAndDate["sdate"];     
-             }
+                sdate = totalAndDate["sdate"];
+            }
 
             signalements = new List<Signalement>(dicoRems.Values);
-          
+
             return signalements;
         }
 
@@ -323,7 +325,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             int count = 0;
             string sdate = "";
 
-            var data = this.MakeGetRequest("/api/georem/georems_get.xml", parameters);
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.url), parameters);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -332,7 +334,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (errMessage["code"].Equals("OK"))
             {
-                total= xmlResponse.GetTotalResponse();
+                total = xmlResponse.GetTotalResponse();
                 sdate = xmlResponse.GetDate();
 
                 dicoSignalements = xmlResponse.ExtractSignalements(dicoSignalements);
@@ -342,13 +344,13 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                 this.progressbar.Maximum = pagination > total ? pagination : total;
                 this.progressbar.Step = pagination;
-        
-                while (total - count > 0)
-                {               
-                    parameters["offset"]= count.ToString();
 
-                    data = this.MakeGetRequest("/api/georem/georems_get.xml", parameters);
-                    xmlResponse = new XmlResponse(data);              
+                while (total - count > 0)
+                {
+                    parameters["offset"] = count.ToString();
+
+                    data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.url), parameters);
+                    xmlResponse = new XmlResponse(data);
 
                     if (errMessage["code"].Equals("OK"))
                     {
@@ -388,8 +390,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             List<Signalement> signalements = new List<Signalement>();
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-        
-            var data = this.MakeGetRequest("/api/georem/georem_get/" + idSignalement.ToString()+".xml", null);
+
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.url, idSignalement.ToString()), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -401,7 +403,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (total == 1)
                 {
                     signalements = xmlResponse.ExtractSignalements(signalements);
-                    signalement = signalements[0]; 
+                    signalement = signalements[0];
                 }
             }
 
@@ -428,7 +430,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 };
 
                 String data = this.MakeMultiPartPostRequest(this.url + "/api/georem/georep_post.xml", parameters, null);
-               
+
                 XmlResponse xmlResponse = new XmlResponse(data);
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
@@ -447,7 +449,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
             }
-            catch(Exception e){
+            catch (Exception e) {
                 throw new Exception(e.Message);
             }
 
@@ -472,8 +474,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     { "comment", signalement.Commentaire }
                 };
 
-                String geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) +" "+
-                                 Convert.ToString(signalement.GetLatitude() , invC) + ")";
+                String geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) + " " +
+                                 Convert.ToString(signalement.GetLatitude(), invC) + ")";
                 parameters.Add("geometry", geometry);
 
                 // zone géographique 
@@ -486,7 +488,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     XDocument doc = new XDocument(new XElement("THEMES"));
                     String attributes = "";
                     foreach (Theme t in themes)
-                    { 
+                    {
                         attributes += "\"" + t.Groupe.Id + "::" + t.Groupe.Nom + "\"=>\"1\",";
                     }
                     attributes = attributes.Substring(0, attributes.Length - 1);
@@ -527,7 +529,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                             throw new Exception("Le fichier " + document + " est de taille supérieure à " +
                                                  Constantes.MAX_TAILLE_UPLOAD_FILE);
                         }
-                       
+
                         fs.Close();
                         docs.Add("upload" + docCount, document);
                     }
@@ -535,7 +537,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                 //envoi de la requête
                 String data = this.MakeMultiPartPostRequest(url + "/api/georem/georem_post.xml", parameters, docs);
-               
+
                 XmlResponse xmlResponse = new XmlResponse(data);
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
@@ -585,19 +587,62 @@ namespace ArcGisProEspaceCollaboratif.Core
             return Constantes.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
         }
 
+        public (Profil, string) SetChangeUserProfil(string idProfil)
+        {
+            Profil profil = new Profil();
+            string message = "";
+            string url = string.Format("{0}/api/georem/geoaut_switch_profile/{1}", this.url, idProfil);
+            string data = this.MakeGetRequest(url, null);
+            XmlResponse xmlResponse = new XmlResponse(data);
+            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
+
+            if (errMessage["code"].Equals("OK"))
+            {
+                profil = xmlResponse.ExtractProfil();
+            }
+            else if (errMessage["message"] != "")
+            {
+                message = errMessage["message"];
+            }
+            return (profil, message);
+        }
+
         /// <summary>
-        /// accesseur message       
+        /// Récupération des layers GéoPortail valides en fonction de la clé Geoportail utilisateur
         /// </summary>
-         public String Message
-         {
-             get
-             {
-                 return message;
-             }
-             set
-             {
-                 message = value;
-             }
-         }
+        /// <param name="cle"></param>
+        /// <returns></returns>
+        public Dictionary<string, string> GetLayersFromCleGeoportailUser(string cle)
+        {
+            Dictionary<string, string> layers = new Dictionary<string, string>();
+            string cleGeoportail = "";
+            if (string.IsNullOrEmpty(cle))
+            {
+                cleGeoportail = "choisirgeoportail";
+            }
+            if (cle == "Démonstration")
+            {
+                cleGeoportail = "choisirgeoportail";
+            }
+            else if (cle != "")
+            {
+                cleGeoportail = cle;
+            }
+
+            string url = string.Format("https://wxs.ign.fr/{0}/autoconf?gp-access-lib=2.1.2&output=xml", cleGeoportail);
+            this.logger.Debug(string.Format("{0} {1}", "GetLayersFromCleGeoportailUser", url));
+            string data = this.MakeGetRequest(url, null);
+            XmlResponse xmlResponse = new XmlResponse(data);
+            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
+            if (errMessage["message"].Contains("ViewContext id=\"autoConf\""))
+            {
+                layers = xmlResponse.ExtractLayersFromCleGeoportailUser();
+            }
+            else
+            {
+                throw new Exception(string.Format("{0} : votre clé Géoportail semble erronée. Vous pouvez utiliser la clé de démonstration.", errMessage["code"]));
+            }
+            return layers;
+        }
     }
 }

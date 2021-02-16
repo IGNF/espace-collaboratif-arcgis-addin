@@ -53,15 +53,15 @@ namespace ArcGisProEspaceCollaboratif
 
         public const String xml_UrlHost = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/URLHost";
         public const String xml_Login = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/Login";
-        public const String xml_DateExtraction = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Date_extraction";
-        public const String xml_Pagination = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Pagination";
-        public const String xml_Themes = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Thèmes_préférés/Thème";
-        public const String xml_Zone_extraction = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Zone_extraction";
-        public const String xml_AfficherCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Afficher_Croquis";
-        public const String xml_AttributsCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Attributs_croquis";
+        public const String xml_DateExtraction = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Date_extraction";
+        public const String xml_Pagination = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Pagination";
+        public const String xml_Themes = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Thèmes_préférés/Thème";
+        public const String xml_Zone_extraction = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Zone_extraction";
+        public const String xml_AfficherCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Afficher_Croquis";
+        public const String xml_AttributsCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Attributs_croquis";
         public const String xml_BaliseNomCalque = "Calque_Nom";
         public const String xml_BaliseChampCalque = "Calque_Champ";
-        public const String xml_Group = "/Paramètres_connexion_à_EspaceCollaboratif/ArcMap/Import_pour_groupe";
+        public const String xml_Group = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Import_pour_groupe";
         public const String xml_Proxy = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/Proxy";
         public const String xml_CleGeoPortail = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/cle_geoportail";
         public const String xml_GroupeActif = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/groupe_actif";
@@ -1380,6 +1380,25 @@ namespace ArcGisProEspaceCollaboratif
             return "";
         }
 
+        /// <summary>
+        /// Retourne tous les éléments contenant la balise element
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static List<string> XML_AllElement(string element)
+        {
+            System.Xml.XmlDocument paramsEspaceCollaboratif = new System.Xml.XmlDocument();
+            StreamReader streamXML = new StreamReader(Helper.XML_NameFile());
+            paramsEspaceCollaboratif.Load(streamXML);
+            System.Xml.XmlNodeList elemlist = paramsEspaceCollaboratif.DocumentElement.SelectNodes(element);
+            streamXML.Close();
+            List<string> allElements = new List<string>();
+            foreach (XmlNode node in elemlist)
+            {
+                allElements.Add(node.InnerText);
+            }
+            return allElements;
+        }
 
         /// <summary>
         /// Renvoie tous les éléments indiqués à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
@@ -1437,16 +1456,16 @@ namespace ArcGisProEspaceCollaboratif
         /// Renvoie la liste des thèmes préférés contenus à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <returns>La liste des noms de thèmes préférés contenus dans le fichier de paramétrage.</returns>
-        /*       public static List<string> Load_PreferedThemes()
-               {
-                   return EspaceCollaboratifHelper.XML_ReadElement(EspaceCollaboratifHelper.xml_Themes);
-               }
-       */
+        public static List<string> Load_PreferredThemes(string element)
+        {
+            return Helper.XML_AllElement(element);
+        }
+       
         /// <summary>
         /// Sauvegarde les thèmes préférés dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
-        public static void Save_PreferedThemes(List<String> preferedThemes)
+        public static void Save_PreferredThemes(List<String> preferedThemes)
         {
             Helper.XML_WriteElement(preferedThemes, Helper.xml_Themes);
         }
@@ -1455,7 +1474,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde les thèmes préférés dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
-        public static void Save_PreferedThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
+        public static void Save_PreferredThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
         {
             List<String> ListThemes = new List<string>();
 
@@ -1464,7 +1483,7 @@ namespace ArcGisProEspaceCollaboratif
                 ListThemes.Add(theme.Groupe.Nom);
             }
 
-            Helper.Save_PreferedThemes(ListThemes);
+            Helper.Save_PreferredThemes(ListThemes);
         }
         
 
@@ -1625,28 +1644,28 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
         /// </summary>
-        /// <param name="layer">Le nom du calque à enregistrer da   ns le fichier de paramétrage pour le filtrage spatiale.</param>
+        /// <param name="layer">Le nom du calque à enregistrer dans le fichier de paramétrage pour le filtrage spatiale.</param>
         public static void Save_CalqueFiltrage(string layer)
         {
             XML_SetElement(Helper.xml_Zone_extraction, layer);
         
         }
 
-    /// <summary>
-    /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
-    /// </summary>
-    /// <param name="layer">Le calque dont on enregistre son nom dans le fichier de paramétrage pour le filtrage spatiale.</param>
-    public static void Save_CalqueFiltrage(Layer layer)
-    {
-        XML_SetElement(Helper.xml_Zone_extraction, layer.Name);
-    }
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
+        /// </summary>
+        /// <param name="layer">Le calque dont on enregistre son nom dans le fichier de paramétrage pour le filtrage spatiale.</param>
+        public static void Save_CalqueFiltrage(Layer layer)
+        {
+            XML_SetElement(Helper.xml_Zone_extraction, layer.Name);
+        }
     
 
-    /// <summary>
-    /// Obtient à partir du XML de paramétrage, l'adresse du service EspaceCollaboratif contenue dans le fichier XML de paramétrage.
-    /// </summary>
-    /// <returns>L'adresse d'accès au service EspaceCollaboratif stockée dans le fichier de paramétrage EspaceCollaboratif.</returns>
-    public static string Load_Urlhost()
+        /// <summary>
+        /// Obtient à partir du XML de paramétrage, l'adresse du service EspaceCollaboratif contenue dans le fichier XML de paramétrage.
+        /// </summary>
+        /// <returns>L'adresse d'accès au service EspaceCollaboratif stockée dans le fichier de paramétrage EspaceCollaboratif.</returns>
+        public static string Load_Urlhost()
         {
             string Urlhost = Helper.XML_FirstElement(Helper.xml_UrlHost);
 
@@ -1751,6 +1770,36 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             XML_SetElement(xml_CleGeoPortail, cle);
+        }
+
+        /// <summary>
+        /// Retourne le nom du groupe préféré de l'utilisateur enregistré dans le fichier XML de paramétrage.
+        /// </summary>
+        public static string Load_PreferredGroup()
+        {
+            return Helper.XML_FirstElement(Helper.xml_GroupePrefere);
+        }
+
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage (espaceco.xml), le nom du groupe préféré de l'utilisateur du service de l'Espace collaboratif.
+        /// </summary>
+        /// <param name="groupePrefere">Le nom du groupe préféré de l'utilisateur à enregistrer dans le fichier de paramétrage.</param>
+        public static void Save_PreferredGroup(string groupePrefere)
+        {
+            if (!XML_HasElement(xml_GroupePrefere))
+            {
+                XML_AddElement(xml_GroupePrefere);
+            }
+
+            XML_SetElement(xml_GroupePrefere, groupePrefere);
+        }
+
+        /// <summary>
+        /// Retourne le nom du groupe actif de l'utilisateur enregistré dans le fichier XML de paramétrage.
+        /// </summary>
+        public static string Load_GroupeActif()
+        {
+            return Helper.XML_FirstElement(Helper.xml_GroupeActif);
         }
 
         /// <summary>

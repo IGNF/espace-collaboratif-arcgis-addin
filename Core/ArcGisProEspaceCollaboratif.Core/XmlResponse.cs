@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         private XPathDocument docxpath;
 
-        private XPathNavigator nav;
+        private XPathNavigator navigator;
 
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
 
@@ -39,7 +39,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             this.response = response;
             docxpath = new XPathDocument(StringToStream(response));
-            nav = docxpath.CreateNavigator();
+            navigator = docxpath.CreateNavigator();
         }
 
 
@@ -49,27 +49,23 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Si le code erreur="OK", la réponse est valide
         /// </summary>
         /// <returns>Dictionary<String,String>  à 2 clés: message et code"</returns>
-        public Dictionary<String, String> CheckResponseValidity() {
-
+        public Dictionary<String, String> CheckResponseValidity()
+        {
             Dictionary<String, String> errMessage = new Dictionary<string, string>();
-
             try
             {
-                XPathExpression expr = nav.Compile("/geors/REPONSE/ERREUR");
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile("/geors/REPONSE/ERREUR");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 iterator.MoveNext();
-                errMessage["message"] = iterator.Current.InnerXml;
-                errMessage["code"] = iterator.Current.GetAttribute("code", "");
-
+                errMessage["message"] = EncodeToUTF8(iterator.Current.InnerXml);
+                errMessage["code"] = EncodeToUTF8(iterator.Current.GetAttribute("code", ""));
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-
             return errMessage;
         }
-
 
         /// <summary>
         /// Extraction des Aleas
@@ -81,8 +77,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile("/geors/REPONSE/ALEA1");
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile("/geors/REPONSE/ALEA1");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     aleas.Add(iterator.Current.InnerXml);
@@ -90,8 +86,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else throw new Exception("Problème de connexion");
 
 
-                expr = nav.Compile("/geors/REPONSE/ALEA2");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile("/geors/REPONSE/ALEA2");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     aleas.Add(iterator.Current.InnerXml);
@@ -119,23 +115,23 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile("/geors/REPONSE/ID_AUTEUR");
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile("/geors/REPONSE/ID_AUTEUR");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                     connectValues.Add("ID_AUTEUR", iterator.Current.InnerXml);
                 else
                     throw new Exception("ID_AUTEUR inexistant dans la réponse xml");
 
-                expr = nav.Compile("/geors/REPONSE/JETON");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile("/geors/REPONSE/JETON");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                     connectValues.Add("JETON", iterator.Current.InnerXml);
                 else
                     throw new Exception("JETON inexistant dans la réponse xml");
 
 
-                expr = nav.Compile("/geors/REPONSE/SITE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile("/geors/REPONSE/SITE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                     connectValues.Add("SITE", iterator.Current.InnerXml);
                 else
@@ -162,8 +158,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile("/geors/REPONSE/JETON");
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile("/geors/REPONSE/JETON");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                     jeton = iterator.Current.InnerXml;
                 else
@@ -178,6 +174,46 @@ namespace ArcGisProEspaceCollaboratif.Core
             return jeton;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> ExtractLayersFromCleGeoportailUser()
+        {
+            Dictionary<string, string> layers = new Dictionary<string, string>();
+            try
+            {
+                navigator.MoveToRoot();
+                XPathNodeIterator itLayer = navigator.SelectDescendants("Layer", "http://www.opengis.net/context", false);
+                foreach (XPathNavigator layer in itLayer)
+                {
+                    string name = "";
+                    string title = "";
+                    XPathNodeIterator iteratorElement = layer.SelectDescendants(XPathNodeType.Element, false);
+                    foreach (XPathNavigator element in iteratorElement)
+                    {
+                        if(element.Name == "Name")
+                        {
+                            name = EncodeToUTF8(element.InnerXml);
+                        }
+                        if (element.Name == "Title")
+                        {
+                            title = EncodeToUTF8(element.InnerXml);
+                        }
+                        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(title))
+                        {
+                            layers[name] = title;
+                        }
+                    }   
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(string.Format("{0}\n{1}", ex.Message, ex.StackTrace));
+                throw ex;
+            }
+            return layers;
+        }
 
         /// <summary>
         /// Extraction du profil à partir de la réponse xml
@@ -189,8 +225,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             try
             {
                 string profilXpath = "/geors/AUTEUR/";
-                XPathExpression expr = nav.Compile(profilXpath + "NOM");
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile(profilXpath + "NOM");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 profil.Auteur = new Auteur();
                 if (iterator.MoveNext())
                 {
@@ -198,52 +234,52 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 profilXpath = "/geors/PROFIL/";
-                expr = nav.Compile(profilXpath + "ID_GEOPROFIL");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "ID_GEOPROFIL");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     profil.Id_Geoprofil = iterator.Current.InnerXml;
                 }
 
-                expr = nav.Compile(profilXpath + "TITRE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "TITRE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     profil.Titre = EncodeToUTF8(iterator.Current.InnerXml);
                 }
 
                 Groupe gr = new Groupe();
-                expr = nav.Compile(profilXpath + "ID_GEOGROUPE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "ID_GEOGROUPE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     gr.Id = iterator.Current.InnerXml;
 
                 }
-                expr = nav.Compile(profilXpath + "GROUPE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "GROUPE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     gr.Nom = EncodeToUTF8(iterator.Current.InnerXml);
                 }
-                profil.groupe = gr;
+                profil.Groupe = gr;
 
-                expr = nav.Compile(profilXpath + "LOGO");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "LOGO");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     profil.Logo = iterator.Current.InnerXml;
                 }
 
-                expr = nav.Compile(profilXpath + "FILTRE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "FILTRE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     profil.Filter = iterator.Current.InnerXml;
                 }
 
-                expr = nav.Compile(profilXpath + "PRIVE");
-                iterator = nav.Select(expr);
+                expr = navigator.Compile(profilXpath + "PRIVE");
+                iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
                     profil.Prive = iterator.Current.InnerXml.Equals("1");
@@ -254,10 +290,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 List<string> filteredThemes = new List<string>();
                 GetThemes(ref themes, ref filteredThemes);
                 profil.Themes = themes;
-                profil.filteredThemes = filteredThemes;
+                profil.FilteredThemes = filteredThemes;
 
                 // Les infos sur tous les geogroupes de l'utilisateur
-                profil.geogroupes = GetGeoGroupes();
+                profil.Geogroupes = GetGeoGroupes();
             }
             catch (Exception ex)
             {
@@ -298,9 +334,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             List<GeoGroupe> listGeoGroupe = new List<GeoGroupe>();
             try
             {
-                nav.MoveToRoot();
-                XPathExpression expr = nav.Compile("/geors/GEOGROUPE");
-                XPathNodeIterator iterator = nav.Select(expr);
+                navigator.MoveToRoot();
+                XPathExpression expr = navigator.Compile("/geors/GEOGROUPE");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 foreach (XPathNavigator val in iterator)
                 {
                     // Infos générales sur le GeoGroupe
@@ -539,21 +575,21 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             try
             {
-                nav.MoveToRoot();
-                XPathExpression expr = nav.Compile("/geors/THEMES/ATTRIBUT");
-                XPathNodeIterator iterator = nav.Select(expr);
+                navigator.MoveToRoot();
+                XPathExpression expr = navigator.Compile("/geors/THEMES/ATTRIBUT");
+                XPathNodeIterator iterator = navigator.Select(expr);
                 ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = GetThemesAttributes(iterator);
 
                 // Récupération du filtre sur les thèmes
-                nav.MoveToRoot();
-                XPathExpression filtreExpr = nav.Compile("/geors/PROFIL/FILTRE");
-                XPathNodeIterator filtreIterator = nav.Select(filtreExpr);
+                navigator.MoveToRoot();
+                XPathExpression filtreExpr = navigator.Compile("/geors/PROFIL/FILTRE");
+                XPathNodeIterator filtreIterator = navigator.Select(filtreExpr);
                 filteredThemes = GetFilteredThemes(filtreIterator, "");
                 
                 // Récupération des thèmes avec leurs attributs et le filtre
-                nav.MoveToRoot();
-                XPathExpression themeExpr = nav.Compile("/geors/THEMES/THEME");
-                XPathNodeIterator themeIterator = nav.Select(themeExpr);
+                navigator.MoveToRoot();
+                XPathExpression themeExpr = navigator.Compile("/geors/THEMES/THEME");
+                XPathNodeIterator themeIterator = navigator.Select(themeExpr);
                 foreach (XPathNavigator val in themeIterator)
                 {
                     Theme tmpTheme = new Theme()
@@ -613,8 +649,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile(remXpath);
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile(remXpath);
+                XPathNodeIterator iterator = navigator.Select(expr);
 
                 foreach (XPathNavigator val in iterator)
                 {
@@ -931,8 +967,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile(xpath);
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile(xpath);
+                XPathNodeIterator iterator = navigator.Select(expr);
                 iterator.MoveNext();
 
                 total =int.Parse( iterator.Current.InnerXml);           
@@ -956,8 +992,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile(xpath);
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile(xpath);
+                XPathNodeIterator iterator = navigator.Select(expr);
                 iterator.MoveNext();
                 v=iterator.Current.GetAttribute("version", "");   
 
@@ -982,8 +1018,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             try
             {
-                XPathExpression expr = nav.Compile(xpath);
-                XPathNodeIterator iterator = nav.Select(expr);
+                XPathExpression expr = navigator.Compile(xpath);
+                XPathNodeIterator iterator = navigator.Select(expr);
                 iterator.MoveNext();
                 sdate = iterator.Current.InnerXml;
             }

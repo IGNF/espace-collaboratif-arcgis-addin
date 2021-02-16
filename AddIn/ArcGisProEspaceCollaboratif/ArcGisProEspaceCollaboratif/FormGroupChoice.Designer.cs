@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBoxGroupes = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.radioButtonOui = new System.Windows.Forms.RadioButton();
@@ -38,13 +38,13 @@
             this.Annuler = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // comboBoxGroupes
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(5, 25);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(251, 24);
-            this.comboBox1.TabIndex = 0;
+            this.comboBoxGroupes.FormattingEnabled = true;
+            this.comboBoxGroupes.Location = new System.Drawing.Point(5, 25);
+            this.comboBoxGroupes.Name = "comboBoxGroupes";
+            this.comboBoxGroupes.Size = new System.Drawing.Size(251, 24);
+            this.comboBoxGroupes.TabIndex = 0;
             // 
             // label1
             // 
@@ -100,6 +100,7 @@
             // 
             // Enregistrer
             // 
+            this.Enregistrer.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Enregistrer.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Enregistrer.Location = new System.Drawing.Point(202, 177);
             this.Enregistrer.Name = "Enregistrer";
@@ -122,8 +123,10 @@
             // 
             // FormGroupChoice
             // 
+            this.AcceptButton = this.Enregistrer;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.Annuler;
             this.ClientSize = new System.Drawing.Size(381, 212);
             this.Controls.Add(this.Annuler);
             this.Controls.Add(this.Enregistrer);
@@ -132,7 +135,7 @@
             this.Controls.Add(this.radioButtonOui);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.comboBoxGroupes);
             this.Name = "FormGroupChoice";
             this.Text = "Paramétrage";
             this.ResumeLayout(false);
@@ -142,7 +145,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBoxGroupes;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton radioButtonOui;
