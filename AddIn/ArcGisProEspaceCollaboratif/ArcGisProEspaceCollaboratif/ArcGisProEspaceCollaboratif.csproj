@@ -130,13 +130,19 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormLoadGateway.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLoadGateway.Designer.cs">
+      <DependentUpon>FormLoadGateway.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormGroupChoice.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormGroupChoice.Designer.cs">
       <DependentUpon>FormGroupChoice.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadLayers.cs" />
+    <Compile Include="LoadGateway.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
     <Compile Include="Contexte.cs" />
@@ -209,6 +215,9 @@
     <EmbeddedResource Include="FormCreateReport.resx">
       <DependentUpon>FormCreateReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormLoadGateway.resx">
+      <DependentUpon>FormLoadGateway.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormGroupChoice.resx">
       <DependentUpon>FormGroupChoice.cs</DependentUpon>
     </EmbeddedResource>
@@ -267,7 +276,13 @@
     <AddInContent Include="Resources\LogoIGN.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\cleaning.png" />
+    <AddInContent Include="Images\cleaning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\charger.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\visualiser.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
