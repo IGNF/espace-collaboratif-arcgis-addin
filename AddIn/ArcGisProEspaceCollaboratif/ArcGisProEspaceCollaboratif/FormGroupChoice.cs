@@ -23,7 +23,7 @@ namespace ArcGisProEspaceCollaboratif
             } 
             if (!string.IsNullOrEmpty(groupeActif))
             {
-                this.comboBoxGroupes.SelectedText = groupeActif;
+                this.comboBoxGroupes.SelectedIndex = _profil.Geogroupes.FindIndex(x => x.Nom.Equals(groupeActif));
             }
             
             // Quelle clé GeoPortail pour l'utilisateur ?
@@ -59,6 +59,7 @@ namespace ArcGisProEspaceCollaboratif
         private void Annuler_Click(object sender, EventArgs e)
         {
             this.Close();
+            return;
         }
     }
 }

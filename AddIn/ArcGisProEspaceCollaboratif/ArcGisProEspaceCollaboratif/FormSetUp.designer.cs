@@ -1,6 +1,6 @@
 ﻿namespace ArcGisProEspaceCollaboratif
 {
-    partial class FormConfigurer
+    partial class FormSetUp
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConfigurer));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSetUp));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.comboBoxCalque = new System.Windows.Forms.ComboBox();
             this.textBoxLogin = new System.Windows.Forms.TextBox();

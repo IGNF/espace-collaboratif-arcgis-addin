@@ -40,8 +40,12 @@
             // 
             // comboBoxGroupes
             // 
+            this.comboBoxGroupes.AllowDrop = true;
+            this.comboBoxGroupes.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.comboBoxGroupes.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxGroupes.FormattingEnabled = true;
             this.comboBoxGroupes.Location = new System.Drawing.Point(5, 25);
+            this.comboBoxGroupes.MaxDropDownItems = 10;
             this.comboBoxGroupes.Name = "comboBoxGroupes";
             this.comboBoxGroupes.Size = new System.Drawing.Size(251, 24);
             this.comboBoxGroupes.TabIndex = 0;
@@ -112,6 +116,7 @@
             // 
             // Annuler
             // 
+            this.Annuler.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Annuler.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Annuler.Location = new System.Drawing.Point(296, 177);
             this.Annuler.Name = "Annuler";

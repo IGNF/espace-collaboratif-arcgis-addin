@@ -24,11 +24,11 @@ namespace ArcGisProEspaceCollaboratif
                     Contexte contexte = Contexte.Instance;
 
                     // Il faut s'être connecté au service pour la créer un signalement
-                    if (contexte.ripClient == null)
+                    if (contexte.RipClient == null)
                     {
                         // Établissement de la connexion avec le service Espace collaboratif.
-                        contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.ripClient == null)
+                        contexte.RipClient = (Client)contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.RipClient == null)
                         {
                             return;
                         }
@@ -59,7 +59,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Lancement du formulaire pour créer une nouvelle remarque Ripart.
                     FormCreateReport formulaireCreation = new FormCreateReport();
-                    formulaireCreation.SetFormulaire(futursSketch.Count, contexte, contexte.ripClient);
+                    formulaireCreation.SetFormulaire(futursSketch.Count, contexte, contexte.RipClient);
                     if (formulaireCreation.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     {
                         return;
@@ -90,11 +90,11 @@ namespace ArcGisProEspaceCollaboratif
                         }
 
                         // Création du nouveau signalement
-                        ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.ripClient.CreateSignalement(signalementVirtuel);
+                        ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.RipClient.CreateSignalement(signalementVirtuel);
                         await contexte.CreerPointSignalement(signalementNouveau);
 
                         FormInfo popupInfo = new FormInfo();
-                        popupInfo.SetLogo(contexte.ripClient.GetProfil().Logo);
+                        popupInfo.SetLogo(contexte.RipClient.GetProfil().Logo);
                         string message = "Succès de la création du nouveau signalement n° " + signalementNouveau.Id;
                         popupInfo.SetMessage(message);
                         popupInfo.ShowDialog();
@@ -119,14 +119,14 @@ namespace ArcGisProEspaceCollaboratif
                             }
 
                             // Création de la nouvelle remarque.
-                            ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.ripClient.CreateSignalement(signalementVirtuel);
+                            ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.RipClient.CreateSignalement(signalementVirtuel);
                             await contexte.CreerPointSignalement(signalementNouveau);
 
                             listIdNouveauxSignalements.Add(signalementNouveau.Id);
                         }
 
                         FormInfo popupRipart = new FormInfo();
-                        popupRipart.SetLogo(contexte.ripClient.GetProfil().Logo);
+                        popupRipart.SetLogo(contexte.RipClient.GetProfil().Logo);
                         string message = "Succès de la création de " + listIdNouveauxSignalements.Count + " nouveaux signalements pour l'espace collaboratif.";
                         popupRipart.SetMessage(message);
                         popupRipart.AddMessage("");

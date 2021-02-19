@@ -1,6 +1,6 @@
 ﻿namespace ArcGisProEspaceCollaboratif
 {
-    partial class FormConnecter
+    partial class FormConnect
     {
         /// <summary>
         /// Required designer variable.
@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConnecter));
-            this.InputLoginEspaceCollaboratif = new System.Windows.Forms.TextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormConnect));
+            this.InputLogin = new System.Windows.Forms.TextBox();
             this.labelInputLoginEspaceCollaboratif = new System.Windows.Forms.Label();
             this.labelInputPasswordEspaceCollaboratif = new System.Windows.Forms.Label();
-            this.InputPasswordEspaceCollaboratif = new System.Windows.Forms.TextBox();
+            this.InputPassword = new System.Windows.Forms.TextBox();
             this.buttonAbort = new System.Windows.Forms.Button();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.buttonConnect = new System.Windows.Forms.Button();
@@ -42,11 +42,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.LogoBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // InputLoginEspaceCollaboratif
+            // InputLogin
             // 
-            resources.ApplyResources(this.InputLoginEspaceCollaboratif, "InputLoginEspaceCollaboratif");
-            this.InputLoginEspaceCollaboratif.Name = "InputLoginEspaceCollaboratif";
-            this.InputLoginEspaceCollaboratif.TextChanged += new System.EventHandler(this.InputLoginEspaceCollaboratif_TextChanged);
+            this.InputLogin.AcceptsTab = true;
+            resources.ApplyResources(this.InputLogin, "InputLogin");
+            this.InputLogin.Name = "InputLogin";
+            this.InputLogin.TextChanged += new System.EventHandler(this.InputLogin_TextChanged);
             // 
             // labelInputLoginEspaceCollaboratif
             // 
@@ -58,11 +59,11 @@
             resources.ApplyResources(this.labelInputPasswordEspaceCollaboratif, "labelInputPasswordEspaceCollaboratif");
             this.labelInputPasswordEspaceCollaboratif.Name = "labelInputPasswordEspaceCollaboratif";
             // 
-            // InputPasswordEspaceCollaboratif
+            // InputPassword
             // 
-            resources.ApplyResources(this.InputPasswordEspaceCollaboratif, "InputPasswordEspaceCollaboratif");
-            this.InputPasswordEspaceCollaboratif.Name = "InputPasswordEspaceCollaboratif";
-            this.InputPasswordEspaceCollaboratif.TextChanged += new System.EventHandler(this.InputPasswordEspaceCollaboratif_TextChanged);
+            resources.ApplyResources(this.InputPassword, "InputPassword");
+            this.InputPassword.Name = "InputPassword";
+            this.InputPassword.TextChanged += new System.EventHandler(this.InputPassword_TextChanged);
             // 
             // buttonAbort
             // 
@@ -94,7 +95,7 @@
             this.lblErreur.ForeColor = System.Drawing.Color.Red;
             this.lblErreur.Name = "lblErreur";
             // 
-            // FormConnecterEspaceCollaboratif
+            // FormConnect
             // 
             this.AcceptButton = this.buttonConnect;
             resources.ApplyResources(this, "$this");
@@ -105,28 +106,29 @@
             this.Controls.Add(this.LogoBox);
             this.Controls.Add(this.buttonConnect);
             this.Controls.Add(this.labelInputPasswordEspaceCollaboratif);
-            this.Controls.Add(this.InputPasswordEspaceCollaboratif);
+            this.Controls.Add(this.InputPassword);
             this.Controls.Add(this.labelInputLoginEspaceCollaboratif);
-            this.Controls.Add(this.InputLoginEspaceCollaboratif);
+            this.Controls.Add(this.InputLogin);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.Name = "FormConnecterEspaceCollaboratif";
+            this.Name = "FormConnect";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.TopMost = true;
             this.Load += new System.EventHandler(this.LogEspaceCollaboratif_Load);
             ((System.ComponentModel.ISupportInitialize)(this.LogoBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
-        private System.Windows.Forms.TextBox InputLoginEspaceCollaboratif;
         private System.Windows.Forms.Label labelInputLoginEspaceCollaboratif;
         private System.Windows.Forms.Label labelInputPasswordEspaceCollaboratif;
-        private System.Windows.Forms.TextBox InputPasswordEspaceCollaboratif;
         private System.Windows.Forms.Button buttonConnect;
         private System.Windows.Forms.PictureBox LogoBox;
         private System.Windows.Forms.Button buttonAbort;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label lblErreur;
+        public System.Windows.Forms.TextBox InputLogin;
+        public System.Windows.Forms.TextBox InputPassword;
     }
 }

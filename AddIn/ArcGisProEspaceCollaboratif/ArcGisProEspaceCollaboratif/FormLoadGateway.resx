@@ -118,8 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value>Les fonds Géoportail suivants sont également paramétrés dans la carte de votre groupe mais la clé Géoportail
-que vous utilisez sous QGIS ne vous y donne pas accès. Pour pouvoir les charger, veuillez modifier votre clé
-Géoportail en vous adressant à contact.geoservices@ign.fr.</value>
+    <value>Les fonds Géoportail suivants sont également paramétrés dans la carte de votre groupe
+mais la clé Géoportail que vous utilisez sous QGIS ne vous y donne pas accès.
+Pour pouvoir les charger, veuillez modifier votre clé Géoportail en vous adressant
+à contact.geoservices@ign.fr.</value>
   </data>
 </root>

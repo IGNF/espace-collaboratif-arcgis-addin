@@ -9,12 +9,12 @@ using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    public partial class FormConfigurer : Form
+    public partial class FormSetUp : Form
     {
         bool majAttributs = false;
         Contexte contexte = null;
 
-        public FormConfigurer(Contexte contexte)
+        public FormSetUp(Contexte contexte)
         {
             InitializeComponent();
 

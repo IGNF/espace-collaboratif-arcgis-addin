@@ -16,20 +16,20 @@ namespace ArcGisProEspaceCollaboratif.Core
     public class Client : IClient
     {
         //url du service EspaceCollaboratif
-        private readonly String url;
+        public string Url { get; set; }
         //login de l'utilisateur
-        private readonly String login;
+        public string Login { get; set; }
         //mot de passe de l'utilisateur
-        private readonly String password;
+        public string Password { get; set; }
 
         //utilisateur courant connecté
         //private readonly Auteur auteur=null;
 
         //version du service
-        private readonly String version = "";
+        private readonly string version = "";
 
         //le profil de l'utilisateur
-        private Profil profil;
+        public Profil Profil { get; set; }
 
         //pour rendre indifférent à la culture (utilisé ici pour les nombres)
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
@@ -53,9 +53,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="password">mot de passe</param>
         public Client(String url, String login, String password)
         {
-            this.url = url;
-            this.login = login;
-            this.password = password;
+            this.Url = url;
+            this.Login = login;
+            this.Password = password;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             String res = null;
 
             WebClient client = new WebClient();
-            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
+            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
             /*System.Net.ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);*/
@@ -116,7 +116,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             String res = null;
 
             WebClient wclient = new WebClient();
-            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
+            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             wclient.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
             String paramString = "";
@@ -162,7 +162,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             wr.Method = "POST";
             wr.KeepAlive = true;
 
-            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.login + ":" + this.password));
+            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             wr.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
             string contentType = "multipart/form-data";
@@ -249,11 +249,11 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns>le profil </returns>
         public Profil GetProfil()
         {
-            if (this.profil == null)
+            if (this.Profil == null)
             {
-                this.profil = this.GetProfilFromService();
+                this.Profil = this.GetProfilFromService();
             }
-            return this.profil;
+            return this.Profil;
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             Profil profil = new Profil();
             String data = "";
 
-            data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.url), null);
+            data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.Url), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -325,7 +325,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             int count = 0;
             string sdate = "";
 
-            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.url), parameters);
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.Url), parameters);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -349,7 +349,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     parameters["offset"] = count.ToString();
 
-                    data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.url), parameters);
+                    data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.Url), parameters);
                     xmlResponse = new XmlResponse(data);
 
                     if (errMessage["code"].Equals("OK"))
@@ -391,7 +391,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.url, idSignalement.ToString()), null);
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idSignalement.ToString()), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -429,7 +429,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     { "status", (signalement.Statut).ToString().ToLower() }
                 };
 
-                String data = this.MakeMultiPartPostRequest(this.url + "/api/georem/georep_post.xml", parameters, null);
+                String data = this.MakeMultiPartPostRequest(this.Url + "/api/georem/georep_post.xml", parameters, null);
 
                 XmlResponse xmlResponse = new XmlResponse(data);
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -536,7 +536,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //envoi de la requête
-                String data = this.MakeMultiPartPostRequest(url + "/api/georem/georem_post.xml", parameters, docs);
+                String data = this.MakeMultiPartPostRequest(Url + "/api/georem/georem_post.xml", parameters, docs);
 
                 XmlResponse xmlResponse = new XmlResponse(data);
                 Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
@@ -591,7 +591,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             Profil profil = new Profil();
             string message = "";
-            string url = string.Format("{0}/api/georem/geoaut_switch_profile/{1}", this.url, idProfil);
+            string url = string.Format("{0}/api/georem/geoaut_switch_profile/{1}", this.Url, idProfil);
             string data = this.MakeGetRequest(url, null);
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();

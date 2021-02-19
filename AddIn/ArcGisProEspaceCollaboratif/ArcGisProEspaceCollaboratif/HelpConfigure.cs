@@ -23,7 +23,7 @@ namespace ArcGisProEspaceCollaboratif
                                     Helper.nom_Fichier_Parametres_EspaceCollaboratif + @" n'existe pas");
                 }
 
-                FormConfigurer configurateur = new FormConfigurer(contexte);
+                FormSetUp configurateur = new FormSetUp(contexte);
                 configurateur.SetTreeViewAttributs(contexte);
                 configurateur.Show();
 

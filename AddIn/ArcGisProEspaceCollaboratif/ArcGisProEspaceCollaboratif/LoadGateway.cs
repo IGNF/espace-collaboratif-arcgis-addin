@@ -10,14 +10,14 @@ namespace ArcGisProEspaceCollaboratif
     /// </summary>
     internal class LoadGateway : Button
     {
-        //private readonly Logger riplogger = Logger.Instance;
-        //private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
+        private readonly Logger riplogger = Logger.Instance;
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
 
         protected override void OnClick()
         {
-            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Charger les couches de mon groupe", "Espace collaboratif");
-            //logger.Debug("Click sur le bouton de chargement des couches du groupe utilisateur");
-            /*try
+            //ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Charger les couches de mon groupe", "Espace collaboratif");
+            logger.Debug("Click sur le bouton de chargement des couches du groupe utilisateur");
+            try
             {
                 Contexte contexte = Contexte.Instance;
                 if(contexte == null)
@@ -26,11 +26,11 @@ namespace ArcGisProEspaceCollaboratif
                     return;
                 }
 
-                if (contexte.profil != null)
+                if (contexte.Profil != null)
                 {
-                    if (contexte.profil.Geogroupes.Count == 1)
+                    if (contexte.Profil.Geogroupes.Count == 1)
                     {
-                        if (contexte.profil.Geogroupes[0].Layers.Count == 0)
+                        if (contexte.Profil.Geogroupes[0].Layers.Count == 0)
                         {
                             throw new Exception("Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.");
                         }
@@ -44,7 +44,7 @@ namespace ArcGisProEspaceCollaboratif
                 System.Windows.Forms.MessageBox.Show(e.Message,
                  "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                 logger.Error(e.Message + "\n" + e.StackTrace);
-            }*/
+            }
         }
     }
 }

@@ -18,22 +18,30 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const int NB_DEFAULT_SIGNALEMENTS_PAGINATION = 100;
 
         // Définition du protocole signant au près du service EspaceCollaboratif l'origine de ce programme. 
-        public const String EspaceCollaboratif_CLIENT_PROTOCOL = "_EspaceCollaboratif_AGIS_64512";
+        public const string EspaceCollaboratif_CLIENT_PROTOCOL = "_EspaceCollaboratif_AGIS_64512";
 
         // Définition donnant la version de ce programme.
-        public const String EspaceCollaboratif_CLIENT_VERSION = "1_1_0";
+        public const string EspaceCollaboratif_CLIENT_VERSION = "1_1_0";
 
-        public const String EspaceCollaboratif_GEOREM_GET = "georem_get";
-        public const String EspaceCollaboratif_GEOREM_POST = "georem_post";
-        public const String EspaceCollaboratif_GEOREM_PUT = "georem_put";
-        public const String EspaceCollaboratif_CONNECT = "connect";
-        public const String EspaceCollaboratif_GEOAUT_GET = "geoaut_get";
-        public const String EspaceCollaboratif_QUESTION_POST = "geoquestion_post";
-        public const String EspaceCollaboratif_QUESTION_GET = "geoquestion_get";
+        public const string EspaceCollaboratif_GEOREM_GET = "georem_get";
+        public const string EspaceCollaboratif_GEOREM_POST = "georem_post";
+        public const string EspaceCollaboratif_GEOREM_PUT = "georem_put";
+        public const string EspaceCollaboratif_CONNECT = "connect";
+        public const string EspaceCollaboratif_GEOAUT_GET = "geoaut_get";
+        public const string EspaceCollaboratif_QUESTION_POST = "geoquestion_post";
+        public const string EspaceCollaboratif_QUESTION_GET = "geoquestion_get";
 
-        public const String HELP_FILE_URL = "http://logiciels.ign.fr/IMG/pdf/add-in-EspaceCollaboratif_1-0.pdf";
+        public const string HELP_FILE_URL = "http://logiciels.ign.fr/IMG/pdf/add-in-EspaceCollaboratif_1-0.pdf";
 
-        public const String DEMO = "Démonstration";
-        public const String CLEGEOPORTAILSTANDARD = "choisirgeoportail";
+        public const string DEMO = "Démonstration";
+        public const string CLEGEOPORTAILSTANDARD = "choisirgeoportail";
+        public const string WMS = "WMS";
+        public const string WFS = "WFS";
+        public const string WMTS = "WMTS";
+        public const string WCS = "WCS";
+        public const string GEOPORTAIL = "GeoPortail";
+        public const string COLLABORATIF = "collaboratif.ign.fr";
+        public const string WXSIGN = "wxs.ign.fr";
+
     }
 }

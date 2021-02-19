@@ -1750,12 +1750,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
         public static string Load_CleGeoportail()
         {
-            string cle = Helper.XML_FirstElement(Helper.xml_CleGeoPortail);
-            if (cle.Length == 0)
-            {
-                cle = ArcGisProEspaceCollaboratif.Core.Constantes.DEMO;
-            }
-            return cle;
+            return Helper.XML_FirstElement(Helper.xml_CleGeoPortail); ;
         }
 
         /// <summary>

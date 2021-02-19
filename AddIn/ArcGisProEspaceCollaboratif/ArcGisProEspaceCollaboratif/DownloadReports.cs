@@ -35,10 +35,10 @@ namespace ArcGisProEspaceCollaboratif
                     Contexte contexte = Contexte.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
-                    if (contexte.ripClient == null)
+                    if (contexte.RipClient == null)
                     {
-                        contexte.ripClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.ripClient == null) return;
+                        contexte.RipClient = (Client)contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.RipClient == null) return;
                     }
 
                     // Chargement ou non des couches liées aux signalements
@@ -104,7 +104,7 @@ namespace ArcGisProEspaceCollaboratif
                     int groupeId = -1;
                     if (Helper.Load_Group() == "true")
                     {
-                        groupeId = Convert.ToInt32(contexte.profil.Groupe.Id);
+                        groupeId = Convert.ToInt32(contexte.Profil.Groupe.Id);
                         parameters.Add("group", groupeId.ToString());
                     }
 
@@ -117,10 +117,10 @@ namespace ArcGisProEspaceCollaboratif
                     */
                     String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
                     parameters.Add("updatingDate", sdate);
-                    parameters.Add("territory", contexte.profil.Zone.ToString());
+                    parameters.Add("territory", contexte.Profil.Zone.ToString());
 
                     // création de la liste des signalements.  
-                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalements = contexte.ripClient.GetGeoRems(parameters);
+                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalements = contexte.RipClient.GetGeoRems(parameters);
 
                     attenteChargement.GetProgressBar().Maximum = signalements.Count;
                     attenteChargement.GetProgressBar().Step = 1;

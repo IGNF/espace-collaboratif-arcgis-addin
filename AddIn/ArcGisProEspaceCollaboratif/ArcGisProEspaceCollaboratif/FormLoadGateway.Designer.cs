@@ -29,55 +29,22 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormLoadGateway));
-            this.tableLayoutPanelMyGateway = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanelLayersGeoportail = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanelLayersGeoportailBis = new System.Windows.Forms.TableLayoutPanel();
             this.labelMonGuichet = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.buttonEnregistrer = new System.Windows.Forms.Button();
             this.buttonAnnuler = new System.Windows.Forms.Button();
             this.labelGroupeActif = new System.Windows.Forms.Label();
+            this.listViewMyGateway = new System.Windows.Forms.ListView();
+            this.listViewGeoportail = new System.Windows.Forms.ListView();
+            this.listViewGeoportailBis = new System.Windows.Forms.ListView();
             this.SuspendLayout();
-            // 
-            // tableLayoutPanelMyGateway
-            // 
-            this.tableLayoutPanelMyGateway.ColumnCount = 1;
-            this.tableLayoutPanelMyGateway.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelMyGateway.Location = new System.Drawing.Point(7, 55);
-            this.tableLayoutPanelMyGateway.Name = "tableLayoutPanelMyGateway";
-            this.tableLayoutPanelMyGateway.RowCount = 1;
-            this.tableLayoutPanelMyGateway.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelMyGateway.Size = new System.Drawing.Size(720, 191);
-            this.tableLayoutPanelMyGateway.TabIndex = 0;
-            // 
-            // tableLayoutPanelLayersGeoportail
-            // 
-            this.tableLayoutPanelLayersGeoportail.ColumnCount = 1;
-            this.tableLayoutPanelLayersGeoportail.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelLayersGeoportail.Location = new System.Drawing.Point(7, 281);
-            this.tableLayoutPanelLayersGeoportail.Name = "tableLayoutPanelLayersGeoportail";
-            this.tableLayoutPanelLayersGeoportail.RowCount = 1;
-            this.tableLayoutPanelLayersGeoportail.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelLayersGeoportail.Size = new System.Drawing.Size(720, 181);
-            this.tableLayoutPanelLayersGeoportail.TabIndex = 1;
-            // 
-            // tableLayoutPanelLayersGeoportailBis
-            // 
-            this.tableLayoutPanelLayersGeoportailBis.ColumnCount = 1;
-            this.tableLayoutPanelLayersGeoportailBis.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelLayersGeoportailBis.Location = new System.Drawing.Point(7, 526);
-            this.tableLayoutPanelLayersGeoportailBis.Name = "tableLayoutPanelLayersGeoportailBis";
-            this.tableLayoutPanelLayersGeoportailBis.RowCount = 1;
-            this.tableLayoutPanelLayersGeoportailBis.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelLayersGeoportailBis.Size = new System.Drawing.Size(720, 121);
-            this.tableLayoutPanelLayersGeoportailBis.TabIndex = 2;
             // 
             // labelMonGuichet
             // 
             this.labelMonGuichet.AutoSize = true;
             this.labelMonGuichet.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelMonGuichet.Location = new System.Drawing.Point(5, 33);
+            this.labelMonGuichet.Location = new System.Drawing.Point(9, 33);
             this.labelMonGuichet.Name = "labelMonGuichet";
             this.labelMonGuichet.Size = new System.Drawing.Size(100, 18);
             this.labelMonGuichet.TabIndex = 3;
@@ -87,7 +54,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(5, 257);
+            this.label1.Location = new System.Drawing.Point(9, 255);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(139, 18);
             this.label1.TabIndex = 4;
@@ -97,17 +64,17 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(5, 469);
+            this.label2.Location = new System.Drawing.Point(9, 472);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(704, 51);
+            this.label2.Size = new System.Drawing.Size(564, 68);
             this.label2.TabIndex = 5;
             this.label2.Text = resources.GetString("label2.Text");
             // 
             // buttonEnregistrer
             // 
-            this.buttonEnregistrer.Location = new System.Drawing.Point(515, 655);
+            this.buttonEnregistrer.Location = new System.Drawing.Point(344, 674);
             this.buttonEnregistrer.Name = "buttonEnregistrer";
-            this.buttonEnregistrer.Size = new System.Drawing.Size(100, 28);
+            this.buttonEnregistrer.Size = new System.Drawing.Size(112, 28);
             this.buttonEnregistrer.TabIndex = 6;
             this.buttonEnregistrer.Text = "Enregistrer";
             this.buttonEnregistrer.UseVisualStyleBackColor = true;
@@ -115,9 +82,9 @@
             // 
             // buttonAnnuler
             // 
-            this.buttonAnnuler.Location = new System.Drawing.Point(625, 655);
+            this.buttonAnnuler.Location = new System.Drawing.Point(468, 674);
             this.buttonAnnuler.Name = "buttonAnnuler";
-            this.buttonAnnuler.Size = new System.Drawing.Size(100, 28);
+            this.buttonAnnuler.Size = new System.Drawing.Size(112, 28);
             this.buttonAnnuler.TabIndex = 7;
             this.buttonAnnuler.Text = "Annuler";
             this.buttonAnnuler.UseVisualStyleBackColor = true;
@@ -128,26 +95,67 @@
             this.labelGroupeActif.AutoSize = true;
             this.labelGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelGroupeActif.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.labelGroupeActif.Location = new System.Drawing.Point(5, 4);
+            this.labelGroupeActif.Location = new System.Drawing.Point(9, 4);
             this.labelGroupeActif.Name = "labelGroupeActif";
             this.labelGroupeActif.Size = new System.Drawing.Size(36, 20);
             this.labelGroupeActif.TabIndex = 8;
             this.labelGroupeActif.Text = "xxx";
             // 
+            // listViewMyGateway
+            // 
+            this.listViewMyGateway.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewMyGateway.FullRowSelect = true;
+            this.listViewMyGateway.GridLines = true;
+            this.listViewMyGateway.HideSelection = false;
+            this.listViewMyGateway.Location = new System.Drawing.Point(9, 56);
+            this.listViewMyGateway.Name = "listViewMyGateway";
+            this.listViewMyGateway.Size = new System.Drawing.Size(570, 188);
+            this.listViewMyGateway.TabIndex = 9;
+            this.listViewMyGateway.UseCompatibleStateImageBehavior = false;
+            this.listViewMyGateway.View = System.Windows.Forms.View.Details;
+            // 
+            // listViewGeoportail
+            // 
+            this.listViewGeoportail.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewGeoportail.FullRowSelect = true;
+            this.listViewGeoportail.GridLines = true;
+            this.listViewGeoportail.HideSelection = false;
+            this.listViewGeoportail.Location = new System.Drawing.Point(9, 276);
+            this.listViewGeoportail.Name = "listViewGeoportail";
+            this.listViewGeoportail.Size = new System.Drawing.Size(570, 187);
+            this.listViewGeoportail.TabIndex = 10;
+            this.listViewGeoportail.UseCompatibleStateImageBehavior = false;
+            this.listViewGeoportail.View = System.Windows.Forms.View.Details;
+            // 
+            // listViewGeoportailBis
+            // 
+            this.listViewGeoportailBis.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewGeoportailBis.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.listViewGeoportailBis.FullRowSelect = true;
+            this.listViewGeoportailBis.GridLines = true;
+            this.listViewGeoportailBis.HideSelection = false;
+            this.listViewGeoportailBis.Location = new System.Drawing.Point(9, 547);
+            this.listViewGeoportailBis.Name = "listViewGeoportailBis";
+            this.listViewGeoportailBis.Size = new System.Drawing.Size(570, 120);
+            this.listViewGeoportailBis.TabIndex = 11;
+            this.listViewGeoportailBis.UseCompatibleStateImageBehavior = false;
+            this.listViewGeoportailBis.View = System.Windows.Forms.View.Details;
+            // 
             // FormLoadGateway
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(733, 690);
+            this.ClientSize = new System.Drawing.Size(590, 712);
+            this.Controls.Add(this.listViewGeoportailBis);
+            this.Controls.Add(this.listViewGeoportail);
+            this.Controls.Add(this.listViewMyGateway);
             this.Controls.Add(this.labelGroupeActif);
             this.Controls.Add(this.buttonAnnuler);
             this.Controls.Add(this.buttonEnregistrer);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.labelMonGuichet);
-            this.Controls.Add(this.tableLayoutPanelLayersGeoportailBis);
-            this.Controls.Add(this.tableLayoutPanelLayersGeoportail);
-            this.Controls.Add(this.tableLayoutPanelMyGateway);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FormLoadGateway";
             this.Text = "Charger les couches de mon groupe";
             this.ResumeLayout(false);
@@ -156,15 +164,14 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelMyGateway;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelLayersGeoportail;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelLayersGeoportailBis;
         private System.Windows.Forms.Label labelMonGuichet;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonEnregistrer;
         private System.Windows.Forms.Button buttonAnnuler;
         private System.Windows.Forms.Label labelGroupeActif;
+        private System.Windows.Forms.ListView listViewMyGateway;
+        private System.Windows.Forms.ListView listViewGeoportail;
+        private System.Windows.Forms.ListView listViewGeoportailBis;
     }
 }

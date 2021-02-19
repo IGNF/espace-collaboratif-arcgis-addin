@@ -38,13 +38,13 @@ namespace ArcGisProEspaceCollaboratif
         public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
 
         public ArcGIS.Core.Geometry.SpatialReference spatialReference; // Le système géodésique employé par le service de l'espace collaboratif
-        public FormConnecter formConnection; // Le login à utiliser pour connecter au service de l'espace collaboratif.
+        public FormConnect formConnect; // Le login à utiliser pour connecter au service de l'espace collaboratif.
 
         private readonly Logger riplogger = Logger.Instance;
         static ILog logger = LogManager.GetLogger(typeof(Contexte));
 
-        public Profil profil=null;
-        public Client ripClient= null;
+        public Profil Profil { get; set; }
+        public Client RipClient { get; set; }
 
         public static Contexte Instance
         {
@@ -831,7 +831,7 @@ namespace ArcGisProEspaceCollaboratif
             this.CleGeoportail = Helper.Load_CleGeoportail();
             this.URLHost = Helper.Load_Urlhost();
             logger.Debug("URLHost : " + this.URLHost);
-            this.formConnection = new FormConnecter();
+            this.formConnect = new FormConnect();
             // Recherche du login par défaut dans le fichier XML de paramétrage
             this.Login = Helper.Load_Login();
             bool firstConnection = false;
@@ -842,19 +842,19 @@ namespace ArcGisProEspaceCollaboratif
                 if (this.Login.Length == 0 || this.Password.Length == 0)
                 {
                     // Lancement du formulaire de saisi du login et mot de passe                
-                    this.formConnection.SetLogin(this.Login);
+                    this.formConnect.SetLogin(this.Login);
 
                     // On s'arrête là si l'utilisateur a cliqué sur le bouton "abandonner"
-                    if (this.formConnection.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    if (this.formConnect.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     {
-                        this.formConnection.Close();
-                        this.formConnection = null;
+                        this.formConnect.Close();
+                        this.formConnect = null;
                         return null;
                     }
 
                     // Récupération du login et mot de passe introduits.
-                    this.Login = this.formConnection.GetLogin();
-                    this.Password = this.formConnection.GetPassword();
+                    this.Login = this.formConnect.GetLogin();
+                    this.Password = this.formConnect.GetPassword();
                 }
                 else
                 {
@@ -875,18 +875,21 @@ namespace ArcGisProEspaceCollaboratif
                         this.Password
                     );
                     logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
-                    this.formConnection.Close();
-                    this.formConnection = null;
+                    this.formConnect.Close();
+                    this.formConnect = null;
 
                     // Récupération du profil utilisateur
-                    this.profil = connexionServer.GetProfil();
+                    this.Profil = connexionServer.GetProfil();
 
                     // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
-                    this.DisplayFormChoiceGroup(connexionServer);
+                    if (!this.DisplayFormChoiceGroup(ref connexionServer))
+                    {
+                        return null;
+                    }
 
                     // Affichage des infos suite à la connexion à l'Espace collaboratif
                     this.DisplayInformationsAfterConnection();
-                    
+
                     return connexionServer;
                 }
                 catch (Exception erreurConnexion)
@@ -896,15 +899,15 @@ namespace ArcGisProEspaceCollaboratif
                     switch (erreurConnexion.Message.ToString())
                     {
                         case "(401) Unauthorized":
-                            this.formConnection.Notifier("Login et/ou mot de passe incorrects");
+                            this.formConnect.Notifier("Login et/ou mot de passe incorrects");
 
                             break;
                         case "Login inconnu":
-                            this.formConnection.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
+                            this.formConnect.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
                             break;
 
                         case "no_group":
-                            this.formConnection.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
+                            this.formConnect.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
                             break;
 
                         default:
@@ -915,8 +918,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
             }
-            this.formConnection.Close();
-            this.formConnection = null;
+            this.formConnect.Close();
+            this.formConnect = null;
             return null;
         }
 
@@ -927,14 +930,23 @@ namespace ArcGisProEspaceCollaboratif
         {
             FormInfo popupEspaceCollaboratif = new FormInfo();
             // Le logo du groupe auquel l'utilisateur appartient
-            string repLogo = this.URLHost + profil.Logo;
+            string repLogo ="";
+            if (string.IsNullOrEmpty(Profil.Logo))
+            {
+                // logo du site ign par défaut, il faut une connexion internet bien sûr
+                repLogo = "https://www.ign.fr/sites/default/files/styles/thumbnail/public/2020-06/logoIGN_300x200.png?itok=MT8RiLtp";
+            }
+            else
+            {
+                repLogo = this.URLHost + Profil.Logo;
+            }
             popupEspaceCollaboratif.SetLogo(repLogo);
             popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif");
             popupEspaceCollaboratif.AddMessage("");
             popupEspaceCollaboratif.AddMessage(" Serveur : " + this.URLHost);
             popupEspaceCollaboratif.AddMessage(" Login : " + this.Login);
-            popupEspaceCollaboratif.AddMessage(" Groupe : " + profil.Titre);
-            if (profil.Zone == ZoneGeographique.UNDEFINED)
+            popupEspaceCollaboratif.AddMessage(" Groupe : " + Profil.Titre);
+            if (Profil.Zone == ZoneGeographique.UNDEFINED)
             {
                 string zoneExtraction = Helper.Load_CalqueFiltrage();
                 if (zoneExtraction == "" || zoneExtraction.Length == 0)
@@ -948,7 +960,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             else
             {
-                popupEspaceCollaboratif.AddMessage(" Zone : " + profil.Zone);
+                popupEspaceCollaboratif.AddMessage(" Zone : " + Profil.Zone);
             }
             popupEspaceCollaboratif.AddMessage(" Clé Géoportail : " + this.CleGeoportail);
             popupEspaceCollaboratif.StartCountDown(10);
@@ -957,30 +969,30 @@ namespace ArcGisProEspaceCollaboratif
             Helper.Save_Login(this.Login);
         }
 
-        public void DisplayFormChoiceGroup(ArcGisProEspaceCollaboratif.Core.Client connexionServer)
+        public bool DisplayFormChoiceGroup(ref ArcGisProEspaceCollaboratif.Core.Client connexionServer)
         {
             // si l'utilisateur appartient à 1 seul groupe, celui-ci est déjà actif
             // si l'utilisateur n'appartient à aucun groupe, un profil par défaut
             // est attribué mais il ne contient pas d'infosgeogroupes
-            if (this.profil.Geogroupes.Count < 1)
+            if (this.Profil.Geogroupes.Count < 1)
             {
                 // si l'utilisateur n'a pas de profil, il faut indiquer que le groupe actif est vide
-                if (this.profil.Titre == "défaut")
+                if (this.Profil.Titre == "défaut")
                 {
                     Helper.Save_GroupeActif("Aucun");
                 }
                 else
                 {
-                    Helper.Save_GroupeActif(this.profil.Groupe.Nom);
+                    Helper.Save_GroupeActif(this.Profil.Groupe.Nom);
 
                     // On enregistre le groupe comme groupe préféré (par défaut) pour la création de signalement
                     // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
                     string preferredGroup = Helper.Load_PreferredGroup();
-                    if (preferredGroup != profil.Groupe.Nom)
+                    if (preferredGroup != Profil.Groupe.Nom)
                     {
                         Helper.Save_PreferredThemes(new List<string>());
                     }
-                    Helper.Save_PreferredGroup(profil.Groupe.Nom);
+                    Helper.Save_PreferredGroup(Profil.Groupe.Nom);
                 }
                 // Par défaut, on enregistre la clé Géoportail de démonstration
                 Helper.Save_CleGeoportail(Constantes.DEMO);
@@ -990,58 +1002,61 @@ namespace ArcGisProEspaceCollaboratif
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
                 // afin qu'il puisse remplir sa clé Géoportail
-                FormGroupChoice FormGroupChoice = new FormGroupChoice(this.CleGeoportail, profil.Groupe.Nom, profil);
-                if (FormGroupChoice.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                FormGroupChoice FormGroupChoice = new FormGroupChoice(this.CleGeoportail, Profil.Groupe.Nom, Profil);
+                if (FormGroupChoice.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
-                    // le choix du nouveau profil est validé
-                    // le nouvel id et nom du groupe, la clé Geoportail sont retournés dans un tuple
-                    (string, string, string) idNomGroupeCleGeoPortail = FormGroupChoice._profil.IdNomGroupeCleGeoPortail;
-                    this.CleGeoportail = idNomGroupeCleGeoPortail.Item3;
+                    // Si l'utilisateur a cliqué sur la bouton Annuler dans son choix du groupe, on sort
+                    return false;
+                }
 
-                    // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
-                    if (FormGroupChoice._profil.Geogroupes.Count == 1)
+                // le choix du nouveau profil est validé
+                // le nouvel id et nom du groupe, la clé Geoportail sont retournés dans un tuple
+                (string, string, string) idNomGroupeCleGeoPortail = FormGroupChoice._profil.IdNomGroupeCleGeoPortail;
+                this.CleGeoportail = idNomGroupeCleGeoPortail.Item3;
+
+                // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
+                if (FormGroupChoice._profil.Geogroupes.Count == 1)
+                {
+                    this.Profil = FormGroupChoice._profil;
+                }
+                else
+                {
+                    // récupère le profil et un message dans un tuple
+                    (Profil, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupeCleGeoPortail.Item1);
+                    string messTmp = profilMessage.Item2;
+
+                    // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
+                    if (messTmp.Contains("actif"))
                     {
-                        this.profil = FormGroupChoice._profil;
+                        // le profil chargé reste actif
+                        this.Profil = FormGroupChoice._profil;
                     }
                     else
                     {
-                        // récupère le profil et un message dans un tuple
-                        (Profil, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupeCleGeoPortail.Item1);
-                        string messTmp = profilMessage.Item2;
-
-                        // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
-                        if (messTmp.Contains("actif"))
-                        {
-                            // le profil chargé reste actif
-                            this.profil = FormGroupChoice._profil;
-                        }
-                        else
-                        {
-                            // setChangeUserProfil retourne un message vide le nouveau profil devient actif
-                            this.profil = profilMessage.Item1;
-                        }
+                        // setChangeUserProfil retourne un message vide le nouveau profil devient actif
+                        this.Profil = profilMessage.Item1;
                     }
-
-                    // Sauvegarde de la clé Géoportail et du groupe actif
-                    // dans le xml du projet utilisateur
-                    Helper.Save_CleGeoportail(idNomGroupeCleGeoPortail.Item3);
-                    this.Groupeactif = idNomGroupeCleGeoPortail.Item2;
-                    Helper.Save_GroupeActif(this.Groupeactif);
-
-                    // On enregistre le groupe comme groupe préféré pour la création de signalement
-                    // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
-                    string preferredGroup = Helper.Load_PreferredGroup();
-                    if (preferredGroup != profil.Groupe.Nom)
-                    {
-                        Helper.Save_PreferredThemes(new List<string>());
-                    }
-                    Helper.Save_PreferredGroup(profil.Groupe.Nom);
-
-                    // Récupération des layers GéoPortail valides en fonction
-                    // de la clé Geoportail utilisateur
-                    this.profil.layersCleGeoportail = connexionServer.GetLayersFromCleGeoportailUser(this.CleGeoportail);
                 }
+
+                // Sauvegarde de la clé Géoportail et du groupe actif
+                // dans le xml du projet utilisateur
+                Helper.Save_CleGeoportail(idNomGroupeCleGeoPortail.Item3);
+                this.Groupeactif = idNomGroupeCleGeoPortail.Item2;
+                Helper.Save_GroupeActif(this.Groupeactif);
+
+                // On enregistre le groupe comme groupe préféré pour la création de signalement
+                // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
+                string preferredGroup = Helper.Load_PreferredGroup();
+                if (preferredGroup != Profil.Groupe.Nom)
+                {
+                    Helper.Save_PreferredThemes(new List<string>());
+                }
+                Helper.Save_PreferredGroup(Profil.Groupe.Nom);
             }
+            // Récupération des layers GéoPortail valides en fonction
+            // de la clé Geoportail utilisateur
+            this.Profil.LayersCleGeoportail = connexionServer.GetLayersFromCleGeoportailUser(this.CleGeoportail);
+            return true;
         }
 
         /// <summary>
