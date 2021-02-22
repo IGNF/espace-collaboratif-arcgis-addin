@@ -166,51 +166,84 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-        /*
-             def getLayersSelected(self, tableWidget, numCol):
-        checked_list = []
-        for i in range(tableWidget.rowCount()):
-            item = tableWidget.item(i, numCol)
-            if item.checkState() == QtCore.Qt.Checked:
-                itemCouche = tableWidget.item(i, 0)
-                checked_list.append(itemCouche.text())
-            else:
-                pass
-        return checked_list
-        */
+        /// <summary>
+        /// Recherche pour une liste de couches en entrée celles qui sont cochées
+        /// </summary>
+        /// <param name="listView">La liste des couches</param>
+        /// <returns></returns>
+        private List<string> GetLayersSelected(ListView listView)
+        {
+            List<string> checked_list = new List<string>();
+            ListView.CheckedListViewItemCollection checkedItems = listView.CheckedItems;
+            foreach (ListViewItem item in checkedItems)
+            {
+                checked_list.Add(item.Text);
+            }
+            return checked_list;
+        }
 
+        /// <summary>
+        /// Bouton "Enregistrer" qui lance l'import des couches sélectionnées par l'utilisateur dans ArcGIS 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonEnregistrer_Click(object sender, EventArgs e)
         {
             this.Close();
-            /*
-             self.accept()
-        layersQGIS = []
-        print("Liste des couches à afficher après sélection utilisateur")
-        '''layersChecked = [self.getLayersSelected(self.tableWidgetAutresGeoservices, 2),
-                         self.getLayersSelected(self.tableWidgetFondsGeoportail, 1),
-                         self.getLayersSelected(self.tableWidgetMonGuichet, 2)]'''
-        layersChecked = [self.getLayersSelected(self.tableWidgetFondsGeoportail, 2),
-                         self.getLayersSelected(self.tableWidgetMonGuichet, 2)]
+            //Liste des couches à afficher après la sélection de l'utilisateur
+            List<string>[] layersChecked = new List<string>[]
+            {
+                GetLayersSelected(this.listViewMyGateway),
+                GetLayersSelected(this.listViewGeoportail),
+                GetLayersSelected(this.listViewGeoportailBis)
+            };
 
-        # Par exemple[['adresse'], ['GEOGRAPHICALGRIDSYSTEMS.MAPS', 'GEOGRAPHICALGRIDSYSTEMS.PLANIGN'], [], []]
-        for layerChecked in layersChecked:
-            for tmp in layerChecked:
-                for layer in self.listLayers:
-                    # tmp est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
-                    if '(' in tmp:
-                        tmpName = tmp.split('(')
-                        name = tmpName[1].replace(')', '')
-                    else:
-                        name = tmp
-                    if name == layer.nom:
-                        layersQGIS.append(layer)
+            List<LayerGateway> layersArcGIS = new List<LayerGateway>();
+            foreach (List<string> layerChecked in layersChecked)
+            {
+                foreach (string layerCheck in layerChecked)
+                {
+                   
+                    // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
+                    string name;
+                    if (layerCheck.Contains("("))
+                    {
+                        string[] layerCheckName = layerCheck.Split('(');
+                        name = layerCheckName[1].Replace(")", "");
+                    }
+                    else
+                    {
+                        name = layerCheck;
+                    }
 
-        importGuichet = ImporterGuichet(self.context)
-        importGuichet.doImport(layersQGIS)
-        */
-    }
+                    int index = this.ListLayers.FindIndex(x => x.Nom.Equals(name));
+                    if (index == -1)
+                    {
+                        continue;
+                    }
+                    layersArcGIS.Add(this.ListLayers[index]);
+                }
+            }
+            
+            // Import des couches dans ArcGIS
+            DoLoadGateway(layersArcGIS);
+        }
 
-    private void ButtonAnnuler_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Import des couches sélectionnées par l'utilisateur dans ArcGIS
+        /// </summary>
+        /// <param name="layersQGIS">La liste des couches à importer avec leurs caractéristiques</param>
+        private void DoLoadGateway(List<LayerGateway> layersQGIS)
+        {
+            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Import des couches dans ArcGIS", "Espace collaboratif");
+        }
+
+        /// <summary>
+        /// Bouton "Annuler"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonAnnuler_Click(object sender, EventArgs e)
         {
             this.Close();
             return;
