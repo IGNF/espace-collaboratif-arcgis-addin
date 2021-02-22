@@ -30,7 +30,7 @@
         public int Visibility { get; set; }
 
         // <OPACITY> 1 </OPACITY>
-        public int Opacity { get; set; }
+        public double Opacity { get; set; }
 
         // <TILEZOOM>
         public int Tilezoom { get; set; }
