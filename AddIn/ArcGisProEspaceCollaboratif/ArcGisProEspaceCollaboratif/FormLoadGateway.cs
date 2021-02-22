@@ -166,12 +166,51 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
+        /*
+             def getLayersSelected(self, tableWidget, numCol):
+        checked_list = []
+        for i in range(tableWidget.rowCount()):
+            item = tableWidget.item(i, numCol)
+            if item.checkState() == QtCore.Qt.Checked:
+                itemCouche = tableWidget.item(i, 0)
+                checked_list.append(itemCouche.text())
+            else:
+                pass
+        return checked_list
+        */
+
         private void ButtonEnregistrer_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
+            /*
+             self.accept()
+        layersQGIS = []
+        print("Liste des couches à afficher après sélection utilisateur")
+        '''layersChecked = [self.getLayersSelected(self.tableWidgetAutresGeoservices, 2),
+                         self.getLayersSelected(self.tableWidgetFondsGeoportail, 1),
+                         self.getLayersSelected(self.tableWidgetMonGuichet, 2)]'''
+        layersChecked = [self.getLayersSelected(self.tableWidgetFondsGeoportail, 2),
+                         self.getLayersSelected(self.tableWidgetMonGuichet, 2)]
 
-        private void ButtonAnnuler_Click(object sender, EventArgs e)
+        # Par exemple[['adresse'], ['GEOGRAPHICALGRIDSYSTEMS.MAPS', 'GEOGRAPHICALGRIDSYSTEMS.PLANIGN'], [], []]
+        for layerChecked in layersChecked:
+            for tmp in layerChecked:
+                for layer in self.listLayers:
+                    # tmp est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
+                    if '(' in tmp:
+                        tmpName = tmp.split('(')
+                        name = tmpName[1].replace(')', '')
+                    else:
+                        name = tmp
+                    if name == layer.nom:
+                        layersQGIS.append(layer)
+
+        importGuichet = ImporterGuichet(self.context)
+        importGuichet.doImport(layersQGIS)
+        */
+    }
+
+    private void ButtonAnnuler_Click(object sender, EventArgs e)
         {
             this.Close();
             return;
