@@ -325,6 +325,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             return newInt;
         }
 
+
         /// <summary>
         /// Récupération des infos sur les balises <GEOGROUPE>
         /// </summary>
@@ -400,7 +401,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                         string newString = null;
                         layerGateway.Visibility = TransformStringOrInt(lay.SelectSingleNode("VISIBILITY").Value, ref newString, true);
-                        layerGateway.Opacity = Int32.Parse(lay.SelectSingleNode("OPACITY").Value);
+                        layerGateway.Opacity = Double.Parse(lay.SelectSingleNode("OPACITY").Value, System.Globalization.CultureInfo.InvariantCulture);
 
                         XPathNavigator tilezoom = lay.SelectSingleNode("TILEZOOM");
                         if (tilezoom != null)
