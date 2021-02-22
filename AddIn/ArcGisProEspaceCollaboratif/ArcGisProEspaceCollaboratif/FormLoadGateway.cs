@@ -35,16 +35,15 @@ namespace ArcGisProEspaceCollaboratif
             this.ListLayers = new List<LayerGateway>();
 
             // le tuple contient Rejected/Accepted pour la connexion au service et la liste des layers du groupe utilisateur
-            (string, List<LayerGateway>) connexionLayers = this.GetInfosLayers();
+            string resultat = this.GetInfosLayers();
 
-            if (connexionLayers.Item1 == "Rejected")
+            if (resultat == "Rejected")
             {
                 throw new Exception("Vous n'appartenez à aucun groupe, il n'y a pas de données à charger.");
             }
 
-            if (connexionLayers.Item1 == "Accepted")
-            {
-                this.ListLayers = connexionLayers.Item2;
+            if (resultat == "Accepted")
+            {                
                 // Les couches sont chargées dans l'ordre renvoyé dans geoaut_get.
                 // Il faut donc inverser l'ordre pour retrouver le paramétrage de la carte du groupe
                 this.ListLayers.Reverse();
@@ -182,27 +181,22 @@ namespace ArcGisProEspaceCollaboratif
         /// Récupération des couches de l'Espace collaboratif pour le groupe choisi par l'utilisateur
         /// </summary>
         /// <returns>Retourne un tuple contenant Rejected/Accepted pour la connexion à l'Espace collaboratif et la liste des layers du groupe utilisateur</returns>
-        private (string, List<LayerGateway>) GetInfosLayers()
+        private string GetInfosLayers()
         {
-            List<LayerGateway> layerGateways = new List<LayerGateway>();
             if (this.Contexte.RipClient == null)
             {
                 IClient connResult = this.Contexte.GetConnexionEspaceCollaboratif();
                 if (connResult == null)
                 {
                     // la connexion a échoué ou l'utilisateur a cliqué sur Annuler
-                    return ("Rejected", layerGateways);
-                }
-
-                this.ProfilUser = connResult.GetProfil();
-                if (this.ProfilUser.Geogroupes.Count == 0)
-                {
-                    return ("Rejected", layerGateways);
+                    return "Rejected";
                 }
             }
-            else
+
+            this.ProfilUser = this.Contexte.Profil;
+            if (this.ProfilUser.Geogroupes.Count == 0)
             {
-                this.ProfilUser = this.Contexte.RipClient.GetProfil();
+                return "Rejected";
             }
             
             foreach (GeoGroupe groupe in this.ProfilUser.Geogroupes)
@@ -213,11 +207,11 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 foreach (LayerGateway layer in groupe.Layers)
                 {
-                    layerGateways.Add(layer);
+                    this.ListLayers.Add(layer);
                 }
             }
  
-            return ("Accepted", layerGateways);
+            return "Accepted";
         }
     }
 }

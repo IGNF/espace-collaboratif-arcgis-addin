@@ -969,6 +969,11 @@ namespace ArcGisProEspaceCollaboratif
             Helper.Save_Login(this.Login);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="connexionServer"></param>
+        /// <returns></returns>
         public bool DisplayFormChoiceGroup(ref ArcGisProEspaceCollaboratif.Core.Client connexionServer)
         {
             // si l'utilisateur appartient à 1 seul groupe, celui-ci est déjà actif
