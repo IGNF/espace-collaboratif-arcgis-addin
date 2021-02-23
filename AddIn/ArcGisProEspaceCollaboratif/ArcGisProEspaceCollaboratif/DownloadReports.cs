@@ -157,7 +157,16 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-
+        /// <summary>
+        /// Renvoie les paramètres de filtrage spatial des signalements sous forme de tuple.
+        /// </summary>
+        /// <param name="filterLayerName">Nom de la couche définie comme filtre spatial.</param>
+        /// <returns>Un tuple :
+        /// Item1 : booléen indiquant si un filtre est défini,
+        /// Item2 : booléen indiquant si on continue même en l'absence de filtre,
+        /// Item3 : bbox des géométries contenues dans la couche,
+        /// Item4 : liste des géométries contenues dans la couche.
+        /// </returns>
         public Tuple<bool, bool, Box, List<Geometry>> GetSpatialFilterParameters(string filterLayerName)
         {
             //Initialisation
