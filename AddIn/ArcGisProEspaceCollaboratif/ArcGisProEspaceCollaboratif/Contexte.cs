@@ -15,6 +15,7 @@ using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
+using System.Xml;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -569,21 +570,23 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
-        /*       public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> geometriesFiltres)
-               {
-                   if (geometriesFiltres.Count == 0) { return new ArcGisProEspaceCollaboratif.Core.Box(); }
+        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> filterGeometries)
+        {
+            if (filterGeometries.Count == 0)
+                return new ArcGisProEspaceCollaboratif.Core.Box();
 
-                   IEnvelope2 bbox = (IEnvelope2)new Envelope();
+            // Initialisation de la bbox avec l'emprise de la première géométrie
+            Envelope bbox = filterGeometries[0].Extent;
 
-                   foreach (Geometry geometrie in geometriesFiltres)
-                   {
-                       IEnvelope bboxTemp = geometrie.Envelope;
-                       bbox.Union(bboxTemp);
-                   }
+            foreach (Geometry geom in filterGeometries)
+            {
+                Envelope bboxTemp = geom.Extent;
+                bbox.Union(bboxTemp);
+            }
 
-                   return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
-               }
-       */
+            return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
+        }
+
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe un unique object géométrique.
         /// </summary>
@@ -599,20 +602,26 @@ namespace ArcGisProEspaceCollaboratif
                 }
         */
 
+        
+        // INUTILE ?
         /// <summary>
         /// Zoom à l'écran sur une emprise donnée.
         /// </summary>
         /// <param name="emprise">L'object Ripart.Core.Box sur laquelle il faut faire le zoom à l'écran.</param>
-        /*       public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
-               {
-                   IEnvelope2 bbox = (IEnvelope2)new Envelope();
-                   bbox.SpatialReference = this.spatialReferenceEspaceCollaboratif;
-                   bbox.PutCoords(emprise.XMin, emprise.YMin, emprise.XMax, emprise.YMax);
-                   this.ActiveView.Extent = bbox;
-                   this.ActiveView.Refresh();
-                   return;
-               }
-       */
+/*
+        public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
+        {
+            Envelope bbox = new Envelope(emprise);
+            bbox.SpatialReference = this.spatialReference;
+            bbox.PutCoords(emprise.XMin, emprise.YMin, emprise.XMax, emprise.YMax);
+
+            Camera extentCamera = new Camera()
+
+            this.mapActiveView.ZoomTo = bbox;
+            this.ActiveView.Refresh();
+            return;
+        }
+*/
         /// <summary>
         /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste d'objects Geometry.
         /// </summary>
@@ -662,164 +671,170 @@ namespace ArcGisProEspaceCollaboratif
                    return;
                }
        */
+
+
+
+        // INUTILE ?
         /// <summary>
         /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques.
         /// </summary>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        /*        public List<Geometry> GetGeometryFiltreSpatial()
-                {
-                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+/*        public List<Geometry> GetSpatialFilterGeometry()
+        {
+            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-                    // Récupération de la liste des géométries servant pour le filtrage spatial à partir des objects sélectionnés dans la carte en cours.
-                    geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_selection();
+            // Récupération de la liste des géométries servant pour le filtrage spatial à partir des objects sélectionnés dans la carte en cours.
+//TO-DO            geometryFiltreSpatial = this.GetSpatialFilterGeometry_from_selection();
 
-                    // Si la récupération par sélection est vide (car aucun object séléectionné ou aucun ayant la géométrie adéquate), alors on récupère les géométries contenues dans le calque définit par le fichier de paramètre.
-                    if (geometryFiltreSpatial.Count == 0)
-                    {
-                        geometryFiltreSpatial = this.GetGeometryFiltreSpatial_from_XML();
-                    }
+            // Si la récupération par sélection est vide (car aucun object séléectionné ou aucun ayant la géométrie adéquate), alors on récupère les géométries contenues dans le calque définit par le fichier de paramètre.
+            if (geometryFiltreSpatial.Count == 0)
+            {
+                geometryFiltreSpatial = this.GetSpatialFilterGeometry_from_XML();
+            }
 
-                    // Si la récupération n'est pas vide, on zoom à l'écran sur celle-ci.
-                    if (geometryFiltreSpatial.Count != 0)
-                    {
-                        this.Zoom(geometryFiltreSpatial);
-                    }
+            // Si la récupération n'est pas vide, on zoom à l'écran sur celle-ci.
+            if (geometryFiltreSpatial.Count != 0)
+            {
+                this.Zoom(geometryFiltreSpatial);
+            }
 
-                    return geometryFiltreSpatial;
-                }
-        */
+            return geometryFiltreSpatial;
+        }
+*/
+
         /// <summary>
         /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <param name="calqueFiltrage">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        /*        public List<Geometry> GetGeometryFiltreSpatial(string calqueFiltrage)
-                {
-                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+        public List<Geometry> GetSpatialFilterGeometry(string filterLayerName)
+        {
+            List<Geometry> spatialFilterGeometry = new List<Geometry>();
 
-                    ILayer layerFiltrage = this.GetLayerByName(calqueFiltrage);
+            FeatureLayer filterLayer = this.GetLayerByName(filterLayerName);
 
-                    if (layerFiltrage == null) { return geometryFiltreSpatial; }
+            if (filterLayer == null)
+                return spatialFilterGeometry;
 
-                    IFeatureLayer featureLayerFiltrageSpatial = layerFiltrage as IFeatureLayer;
-                    IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
-                    IQueryFilter filtreSpatial = new QueryFilter();
+            FeatureClass featureClassFilter = filterLayer.GetFeatureClass();
+            QueryFilter spatialQueryFilter = new QueryFilter();
 
-                    IFeatureCursor cursor = featureClassFiltrageSpatial.Search(
-                                filtreSpatial,
-                                false // important : sinon on n'obtient qu'un seul objet
-                            );
-                    Feature featureFiltrageSpatial = cursor.NextFeature();
+            RowCursor rowCursor = featureClassFilter.Search(
+                        spatialQueryFilter,
+                        false // important : sinon on n'obtient qu'un seul objet
+                    );
 
-                    while (featureFiltrageSpatial != null)
-                    {
-                        Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
-                        contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
-                        geometryFiltreSpatial.Add(contourFiltrageSpatial);
-                        featureFiltrageSpatial = cursor.NextFeature();
-                    }
+            // On parcourt les objets de la feature class utilisée pour le filtre spatial
+            while (rowCursor.MoveNext())
+            {
+                Feature featureSpatialFilter = rowCursor.Current as Feature;
+                Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), this.spatialReference);
+                spatialFilterGeometry.Add(geomFeature);
 
-                    return geometryFiltreSpatial;
-                }
-        */
+            }
+
+            return spatialFilterGeometry;
+        }
+
+
+        // INUTILE ?
         /// <summary>
-        /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
+        /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'import des signalements.
         /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        /*        public List<Geometry> GetGeometryFiltreSpatial_from_XML()
-                {
-                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'import des signalements.</returns>
+/*        public List<Geometry> GetSpatialFilterGeometry_from_XML()
+        {
+            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
 
-            string nom_FichierParametre = EspaceCollaboratifHelper.XML_NameFile();
+            string nom_FichierParametre = Helper.XML_NameFile();
 
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load(nom_FichierParametre);
+            XmlDocument doc = new XmlDocument();
+            doc.Load(nom_FichierParametre);
 
             // XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName("Zone_extraction");
-            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(EspaceCollaboratifHelper.XML_Suffixe(EspaceCollaboratifHelper.xml_Zone_extraction));
-                    IEnumerator ienum;
+            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(Helper.XML_Suffixe(Helper.xml_Zone_extraction));
+            IEnumerator<XmlNode> ienum;
 
-                    // Parcour des calques contenant les objects de filtrage spatial d'après de le XML de paramétrage
-                    for (int i = 0; i < elemCalqueExtraction.Count; i++)
+            // Parcour des calques contenant les objects de filtrage spatial d'après de le XML de paramétrage
+            for (int i = 0; i < elemCalqueExtraction.Count; i++)
+            {
+                string nomCalqueExtraction = elemCalqueExtraction[i].Attributes["calque"].Value;
+
+                if (nomCalqueExtraction.Length == 0)
+                { continue; }
+
+                Layer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
+                if (calqueExtraction == null)
+                { continue; }
+
+                ienum = elemCalqueExtraction[i].GetEnumerator() as IEnumerator<XmlNode>;
+
+                // Parcour objects de filtrage spatial au sein du même calque
+                while (ienum.MoveNext())
+                {
+                    XmlNode noeud = (XmlNode)ienum.Current;
+
+                    string idObjectExtraction = noeud.Attributes["ID"].Value;
+                    string valObjectExtraction = noeud.InnerText;
+
+                    FeatureLayer featureLayerFiltrageSpatial = calqueExtraction as FeatureLayer;
+                    FeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.GetFeatureClass();
+
+                    QueryFilter filtreSpatial = new QueryFilter
                     {
-                        string nomCalqueExtraction = elemCalqueExtraction[i].Attributes["calque"].Value;
 
-                        if (nomCalqueExtraction.Length == 0)
-                        { continue; }
+                        // Recherche de l'object filtrant spatial d'après le nom et la valeur de son identifiant
+                        WhereClause = idObjectExtraction + "=" + valObjectExtraction
+                    };
 
-                        ILayer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
-                        if (calqueExtraction == null)
-                        { continue; }
+                    RowCursor rowCursor = featureClassFiltrageSpatial.Search(
+                        filtreSpatial,
+                        false // important : sinon, on a un seul objet
+                    );
 
-                        ienum = elemCalqueExtraction[i].GetEnumerator();
+                    while (rowCursor.MoveNext())
+                    {
+                        Feature featureFiltrageSpatial = rowCursor.Current as Feature;
+                        Geometry contourFiltrageSpatial = GeometryEngine.Instance.Project(featureFiltrageSpatial.GetShape(), this.spatialReference);
+                        geometryFiltreSpatial.Add(contourFiltrageSpatial);
 
-                        // Parcour objects de filtrage spatial au sein du même calque
-                        while (ienum.MoveNext())
-                        {
-                            XmlNode noeud = (XmlNode)ienum.Current;
-
-                            string idObjectExtraction = noeud.Attributes["ID"].Value;
-                            string valObjectExtraction = noeud.InnerText;
-
-                            IFeatureLayer featureLayerFiltrageSpatial = calqueExtraction as IFeatureLayer;
-                            IFeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.FeatureClass;
-
-                            IQueryFilter filtreSpatial = new QueryFilter
-                            {
-
-                                // Recherche de l'object filtrant spatial d'après le nom et la valeur de son identifiant
-                                WhereClause = idObjectExtraction + "=" + valObjectExtraction
-                            };
-
-                            IFeatureCursor cursor = featureClassFiltrageSpatial.Search(
-                                filtreSpatial,
-                                false // important : sinon, on a un seul objet
-                            );
-                            Feature featureFiltrageSpatial = cursor.NextFeature();
-
-                            while (featureFiltrageSpatial != null)
-                            {
-                                Geometry contourFiltrageSpatial = featureFiltrageSpatial.GetShape();
-                                contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
-                                geometryFiltreSpatial.Add(contourFiltrageSpatial);
-                                featureFiltrageSpatial = cursor.NextFeature();
-                            }
-
-                        }
-
-                        ienum.Reset();
                     }
-
-                    return geometryFiltreSpatial;
                 }
-        */
+                ienum.Reset();
+            }
+            return geometryFiltreSpatial;
+        }
+*/
+
+        // INUTILE ?
         /// <summary>
         /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
         /// </summary>
         /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
-        /*        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
+
+/*        TO-DO
+ *        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
+        {
+            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
+
+            // Récupération des objects sélectionnés
+            IEnumerator<Feature> enumFeature = this.mapActiveView..FeatureSelection as IEnumFeature;
+            Feature feature = enumFeature.Next();
+
+            while (feature != null)
+            {
+                if (Helper.TestGeometrieFiltrageSpatial(feature))
                 {
-                    List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-                    // Obtention des objects sélectionnés
-                    IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-                    Feature feature = enumFeature.Next();
-
-                    while (feature != null)
-                    {
-                        if (EspaceCollaboratifHelper.TestGeometrieFiltrageSpatial(feature))
-                        {
-                            Geometry contourFiltrageSpatial = feature.GetShape();
-                            contourFiltrageSpatial.Project(this.spatialReferenceEspaceCollaboratif);
-                            geometryFiltreSpatial.Add(contourFiltrageSpatial);
-                        }
-
-                        feature = enumFeature.Next();
-                    }
-
-                    return geometryFiltreSpatial;
+                    Geometry contourFiltrageSpatial = GeometryEngine.Instance.Project(feature.GetShape(), this.spatialReference);
+                    geometryFiltreSpatial.Add(contourFiltrageSpatial);
                 }
-        */
+
+                feature = enumFeature.Next();
+            }
+
+            return geometryFiltreSpatial;
+        }
+*/        
 
 
         /// <summary>
@@ -948,7 +963,7 @@ namespace ArcGisProEspaceCollaboratif
             popupEspaceCollaboratif.AddMessage(" Groupe : " + Profil.Titre);
             if (Profil.Zone == ZoneGeographique.UNDEFINED)
             {
-                string zoneExtraction = Helper.Load_CalqueFiltrage();
+                string zoneExtraction = Helper.Load_FilterLayer();
                 if (zoneExtraction == "" || zoneExtraction.Length == 0)
                 {
                     popupEspaceCollaboratif.AddMessage(" Zone : pas de zone définie");
@@ -1197,30 +1212,30 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
+        /// <param name="status">Le statut des remarques Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-/*        public int Count_Remarque_by_Statut(int statut)
+        public int CountReportsByStatus(int status)
         {
-            FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
-            FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
+            FeatureLayer reportLayer = this.GetLayerByName(Helper.nom_Calque_Signalement);
+            FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
             QueryFilter queryFilter = new QueryFilter
             {
-                WhereClause = EspaceCollaboratifHelper.nom_Champ_Statut + " = " + statut
+                WhereClause = Helper.nom_Champ_Statut + " = " + status
             };
            
-            return featureClass.GetCount(queryFilter);
+            return reportFeatureClass.GetCount(queryFilter);
         }
-*/
+
         /// <summary>
         /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-/*        public int Count_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
+        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Statut status)
         {
-            return this.Count_Remarque_by_Statut((int)statut);
+            return this.CountReportsByStatus((int)status);
         }
-*/
+
 
         /// <summary>
         /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 

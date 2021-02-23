@@ -68,7 +68,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.dateTimePicker.Text = dateDefaut.ToShortDateString();
             }
 
-            string calqueFiltrageDefaut = Helper.Load_CalqueFiltrage();
+            string calqueFiltrageDefaut = Helper.Load_FilterLayer();
 
             // Récupération des couches et attributs
             IReadOnlyList<Layer> mapLayers = contexte.mapActiveView.Map.GetLayersAsFlattenedList();

@@ -38,7 +38,7 @@
             // 
             this.label.AutoSize = true;
             this.label.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label.Location = new System.Drawing.Point(115, 78);
+            this.label.Location = new System.Drawing.Point(115, 22);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(34, 15);
             this.label.TabIndex = 9;
@@ -49,9 +49,9 @@
             // progressBar
             // 
             this.progressBar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(192)))), ((int)(((byte)(26)))));
-            this.progressBar.Location = new System.Drawing.Point(115, 12);
+            this.progressBar.Location = new System.Drawing.Point(118, 78);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(293, 51);
+            this.progressBar.Size = new System.Drawing.Size(293, 27);
             this.progressBar.Step = 1;
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 8;
@@ -69,12 +69,12 @@
             this.LogoBox.TabStop = false;
             this.LogoBox.UseWaitCursor = true;
             // 
-            // FormAttenteChargement
+            // FormProgressDownload
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(420, 117);
+            this.ClientSize = new System.Drawing.Size(426, 117);
             this.ControlBox = false;
             this.Controls.Add(this.label);
             this.Controls.Add(this.progressBar);
@@ -82,11 +82,11 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FormAttenteChargement";
+            this.Name = "FormProgressDownload";
             this.Opacity = 0.95D;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Importation des remarques Ripart.";
+            this.Text = "Import des signalements";
             this.TopMost = true;
             this.UseWaitCursor = true;
             this.Load += new System.EventHandler(this.AttenteChargement_Load);
