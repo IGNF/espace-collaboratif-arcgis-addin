@@ -112,25 +112,21 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="remarqueTest">La remarque EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si la remarque à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        /*        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Signalement remarqueTest, List<Geometry> geometrys)
-                {
-                    foreach (Geometry shape in geometrys)
-                    {
-                        if (!shape.IsEmpty)
-                        {
-                            Polygon polygon = shape as Polygon;
-                            // Création de l'opérateur de filtrage
-                            IRelationalOperator2 filtrageSpatial = (IRelationalOperator2)polygon;
+        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Signalement report, List<Geometry> geometries)
+        {
+            MapPoint reportPoint = Helper.TransformPoint(report.Position);
 
-                            if (filtrageSpatial.Contains(EspaceCollaboratifHelper.TransformPoint(remarqueTest.Position) as Point))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
+            foreach (Geometry shape in geometries)
+            {
+                if (!shape.IsEmpty)
+                {
+                    if (GeometryEngine.Instance.Intersects(reportPoint, shape))
+                        return true;
                 }
-        */
+            }
+            return false;
+        }
+        
         /// <summary>
         /// Définit toutes les caractéristiques pour le futur calque dédié à contenir les signalements pour l'Espace collaboratif.
         /// </summary>
@@ -1636,7 +1632,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des remarques.
         /// </summary>
         /// <returns>Le nom du calque pour le filtrage spatiale stocké dans le fichier de paramétrage.</returns>
-        public static string Load_CalqueFiltrage()
+        public static string Load_FilterLayer()
         {
             return Helper.XML_FirstElement(Helper.xml_Zone_extraction);
         }

@@ -44,40 +44,45 @@
             this.comboBoxGroupes.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.comboBoxGroupes.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBoxGroupes.FormattingEnabled = true;
-            this.comboBoxGroupes.Location = new System.Drawing.Point(5, 25);
+            this.comboBoxGroupes.Location = new System.Drawing.Point(4, 20);
+            this.comboBoxGroupes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.comboBoxGroupes.MaxDropDownItems = 10;
             this.comboBoxGroupes.Name = "comboBoxGroupes";
-            this.comboBoxGroupes.Size = new System.Drawing.Size(251, 24);
+            this.comboBoxGroupes.Size = new System.Drawing.Size(189, 21);
             this.comboBoxGroupes.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(6, 4);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(4, 3);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(252, 15);
+            this.label1.Size = new System.Drawing.Size(219, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Dans quel groupe souhaitez-vous travailler ? ";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(7, 58);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(5, 47);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(365, 60);
+            this.label2.Size = new System.Drawing.Size(319, 52);
             this.label2.TabIndex = 2;
             this.label2.Text = "Vous pouvez utiliser une clé Géoportail pour afficher les fonds IGN\r\nde votre gro" +
     "upe directement dans QGIS.\r\n\r\nDisposez-vous de votre propre clé Géoportail ?";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // radioButtonOui
             // 
             this.radioButtonOui.AutoSize = true;
-            this.radioButtonOui.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonOui.Location = new System.Drawing.Point(9, 127);
+            this.radioButtonOui.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonOui.Location = new System.Drawing.Point(7, 103);
+            this.radioButtonOui.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonOui.Name = "radioButtonOui";
-            this.radioButtonOui.Size = new System.Drawing.Size(47, 19);
+            this.radioButtonOui.Size = new System.Drawing.Size(41, 17);
             this.radioButtonOui.TabIndex = 3;
             this.radioButtonOui.TabStop = true;
             this.radioButtonOui.Text = "Oui";
@@ -86,10 +91,11 @@
             // radioButtonNon
             // 
             this.radioButtonNon.AutoSize = true;
-            this.radioButtonNon.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButtonNon.Location = new System.Drawing.Point(10, 155);
+            this.radioButtonNon.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButtonNon.Location = new System.Drawing.Point(8, 126);
+            this.radioButtonNon.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.radioButtonNon.Name = "radioButtonNon";
-            this.radioButtonNon.Size = new System.Drawing.Size(290, 19);
+            this.radioButtonNon.Size = new System.Drawing.Size(248, 17);
             this.radioButtonNon.TabIndex = 4;
             this.radioButtonNon.TabStop = true;
             this.radioButtonNon.Text = "Non - Utiliser la clé Géoportail de démonstration";
@@ -97,18 +103,20 @@
             // 
             // textBoxCleGeoportailUser
             // 
-            this.textBoxCleGeoportailUser.Location = new System.Drawing.Point(63, 127);
+            this.textBoxCleGeoportailUser.Location = new System.Drawing.Point(51, 103);
+            this.textBoxCleGeoportailUser.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxCleGeoportailUser.Name = "textBoxCleGeoportailUser";
-            this.textBoxCleGeoportailUser.Size = new System.Drawing.Size(309, 22);
+            this.textBoxCleGeoportailUser.Size = new System.Drawing.Size(269, 20);
             this.textBoxCleGeoportailUser.TabIndex = 5;
             // 
             // Enregistrer
             // 
             this.Enregistrer.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Enregistrer.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Enregistrer.Location = new System.Drawing.Point(202, 177);
+            this.Enregistrer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Enregistrer.Location = new System.Drawing.Point(166, 151);
+            this.Enregistrer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Enregistrer.Name = "Enregistrer";
-            this.Enregistrer.Size = new System.Drawing.Size(77, 24);
+            this.Enregistrer.Size = new System.Drawing.Size(75, 25);
             this.Enregistrer.TabIndex = 6;
             this.Enregistrer.Text = "Enregistrer";
             this.Enregistrer.UseVisualStyleBackColor = true;
@@ -117,10 +125,11 @@
             // Annuler
             // 
             this.Annuler.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Annuler.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Annuler.Location = new System.Drawing.Point(296, 177);
+            this.Annuler.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Annuler.Location = new System.Drawing.Point(245, 151);
+            this.Annuler.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Annuler.Name = "Annuler";
-            this.Annuler.Size = new System.Drawing.Size(77, 24);
+            this.Annuler.Size = new System.Drawing.Size(75, 25);
             this.Annuler.TabIndex = 7;
             this.Annuler.Text = "Annuler";
             this.Annuler.UseVisualStyleBackColor = true;
@@ -129,10 +138,10 @@
             // FormGroupChoice
             // 
             this.AcceptButton = this.Enregistrer;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Annuler;
-            this.ClientSize = new System.Drawing.Size(381, 212);
+            this.ClientSize = new System.Drawing.Size(342, 187);
             this.Controls.Add(this.Annuler);
             this.Controls.Add(this.Enregistrer);
             this.Controls.Add(this.textBoxCleGeoportailUser);
@@ -141,6 +150,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBoxGroupes);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormGroupChoice";
             this.Text = "Paramétrage";
             this.ResumeLayout(false);

@@ -25,8 +25,7 @@ namespace ArcGisProEspaceCollaboratif
 
         protected override async void OnClick()
         {
-            //StatusBar mess;
-            FormProgressDownload attenteChargement = new FormProgressDownload();
+            FormProgressDownload progressDownload = new FormProgressDownload();
 
             try
             {
@@ -41,9 +40,6 @@ namespace ArcGisProEspaceCollaboratif
                         if (contexte.RipClient == null) return;
                     }
 
-                    // Chargement ou non des couches liées aux signalements
-                    await contexte.CreateOrLoadReportLayers();
-
                     // Test de la présence du fichier XML de paramétrage
                     if (!System.IO.File.Exists(Helper.nom_Fichier_Parametres_EspaceCollaboratif))
                     {
@@ -51,56 +47,10 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
 
-                    DialogResult result1;
-                    //DialogResult result2;
-                    //bool courtcircuite = false;
-                    string calqueFiltrage = Helper.Load_CalqueFiltrage();
-                    if (calqueFiltrage.Length == 0)
-                    {
-                        result1 = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif, le nom du calque à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des signalements sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Espace collaboratif - QUESTION", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-                        if (result1 != DialogResult.Yes)
-                        { return; }
-
-                        //courtcircuite = true;
-                    }
-
-                    Layer layerFiltrage = contexte.GetLayerByName(calqueFiltrage);
-                    /*
-                                    if (layerFiltrage == null && courtcircuite == false)
-                                    {
-                                        result2 = MessageBox.Show("La carte en cours ne contient pas le calque '" + calqueFiltrage + "' définit pour être le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-                                        if (result2 != DialogResult.Yes)
-                                        { return; }
-
-                                        courtcircuite = true;
-                                    }
-
-                                    List<Geometry> geometryFiltreSpatial = contexte.GetGeometryFiltreSpatial(calqueFiltrage);
-
-                                    if (geometryFiltreSpatial.Count == 0 && courtcircuite == false)
-                                    {
-                                        if (MessageBox.Show("Le calque '" + calqueFiltrage + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'importation des remarques Ripart sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != DialogResult.Yes)
-                                        { return; }
-                                    }
-
-
-                                    ArcGisProEspaceCollaboratif.Core.Box BBoxFiltrageSpatial = contexte.GetBBox(geometryFiltreSpatial);
-                    */
-                    
-                    /*
-                                    ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
-                                    mess = application.StatusBar;
-                                    mess.set_Message(0, "Requête auprès du service Ripart ...");
-                                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-                                    attenteChargement.Show();
-                                    attenteChargement.setText("Téléchargement des remarques depuis le serveur: \n" + contexte.URLHostEspaceCollaboratif);
-
-                                    contexte.ripClient.setProgressBar(attenteChargement.getProgressBar());
-                                    attenteChargement.Refresh();
-                    */
-                    contexte.EmptyCollaborativeSpaceLayers();
-
+                    // Préparation des paramètres à envoyer pour la requête de récupération des signalements
                     Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+                    // Paramètre groupe
                     int groupeId = -1;
                     if (Helper.Load_Group() == "true")
                     {
@@ -108,204 +58,166 @@ namespace ArcGisProEspaceCollaboratif
                         parameters.Add("group", groupeId.ToString());
                     }
 
-
-                    /*
-                                    if (!courtcircuite)
-                                    {
-                                        parameters.Add("box", BBoxFiltrageSpatial.boxToString());
-                                    }
-                    */
+                    // Paramtère date d'extraction
                     String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
                     parameters.Add("updatingDate", sdate);
-                    parameters.Add("territory", contexte.Profil.Zone.ToString());
 
-                    // création de la liste des signalements.  
-                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalements = contexte.RipClient.GetGeoRems(parameters);
+                    // Paramètre filtrage spatial
 
-                    attenteChargement.GetProgressBar().Maximum = signalements.Count;
-                    attenteChargement.GetProgressBar().Step = 1;
+                    string filterLayerName = Helper.Load_FilterLayer();
+                    Tuple<bool, bool, Box, List<Geometry>> filterParameters = GetSpatialFilterParameters(filterLayerName);
 
-                    // Filtrage spatial affiné des remarques.
-                    //                if (!BBoxFiltrageSpatial.IsEmpty())
-                    //                {
-                    List<ArcGisProEspaceCollaboratif.Core.Signalement> signalementAConserver = new List<ArcGisProEspaceCollaboratif.Core.Signalement>();
+                    bool hasFilter = filterParameters.Item1;
+                    bool overrideFilter = filterParameters.Item2;
 
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement signalementTest in signalements)
+                    if (!hasFilter && !overrideFilter)
+                        return;
+
+                    if (hasFilter)
+                        parameters.Add("box", filterParameters.Item3.BoxToString());
+                                    
+                    // Envoi de la requête au serveur et création de la liste des signalements
+                    progressDownload.Show();
+                    progressDownload.SetText("Import des signalements depuis le serveur: \n" + contexte.URLHost);
+
+                    contexte.RipClient.SetProgressBar(progressDownload.GetProgressBar());
+                    progressDownload.Refresh();
+
+                    List<Signalement> signalements = contexte.RipClient.GetGeoRems(parameters);
+
+                    // Filtrage spatial affiné des signalements
+                    if (hasFilter)
                     {
-                        //                        if (EspaceCollaboratifHelper.IsInGeometry(remarqueTest, geometryFiltreSpatial))
-                        //                        {
-                        signalementAConserver.Add(signalementTest);
-                        //                        }
+                        List<Signalement> signalementAConserver = new List<Signalement>();
+
+                        foreach (Signalement signalementTest in signalements)
+                        {
+                            if (Helper.IsInGeometry(signalementTest, filterParameters.Item4))
+                                signalementAConserver.Add(signalementTest);
+                        }
+
+                        signalements = signalementAConserver;
                     }
 
-                    signalements = signalementAConserver;
-                    //                }
+                    // Chargement ou création des couches liées aux signalements
+                    await contexte.CreateOrLoadReportLayers();
 
-                    //                contexte.Zoom(remarques);
-                    /*
-                                    int countBar = 0;
-                                    attenteChargement.setMaxProgressor(remarques.Count);
+                    // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
+                    contexte.EmptyCollaborativeSpaceLayers();
 
-                                    attenteChargement.setBar(1);
+                    // Barre de progression
+                    int countBar = 0;
 
-                                    mess.ProgressBar.Position = 0;
-                                    mess.ShowProgressBar("Implantation des remarques Ripart", 0, remarques.Count, 1, false);
+                    progressDownload.GetProgressBar().Maximum = signalements.Count;
+                    progressDownload.GetProgressBar().Step = 1;
+                    progressDownload.SetMaxProgressor(signalements.Count);
+                    progressDownload.SetBar(1);
 
-                                    mess.Visible = true;
-                    */
-
-                    // Implantation des remarques importées et filtrées sur la carte.
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in signalements)
+                    // Placement des signalements importés et filtrés sur la carte.
+                    foreach (Signalement remarque in signalements)
                     {
-
-                        //                    countBar++;
-                        //                    attenteChargement.nextProgressor("Placement sur la carte en cours de la remarque: \n#" + countBar + "/" + remarques.Count + ".");
+                        countBar++;
+                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countBar + "/" + signalements.Count);
                         await contexte.CreerPointSignalement(remarque);
-                        //                    contexte.activeView.Refresh();
-                        //                    mess.StepProgressBar();
                     }
 
-                    //                mess.ProgressBar.Hide();
+                    progressDownload.Close();
 
-                    attenteChargement.Close();
-                    /*
-                                    int remarquesNouvelles = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Submit);
-                                    int remarquesEnCours = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending0) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending1) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Pending2);
-                                    int remarquesRejetees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Reject0);
-                                    int remarquesValidees = contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid) + contexte.Count_Remarque_by_Statut(Ripart.Core.Statut.Valid0);
+                    //Zoom sur la couche des signalements
+                    FeatureLayer reportLayer = contexte.GetLayerByName(Helper.nom_Calque_Signalement);
+                    contexte.mapActiveView.ZoomTo(reportLayer.QueryExtent());
 
-                                    string message = "Extraction réussie avec succès de " + countBar + " remarque(s) Ripart depuis le serveur";
+                    // Message de confirmation
+                    int newReports = contexte.CountReportsByStatus(Statut.Submit);
+                    int pendingReports = contexte.CountReportsByStatus(Statut.Pending) + contexte.CountReportsByStatus(Statut.Pending0) + contexte.CountReportsByStatus(Statut.Pending1) + contexte.CountReportsByStatus(Statut.Pending2);
+                    int rejectedReports = contexte.CountReportsByStatus(Statut.Reject) + contexte.CountReportsByStatus(Statut.Reject0);
+                    int validatedReports = contexte.CountReportsByStatus(Statut.Valid) + contexte.CountReportsByStatus(Statut.Valid0);
 
-                                    mess.set_Message(0, message + " !");
+                    string message = "Import de " + countBar + " signalement(s) depuis l'Espace collaboratif :\n";
 
-                                    message += " avec la répartition suivante:";
-                                    message += "\n _ " + remarquesNouvelles + " remarque(s) nouvelle(s).";
-                                    message += "\n _ " + remarquesEnCours + " remarque(s) en cours de traitement.";
-                                    message += "\n _ " + remarquesValidees + " remarque(s) validée(s).";
-                                    message += "\n _ " + remarquesRejetees + " remarque(s) rejetée(s).";
+                    //mess.set_Message(0, message + " !");
 
-                                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                    message += "\n _ " + newReports + " nouveaux signalements.";
+                    message += "\n _ " + pendingReports + " signalement(s) en cours de traitement.";
+                    message += "\n _ " + validatedReports + " signalement(s) validé(s).";
+                    message += "\n _ " + rejectedReports + " signalement(s) rejeté(s).";
 
-                                    System.Windows.Forms.MessageBox.Show(message, "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
-                    */
-                    System.Windows.Forms.MessageBox.Show("Import terminé", "IGN Espace collaboratif - INFORMATION", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+
+                    MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 });
             }
 
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.StackTrace);
-                //mess = null;
-                attenteChargement.Close();
-                MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-
+                progressDownload.Close();
+                MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
-        // INUTILE - on utilise la fonction présente dans Contexte
-
-        protected void CreerPointRemarqueRipart(ArcGisProEspaceCollaboratif.Core.Signalement report, List<FeatureLayer> mapLayers)
+        /// <summary>
+        /// Renvoie les paramètres de filtrage spatial des signalements sous forme de tuple.
+        /// </summary>
+        /// <param name="filterLayerName">Nom de la couche définie comme filtre spatial.</param>
+        /// <returns>Un tuple :
+        /// Item1 : booléen indiquant si un filtre est défini,
+        /// Item2 : booléen indiquant si on continue même en l'absence de filtre,
+        /// Item3 : bbox des géométries contenues dans la couche,
+        /// Item4 : liste des géométries contenues dans la couche.
+        /// </returns>
+        public Tuple<bool, bool, Box, List<Geometry>> GetSpatialFilterParameters(string filterLayerName)
         {
+            //Initialisation
+            Box bboxFiltrageSpatial = new Box();
+            List<Geometry> spatialFilterGeometry = new List<Geometry>();
 
-            // on cast en featureLayer
-            FeatureLayer reportLayer = Contexte.Instance.GetLayerByName(Helper.nom_Calque_Signalement) as FeatureLayer;
-            //FeatureClass featureClass = featureLayer.GetFeatureClass();
+            Tuple< bool, bool, Box, List<Geometry>> noFilterTuple = Tuple.Create(false, false, bboxFiltrageSpatial, spatialFilterGeometry);
+            Tuple< bool, bool, Box, List<Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
 
-            //Feature featureRemarque = featureClass.CreateRow();
+            // Initialisation boîte de dialogue
+            DialogResult resultDialog;
 
-            // Placement géographique du point d'application de la remarque Ripart
-            //featureRemarque.SetShape(EspaceCollaboratifHelper.TransformPoint(report.Position));
-
-            var createFeatures = new EditOperation();
-
-            // Remplissage des attributs de la remarque Ripart
-            var newReportAttributes = new Dictionary<string, object>
+            // Cas nom de la couche non rempli
+            if (filterLayerName.Length == 0)
             {
-                { "SHAPE", Helper.TransformPoint(report.Position) },
-                { Helper.nom_Champ_IdRemarque, report.Id },
-                { Helper.nom_Champ_Auteur, report.Auteur.Nom },
-                { Helper.nom_Champ_Departement, report.Departement.Nom },
-                { Helper.nom_Champ_IDDepartement, report.Departement.Id },
-                { Helper.nom_Champ_Commune, report.Commune },
-                { Helper.nom_Champ_DateCreation, report.DateCreation },
-                { Helper.nom_Champ_DateMAJ, report.DateMiseAJour },
-                { Helper.nom_Champ_DateValidation, report.DateValidation },
-                { Helper.nom_Champ_Statut, (int)report.Statut },
-                { Helper.nom_Champ_Themes, report.ConcatenateThemes() },
-                { Helper.nom_Champ_Url, report.Lien },
-                { Helper.nom_Champ_UrlPrive, report.LienPrive }
-            };
-            /*
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IdRemarque, report.Id);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Auteur, report.Auteur.Nom);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Departement, report.Departement.Nom);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_IDDepartement, report.Departement.Id);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Commune, report.Commune);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateCreation, report.DateCreation);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateMAJ, report.DateMiseAJour);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_DateValidation, report.DateValidation);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Statut, (int)report.Statut);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Themes, report.ConcatenateThemes());
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_Url, report.Lien);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClass, featureRemarque, EspaceCollaboratifHelper.nom_Champ_UrlPrive, report.LienPrive);
-            */
+                resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Espace collaboratif - QUESTION", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
 
-            createFeatures.Create(reportLayer, newReportAttributes);
-
-            /* TO-DO : croquis
-            featureRemarque.Store();
-
-
-            //  Traitement du ou des croquis associé(s) à la remarque            
-            if (!report.IsCroquisEmpty())
-            {
-
-                foreach (ArcGisProEspaceCollaboratif.Core.Sketch unCroquis in report.Sketch)
-                {
-                    if (unCroquis.Points.Count == 0)
-                    {
-                        //  this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
-                    }
-                    else
-                    {
-                        // on cast le featureLayer en fonction du type du croquis pour utiliser le bon calque associé
-                        FeatureLayer featureLayerCroquis = mapLayers[(int)unCroquis.Type] as FeatureLayer;
-                        FeatureClass featureClassCroquis = featureLayerCroquis.GetFeatureClass();
-
-                        IFeature featureCroquis = featureClassCroquis.CreateFeature();
-
-                        Polyline polylineCroquis = new Polyline() as IPolyline;
-                        Polygon polygonCroquis = new Polygon() as IPolygon;
-                        Point pointCroquis = EspaceCollaboratifHelper.TransformPoint(unCroquis.Points.First());
-
-                        // Construction géométrique du croquis en fonction de son type et à partir du vecteur de vertex du croquis.
-                        switch (unCroquis.Type)
-                        {
-                            case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point:
-                                featureCroquis.Shape = pointCroquis;
-                                break;
-
-                            case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Ligne:
-                                featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polylineCroquis, unCroquis);
-                                break;
-
-                            case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygone:
-                                featureCroquis.Shape = EspaceCollaboratifHelper.GeometryFromCroquis(polygonCroquis, unCroquis);
-                                break;
-
-                        }
-
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClassCroquis, featureCroquis, EspaceCollaboratifHelper.nom_Champ_LienRemarque, uneRemarque.Id);
-                        EspaceCollaboratifHelper.CompleteChampRipart(featureClassCroquis, featureCroquis, EspaceCollaboratifHelper.nom_Champ_NomCroquis, unCroquis.Nom);
-
-                        featureCroquis.Store();
-                    }
-                }
-                
+                if (resultDialog == DialogResult.Yes)
+                    return overrideFilterTuple;
+                else
+                    return noFilterTuple;
             }
 
-    */
+            Contexte contexte = Contexte.Instance;
+            Layer filterLayer = contexte.GetLayerByName(filterLayerName);
+
+            if (filterLayer == null)
+            {
+                resultDialog = MessageBox.Show("La carte en cours ne contient pas la couche '" + filterLayerName + "' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (resultDialog == DialogResult.Yes)
+                    return overrideFilterTuple;
+                else
+                    return noFilterTuple;
+            }
+
+            spatialFilterGeometry = contexte.GetSpatialFilterGeometry(filterLayerName);
+
+            if (spatialFilterGeometry.Count == 0)
+            {
+                resultDialog = MessageBox.Show("La couche '" + filterLayerName + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre un temps long.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (resultDialog != DialogResult.Yes)
+                    return noFilterTuple;
+            }
+
+
+            // On ajoute la BBOX comme paramètre de la requête
+            bboxFiltrageSpatial = contexte.GetBBox(spatialFilterGeometry);
+            
+            return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
         }
 
 
@@ -315,10 +227,7 @@ namespace ArcGisProEspaceCollaboratif
             //this.Enabled = ArcMap.Application != null;
             // Pas trop sure...
             this.Enabled = Project.Current != null;
-
         }
-
-
 
     }
 }

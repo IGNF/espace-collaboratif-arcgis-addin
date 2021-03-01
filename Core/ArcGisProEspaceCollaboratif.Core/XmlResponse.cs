@@ -782,7 +782,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception e)
             {
                 logger.Error(e.Message + "\n" + e.StackTrace);
-                throw new Exception("Une erreur est survenue dans l'importation des remarques");
+                throw new Exception("Une erreur est survenue dans l'impor des signalements " + rem.Id);
             }
 
             return signalements;

@@ -14,6 +14,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             Point,    /*!< Pour un point du croquis. */
             Ligne,    /*!< Pour une polyligne du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
             Polygone, /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
+            Texte,    /*!< Pour un un champ texte du croquis. */
+            Fleche    /*!< Pour une flêche du croquis. */
         };
 
         /// <summary>
@@ -231,7 +233,7 @@ namespace ArcGisProEspaceCollaboratif.Core
        
         public bool IsOpenLine()
         {
-            return (this.Type == SketchType.Ligne && !(this.IsClosed()));
+            return ((this.Type == SketchType.Fleche || this.Type == SketchType.Ligne) && !(this.IsClosed()));
         }
 
 
@@ -239,19 +241,19 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             int nPoints = this.Points.Count;
 
-            if ( nPoints == 0 )
+            if (nPoints == 0)
             {
                 return false;
             }
-           
-            if (this.Type == SketchType.Point && nPoints != 1 )
+
+            if ((this.Type == SketchType.Point || this.Type == SketchType.Texte) && nPoints != 1)
             {
-                return false; 
+                return false;
             }
 
-            if ( this.Type == SketchType.Polygone && this.FirstCoord() != this.LastCoord() )
+            if (this.Type == SketchType.Polygone && this.FirstCoord() != this.LastCoord())
             {
-                return false; 
+                return false;
             }
 
             return true;
@@ -279,13 +281,13 @@ namespace ArcGisProEspaceCollaboratif.Core
             coord = coord.Substring(0, coord.Length-1);
 
             switch ( this.Type) {
-                case SketchType.Ligne: 
+                case SketchType.Ligne: case SketchType.Fleche:
                     geom.Add(new XElement(gml +"LineString",
                                 new XElement(gml + "coordinates", coord)
                             ));
                     break;
 
-                case SketchType.Point: 
+                case SketchType.Point: case SketchType.Texte:
                     geom.Add(new XElement(gml + "Point",
                                  new XElement(gml + "coordinates", coord)
                              ));
