@@ -612,9 +612,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="cle"></param>
         /// <returns></returns>
-        public Dictionary<string, string> GetLayersFromCleGeoportailUser(string cle)
+        public List<LayerGeoportail> GetLayersFromCleGeoportailUser(string cle)
         {
-            Dictionary<string, string> layers = new Dictionary<string, string>();
+            List<LayerGeoportail> layers = new List<LayerGeoportail>();
             string cleGeoportail = "";
             if (string.IsNullOrEmpty(cle))
             {

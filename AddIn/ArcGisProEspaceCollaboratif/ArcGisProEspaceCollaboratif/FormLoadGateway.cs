@@ -2,6 +2,9 @@
 using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using ArcGIS.Core.CIM;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -123,7 +126,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Mise à jour de la ListView "FondsGéoportail" contenant les couches visibles
         /// avec la clé Géoportail de l'utilisateur
         /// </summary>
-        private void SetListViewFondsGeoportail()
+        public void SetListViewFondsGeoportail()
         {
             this.AddColumns(this.listViewGeoportail, true);
             foreach (LayerGateway layer in this.ListLayers)
@@ -132,13 +135,13 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     continue;
                 }
-
-                if (!this.ProfilUser.LayersCleGeoportail.ContainsKey(layer.Nom))
+                int index = this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Name.Equals(layer.Nom));
+                if (index == -1)
                 {
                     continue;
                 }
 
-                string nomLayer = string.Format("{0} ({1})", layer.Description, layer.Nom);
+                string nomLayer = string.Format("{0} ({1})", this.ProfilUser.LayersCleGeoportail[index].Title, layer.Nom);
                 this.AddItem(this.listViewGeoportail, nomLayer, layer.Role, true);
             }
         }
@@ -157,7 +160,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                if (this.ProfilUser.LayersCleGeoportail.ContainsKey(layer.Nom))
+                if (this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Name.Equals(layer.Nom)) != -1)
                 {
                     continue;
                 }
@@ -198,7 +201,7 @@ namespace ArcGisProEspaceCollaboratif
                 GetLayersSelected(this.listViewGeoportailBis)
             };
 
-            List<LayerGateway> layersArcGIS = new List<LayerGateway>();
+            List<LayerGateway> layersToAppend = new List<LayerGateway>();
             foreach (List<string> layerChecked in layersChecked)
             {
                 foreach (string layerCheck in layerChecked)
@@ -221,21 +224,33 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         continue;
                     }
-                    layersArcGIS.Add(this.ListLayers[index]);
+                    layersToAppend.Add(this.ListLayers[index]);
                 }
             }
-            
-            // Import des couches dans ArcGIS
-            DoLoadGateway(layersArcGIS);
+
+            // Import des couches WFS et WMTS dans ArcGIS
+            LoadLayersAsync(layersToAppend);
         }
 
         /// <summary>
-        /// Import des couches sélectionnées par l'utilisateur dans ArcGIS
+        /// Import des couches WFS et WMTS sélectionnées par l'utilisateur dans ArcGIS
         /// </summary>
-        /// <param name="layersQGIS">La liste des couches à importer avec leurs caractéristiques</param>
-        private void DoLoadGateway(List<LayerGateway> layersQGIS)
+        /// <param name="layersToLoad">La liste de toutes les couches à importer avec leurs caractéristiques</param>
+        private async void LoadLayersAsync(List<LayerGateway> layersToLoad)
         {
-            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Import des couches dans ArcGIS", "Espace collaboratif");
+            /*WebFeatureService wfs = new WebFeatureService()
+            {
+                Layers = layersToLoad,
+            };
+            await wfs.AddLayersAsync(this.Contexte.Groupeactif);*/
+
+            WebMapTileService wmts = new WebMapTileService()
+            {
+                Layers = layersToLoad,
+                LayersGeoportail = this.ProfilUser.LayersCleGeoportail,
+                KeyGeoportail = this.Contexte.CleGeoportail
+            };
+            await wmts.AddLayersAsync();
         }
 
         /// <summary>

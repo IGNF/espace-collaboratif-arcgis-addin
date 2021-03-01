@@ -2,41 +2,66 @@
 {
     /// <summary>
     /// Classe représentant les caractéristiques d'une couche appartenant au <GEOGROUPE>
+    /// Les commentaires au-dessus des variables sonr des balises données en exemple
     /// </summary>
     public class LayerGateway
     {
-        // <TYPE> GeoPortail </TYPE>
+        /// <summary>
+        /// Balise exemple <TYPE>GeoPortail</TYPE>
+        /// ou <TYPE>WFS</TYPE>
+        /// </summary>
         public string Type { get; set; }
 
-        // <NOM> ORTHOIMAGERY.ORTHOPHOTOS </NOM>
+        /// <summary>
+        /// Balise exemple <NOM>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</NOM>
+        /// ou <NOM>piste_cyclable</NOM>
+        /// </summary>
         public string Nom { get; set; }
 
-        // <DESCRIPTION> Photographies aériennes </DESCRIPTION>
+        /// <summary>
+        /// Balise exemple <DESCRIPTION>Plan cadastral informatisé vecteur de la DGFIP.</DESCRIPTION>
+        /// ou <DESCRIPTION/>
+        /// </summary>
         public string Description { get; set; }
 
-        // <MINZOOM> 0 </MINZOOM>
+        /// <summary>
+        /// Balise exemple <MINZOOM>0</MINZOOM>
+        /// </summary>
         public int Minzoom { get; set; }
 
-        // <MAXZOOM> 20 </MAXZOOM>
+        /// <summary>
+        /// Balise exemple <MAXZOOM>20</MAXZOOM>
+        /// </summary>
         public int Maxzoom { get; set; }
 
-        // <EXTENT> -180, -86, 180, 84 </EXTENT>
+        /// <summary>
+        /// Balise exemple <EXTENT>-70,-70,70,70</EXTENT>
+        /// </summary>
         public string Extent { get; set; }
 
-        // <ROLE> Droit utilisateur sur la couche </ROLE>
+        /// <summary>
+        /// Balise exemple <ROLE>edit</ROLE>
+        /// </summary>
         public string Role { get; set; }
 
-        // <VISIBILITY> 1 </VISIBILITY>
+        /// <summary>
+        /// Balise exemple <VISIBILITY>1</VISIBILITY>
+        /// </summary>
         public int Visibility { get; set; }
 
-        // <OPACITY> 1 </OPACITY>
+        /// <summary>
+        /// Balise exemple <OPACITY>1</OPACITY>
+        /// </summary>
         public double Opacity { get; set; }
 
-        // <TILEZOOM>
+        /// <summary>
+        /// Balise exemple <TILEZOOM>12</TILEZOOM>
+        /// </summary>
         public int Tilezoom { get; set; }
 
-        // <URL>
+        /// <summary>
+        /// Balise exemple <URL>https://espacecollaboratif.ign.fr/gcms/wfs?service=wfs&databasename=demo_guichet</URL>
+        /// </summary>
         public string Url { get; set; }
-
     }
 }

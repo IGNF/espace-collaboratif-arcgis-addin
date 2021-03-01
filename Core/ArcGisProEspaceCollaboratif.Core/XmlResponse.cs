@@ -178,33 +178,42 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> ExtractLayersFromCleGeoportailUser()
+        public List<LayerGeoportail> ExtractLayersFromCleGeoportailUser()
         {
-            Dictionary<string, string> layers = new Dictionary<string, string>();
+            List<LayerGeoportail> layers = new List<LayerGeoportail>();
             try
             {
                 navigator.MoveToRoot();
                 XPathNodeIterator itLayer = navigator.SelectDescendants("Layer", "http://www.opengis.net/context", false);
                 foreach (XPathNavigator layer in itLayer)
                 {
-                    string name = "";
-                    string title = "";
                     XPathNodeIterator iteratorElement = layer.SelectDescendants(XPathNodeType.Element, false);
+                    LayerGeoportail tmpLayer = new LayerGeoportail();
                     foreach (XPathNavigator element in iteratorElement)
                     {
                         if(element.Name == "Name")
                         {
-                            name = EncodeToUTF8(element.InnerXml);
+                            if (string.IsNullOrEmpty(tmpLayer.Name))
+                            {
+                                tmpLayer.Name = EncodeToUTF8(element.InnerXml);
+                            }
                         }
                         if (element.Name == "Title")
                         {
-                            title = EncodeToUTF8(element.InnerXml);
+                            if (string.IsNullOrEmpty(tmpLayer.Title))
+                            {
+                                tmpLayer.Title = EncodeToUTF8(element.InnerXml);
+                            }
                         }
-                        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(title))
+                        if (element.Name == "Abstract")
                         {
-                            layers[name] = title;
+                            if (string.IsNullOrEmpty(tmpLayer.Abstract))
+                            {
+                                tmpLayer.Abstract = EncodeToUTF8(element.InnerXml);
+                            }
                         }
-                    }   
+                    }
+                    layers.Add(tmpLayer);
                 }
             }
             catch (Exception ex)
@@ -413,6 +422,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         {
                             layerGateway.Url = EncodeToUTF8(url.Value);
                         }
+
                         layersGateway.Add(layerGateway);
                     }
                     tmpGeoGroupe.Layers = layersGateway;
