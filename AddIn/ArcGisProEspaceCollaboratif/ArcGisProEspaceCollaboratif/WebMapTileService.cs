@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-
 using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
     /// <summary>
-    /// Création d'un service de connexion permettant de télécharger
-    ///  des couches WMTS à partir du GéoPortail
+    /// Création d'un service de connexion WMTS permettant de télécharger
+    /// des couches du GéoPortail
     /// </summary>
     class WebMapTileService
     {
@@ -22,24 +19,25 @@ namespace ArcGisProEspaceCollaboratif
         public Map Map { get; set; } = MapView.Active.Map;
 
         /// <summary>
-        /// La liste des couches à afficher dans ArcGis
+        /// La liste complète des couches WFS et WMTS à afficher dans ArcGis
         /// </summary>
         public List<LayerGateway> Layers { get; set; }
 
+        /// <summary>
+        /// La liste des couches visibles avec la clé Géoportail de l'utilisateur
+        /// ou de démonstration
+        /// </summary>
         public List<LayerGeoportail> LayersGeoportail { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public string Url { get; set; }
-
-        /// <summary>
-        /// 
+        /// La clé Géoportail de l'utilisateur
         /// </summary>
         private string _keyGeoportail = "";
 
         /// <summary>
-        /// 
+        /// Les accesseurs à la clé Géoportail avec une condition
+        /// Si la clé est nulle, vide ou de démonstration
+        /// alors sa valeur est changée par une clé standard
         /// </summary>
         public string KeyGeoportail
         {
@@ -57,7 +55,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// 
+        /// Comme son nom l'indique, il s'agit de créer une nouvelle connexion internet
         /// </summary>
         public CIMInternetServerConnection InternetServerConnection { get; set; }
 
@@ -96,14 +94,13 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// 
+        /// Ajout de la couche WMTS dans la carte ArcGIS
         /// </summary>
-        /// <param name="keyGeoportail"></param>
         /// <returns></returns>
         public async Task AddLayersAsync()
         {           
-            // L'url doit être de la forme https://wxs.ign.fr/xxxxx/geoportail/wmts?SERVICE=WMTS&REQUEST=GetCapabilities
-            Url = string.Format("https://wxs.ign.fr/{0}/geoportail/wmts?SERVICE=WMTS&REQUEST=GetCapabilities", KeyGeoportail);
+            // Quelles sont les couches existantes dans la carte ?
+            List<string> layersInMap = LayersInMap;
 
             // Création des couches sélectionnées par l'utilisateur dans ArcGIS 
             foreach (LayerGateway layer in Layers)
@@ -114,7 +111,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                int index = LayersInMap.FindIndex(x => x.Equals(layer.Nom));
+                int index = layersInMap.FindIndex(x => x.Equals(layer.Nom));
                 if (index != -1)
                 {
                     // La couche existe déjà, on passe à la suivante
@@ -127,7 +124,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         InternetServerConnection = new CIMInternetServerConnection
                         {
-                            URL = Url
+                            URL = string.Format("https://{0}/{1}/geoportail/wmts?SERVICE=WMTS&REQUEST=GetCapabilities", Constantes.WXSIGN, KeyGeoportail)
                         };
                     }
 

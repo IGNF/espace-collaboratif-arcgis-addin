@@ -8,10 +8,25 @@ using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
+    /// <summary>
+    /// La  classe du dialogue qui permet à l'utilisateur de choisir les différentes couches
+    /// qu'il veut afficher dans sa carte ArcGIS pro
+    /// </summary>
     public partial class FormLoadGateway : Form
     {
+        /// <summary>
+        /// Toutes les données contextuelles liées à la carte et à l'Espace collaboratif
+        /// </summary>
         public Contexte Contexte { get; set; }
+
+        /// <summary>
+        /// La liste de toutes les couches disponibles pour le groupe de l'utilisateur 
+        /// </summary>
         public List<LayerGateway> ListLayers { get; set; }
+
+        /// <summary>
+        /// Le profil de l'utilisateur
+        /// </summary>
         public Profil ProfilUser { get; set; }
 
         // 
@@ -21,7 +36,8 @@ namespace ArcGisProEspaceCollaboratif
         /// - visu = couche servant de fond uniquement
         /// - ref = couche servant de référence pour la saisie (snapping ou routing)
         /// - edit, ref-edit = couche éditable sur le guichet
-        /// "clé xml":"valeur affichage boite"
+        ///
+        /// Le dictionnaire est de la forme "clé xml":"valeur affichage boite"
         /// </summary>
         Dictionary<string, string> roleCleVal = new Dictionary<string, string>
         {
@@ -31,6 +47,10 @@ namespace ArcGisProEspaceCollaboratif
             { "ref" , "Visualisation" }
         };
 
+        /// <summary>
+        /// Initialisation du dialogue avec les couches de l'utilisateur et sa clé Géoportail
+        /// </summary>
+        /// <param name="contexte"></param>
         public FormLoadGateway(Contexte contexte)
         {
             InitializeComponent();
@@ -52,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.ListLayers.Reverse();
             }
 
-            // Remplissage des différentes tables de couches
+            // Remplissage des différentes lIstView avec les couches disponibles
             this.SetListViewMyGateway();
             this.SetListViewFondsGeoportail();
             this.SetListViewFondsGeoportailBis();
@@ -61,7 +81,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Ajouter une ligne dans la ListView passée en entrée
+        /// Ajoute une ligne dans la ListView passée en entrée
         /// </summary>
         /// <param name="listView">La ListView à compléter</param>
         /// <param name="att1">Le nom de la couche</param>
@@ -85,7 +105,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Ajouter des colonnes à une ListView
+        /// Ajoute des colonnes par défaut à une ListView
         /// </summary>
         /// <param name="listView">La ListView à compléter</param>
         /// <param name="allColums">true pour ajouter toutes les colonnes (3 max)</param>
@@ -99,8 +119,8 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Mise à jour de la ListView "Mon guichet" contenant les couches du groupe
-        /// auquel l'utilisateur appartient
+        /// Mise à jour de la ListView "Mon guichet" contenant
+        /// les couches du groupe utilisateur
         /// </summary>
         private void SetListViewMyGateway()
         {
@@ -123,8 +143,8 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Mise à jour de la ListView "FondsGéoportail" contenant les couches visibles
-        /// avec la clé Géoportail de l'utilisateur
+        /// Mise à jour de la ListView "FondsGeoportail" contenant
+        /// les couches visibles avec la clé Géoportail de l'utilisateur
         /// </summary>
         public void SetListViewFondsGeoportail()
         {
@@ -147,8 +167,8 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Mise à jour de la ListView "FondsGéoportail" contenant les couches visibles
-        /// avec la clé Géoportail de l'utilisateur
+        /// Mise à jour de la ListView "FondsGeoportailBis" contenant
+        /// les autres couches visibles avec la clé Géoportail de l'utilisateur
         /// </summary>
         private void SetListViewFondsGeoportailBis()
         {
@@ -170,9 +190,9 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Recherche pour une liste de couches en entrée celles qui sont cochées
+        /// Recherche pour une ListView les couches qui sont cochées
         /// </summary>
-        /// <param name="listView">La liste des couches</param>
+        /// <param name="listView">La ListView contenant les couches sélectionnées</param>
         /// <returns></returns>
         private List<string> GetLayersSelected(ListView listView)
         {
@@ -186,13 +206,13 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Bouton "Enregistrer" qui lance l'import des couches sélectionnées par l'utilisateur dans ArcGIS 
+        /// Bouton "Enregistrer" qui lance l'import
+        /// des couches sélectionnées par l'utilisateur dans ArcGIS 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ButtonEnregistrer_Click(object sender, EventArgs e)
         {
-            this.Close();
             //Liste des couches à afficher après la sélection de l'utilisateur
             List<string>[] layersChecked = new List<string>[]
             {
@@ -201,12 +221,14 @@ namespace ArcGisProEspaceCollaboratif
                 GetLayersSelected(this.listViewGeoportailBis)
             };
 
+            // Fermeture de la boite
+            this.Close();
+
             List<LayerGateway> layersToAppend = new List<LayerGateway>();
             foreach (List<string> layerChecked in layersChecked)
             {
                 foreach (string layerCheck in layerChecked)
                 {
-                   
                     // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
                     string name;
                     if (layerCheck.Contains("("))
@@ -235,15 +257,17 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Import des couches WFS et WMTS sélectionnées par l'utilisateur dans ArcGIS
         /// </summary>
-        /// <param name="layersToLoad">La liste de toutes les couches à importer avec leurs caractéristiques</param>
+        /// <param name="layersToLoad">La liste de toutes les couches sélectionnées à importer avec leurs caractéristiques</param>
         private async void LoadLayersAsync(List<LayerGateway> layersToLoad)
         {
+            // Les couches WFS de l'Espoace collaboratif
             /*WebFeatureService wfs = new WebFeatureService()
             {
                 Layers = layersToLoad,
             };
             await wfs.AddLayersAsync(this.Contexte.Groupeactif);*/
 
+            // Les couches WMTS du Géoportail
             WebMapTileService wmts = new WebMapTileService()
             {
                 Layers = layersToLoad,

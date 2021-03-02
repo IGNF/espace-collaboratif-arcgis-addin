@@ -71,9 +71,8 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(319, 52);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Vous pouvez utiliser une clé Géoportail pour afficher les fonds IGN\r\nde votre gro" +
-    "upe directement dans QGIS.\r\n\r\nDisposez-vous de votre propre clé Géoportail ?";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.label2.Text = "Vous pouvez utiliser une clé Géoportail pour afficher les fonds IGN\r\nde votre groupe " +
+            "directement dans QGIS.\r\n\r\nDisposez-vous de votre propre clé Géoportail ?";
             // 
             // radioButtonOui
             // 

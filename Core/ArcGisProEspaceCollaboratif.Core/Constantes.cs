@@ -35,10 +35,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public const string DEMO = "Démonstration";
         public const string CLEGEOPORTAILSTANDARD = "choisirgeoportail";
-        public const string WMS = "WMS";
         public const string WFS = "WFS";
-        public const string WMTS = "WMTS";
-        public const string WCS = "WCS";
         public const string GEOPORTAIL = "GeoPortail";
         public const string COLLABORATIF = "collaboratif.ign.fr";
         public const string WXSIGN = "wxs.ign.fr";
