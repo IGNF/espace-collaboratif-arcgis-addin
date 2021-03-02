@@ -260,21 +260,62 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="layersToLoad">La liste de toutes les couches sélectionnées à importer avec leurs caractéristiques</param>
         private async void LoadLayersAsync(List<LayerGateway> layersToLoad)
         {
-            // Les couches WFS de l'Espoace collaboratif
-            /*WebFeatureService wfs = new WebFeatureService()
+            // Quelles sont les couches existantes dans la carte ?
+            List<string> layersInMap = LayersInMap;
+
+            // Les couches WFS de l'Espace collaboratif
+            WebFeatureService wfs = new WebFeatureService()
             {
                 Layers = layersToLoad,
+                LayersInMap = layersInMap,
+                Login = this.Contexte.Login,
+                Password = this.Contexte.Password,
+                ActiveGroup = this.Contexte.Groupeactif
             };
-            await wfs.AddLayersAsync(this.Contexte.Groupeactif);*/
+            await wfs.AddLayersAsync();
 
             // Les couches WMTS du Géoportail
             WebMapTileService wmts = new WebMapTileService()
             {
                 Layers = layersToLoad,
-                LayersGeoportail = this.ProfilUser.LayersCleGeoportail,
+                LayersInMap = layersInMap,
                 KeyGeoportail = this.Contexte.CleGeoportail
             };
             await wmts.AddLayersAsync();
+        }
+
+        /// <summary>
+        /// Récupère dans une liste les noms des couches existantes de la carte active
+        /// et change le nom des couches Geoportail car dans certains cas les valeurs des balises DESCRIPTION et Title sont les mêmes
+        /// dans d'autres elles sont différentes, il faut donc récupérer la valeur de la balise Name
+        ///
+        /// Espace collaboratif versus Geoportail
+        /// <NOM>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</NOM> == <Name>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</Name>
+        /// <DESCRIPTION>Plan cadastral informatisé vecteur de la DGFIP.</DESCRIPTION> != <Title>PCI vecteur</Title>
+        /// autre exemple
+        /// <NOM>ORTHOIMAGERY.ORTHOPHOTOS</NOM> == <Name>ORTHOIMAGERY.ORTHOPHOTOS</Name>
+        /// <DESCRIPTION>Photographies aériennes</DESCRIPTION> == <Title>Photographies aériennes</Title>
+        /// </summary>
+        private List<string> LayersInMap
+        {
+            get
+            {
+                System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = Contexte.mapActiveView.Map.Layers;
+                List<string> layersInMap = new List<string>();
+                foreach (Layer observableLayer in observableLayers)
+                {
+                    int index = this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Title.Equals(observableLayer.Name));
+                    if (index != -1)
+                    {
+                        layersInMap.Add(this.ProfilUser.LayersCleGeoportail[index].Name);
+                    }
+                    else
+                    {
+                        layersInMap.Add(observableLayer.Name);
+                    }
+                }
+                return layersInMap;
+            }
         }
 
         /// <summary>
