@@ -34,16 +34,16 @@ namespace ArcGisProEspaceCollaboratif
                     Contexte contexte = Contexte.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
-                    if (contexte.RipClient == null)
+                    if (contexte.Client == null)
                     {
-                        contexte.RipClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.RipClient == null) return;
+                        contexte.Client = (Client)contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.Client == null) return;
                     }
 
                     // Test de la présence du fichier XML de paramétrage
                     if (!System.IO.File.Exists(Helper.nom_Fichier_Parametres_EspaceCollaboratif))
                     {
-                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '" + Helper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.repertoireTravail + "'", "IGN Espace collaboratif - ERROR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '" + Helper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.DirectoryWorking + "'", "IGN Espace collaboratif - ERROR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                         return;
                     }
 
@@ -80,10 +80,10 @@ namespace ArcGisProEspaceCollaboratif
                     progressDownload.Show();
                     progressDownload.SetText("Import des signalements depuis le serveur: \n" + contexte.URLHost);
 
-                    contexte.RipClient.SetProgressBar(progressDownload.GetProgressBar());
+                    contexte.Client.SetProgressBar(progressDownload.GetProgressBar());
                     progressDownload.Refresh();
 
-                    List<Signalement> signalements = contexte.RipClient.GetGeoRems(parameters);
+                    List<Signalement> signalements = contexte.Client.GetGeoRems(parameters);
 
                     // Filtrage spatial affiné des signalements
                     if (hasFilter)
@@ -125,7 +125,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     //Zoom sur la couche des signalements
                     FeatureLayer reportLayer = contexte.GetLayerByName(Helper.nom_Calque_Signalement);
-                    contexte.mapActiveView.ZoomTo(reportLayer.QueryExtent());
+                    contexte.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
                     int newReports = contexte.CountReportsByStatus(Statut.Submit);

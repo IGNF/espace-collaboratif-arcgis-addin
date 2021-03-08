@@ -21,48 +21,111 @@ namespace ArcGisProEspaceCollaboratif
 {
     public sealed class Contexte
     {
-        private static Contexte instance = null;
-        private static readonly object padlock = new object();
+        /// <summary>
+        /// 
+        /// </summary>
+        public static object Padlock { get; set; } = new object();
 
-        public MapView mapActiveView;
-        public string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
+        /// <summary>
+        /// 
+        /// </summary>
+        public MapView MapActiveView { get; set; }
 
-        public string repertoireTravail; // Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille.
-        public string fichierCarteTravail; // Le fichier de la carte ArcGIS Pro sur laquelle on travaille.
+        /// <summary>
+        /// 
+        /// </summary>
+        public string GeoDatabasePath { get; set; } = CoreModule.CurrentProject.DefaultGeodatabasePath;
 
-        public string URLHost; // l'URL d'accès au service de l'espace collaboratif.
-        public string Login; // Le login à utiliser pour se connecter au service de l'espace collaboratif.
-        public string Password; // Le mot de passe associé au login pour se connecter au service de l'espace collaboratif.
-        public string CleGeoportail { get; set; } // La clé Geoportail de l'utilisateur
-        public string Groupeactif { get; set; } // le groupe sélectionné par l'utilisateur sur lequel il vaut travailler
+        /// <summary>
+        /// Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille
+        /// </summary>
+        public string DirectoryWorking { get; set; }
 
-        public List<FeatureLayer> collaborativeSpaceLayers = new List<FeatureLayer>(); // La liste des calques dédiés pour l'espace collaboratif dans la carte en cours.
+        /// <summary>
+        /// Le fichier de la carte ArcGIS Pro sur laquelle on travaille
+        /// </summary>
+        public string FileMapWorking { get; set; }
 
-        public ArcGIS.Core.Geometry.SpatialReference spatialReference; // Le système géodésique employé par le service de l'espace collaboratif
-        public FormConnect formConnect; // Le login à utiliser pour connecter au service de l'espace collaboratif.
+        /// <summary>
+        /// URL d'accès au service de l'espace collaboratif
+        /// </summary>
+        public string URLHost { get; set; } 
 
-        private readonly Logger riplogger = Logger.Instance;
-        static ILog logger = LogManager.GetLogger(typeof(Contexte));
+        /// <summary>
+        /// Le login à utiliser pour se connecter au service de l'espace collaboratif
+        /// </summary>
+        public string Login { get; set; } 
 
+        /// <summary>
+        /// Le mot de passe associé au login pour se connecter au service de l'espace collaboratif
+        /// </summary>
+        public string Password { get; set; }
+
+        /// <summary>
+        /// La clé Geoportail de l'utilisateur
+        /// </summary>
+        public string CleGeoportail { get; set; }
+
+        /// <summary>
+        /// Le groupe sélectionné par l'utilisateur sur lequel il veut travailler
+        /// </summary>
+        public string Groupeactif { get; set; }
+
+        /// <summary>
+        /// La liste des calques dédiés pour l'espace collaboratif dans la carte en cours
+        /// </summary>
+        public List<FeatureLayer> CollaborativeSpaceLayers { get; set; } = new List<FeatureLayer>();
+
+        /// <summary>
+        /// Le système géodésique employé par le service de l'espace collaboratif
+        /// </summary>
+        public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; }
+
+        /// <summary>
+        /// Le login utilisateur pour se connecter au service de l'espace collaboratif
+        /// </summary>
+        public FormConnect formConnect; // .
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Logger Logger { get; set; } = Logger.Instance;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        static ILog ILog { get; set; } = LogManager.GetLogger(typeof(Contexte));
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Profil Profil { get; set; }
-        public Client RipClient { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Client Client { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static Contexte _instance = null;
         public static Contexte Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
-                    lock (padlock)
+                    lock (Padlock)
                     {
-                        if (instance == null)
+                        if (_instance == null)
                         {
-                            instance = new Contexte();
-                            logger.Debug("Instance de contexte créée");
+                            _instance = new Contexte();
+                            ILog.Debug("Instance de contexte créée");
                         }
                     }
                 }
-                return instance;
+                return _instance;
             }
         }
 
@@ -90,8 +153,8 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
         public void Init(MapView activeView)
         {
-            this.mapActiveView = activeView;
-            this.spatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            this.MapActiveView = activeView;
+            this.SpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
             this.Login = "";
             this.Password = "";
             this.URLHost = "";
@@ -102,8 +165,8 @@ namespace ArcGisProEspaceCollaboratif
                 throw new Exception(@"Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
             }
 
-            this.repertoireTravail = System.IO.Path.GetDirectoryName(project.Path);
-            this.fichierCarteTravail = System.IO.Path.GetFileNameWithoutExtension(project.Name);
+            this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
+            this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
 
@@ -111,7 +174,7 @@ namespace ArcGisProEspaceCollaboratif
             //TODO : question Noémie pourquoi cette création ici ?
             //var bLayersLoaded = CreateOrLoadReportLayers();
 
-            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+            ILog.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
         /// <summary>
@@ -121,7 +184,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
         public bool CheckConfigFile()
         {
-            string fileConfiguration = this.repertoireTravail + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
+            string fileConfiguration = this.DirectoryWorking + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
             if (!File.Exists(fileConfiguration))
             {
                 try
@@ -130,7 +193,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    logger.Error(e.Message + "\n" + e.StackTrace);
+                    ILog.Error(e.Message + "\n" + e.StackTrace);
                     return false;
                 }
             }
@@ -182,11 +245,11 @@ namespace ArcGisProEspaceCollaboratif
                 );
 
             // Ajout des couches à la liste collaboratifSpaceLayers
-            this.collaborativeSpaceLayers.Clear();
-            this.collaborativeSpaceLayers.Add(GetLayerByName(reportLayer) as FeatureLayer);
-            this.collaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer) as FeatureLayer);
-            this.collaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer) as FeatureLayer);
-            this.collaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer) as FeatureLayer);
+            this.CollaborativeSpaceLayers.Clear();
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer) as FeatureLayer);
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer) as FeatureLayer);
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer) as FeatureLayer);
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer) as FeatureLayer);
 
         }
 
@@ -241,7 +304,7 @@ namespace ArcGisProEspaceCollaboratif
         public FeatureLayer GetLayerByName(string layerName)
         {
             // Enumération des couches et groupes de couches
-            IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName)
@@ -259,7 +322,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si la couche existe, false dans le cas contraire.</returns>
         public bool IsLayerInMap(string layerName)
         {
-            IReadOnlyList<Layer> mapLayers = this.mapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName) return true;
@@ -286,12 +349,11 @@ namespace ArcGisProEspaceCollaboratif
                 return await QueuedTask.Run(() =>
                 {
 
-                var fGdbPath = this.repertoireTravail;
-                var fGdbName = this.fichierCarteTravail + "_EspaceCollaboratif.gdb";
+                    var fGdbPath = this.DirectoryWorking;
+                    var fGdbName = string.Format("{0}_EspaceCollaboratif.gdb", this.FileMapWorking);
+                    var fGdb = string.Format("{0}\\{1}", fGdbPath, fGdbName);
 
-                var fGdb = fGdbPath + "\\" + fGdbName;
-
-                // Si la gdb n'existe pas, on la crée
+                    // Si la gdb n'existe pas, on la crée
                     if (!System.IO.Directory.Exists(fGdb))
                     {
                         var fGdbVersion = "Current";  // create the 'latest' version of file Geodatabase
@@ -304,14 +366,11 @@ namespace ArcGisProEspaceCollaboratif
                             {
                                 System.Diagnostics.Debug.WriteLine($@"GP event: {eventName}");
                             });
-                        //return true;
                     }
 
                     // Sinon, on ouvre la gdb existante
-
                     Geodatabase geodatabase = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fGdb)));
-                    return true;
-                    
+                    return true;     
                 });
             }
             catch (Exception ex)
@@ -330,7 +389,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             try
             {
-                foreach (FeatureLayer layer in this.collaborativeSpaceLayers)
+                foreach (FeatureLayer layer in this.CollaborativeSpaceLayers)
                 {
                     FeatureClass fcCollabSpace = layer.GetFeatureClass();
                     var result = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
@@ -338,7 +397,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                logger.Error(e.Message + "\n" + e.StackTrace);
+                ILog.Error(e.Message + "\n" + e.StackTrace);
             }
 
         }
@@ -462,7 +521,7 @@ namespace ArcGisProEspaceCollaboratif
                             else
                             {
                                 // on cast le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
-                                FeatureLayer sketchFeatureLayer = this.collaborativeSpaceLayers[(int)currSketch.Type] as FeatureLayer;
+                                FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type] as FeatureLayer;
                                 FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
 
                                 // Création de l'objet croquis dans la classe correpondant à son type
@@ -480,7 +539,7 @@ namespace ArcGisProEspaceCollaboratif
 
             catch (Exception e)
             {
-                logger.Error(e.Message + "\n" + e.ToString());
+                ILog.Error(e.Message + "\n" + e.ToString());
                 return false;
             }
         }
@@ -498,7 +557,7 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     // Récupération des attributs du croquis transmis par l'API (champ attributes)
                     String attributes = "";
-                    foreach (ArcGisProEspaceCollaboratif.Core.Attribut attribut in currSketch.Attributes)
+                    foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
                         attributes += attribut.Nom + " = '" + attribut.Valeur + "' | ";
 
                     if (currSketch.Attributes.Count != 0)
@@ -728,7 +787,7 @@ namespace ArcGisProEspaceCollaboratif
             while (rowCursor.MoveNext())
             {
                 Feature featureSpatialFilter = rowCursor.Current as Feature;
-                Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), this.spatialReference);
+                Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), this.SpatialReference);
                 spatialFilterGeometry.Add(geomFeature);
 
             }
@@ -840,19 +899,19 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Établit la connexion avec le service Ripart.
         /// </summary>
-        public ArcGisProEspaceCollaboratif.Core.IClient GetConnexionEspaceCollaboratif()
+        public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
-            logger.Debug("GetConnexionEspaceCollaboratif ");
+            ILog.Debug("GetConnexionEspaceCollaboratif ");
             this.CleGeoportail = Helper.Load_CleGeoportail();
             this.URLHost = Helper.Load_Urlhost();
-            logger.Debug("URLHost : " + this.URLHost);
+            ILog.Debug("URLHost : " + this.URLHost);
             this.formConnect = new FormConnect();
             // Recherche du login par défaut dans le fichier XML de paramétrage
             this.Login = Helper.Load_Login();
             bool firstConnection = false;
             for (int tentativeConnexion = 0; tentativeConnexion < 3; tentativeConnexion++)          
             {
-                logger.Debug("Tentative de connexion ");
+                ILog.Debug("Tentative de connexion ");
                 // S'il n'y a pas de login enregistré, on lance le formulaire de connexion
                 if (this.Login.Length == 0 || this.Password.Length == 0)
                 {
@@ -889,7 +948,7 @@ namespace ArcGisProEspaceCollaboratif
                         this.Login,
                         this.Password
                     );
-                    logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
+                    ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
                     this.formConnect.Close();
                     this.formConnect = null;
 
@@ -946,12 +1005,7 @@ namespace ArcGisProEspaceCollaboratif
             FormInfo popupEspaceCollaboratif = new FormInfo();
             // Le logo du groupe auquel l'utilisateur appartient
             string repLogo ="";
-            if (string.IsNullOrEmpty(Profil.Logo))
-            {
-                // logo du site ign par défaut, il faut une connexion internet bien sûr
-                repLogo = "https://www.ign.fr/sites/default/files/styles/thumbnail/public/2020-06/logoIGN_300x200.png?itok=MT8RiLtp";
-            }
-            else
+            if (!string.IsNullOrEmpty(Profil.Logo))
             {
                 repLogo = this.URLHost + Profil.Logo;
             }
@@ -1091,7 +1145,7 @@ namespace ArcGisProEspaceCollaboratif
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
             mess = application.StatusBar;*/
 
-                        if (this.mapActiveView == null)
+                        if (this.MapActiveView == null)
             {
                 return null;
             }
@@ -1102,7 +1156,7 @@ namespace ArcGisProEspaceCollaboratif
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
             {
-                var selectedFeatures = this.mapActiveView.Map.GetSelection();
+                var selectedFeatures = this.MapActiveView.Map.GetSelection();
                 foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
                 {
                     //get the layer of the selected feature

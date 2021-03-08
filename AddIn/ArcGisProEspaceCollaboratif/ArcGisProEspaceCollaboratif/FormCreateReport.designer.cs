@@ -1,4 +1,6 @@
-﻿namespace ArcGisProEspaceCollaboratif
+﻿using ArcGisProEspaceCollaboratif.Core;
+
+namespace ArcGisProEspaceCollaboratif
 {
     partial class FormCreateReport
     {
@@ -32,25 +34,27 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormCreateReport));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.groupImageProfil = new System.Windows.Forms.GroupBox();
-            this.pictureProfil = new System.Windows.Forms.PictureBox();
+            this.labelNewReport = new System.Windows.Forms.Label();
+            this.labelGroupe = new System.Windows.Forms.Label();
+            this.comboBoxGroupe = new System.Windows.Forms.ComboBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabThemes = new System.Windows.Forms.TabPage();
-            this.checkedListBoxThemes = new System.Windows.Forms.CheckedListBox();
             this.tabOptions = new System.Windows.Forms.TabPage();
             this.tableLayoutPanelOption = new System.Windows.Forms.TableLayoutPanel();
             this.checkBoxDocument = new System.Windows.Forms.CheckBox();
             this.radioButtonSignalementMultiple = new System.Windows.Forms.RadioButton();
             this.radioButtonSignalementUnique = new System.Windows.Forms.RadioButton();
             this.checkBoxCroquis = new System.Windows.Forms.CheckBox();
-            this.listViewPJ = new System.Windows.Forms.ListView();
+            this.listViewFilePJ = new System.Windows.Forms.ListView();
             this.buttonCreer = new System.Windows.Forms.Button();
             this.labelMessage = new System.Windows.Forms.Label();
             this.richTextBoxMessage = new System.Windows.Forms.RichTextBox();
             this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            //this.treeViewThemesAttributs = new System.Windows.Forms.TreeView();
+            this.treeViewThemesAttributs = new DropDownTreeView();
             this.tableLayoutPanel.SuspendLayout();
             this.groupImageProfil.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureProfil)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabThemes.SuspendLayout();
             this.tabOptions.SuspendLayout();
@@ -84,77 +88,82 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(929, 553);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(669, 553);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // groupImageProfil
             // 
             this.groupImageProfil.AutoSize = true;
             this.tableLayoutPanel.SetColumnSpan(this.groupImageProfil, 4);
-            this.groupImageProfil.Controls.Add(this.pictureProfil);
+            this.groupImageProfil.Controls.Add(this.labelNewReport);
+            this.groupImageProfil.Controls.Add(this.labelGroupe);
+            this.groupImageProfil.Controls.Add(this.comboBoxGroupe);
             this.groupImageProfil.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupImageProfil.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupImageProfil.Location = new System.Drawing.Point(4, 4);
             this.groupImageProfil.Margin = new System.Windows.Forms.Padding(4);
             this.groupImageProfil.Name = "groupImageProfil";
             this.groupImageProfil.Padding = new System.Windows.Forms.Padding(4);
-            this.groupImageProfil.Size = new System.Drawing.Size(921, 115);
+            this.groupImageProfil.Size = new System.Drawing.Size(661, 115);
             this.groupImageProfil.TabIndex = 0;
             this.groupImageProfil.TabStop = false;
-            this.groupImageProfil.Text = "Profil:";
+            this.groupImageProfil.Text = "Profil";
             // 
-            // pictureProfil
+            // labelNewReport
             // 
-            this.pictureProfil.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.pictureProfil.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureProfil.Location = new System.Drawing.Point(4, 19);
-            this.pictureProfil.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureProfil.Name = "pictureProfil";
-            this.pictureProfil.Size = new System.Drawing.Size(136, 92);
-            this.pictureProfil.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureProfil.TabIndex = 0;
-            this.pictureProfil.TabStop = false;
+            this.labelNewReport.AutoSize = true;
+            this.labelNewReport.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelNewReport.Location = new System.Drawing.Point(9, 94);
+            this.labelNewReport.Name = "labelNewReport";
+            this.labelNewReport.Size = new System.Drawing.Size(169, 18);
+            this.labelNewReport.TabIndex = 2;
+            this.labelNewReport.Text = "Nouveau signalement\r\n";
+            // 
+            // labelGroupe
+            // 
+            this.labelGroupe.AutoSize = true;
+            this.labelGroupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelGroupe.Location = new System.Drawing.Point(9, 32);
+            this.labelGroupe.Name = "labelGroupe";
+            this.labelGroupe.Size = new System.Drawing.Size(64, 18);
+            this.labelGroupe.TabIndex = 1;
+            this.labelGroupe.Text = "Groupe";
+            // 
+            // comboBoxGroupe
+            // 
+            this.comboBoxGroupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBoxGroupe.FormattingEnabled = true;
+            this.comboBoxGroupe.Location = new System.Drawing.Point(12, 52);
+            this.comboBoxGroupe.Name = "comboBoxGroupe";
+            this.comboBoxGroupe.Size = new System.Drawing.Size(272, 24);
+            this.comboBoxGroupe.TabIndex = 0;
             // 
             // tabControl
             // 
             this.tableLayoutPanel.SetColumnSpan(this.tabControl, 4);
             this.tabControl.Controls.Add(this.tabThemes);
             this.tabControl.Controls.Add(this.tabOptions);
-            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl.Location = new System.Drawing.Point(4, 127);
             this.tabControl.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl.MinimumSize = new System.Drawing.Size(481, 92);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(921, 172);
+            this.tabControl.Size = new System.Drawing.Size(660, 172);
             this.tabControl.TabIndex = 12;
             // 
             // tabThemes
             // 
             this.tabThemes.AutoScroll = true;
-            this.tabThemes.Controls.Add(this.checkedListBoxThemes);
+            this.tabThemes.Controls.Add(this.treeViewThemesAttributs);
             this.tabThemes.Location = new System.Drawing.Point(4, 26);
             this.tabThemes.Margin = new System.Windows.Forms.Padding(4);
             this.tabThemes.Name = "tabThemes";
             this.tabThemes.Padding = new System.Windows.Forms.Padding(4);
-            this.tabThemes.Size = new System.Drawing.Size(913, 142);
+            this.tabThemes.Size = new System.Drawing.Size(652, 142);
             this.tabThemes.TabIndex = 0;
             this.tabThemes.Text = "Thèmes";
             this.tabThemes.UseVisualStyleBackColor = true;
-            // 
-            // checkedListBoxThemes
-            // 
-            this.checkedListBoxThemes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.checkedListBoxThemes.CheckOnClick = true;
-            this.checkedListBoxThemes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkedListBoxThemes.FormattingEnabled = true;
-            this.checkedListBoxThemes.Location = new System.Drawing.Point(4, 4);
-            this.checkedListBoxThemes.Margin = new System.Windows.Forms.Padding(4);
-            this.checkedListBoxThemes.Name = "checkedListBoxThemes";
-            this.checkedListBoxThemes.Size = new System.Drawing.Size(905, 134);
-            this.checkedListBoxThemes.TabIndex = 0;
-            this.checkedListBoxThemes.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CheckedListBoxThemes_MouseUp);
             // 
             // tabOptions
             // 
@@ -162,7 +171,7 @@
             this.tabOptions.Location = new System.Drawing.Point(4, 26);
             this.tabOptions.Margin = new System.Windows.Forms.Padding(4);
             this.tabOptions.Name = "tabOptions";
-            this.tabOptions.Size = new System.Drawing.Size(913, 142);
+            this.tabOptions.Size = new System.Drawing.Size(652, 142);
             this.tabOptions.TabIndex = 2;
             this.tabOptions.Text = "Options";
             this.tabOptions.UseVisualStyleBackColor = true;
@@ -176,7 +185,7 @@
             this.tableLayoutPanelOption.Controls.Add(this.radioButtonSignalementMultiple, 0, 3);
             this.tableLayoutPanelOption.Controls.Add(this.radioButtonSignalementUnique, 0, 2);
             this.tableLayoutPanelOption.Controls.Add(this.checkBoxCroquis, 0, 0);
-            this.tableLayoutPanelOption.Controls.Add(this.listViewPJ, 1, 1);
+            this.tableLayoutPanelOption.Controls.Add(this.listViewFilePJ, 1, 1);
             this.tableLayoutPanelOption.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelOption.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanelOption.Margin = new System.Windows.Forms.Padding(4);
@@ -195,7 +204,7 @@
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanelOption.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanelOption.Size = new System.Drawing.Size(913, 142);
+            this.tableLayoutPanelOption.Size = new System.Drawing.Size(652, 142);
             this.tableLayoutPanelOption.TabIndex = 5;
             // 
             // checkBoxDocument
@@ -204,21 +213,21 @@
             this.checkBoxDocument.Location = new System.Drawing.Point(4, 33);
             this.checkBoxDocument.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDocument.Name = "checkBoxDocument";
-            this.checkBoxDocument.Size = new System.Drawing.Size(187, 21);
+            this.checkBoxDocument.Size = new System.Drawing.Size(182, 21);
             this.checkBoxDocument.TabIndex = 3;
-            this.checkBoxDocument.Text = "Joindre un document.";
+            this.checkBoxDocument.Text = "Joindre un document";
             this.checkBoxDocument.UseVisualStyleBackColor = true;
             this.checkBoxDocument.CheckedChanged += new System.EventHandler(this.CheckBoxDocument_CheckedChanged);
             // 
             // radioButtonSignalementMultiple
             // 
             this.radioButtonSignalementMultiple.AutoSize = true;
-            this.radioButtonSignalementMultiple.Location = new System.Drawing.Point(255, 92);
+            this.radioButtonSignalementMultiple.Location = new System.Drawing.Point(250, 92);
             this.radioButtonSignalementMultiple.Margin = new System.Windows.Forms.Padding(4);
             this.radioButtonSignalementMultiple.Name = "radioButtonSignalementMultiple";
-            this.radioButtonSignalementMultiple.Size = new System.Drawing.Size(280, 21);
+            this.radioButtonSignalementMultiple.Size = new System.Drawing.Size(275, 21);
             this.radioButtonSignalementMultiple.TabIndex = 2;
-            this.radioButtonSignalementMultiple.Text = "Créer 1000 signalements distincts.";
+            this.radioButtonSignalementMultiple.Text = "Créer 1000 signalements distincts";
             this.radioButtonSignalementMultiple.UseVisualStyleBackColor = true;
             // 
             // radioButtonSignalementUnique
@@ -228,10 +237,10 @@
             this.radioButtonSignalementUnique.Location = new System.Drawing.Point(4, 92);
             this.radioButtonSignalementUnique.Margin = new System.Windows.Forms.Padding(4);
             this.radioButtonSignalementUnique.Name = "radioButtonSignalementUnique";
-            this.radioButtonSignalementUnique.Size = new System.Drawing.Size(243, 21);
+            this.radioButtonSignalementUnique.Size = new System.Drawing.Size(238, 21);
             this.radioButtonSignalementUnique.TabIndex = 1;
             this.radioButtonSignalementUnique.TabStop = true;
-            this.radioButtonSignalementUnique.Text = "Créer un signalement unique.";
+            this.radioButtonSignalementUnique.Text = "Créer un signalement unique";
             this.radioButtonSignalementUnique.UseVisualStyleBackColor = true;
             // 
             // checkBoxCroquis
@@ -242,33 +251,33 @@
             this.checkBoxCroquis.Location = new System.Drawing.Point(4, 4);
             this.checkBoxCroquis.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCroquis.Name = "checkBoxCroquis";
-            this.checkBoxCroquis.Size = new System.Drawing.Size(170, 21);
+            this.checkBoxCroquis.Size = new System.Drawing.Size(165, 21);
             this.checkBoxCroquis.TabIndex = 0;
-            this.checkBoxCroquis.Text = "Joindre un croquis.";
+            this.checkBoxCroquis.Text = "Joindre un croquis";
             this.checkBoxCroquis.UseVisualStyleBackColor = true;
             // 
-            // listViewPJ
+            // listViewFilePJ
             // 
-            this.listViewPJ.Alignment = System.Windows.Forms.ListViewAlignment.Default;
-            this.listViewPJ.BackColor = System.Drawing.SystemColors.Window;
-            this.listViewPJ.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tableLayoutPanelOption.SetColumnSpan(this.listViewPJ, 2);
-            this.listViewPJ.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewPJ.Enabled = false;
-            this.listViewPJ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listViewPJ.HideSelection = false;
-            this.listViewPJ.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.listViewPJ.Location = new System.Drawing.Point(27, 58);
-            this.listViewPJ.Margin = new System.Windows.Forms.Padding(27, 0, 0, 0);
-            this.listViewPJ.MultiSelect = false;
-            this.listViewPJ.Name = "listViewPJ";
-            this.listViewPJ.Scrollable = false;
-            this.listViewPJ.Size = new System.Drawing.Size(886, 30);
-            this.listViewPJ.TabIndex = 2;
-            this.listViewPJ.UseCompatibleStateImageBehavior = false;
-            this.listViewPJ.View = System.Windows.Forms.View.SmallIcon;
-            this.listViewPJ.Visible = false;
-            this.listViewPJ.DoubleClick += new System.EventHandler(this.ListViewPJ_DoubleClick);
+            this.listViewFilePJ.Alignment = System.Windows.Forms.ListViewAlignment.Default;
+            this.listViewFilePJ.BackColor = System.Drawing.SystemColors.Window;
+            this.listViewFilePJ.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.tableLayoutPanelOption.SetColumnSpan(this.listViewFilePJ, 2);
+            this.listViewFilePJ.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewFilePJ.Enabled = false;
+            this.listViewFilePJ.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewFilePJ.HideSelection = false;
+            this.listViewFilePJ.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.listViewFilePJ.Location = new System.Drawing.Point(27, 58);
+            this.listViewFilePJ.Margin = new System.Windows.Forms.Padding(27, 0, 0, 0);
+            this.listViewFilePJ.MultiSelect = false;
+            this.listViewFilePJ.Name = "listViewFilePJ";
+            this.listViewFilePJ.Scrollable = false;
+            this.listViewFilePJ.Size = new System.Drawing.Size(625, 30);
+            this.listViewFilePJ.TabIndex = 2;
+            this.listViewFilePJ.UseCompatibleStateImageBehavior = false;
+            this.listViewFilePJ.View = System.Windows.Forms.View.SmallIcon;
+            this.listViewFilePJ.Visible = false;
+            this.listViewFilePJ.DoubleClick += new System.EventHandler(this.ListViewPJ_DoubleClick);
             // 
             // buttonCreer
             // 
@@ -276,14 +285,13 @@
             this.buttonCreer.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel.SetColumnSpan(this.buttonCreer, 4);
             this.buttonCreer.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonCreer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonCreer.Enabled = false;
             this.buttonCreer.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonCreer.Location = new System.Drawing.Point(4, 519);
             this.buttonCreer.Margin = new System.Windows.Forms.Padding(4);
             this.buttonCreer.MinimumSize = new System.Drawing.Size(481, 0);
             this.buttonCreer.Name = "buttonCreer";
-            this.buttonCreer.Size = new System.Drawing.Size(921, 30);
+            this.buttonCreer.Size = new System.Drawing.Size(481, 30);
             this.buttonCreer.TabIndex = 11;
             this.buttonCreer.Text = "Envoyer";
             this.buttonCreer.UseVisualStyleBackColor = true;
@@ -293,26 +301,24 @@
             this.labelMessage.AutoSize = true;
             this.tableLayoutPanel.SetColumnSpan(this.labelMessage, 4);
             this.labelMessage.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.labelMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
-            this.labelMessage.Location = new System.Drawing.Point(4, 316);
+            this.labelMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
+            this.labelMessage.Location = new System.Drawing.Point(4, 323);
             this.labelMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(921, 25);
+            this.labelMessage.Size = new System.Drawing.Size(661, 18);
             this.labelMessage.TabIndex = 13;
             this.labelMessage.Text = "Message";
             // 
             // richTextBoxMessage
             // 
             this.tableLayoutPanel.SetColumnSpan(this.richTextBoxMessage, 4);
-            this.richTextBoxMessage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBoxMessage.Location = new System.Drawing.Point(4, 345);
             this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBoxMessage.MinimumSize = new System.Drawing.Size(480, 91);
             this.richTextBoxMessage.Name = "richTextBoxMessage";
-            this.richTextBoxMessage.Size = new System.Drawing.Size(921, 166);
+            this.richTextBoxMessage.Size = new System.Drawing.Size(660, 146);
             this.richTextBoxMessage.TabIndex = 14;
             this.richTextBoxMessage.Text = "";
-            this.richTextBoxMessage.TextChanged += new System.EventHandler(this.RichTextBoxMessage_TextChanged);
             // 
             // OpenFileDialog
             // 
@@ -320,15 +326,19 @@
             this.OpenFileDialog.ReadOnlyChecked = true;
             this.OpenFileDialog.Title = "Document à joindre pour le nouveau signalement de l\'Espace collaboratif.";
             // 
-            // toolTip
+            // treeViewThemesAttributs
             // 
-            this.toolTip.Popup += new System.Windows.Forms.PopupEventHandler(this.ToolTip_Popup);
+            this.treeViewThemesAttributs.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeViewThemesAttributs.Location = new System.Drawing.Point(-1, 0);
+            this.treeViewThemesAttributs.Name = "treeViewThemesAttributs";
+            this.treeViewThemesAttributs.Size = new System.Drawing.Size(629, 146);
+            this.treeViewThemesAttributs.TabIndex = 0;
             // 
             // FormCreateReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(929, 553);
+            this.ClientSize = new System.Drawing.Size(669, 553);
             this.Controls.Add(this.tableLayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -341,7 +351,7 @@
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
             this.groupImageProfil.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureProfil)).EndInit();
+            this.groupImageProfil.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabThemes.ResumeLayout(false);
             this.tabOptions.ResumeLayout(false);
@@ -356,22 +366,24 @@
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.GroupBox groupImageProfil;
-        private System.Windows.Forms.PictureBox pictureProfil;
         public System.Windows.Forms.Button buttonCreer;
         private System.Windows.Forms.OpenFileDialog OpenFileDialog;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.Label labelMessage;
         private System.Windows.Forms.RichTextBox richTextBoxMessage;
         private System.Windows.Forms.ToolTip toolTip;
-        private System.Windows.Forms.ListView listViewPJ;
+        private System.Windows.Forms.ListView listViewFilePJ;
         private System.Windows.Forms.TabPage tabOptions;
         private System.Windows.Forms.CheckBox checkBoxCroquis;
         private System.Windows.Forms.RadioButton radioButtonSignalementMultiple;
         private System.Windows.Forms.RadioButton radioButtonSignalementUnique;
         private System.Windows.Forms.TabPage tabThemes;
-        private System.Windows.Forms.CheckedListBox checkedListBoxThemes;
         private System.Windows.Forms.CheckBox checkBoxDocument;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelOption;
-
+        private System.Windows.Forms.Label labelNewReport;
+        private System.Windows.Forms.Label labelGroupe;
+        private System.Windows.Forms.ComboBox comboBoxGroupe;
+        //private System.Windows.Forms.TreeView treeViewThemesAttributs;
+        private DropDownTreeView treeViewThemesAttributs;
     }
 }

@@ -30,7 +30,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Crée une nouvelle remarque
         /// </summary>        
-        Signalement CreateSignalement(Signalement nouveauSignalement                                                                            );
+        Signalement CreateSignalement(Signalement nouveauSignalement);
 
         int Get_MAX_TAILLE_UPLOAD_FILE();
         int Get_NB_DEFAULT_SIGNALEMENTS_PAGINATION();

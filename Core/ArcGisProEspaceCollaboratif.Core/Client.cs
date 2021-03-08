@@ -13,7 +13,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// Implémentation de l'interface IClient
     /// Cette classe sert de client pour le service EspaceCollaboratif
     /// </summary>
-    public class Client : IClient
+    public class Client
     {
         //url du service EspaceCollaboratif
         public string Url { get; set; }

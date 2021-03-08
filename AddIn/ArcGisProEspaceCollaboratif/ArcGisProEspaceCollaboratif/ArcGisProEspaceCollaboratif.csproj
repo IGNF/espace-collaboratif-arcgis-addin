@@ -288,6 +288,9 @@
   <ItemGroup>
     <AddInContent Include="Images\visualiser.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\no_logo.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:

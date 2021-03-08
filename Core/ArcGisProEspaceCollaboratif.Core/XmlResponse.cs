@@ -360,7 +360,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     // Récupération des attributs des thèmes du GeoGroupe
                     XPathNodeIterator attiterator = val.Select("THEMES/ATTRIBUT");
-                    ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = GetThemesAttributes(attiterator);
+                    ConcurrentDictionary<string, List<ThemeAttributes>> themesAttributesDict = GetThemesAttributes(attiterator);
 
                     // Récupérer uniquement les thèmes du guichet passés à travers le filtre
                     XPathNodeIterator filtreIterator = val.Select("FILTER");
@@ -383,7 +383,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         }
                         if (themesAttributesDict.ContainsKey(nom))
                         {
-                            List<ThemeAttribut> tmp = new List<ThemeAttribut>();
+                            List<ThemeAttributes> tmp = new List<ThemeAttributes>();
                             themesAttributesDict.TryGetValue(nom, out tmp);
                             tmpTheme.Attributs = tmp;
                         }
@@ -523,12 +523,12 @@ namespace ArcGisProEspaceCollaboratif.Core
             return filteredThemes;
         }
 
-        public ConcurrentDictionary<string, List<ThemeAttribut>> GetThemesAttributes(XPathNodeIterator iterator)
+        public ConcurrentDictionary<string, List<ThemeAttributes>> GetThemesAttributes(XPathNodeIterator iterator)
         {
-            ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = new ConcurrentDictionary<string, List<ThemeAttribut>>();
+            ConcurrentDictionary<string, List<ThemeAttributes>> themesAttributesDict = new ConcurrentDictionary<string, List<ThemeAttributes>>();
             foreach (XPathNavigator val in iterator)
             {
-                ThemeAttribut themeAttribut = new ThemeAttribut
+                ThemeAttributes themeAttribut = new ThemeAttributes
                 {
                     Theme = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
                     Nom = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
@@ -538,7 +538,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathNavigator obligatoire = val.SelectSingleNode("OBLIGATOIRE");
                 if (obligatoire != null)
                 {
-                    themeAttribut.Obligatoire = obligatoire.Value;
+                    themeAttribut.Obligatoire = true;                   
                 }
 
                 XPathNavigator valVALEURS = val.SelectSingleNode("VALEURS");
@@ -556,7 +556,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                 }
                 themeAttribut.Valeurs = lTmp;
-                themesAttributesDict.AddOrUpdate(themeAttribut.Theme, new List<ThemeAttribut> { themeAttribut }, (nomTheme, attTheme) => { attTheme.Add(themeAttribut); return attTheme; });
+                themesAttributesDict.AddOrUpdate(themeAttribut.Theme, new List<ThemeAttributes> { themeAttribut }, (nomTheme, attTheme) => { attTheme.Add(themeAttribut); return attTheme; });
             };
             return themesAttributesDict;
         }
@@ -589,7 +589,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 navigator.MoveToRoot();
                 XPathExpression expr = navigator.Compile("/geors/THEMES/ATTRIBUT");
                 XPathNodeIterator iterator = navigator.Select(expr);
-                ConcurrentDictionary<string, List<ThemeAttribut>> themesAttributesDict = GetThemesAttributes(iterator);
+                ConcurrentDictionary<string, List<ThemeAttributes>> themesAttributesDict = GetThemesAttributes(iterator);
 
                 // Récupération du filtre sur les thèmes
                 navigator.MoveToRoot();
@@ -616,7 +616,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     if (themesAttributesDict.ContainsKey(nom))
                     {
-                        List<ThemeAttribut> tmp = new List<ThemeAttribut>();
+                        List<ThemeAttributes> tmp = new List<ThemeAttributes>();
                         themesAttributesDict.TryGetValue(nom, out tmp);
                         tmpTheme.Attributs = tmp;
                     }
@@ -813,7 +813,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathNodeIterator itAttribut = v.Select("attributs/attribut");
                 foreach (XPathNavigator att in itAttribut)
                 {
-                    Attribut attribut = new Attribut
+                    SketchAttributes attribut = new SketchAttributes
                     {
                         Nom = EncodeToUTF8(att.GetAttribute("name", "")),
                         Valeur = EncodeToUTF8(att.InnerXml)

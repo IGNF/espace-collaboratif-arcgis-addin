@@ -31,7 +31,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La liste des attributs (clé,valeur)
         /// </summary>
-        public List<Attribut> Attributes = new List<Attribut>();
+        public List<SketchAttributes> Attributes = new List<SketchAttributes>();
 
         /// <summary>
         /// La liste des points composant le croquis (coordonnées)
@@ -81,7 +81,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="name">nom du croquis</param>
         /// <param name="type">type du croquis</param>
         /// <param name="attributs">liste d'Attributs lié au croquis</param>
-        public Sketch(String name, SketchType type, List<Point> points, List<Attribut> attributes)
+        public Sketch(String name, SketchType type, List<Point> points, List<SketchAttributes> attributes)
         {
             this.Name = name;
             this.Type = type;
@@ -125,7 +125,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Ajoute un attribut à la liste des attributs du croquis
         /// </summary>
         /// <param name="attribut">l'objet Attribut</param>
-        public void AddAttribute(Attribut attribute)
+        public void AddAttribute(SketchAttributes attribute)
         {
             this.Attributes.Add(attribute);
         }
@@ -137,7 +137,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="value">valeur de l'attribut</param>
         public void AddAttribute(String key, String value)
         {
-            this.Attributes.Add(new Attribut(key, value));
+            this.Attributes.Add(new SketchAttributes(key, value));
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="i">l'index du de l'attribut </param>
         /// <returns>l'objet Attribut</returns>
-        public Attribut GetAttribute(int i)
+        public SketchAttributes GetAttribute(int i)
         {
             return this.Attributes[i];
         }
@@ -310,7 +310,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             //Ajout des attributs
             XElement xattributs=new XElement("attributs"); ;
-            foreach (Attribut att in this.Attributes)
+            foreach (SketchAttributes att in this.Attributes)
             {
                 XElement xattribut = new XElement("attribut");
                 xattribut.Add(new XAttribute("name", att.Nom), att.Valeur);

@@ -300,7 +300,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             get
             {
-                System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = Contexte.mapActiveView.Map.Layers;
+                System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = Contexte.MapActiveView.Map.Layers;
                 List<string> layersInMap = new List<string>();
                 foreach (Layer observableLayer in observableLayers)
                 {
@@ -335,9 +335,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Retourne un tuple contenant Rejected/Accepted pour la connexion à l'Espace collaboratif et la liste des layers du groupe utilisateur</returns>
         private string GetInfosLayers()
         {
-            if (this.Contexte.RipClient == null)
+            if (this.Contexte.Client == null)
             {
-                IClient connResult = this.Contexte.GetConnexionEspaceCollaboratif();
+                Client connResult = this.Contexte.GetConnexionEspaceCollaboratif();
                 if (connResult == null)
                 {
                     // la connexion a échoué ou l'utilisateur a cliqué sur Annuler

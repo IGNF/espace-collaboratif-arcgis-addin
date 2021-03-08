@@ -65,8 +65,8 @@
             this.tableLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel.ColumnCount = 4;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 131F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 69F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 92F));
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.Controls.Add(this.comboBoxCalque, 1, 5);
             this.tableLayoutPanel.Controls.Add(this.textBoxLogin, 1, 1);
@@ -93,6 +93,7 @@
             this.tableLayoutPanel.Controls.Add(this.textBoxCleGeoportail, 1, 10);
             this.tableLayoutPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.tableLayoutPanel.Location = new System.Drawing.Point(1, 2);
+            this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 12;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -103,11 +104,11 @@
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(944, 518);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(1259, 638);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // comboBoxCalque
@@ -119,9 +120,10 @@
             this.comboBoxCalque.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxCalque.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBoxCalque.FormattingEnabled = true;
-            this.comboBoxCalque.Location = new System.Drawing.Point(330, 112);
+            this.comboBoxCalque.Location = new System.Drawing.Point(398, 136);
+            this.comboBoxCalque.Margin = new System.Windows.Forms.Padding(4);
             this.comboBoxCalque.Name = "comboBoxCalque";
-            this.comboBoxCalque.Size = new System.Drawing.Size(692, 24);
+            this.comboBoxCalque.Size = new System.Drawing.Size(923, 28);
             this.comboBoxCalque.TabIndex = 6;
             // 
             // textBoxLogin
@@ -129,9 +131,10 @@
             this.tableLayoutPanel.SetColumnSpan(this.textBoxLogin, 3);
             this.textBoxLogin.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxLogin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxLogin.Location = new System.Drawing.Point(330, 31);
+            this.textBoxLogin.Location = new System.Drawing.Point(398, 38);
+            this.textBoxLogin.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxLogin.Name = "textBoxLogin";
-            this.textBoxLogin.Size = new System.Drawing.Size(692, 22);
+            this.textBoxLogin.Size = new System.Drawing.Size(923, 26);
             this.textBoxLogin.TabIndex = 2;
             // 
             // labelUrl
@@ -139,10 +142,11 @@
             this.labelUrl.AutoSize = true;
             this.labelUrl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelUrl.Location = new System.Drawing.Point(3, 0);
+            this.labelUrl.Location = new System.Drawing.Point(4, 0);
+            this.labelUrl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelUrl.Name = "labelUrl";
             this.labelUrl.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.labelUrl.Size = new System.Drawing.Size(321, 28);
+            this.labelUrl.Size = new System.Drawing.Size(386, 34);
             this.labelUrl.TabIndex = 0;
             this.labelUrl.Text = "Adresse de connexion à l\'espace collaboratif";
             this.labelUrl.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -152,9 +156,10 @@
             this.tableLayoutPanel.SetColumnSpan(this.textBoxUrl, 3);
             this.textBoxUrl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxUrl.Location = new System.Drawing.Point(330, 3);
+            this.textBoxUrl.Location = new System.Drawing.Point(398, 4);
+            this.textBoxUrl.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxUrl.Name = "textBoxUrl";
-            this.textBoxUrl.Size = new System.Drawing.Size(692, 22);
+            this.textBoxUrl.Size = new System.Drawing.Size(923, 26);
             this.textBoxUrl.TabIndex = 1;
             // 
             // numericUpDownPagination
@@ -162,14 +167,15 @@
             this.tableLayoutPanel.SetColumnSpan(this.numericUpDownPagination, 3);
             this.numericUpDownPagination.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numericUpDownPagination.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDownPagination.Location = new System.Drawing.Point(330, 59);
+            this.numericUpDownPagination.Location = new System.Drawing.Point(398, 72);
+            this.numericUpDownPagination.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownPagination.Maximum = new decimal(new int[] {
             100000,
             0,
             0,
             0});
             this.numericUpDownPagination.Name = "numericUpDownPagination";
-            this.numericUpDownPagination.Size = new System.Drawing.Size(692, 21);
+            this.numericUpDownPagination.Size = new System.Drawing.Size(923, 24);
             this.numericUpDownPagination.TabIndex = 3;
             this.numericUpDownPagination.ThousandsSeparator = true;
             // 
@@ -178,9 +184,10 @@
             this.dateTimePicker.CalendarFont = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dateTimePicker.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dateTimePicker.Location = new System.Drawing.Point(330, 86);
+            this.dateTimePicker.Location = new System.Drawing.Point(398, 104);
+            this.dateTimePicker.Margin = new System.Windows.Forms.Padding(4);
             this.dateTimePicker.Name = "dateTimePicker";
-            this.dateTimePicker.Size = new System.Drawing.Size(125, 20);
+            this.dateTimePicker.Size = new System.Drawing.Size(167, 22);
             this.dateTimePicker.TabIndex = 4;
             this.dateTimePicker.Value = new System.DateTime(2014, 11, 25, 0, 0, 0, 0);
             this.dateTimePicker.ValueChanged += new System.EventHandler(this.DateTimePicker_ValueChanged);
@@ -189,14 +196,15 @@
             // 
             this.numericUpDownDate.AutoSize = true;
             this.numericUpDownDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.numericUpDownDate.Location = new System.Drawing.Point(461, 86);
+            this.numericUpDownDate.Location = new System.Drawing.Point(573, 104);
+            this.numericUpDownDate.Margin = new System.Windows.Forms.Padding(4);
             this.numericUpDownDate.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
             this.numericUpDownDate.Name = "numericUpDownDate";
-            this.numericUpDownDate.Size = new System.Drawing.Size(63, 20);
+            this.numericUpDownDate.Size = new System.Drawing.Size(84, 22);
             this.numericUpDownDate.TabIndex = 5;
             this.numericUpDownDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numericUpDownDate.ThousandsSeparator = true;
@@ -207,9 +215,10 @@
             this.labelJour.AutoSize = true;
             this.labelJour.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelJour.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelJour.Location = new System.Drawing.Point(530, 83);
+            this.labelJour.Location = new System.Drawing.Point(665, 100);
+            this.labelJour.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelJour.Name = "labelJour";
-            this.labelJour.Size = new System.Drawing.Size(492, 26);
+            this.labelJour.Size = new System.Drawing.Size(656, 32);
             this.labelJour.TabIndex = 9;
             this.labelJour.Text = "jours.";
             this.labelJour.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -222,9 +231,10 @@
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.buttonOK.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.buttonOK.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonOK.Location = new System.Drawing.Point(3, 487);
+            this.buttonOK.Location = new System.Drawing.Point(4, 600);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
             this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(1019, 28);
+            this.buttonOK.Size = new System.Drawing.Size(1317, 34);
             this.buttonOK.TabIndex = 7;
             this.buttonOK.Text = "Sauvegarder les paramètres";
             this.buttonOK.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -238,9 +248,10 @@
             this.checkBoxCalque.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCalque.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxCalque.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
-            this.checkBoxCalque.Location = new System.Drawing.Point(3, 112);
+            this.checkBoxCalque.Location = new System.Drawing.Point(4, 136);
+            this.checkBoxCalque.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCalque.Name = "checkBoxCalque";
-            this.checkBoxCalque.Size = new System.Drawing.Size(321, 24);
+            this.checkBoxCalque.Size = new System.Drawing.Size(386, 28);
             this.checkBoxCalque.TabIndex = 10;
             this.checkBoxCalque.Text = "Calque pour le filtrage spatial";
             this.checkBoxCalque.UseVisualStyleBackColor = true;
@@ -253,9 +264,10 @@
             this.checkBoxDate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxDate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
-            this.checkBoxDate.Location = new System.Drawing.Point(3, 86);
+            this.checkBoxDate.Location = new System.Drawing.Point(4, 104);
+            this.checkBoxDate.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxDate.Name = "checkBoxDate";
-            this.checkBoxDate.Size = new System.Drawing.Size(321, 20);
+            this.checkBoxDate.Size = new System.Drawing.Size(386, 24);
             this.checkBoxDate.TabIndex = 15;
             this.checkBoxDate.Text = "Date d\'extraction";
             this.checkBoxDate.UseVisualStyleBackColor = true;
@@ -268,9 +280,10 @@
             this.checkBoxPagination.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxPagination.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxPagination.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
-            this.checkBoxPagination.Location = new System.Drawing.Point(3, 59);
+            this.checkBoxPagination.Location = new System.Drawing.Point(4, 72);
+            this.checkBoxPagination.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxPagination.Name = "checkBoxPagination";
-            this.checkBoxPagination.Size = new System.Drawing.Size(321, 21);
+            this.checkBoxPagination.Size = new System.Drawing.Size(386, 24);
             this.checkBoxPagination.TabIndex = 9;
             this.checkBoxPagination.Text = "Pagination";
             this.checkBoxPagination.UseVisualStyleBackColor = true;
@@ -281,9 +294,10 @@
             this.checkBoxLogin.AutoSize = true;
             this.checkBoxLogin.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxLogin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
-            this.checkBoxLogin.Location = new System.Drawing.Point(3, 31);
+            this.checkBoxLogin.Location = new System.Drawing.Point(4, 38);
+            this.checkBoxLogin.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxLogin.Name = "checkBoxLogin";
-            this.checkBoxLogin.Size = new System.Drawing.Size(321, 22);
+            this.checkBoxLogin.Size = new System.Drawing.Size(386, 26);
             this.checkBoxLogin.TabIndex = 8;
             this.checkBoxLogin.Text = "Login par défaut";
             this.checkBoxLogin.UseVisualStyleBackColor = true;
@@ -295,9 +309,10 @@
             this.tableLayoutPanel.SetColumnSpan(this.treeViewAttributs, 3);
             this.treeViewAttributs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeViewAttributs.FullRowSelect = true;
-            this.treeViewAttributs.Location = new System.Drawing.Point(330, 168);
+            this.treeViewAttributs.Location = new System.Drawing.Point(398, 204);
+            this.treeViewAttributs.Margin = new System.Windows.Forms.Padding(4);
             this.treeViewAttributs.Name = "treeViewAttributs";
-            this.treeViewAttributs.Size = new System.Drawing.Size(692, 226);
+            this.treeViewAttributs.Size = new System.Drawing.Size(923, 277);
             this.treeViewAttributs.TabIndex = 16;
             this.treeViewAttributs.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAttributs_AfterCheck);
             // 
@@ -306,9 +321,10 @@
             this.checkBoxCroquis.AutoSize = true;
             this.checkBoxCroquis.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold);
             this.checkBoxCroquis.ImageAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.checkBoxCroquis.Location = new System.Drawing.Point(3, 168);
+            this.checkBoxCroquis.Location = new System.Drawing.Point(4, 204);
+            this.checkBoxCroquis.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxCroquis.Name = "checkBoxCroquis";
-            this.checkBoxCroquis.Size = new System.Drawing.Size(280, 36);
+            this.checkBoxCroquis.Size = new System.Drawing.Size(343, 44);
             this.checkBoxCroquis.TabIndex = 17;
             this.checkBoxCroquis.Text = "Calques sources et champs à mettre\r\nen attribut pour les nouveaux croquis";
             this.checkBoxCroquis.UseVisualStyleBackColor = true;
@@ -320,9 +336,10 @@
             this.checkBoxGroup.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxGroup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.checkBoxGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxGroup.Location = new System.Drawing.Point(3, 142);
+            this.checkBoxGroup.Location = new System.Drawing.Point(4, 172);
+            this.checkBoxGroup.Margin = new System.Windows.Forms.Padding(4);
             this.checkBoxGroup.Name = "checkBoxGroup";
-            this.checkBoxGroup.Size = new System.Drawing.Size(321, 20);
+            this.checkBoxGroup.Size = new System.Drawing.Size(386, 24);
             this.checkBoxGroup.TabIndex = 18;
             this.checkBoxGroup.Text = "Extraction pour groupe";
             this.checkBoxGroup.UseVisualStyleBackColor = true;
@@ -332,9 +349,10 @@
             this.lblGroup.AutoSize = true;
             this.lblGroup.Dock = System.Windows.Forms.DockStyle.Left;
             this.lblGroup.Enabled = false;
-            this.lblGroup.Location = new System.Drawing.Point(330, 139);
+            this.lblGroup.Location = new System.Drawing.Point(398, 168);
+            this.lblGroup.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblGroup.Name = "lblGroup";
-            this.lblGroup.Size = new System.Drawing.Size(0, 26);
+            this.lblGroup.Size = new System.Drawing.Size(0, 32);
             this.lblGroup.TabIndex = 19;
             this.lblGroup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -342,10 +360,10 @@
             // 
             this.checkBoxProxy.AutoSize = true;
             this.checkBoxProxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBoxProxy.Location = new System.Drawing.Point(2, 399);
-            this.checkBoxProxy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBoxProxy.Location = new System.Drawing.Point(3, 487);
+            this.checkBoxProxy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBoxProxy.Name = "checkBoxProxy";
-            this.checkBoxProxy.Size = new System.Drawing.Size(67, 21);
+            this.checkBoxProxy.Size = new System.Drawing.Size(78, 24);
             this.checkBoxProxy.TabIndex = 20;
             this.checkBoxProxy.Text = "Proxy";
             this.checkBoxProxy.UseVisualStyleBackColor = true;
@@ -354,10 +372,9 @@
             // 
             this.labelCleGeoportail.AutoSize = true;
             this.labelCleGeoportail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelCleGeoportail.Location = new System.Drawing.Point(2, 458);
-            this.labelCleGeoportail.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelCleGeoportail.Location = new System.Drawing.Point(3, 560);
             this.labelCleGeoportail.Name = "labelCleGeoportail";
-            this.labelCleGeoportail.Size = new System.Drawing.Size(112, 17);
+            this.labelCleGeoportail.Size = new System.Drawing.Size(130, 20);
             this.labelCleGeoportail.TabIndex = 22;
             this.labelCleGeoportail.Text = "Clé Géoportail";
             this.labelCleGeoportail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -366,20 +383,20 @@
             // 
             this.tableLayoutPanel.SetColumnSpan(this.textBoxProxy, 3);
             this.textBoxProxy.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxProxy.Location = new System.Drawing.Point(329, 399);
-            this.textBoxProxy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxProxy.Location = new System.Drawing.Point(397, 487);
+            this.textBoxProxy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxProxy.Name = "textBoxProxy";
-            this.textBoxProxy.Size = new System.Drawing.Size(644, 23);
+            this.textBoxProxy.Size = new System.Drawing.Size(857, 27);
             this.textBoxProxy.TabIndex = 23;
             // 
             // textBoxGroupeActif
             // 
             this.tableLayoutPanel.SetColumnSpan(this.textBoxGroupeActif, 3);
             this.textBoxGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxGroupeActif.Location = new System.Drawing.Point(329, 433);
-            this.textBoxGroupeActif.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxGroupeActif.Location = new System.Drawing.Point(397, 529);
+            this.textBoxGroupeActif.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxGroupeActif.Name = "textBoxGroupeActif";
-            this.textBoxGroupeActif.Size = new System.Drawing.Size(644, 23);
+            this.textBoxGroupeActif.Size = new System.Drawing.Size(857, 27);
             this.textBoxGroupeActif.TabIndex = 24;
             // 
             // labelGroupeActif
@@ -387,11 +404,10 @@
             this.labelGroupeActif.AutoSize = true;
             this.labelGroupeActif.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelGroupeActif.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.labelGroupeActif.Location = new System.Drawing.Point(2, 431);
-            this.labelGroupeActif.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.labelGroupeActif.Location = new System.Drawing.Point(3, 527);
             this.labelGroupeActif.Name = "labelGroupeActif";
             this.labelGroupeActif.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.labelGroupeActif.Size = new System.Drawing.Size(98, 17);
+            this.labelGroupeActif.Size = new System.Drawing.Size(113, 20);
             this.labelGroupeActif.TabIndex = 21;
             this.labelGroupeActif.Text = "Groupe actif";
             // 
@@ -399,20 +415,21 @@
             // 
             this.tableLayoutPanel.SetColumnSpan(this.textBoxCleGeoportail, 3);
             this.textBoxCleGeoportail.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxCleGeoportail.Location = new System.Drawing.Point(329, 460);
-            this.textBoxCleGeoportail.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxCleGeoportail.Location = new System.Drawing.Point(397, 562);
+            this.textBoxCleGeoportail.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxCleGeoportail.Name = "textBoxCleGeoportail";
-            this.textBoxCleGeoportail.Size = new System.Drawing.Size(644, 23);
+            this.textBoxCleGeoportail.Size = new System.Drawing.Size(857, 27);
             this.textBoxCleGeoportail.TabIndex = 25;
             // 
             // FormSetUp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(954, 521);
+            this.ClientSize = new System.Drawing.Size(1272, 641);
             this.Controls.Add(this.tableLayoutPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.Name = "FormSetUp";
             this.Opacity = 0.95D;

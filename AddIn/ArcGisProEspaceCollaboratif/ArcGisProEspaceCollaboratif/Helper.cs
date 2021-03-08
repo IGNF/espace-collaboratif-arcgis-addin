@@ -168,7 +168,7 @@ namespace ArcGisProEspaceCollaboratif
                         };
 
                         // Ajout de la référence spatiale
-                        arguments.Add(contexte.spatialReference);
+                        arguments.Add(contexte.SpatialReference);
 
                         // Création de la feature class
                         var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
@@ -191,7 +191,7 @@ namespace ArcGisProEspaceCollaboratif
                         // Ajout en tant que FeatureLayer à la carte
                         collabSpaceLayer = LayerFactory.Instance.CreateFeatureLayer(
                             collabSpaceFc,
-                            contexte.mapActiveView.Map,
+                            contexte.MapActiveView.Map,
                             layerPosition,
                             fcName
                         );
@@ -1034,7 +1034,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le <paramref name="croquis"/> complété de l'attribut supplémentaire issu de la paire <paramref name="nom"/> et <paramref name="val"/>.</returns>
         public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Sketch croquis, string nom, string val)
         {
-            croquis.AddAttribute(new ArcGisProEspaceCollaboratif.Core.Attribut(nom, val));
+            croquis.AddAttribute(new ArcGisProEspaceCollaboratif.Core.SketchAttributes(nom, val));
         }
 
         /// <summary>
@@ -1196,7 +1196,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le chemin complet + nom du fichier du fichier de paramétrage.</returns>
         public static string XML_NameFile()
         {
-            string workDir = Contexte.Instance.repertoireTravail;
+            string workDir = Contexte.Instance.DirectoryWorking;
             return System.IO.Path.GetFullPath(workDir) + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
         }
 
@@ -1452,9 +1452,9 @@ namespace ArcGisProEspaceCollaboratif
         /// Renvoie la liste des thèmes préférés contenus à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <returns>La liste des noms de thèmes préférés contenus dans le fichier de paramétrage.</returns>
-        public static List<string> Load_PreferredThemes(string element)
+        public static List<string> Load_PreferredThemes()
         {
-            return Helper.XML_AllElement(element);
+            return Helper.XML_AllElement(Helper.xml_Themes);
         }
        
         /// <summary>

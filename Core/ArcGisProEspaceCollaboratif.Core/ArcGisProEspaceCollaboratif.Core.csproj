@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -47,7 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attribut.cs" />
+    <Compile Include="ComboBoxTreeNode.cs" />
+    <Compile Include="DropDownTreeView .cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SketchAttributes.cs" />
     <Compile Include="Auteur.cs" />
     <Compile Include="Box.cs" />
     <Compile Include="Client.cs" />
@@ -58,7 +63,6 @@
     <Compile Include="Sketch.cs" />
     <Compile Include="GeoReponse.cs" />
     <Compile Include="Groupe.cs" />
-    <Compile Include="IClient.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Profil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,7 +72,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Statut.cs" />
     <Compile Include="Theme.cs" />
-    <Compile Include="ThemeAttribut.cs" />
+    <Compile Include="ThemeAttributes.cs" />
     <Compile Include="XmlResponse.cs" />
     <Compile Include="ZoneGeographique.cs" />
   </ItemGroup>

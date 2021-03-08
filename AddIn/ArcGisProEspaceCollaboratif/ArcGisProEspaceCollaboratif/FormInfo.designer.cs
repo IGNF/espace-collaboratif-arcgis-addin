@@ -41,7 +41,7 @@
             // 
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.buttonOK.Location = new System.Drawing.Point(528, 221);
-            this.buttonOK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(100, 28);
             this.buttonOK.TabIndex = 1;
@@ -59,10 +59,10 @@
             // LogoBox
             // 
             this.LogoBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.LogoBox.Image = global::ArcGisProEspaceCollaboratif.Properties.Resources.LogoIGN;
+            this.LogoBox.Image = global::ArcGisProEspaceCollaboratif.Properties.Resources.no_logo;
             this.LogoBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.LogoBox.Location = new System.Drawing.Point(16, 15);
-            this.LogoBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LogoBox.Margin = new System.Windows.Forms.Padding(4);
             this.LogoBox.Name = "LogoBox";
             this.LogoBox.Size = new System.Drawing.Size(147, 148);
             this.LogoBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -74,14 +74,14 @@
             this.richTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox.Location = new System.Drawing.Point(177, 15);
-            this.richTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.richTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ReadOnly = true;
             this.richTextBox.Size = new System.Drawing.Size(449, 198);
             this.richTextBox.TabIndex = 9;
             this.richTextBox.Text = "";
             // 
-            // FormInfoEspaceCollaboratif
+            // FormInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -93,10 +93,10 @@
             this.Controls.Add(this.buttonOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FormInfoEspaceCollaboratif";
+            this.Name = "FormInfo";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "IGN Espace collaboratif";

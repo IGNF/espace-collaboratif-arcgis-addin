@@ -24,11 +24,11 @@ namespace ArcGisProEspaceCollaboratif
                     Contexte contexte = Contexte.Instance;
 
                     // Il faut s'être connecté au service pour la créer un signalement
-                    if (contexte.RipClient == null)
+                    if (contexte.Client == null)
                     {
                         // Établissement de la connexion avec le service Espace collaboratif.
-                        contexte.RipClient = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.RipClient == null)
+                        contexte.Client = contexte.GetConnexionEspaceCollaboratif();
+                        if (contexte.Client == null)
                         {
                             return;
                         }
@@ -57,10 +57,13 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
 
-                    // Lancement du formulaire pour créer une nouvelle remarque Ripart.
-                    FormCreateReport formulaireCreation = new FormCreateReport();
-                    formulaireCreation.SetFormulaire(futursSketch.Count, contexte, contexte.RipClient);
-                    if (formulaireCreation.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    // Lancement du formulaire pour créer une nouvelle remarque
+                    FormCreateReport formCreateReport = new FormCreateReport(contexte)
+                    {
+                        SketchNumber = futursSketch.Count,
+                        ListFilesPJ = new List<string>()
+                    };
+                    if (formCreateReport.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                     {
                         return;
                     }
@@ -69,33 +72,33 @@ namespace ArcGisProEspaceCollaboratif
                     ArcGisProEspaceCollaboratif.Core.Signalement signalementVirtuel = new ArcGisProEspaceCollaboratif.Core.Signalement();
 
                     // Affectation du message de la nouvelle remarque.
-                    signalementVirtuel.SetCommentaire(formulaireCreation.GetMessage());
+                    signalementVirtuel.SetCommentaire(formCreateReport.GetMessage());
 
                     // Récupération des thèmes sélectionnés qui sont ensuite enregistrés dans le fichier XML de paramétrage Ripart.               
-                    signalementVirtuel.AddTheme(formulaireCreation.GetSelectedThemes());
+                    //signalementVirtuel.AddTheme(formCreateReport.GetSelectedThemes());
 
                     // Ajout du fichier en pièce-jointe.
-                    signalementVirtuel.AddDocument(formulaireCreation.GetFichierPJ());
+                    signalementVirtuel.AddDocument(formCreateReport.GetFichierPJ());
 
                     // Selon l'option création d'un signalement unique ou un par croquis.
-                    if (formulaireCreation.OptionSingleSignalement())
+                    if (formCreateReport.OptionSingleSignalement())
                     {
                         // Positionnement du signalement unique par rapport à l'ensemble des croquis.
                         signalementVirtuel.SetPosition(Helper.CalculatePointReport(futursSketch));
 
                         // Si option de joindre un croquis au nouveau signalement.
-                        if (formulaireCreation.OptionWithCroquis())
+                        if (formCreateReport.OptionWithCroquis())
                         {
                             signalementVirtuel.AddCroquis(futursSketch);
                         }
 
                         // Création du nouveau signalement
-                        ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.RipClient.CreateSignalement(signalementVirtuel);
+                        ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.Client.CreateSignalement(signalementVirtuel);
                         await contexte.CreerPointSignalement(signalementNouveau);
 
                         FormInfo popupInfo = new FormInfo();
-                        popupInfo.SetLogo(contexte.RipClient.GetProfil().Logo);
-                        string message = "Succès de la création du nouveau signalement n° " + signalementNouveau.Id;
+                        popupInfo.SetLogo(contexte.Client.GetProfil().Logo);
+                        string message = string.Format("Succès : création d'un nouveau signalement n°{0}", signalementNouveau.Id);
                         popupInfo.SetMessage(message);
                         popupInfo.ShowDialog();
 
@@ -113,20 +116,20 @@ namespace ArcGisProEspaceCollaboratif
                             signalementVirtuel.ClearCroquis();
 
                             // Si option de joindre un croquis à la nouvelle remarque.
-                            if (formulaireCreation.OptionWithCroquis())
+                            if (formCreateReport.OptionWithCroquis())
                             {
                                 signalementVirtuel.AddCroquis(croquis);
                             }
 
                             // Création de la nouvelle remarque.
-                            ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.RipClient.CreateSignalement(signalementVirtuel);
+                            ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.Client.CreateSignalement(signalementVirtuel);
                             await contexte.CreerPointSignalement(signalementNouveau);
 
                             listIdNouveauxSignalements.Add(signalementNouveau.Id);
                         }
 
                         FormInfo popupRipart = new FormInfo();
-                        popupRipart.SetLogo(contexte.RipClient.GetProfil().Logo);
+                        popupRipart.SetLogo(contexte.Client.GetProfil().Logo);
                         string message = "Succès de la création de " + listIdNouveauxSignalements.Count + " nouveaux signalements pour l'espace collaboratif.";
                         popupRipart.SetMessage(message);
                         popupRipart.AddMessage("");

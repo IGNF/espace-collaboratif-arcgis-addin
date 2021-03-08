@@ -71,7 +71,7 @@ namespace ArcGisProEspaceCollaboratif
             string calqueFiltrageDefaut = Helper.Load_FilterLayer();
 
             // Récupération des couches et attributs
-            IReadOnlyList<Layer> mapLayers = contexte.mapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = contexte.MapActiveView.Map.GetLayersAsFlattenedList();
             List<String> collabSpaceLayers = new List<String>
             {
                 Helper.nom_Calque_Signalement,
