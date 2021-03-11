@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="196.4" Width="420">
+        Title="{Binding Title}" Height="196.4" Width="420" WindowStartupLocation="CenterScreen">
     <Grid Margin="0,0,-0.4,5.6">
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>
             <RowDefinition Height="29*"/>
         </Grid.RowDefinitions>
-        <Image HorizontalAlignment="Left" Height="100" Margin="20,20,0,0" VerticalAlignment="Top" Width="100" Grid.RowSpan="2"/>
-        <Label Content="Votre Login" HorizontalAlignment="Left" Margin="125,20,0,0" VerticalAlignment="Top" Width="115" Height="30"/>
+        <Image HorizontalAlignment="Left" Height="90" Margin="20,20,0,0" VerticalAlignment="Top" Width="90" Grid.RowSpan="2" Source="{Binding Logo}" RenderTransformOrigin="0.5,0.4"/>
+        <Label Content="Votre login" HorizontalAlignment="Left" Margin="125,20,0,0" VerticalAlignment="Top" Width="115" Height="30"/>
         <Label Content="Votre mot de passe" HorizontalAlignment="Left" Margin="125,60,0,0" VerticalAlignment="Top" Width="115" Height="30" Grid.RowSpan="2"/>
-        <TextBox x:Name="LoginTextBox" Text="{Binding Login, UpdateSourceTrigger=Explicit }" ToolTip="{Binding LoginToolTip}" HorizontalAlignment="Left" Height="26" Margin="245,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="158"/>
-        <PasswordBox x:Name="PasswordBox" ToolTip="{Binding PasswordToolTip}" HorizontalAlignment="Left" Margin="245,60,0,0" VerticalAlignment="Top" Width="158" Height="25" Grid.RowSpan="2"/>
-        <Button x:Name="ConnectButton" Content="Connecter" IsDefault="True" Click="connectButton_Click" Command="{Binding ConnectCmd}" HorizontalAlignment="Left" Margin="245,23.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
-        <Button x:Name="CancelButton" Content="Annuler" IsCancel="True" Command="{Binding CancelCmd}" HorizontalAlignment="Left" Margin="328,23.8,0,0" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
+        <TextBox x:Name="LoginTextBox" Text="{Binding Login, UpdateSourceTrigger=Explicit }" ToolTip="{Binding LoginToolTip}" HorizontalAlignment="Left" Height="25" Margin="245,19,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150"/>
+        <PasswordBox x:Name="PasswordBox" ToolTip="{Binding PasswordToolTip}" HorizontalAlignment="Left" Margin="245,60,0,0" VerticalAlignment="Top" Width="150" Height="25" Grid.RowSpan="2"/>
+        <Button x:Name="ConnectButton" Content="Connecter" IsDefault="True" Click="ConnectButton_Click" Command="{Binding ConnectCmd}" HorizontalAlignment="Left" Margin="245,23.8,0,0" VerticalAlignment="Top" Width="67" Grid.Row="1"/>
+        <Button x:Name="CancelButton" Content="Annuler" IsCancel="True" Command="{Binding CancelCmd}" HorizontalAlignment="Left" Margin="328,23.8,0,0" VerticalAlignment="Top" Width="67" Grid.Row="1"/>
         <TextBlock x:Name="ErrorTextBlock" HorizontalAlignment="Left" Margin="20,56.8,0,2.6" TextWrapping="Wrap" Text="{Binding Error}" Width="383" Grid.Row="1"/>
     </Grid>
 </Window>

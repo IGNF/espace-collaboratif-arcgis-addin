@@ -12,7 +12,7 @@ namespace ArcGisProEspaceCollaboratif.Views
             InitializeComponent();
         }
 
-        void connectButton_Click(object sender, RoutedEventArgs e)
+        void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
             // Accept the dialog and return the dialog result
             this.DialogResult = true;

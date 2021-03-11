@@ -46,7 +46,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
         #endregion
 
-        #region Commands
+        #region Bindings
         /// <summary>
         /// Modifie le titre de la boite par le nom du service
         /// auquel l'utilisateur se connecte
@@ -56,6 +56,25 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             get { return string.Format("Connexion à {0}", this.Uri); }
         }
 
+        public string Logo { get; set; } = "/ArcGisProEspaceCollaboratif;component/Resources/LogoIGN.gif";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string LoginToolTip => "Entrez votre login utilisateur";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PasswordToolTip => "Entrez votre password utilisateur";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Error { get; set; } = "";
+        #endregion
+
+        #region Commands
         public ICommand CancelCmd { get { return new RelayCommand(OnCancel, AlwaysTrue); } }
 
         /// <summary>
@@ -81,13 +100,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         private bool AlwaysTrue() { return true; }
-
-        public string LoginToolTip => "Entrez votre login utilisateur";
-
-        public string PasswordToolTip => "Entrez votre password utilisateur";
-
-        public string Error { get; set; } = "";
-
         #endregion
     }
 }

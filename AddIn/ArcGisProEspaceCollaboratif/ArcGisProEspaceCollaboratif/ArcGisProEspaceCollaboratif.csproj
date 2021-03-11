@@ -149,8 +149,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utils\RelayCommand.cs" />
+    <Compile Include="ViewModels\ConnectFeedbackInformationViewModel.cs" />
     <Compile Include="ViewModels\ConnectViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\ConnectFeedbackInformationView.xaml.cs">
+      <DependentUpon>ConnectFeedbackInformationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ConnectView.xaml.cs">
       <DependentUpon>ConnectView.xaml</DependentUpon>
     </Compile>
@@ -293,7 +297,7 @@
     <AddInContent Include="Resources\document-dossier-g3844-vert-papier-icone-7258-48.png" />
     <AddInContent Include="Resources\document81.png" />
     <AddInContent Include="Resources\Fatcow-Farm-Fresh-Connect.ico" />
-    <AddInContent Include="Resources\LogoIGN.gif" />
+    <Resource Include="Resources\LogoIGN.gif" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\cleaning.png" />
@@ -308,6 +312,10 @@
     <Resource Include="Resources\no_logo.gif" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\ConnectFeedbackInformationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ConnectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

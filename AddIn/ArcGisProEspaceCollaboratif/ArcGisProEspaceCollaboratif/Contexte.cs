@@ -1085,40 +1085,41 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public void DisplayInformationsAfterConnection()
         {
-            FormInfo popupEspaceCollaboratif = new FormInfo();
+            var connectInfoViewModel = new ConnectFeedbackInformationViewModel();
+            connectInfoViewModel.connectFeedbackInformationView.DataContext = connectInfoViewModel;
+
             // Le logo du groupe auquel l'utilisateur appartient
-            string repLogo ="";
             if (!string.IsNullOrEmpty(Profil.Logo))
             {
-                repLogo = this.URLHost + Profil.Logo;
+                connectInfoViewModel.Logo = this.URLHost + Profil.Logo;
             }
-            popupEspaceCollaboratif.SetLogo(repLogo);
-            popupEspaceCollaboratif.SetMessage("Connexion réussie à l'Espace collaboratif");
-            popupEspaceCollaboratif.AddMessage("");
-            popupEspaceCollaboratif.AddMessage(" Serveur : " + this.URLHost);
-            popupEspaceCollaboratif.AddMessage(" Login : " + this.Login);
-            popupEspaceCollaboratif.AddMessage(" Groupe : " + Profil.Titre);
+            string message = "Connexion réussie à l'Espace collaboratif\n\n";
+            message += string.Format(" Serveur : {0}\n", this.URLHost);
+            message += string.Format(" Login : {0}\n", this.Login);
+            message += string.Format(" Groupe : {0}\n", Profil.Titre);
             if (Profil.Zone == ZoneGeographique.UNDEFINED)
             {
                 string zoneExtraction = Helper.Load_FilterLayer();
                 if (zoneExtraction == "" || zoneExtraction.Length == 0)
                 {
-                    popupEspaceCollaboratif.AddMessage(" Zone : pas de zone définie");
+                    message += " Zone : pas de zone définie\n";
                 }
                 else
                 {
-                    popupEspaceCollaboratif.AddMessage(" Zone : " + zoneExtraction);
+                    message += string.Format(" Zone : {0}", zoneExtraction);
                 }
             }
             else
             {
-                popupEspaceCollaboratif.AddMessage(" Zone : " + Profil.Zone);
+                message += string.Format(" Zone : {0}", Profil.Zone);
             }
-            popupEspaceCollaboratif.AddMessage(" Clé Géoportail : " + this.CleGeoportail);
-            popupEspaceCollaboratif.StartCountDown(10);
-            popupEspaceCollaboratif.ShowDialog();
+            message += string.Format(" Clé Géoportail : {0}", this.CleGeoportail);
+            connectInfoViewModel.MessageFeedbackConnect = message;
+            connectInfoViewModel.connectFeedbackInformationView.ShowDialog();
 
             Helper.Save_Login(this.Login);
+            Helper.Save_GroupeActif(Profil.Titre);
+            Helper.Save_CleGeoportail(this.CleGeoportail);
         }
 
         /// <summary>
