@@ -16,6 +16,8 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using System.Xml;
+using ArcGisProEspaceCollaboratif.ViewModels;
+using System.Security;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -39,37 +41,37 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille
         /// </summary>
-        public string DirectoryWorking { get; set; }
+        public string DirectoryWorking { get; set; } = "";
 
         /// <summary>
         /// Le fichier de la carte ArcGIS Pro sur laquelle on travaille
         /// </summary>
-        public string FileMapWorking { get; set; }
+        public string FileMapWorking { get; set; } = "";
 
         /// <summary>
         /// URL d'accès au service de l'espace collaboratif
         /// </summary>
-        public string URLHost { get; set; } 
+        public string URLHost { get; set; } = "";
 
         /// <summary>
         /// Le login à utiliser pour se connecter au service de l'espace collaboratif
         /// </summary>
-        public string Login { get; set; } 
+        public string Login { get; set; } = "";
 
         /// <summary>
         /// Le mot de passe associé au login pour se connecter au service de l'espace collaboratif
         /// </summary>
-        public string Password { get; set; }
+        public string Password { get; set; } = "";
 
         /// <summary>
         /// La clé Geoportail de l'utilisateur
         /// </summary>
-        public string CleGeoportail { get; set; }
+        public string CleGeoportail { get; set; } = "";
 
         /// <summary>
         /// Le groupe sélectionné par l'utilisateur sur lequel il veut travailler
         /// </summary>
-        public string Groupeactif { get; set; }
+        public string Groupeactif { get; set; } = "";
 
         /// <summary>
         /// La liste des calques dédiés pour l'espace collaboratif dans la carte en cours
@@ -79,12 +81,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le système géodésique employé par le service de l'espace collaboratif
         /// </summary>
-        public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; }
-
-        /// <summary>
-        /// Le login utilisateur pour se connecter au service de l'espace collaboratif
-        /// </summary>
-        public FormConnect formConnect; // .
+        public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
 
         /// <summary>
         /// 
@@ -154,10 +151,6 @@ namespace ArcGisProEspaceCollaboratif
         public void Init(MapView activeView)
         {
             this.MapActiveView = activeView;
-            this.SpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
-            this.Login = "";
-            this.Password = "";
-            this.URLHost = "";
 
             Project project = Project.Current;
             if (project.Name.Length == 0)
@@ -899,15 +892,19 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Établit la connexion avec le service Ripart.
         /// </summary>
-        public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
+        /*public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
             ILog.Debug("GetConnexionEspaceCollaboratif ");
             this.CleGeoportail = Helper.Load_CleGeoportail();
             this.URLHost = Helper.Load_Urlhost();
             ILog.Debug("URLHost : " + this.URLHost);
-            this.formConnect = new FormConnect();
+
+            var connectViewModel = new ConnectViewModel(this.URLHost);
+            connectViewModel.connectView.DataContext = connectViewModel;
+
             // Recherche du login par défaut dans le fichier XML de paramétrage
             this.Login = Helper.Load_Login();
+            this.Password = "";
             bool firstConnection = false;
             for (int tentativeConnexion = 0; tentativeConnexion < 3; tentativeConnexion++)          
             {
@@ -916,19 +913,19 @@ namespace ArcGisProEspaceCollaboratif
                 if (this.Login.Length == 0 || this.Password.Length == 0)
                 {
                     // Lancement du formulaire de saisi du login et mot de passe                
-                    this.formConnect.SetLogin(this.Login);
+                    connectViewModel.Login = this.Login;
 
-                    // On s'arrête là si l'utilisateur a cliqué sur le bouton "abandonner"
-                    if (this.formConnect.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    // Si l'utilisateur a cliqué sur le bouton "Connecter"
+                    // il faut récupérer le login et password pour établir
+                    // la connexion au service de l'Espace collaboratif
+                    Nullable<bool> dialogResult = connectViewModel.connectView.ShowDialog();
+                    if(dialogResult == false)
                     {
-                        this.formConnect.Close();
-                        this.formConnect = null;
                         return null;
                     }
-
                     // Récupération du login et mot de passe introduits.
-                    this.Login = this.formConnect.GetLogin();
-                    this.Password = this.formConnect.GetPassword();
+                    this.Login = connectViewModel.Login;
+                    this.Password = connectViewModel.Password;
                 }
                 else
                 {
@@ -949,8 +946,7 @@ namespace ArcGisProEspaceCollaboratif
                         this.Password
                     );
                     ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
-                    this.formConnect.Close();
-                    this.formConnect = null;
+                    //connectViewModel.connectView.Close();
 
                     // Récupération du profil utilisateur
                     this.Profil = connexionServer.GetProfil();
@@ -969,19 +965,21 @@ namespace ArcGisProEspaceCollaboratif
                 catch (Exception erreurConnexion)
                 {
                     this.Password = "";
+                    connectViewModel.connectView.Visibility = System.Windows.Visibility.Visible;
 
                     switch (erreurConnexion.Message.ToString())
                     {
                         case "(401) Unauthorized":
-                            this.formConnect.Notifier("Login et/ou mot de passe incorrects");
-
+                            connectViewModel.Error = "Login et/ou mot de passe incorrect(s)";
+                            
                             break;
+
                         case "Login inconnu":
-                            this.formConnect.Notifier("''" + this.Login + "'' n'est pas un utilisateur enregistré dans le service de l'Espace collaboratif.");
+                            connectViewModel.Error = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
                             break;
 
                         case "no_group":
-                            this.formConnect.Notifier("Accès refusé. L'utilisateur n'appartient à aucun groupe.");
+                            connectViewModel.Error = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
                             break;
 
                         default:
@@ -992,8 +990,93 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
             }
-            this.formConnect.Close();
-            this.formConnect = null;
+            connectViewModel.connectView.Close();
+            return null;
+        }*/
+
+        public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
+        {
+            ILog.Debug("GetConnexionEspaceCollaboratif ");
+            this.CleGeoportail = Helper.Load_CleGeoportail();
+            this.URLHost = Helper.Load_Urlhost();
+            ILog.Debug("URLHost : " + this.URLHost);
+
+            var connectViewModel = new ConnectViewModel(this.URLHost);
+            connectViewModel.connectView.DataContext = connectViewModel;
+
+            // Recherche du login par défaut dans le fichier XML de paramétrage
+            connectViewModel.Login = Helper.Load_Login();
+
+            // Lancement du formulaire de saisi du login et mot de passe 
+            Nullable<bool> dialogResult = connectViewModel.connectView.ShowDialog();
+            // Si l'utilisateur a cliqué sur le bouton "Annuler"
+            // il n'y aura pas de connexion
+            if (dialogResult == false)
+            {
+                return null;
+            }
+            // Récupération du login et mot de passe introduits.
+            this.Login = connectViewModel.Login;
+            this.Password = connectViewModel.Password;
+
+            try
+            {
+                ArcGisProEspaceCollaboratif.Core.Client connexionServer = new Client(
+                        this.URLHost,
+                        this.Login,
+                        this.Password
+                    );
+                
+                ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
+                
+                // Récupération du profil utilisateur
+                this.Profil = connexionServer.GetProfil();
+                if (this.Profil == null)
+                {
+                    throw new Exception("Connexion impossible au serveur de l'Espace collaboratif");
+                }
+
+                // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
+                if (!this.DisplayFormChoiceGroup(ref connexionServer))
+                {
+                    return null;
+                }
+
+                // Affichage des infos suite à la connexion à l'Espace collaboratif
+                this.DisplayInformationsAfterConnection();
+
+                return connexionServer;
+            }
+            catch (Exception erreurConnexion)
+            {
+                this.Password = "";
+                
+                switch (erreurConnexion.Message.ToString())
+                {
+                    case "(401) Unauthorized":
+                        //connectViewModel.Error = "Login et/ou mot de passe incorrect(s)";
+                        string message = "Login et/ou mot de passe incorrect(s)";
+                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case "Login inconnu":
+                        //connectViewModel.Error = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
+                        message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
+                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    case "no_group":
+                        //connectViewModel.Error = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
+                        message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
+                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+
+                    default:
+                        message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.URLHost, erreurConnexion.Message.ToString());
+                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        break;
+                }
+            }
             return null;
         }
 

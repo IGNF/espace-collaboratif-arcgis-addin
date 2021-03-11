@@ -51,7 +51,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="url">url du service EspaceCollaboratif</param>
         /// <param name="login">login de l'utilisateur</param>
         /// <param name="password">mot de passe</param>
-        public Client(String url, String login, String password)
+        public Client(string url, string login, string password)
         {
             this.Url = url;
             this.Login = login;
