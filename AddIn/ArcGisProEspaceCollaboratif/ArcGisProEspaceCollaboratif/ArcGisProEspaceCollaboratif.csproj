@@ -189,12 +189,6 @@
     <Compile Include="FormCreateReport.designer.cs">
       <DependentUpon>FormCreateReport.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormInfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormInfo.designer.cs">
-      <DependentUpon>FormInfo.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormProgressDownload.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,9 +236,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormGroupChoice.resx">
       <DependentUpon>FormGroupChoice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormInfo.resx">
-      <DependentUpon>FormInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormProgressDownload.resx">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>

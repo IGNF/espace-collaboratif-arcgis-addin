@@ -1114,7 +1114,7 @@ namespace ArcGisProEspaceCollaboratif
                 message += string.Format(" Zone : {0}", Profil.Zone);
             }
             message += string.Format(" Clé Géoportail : {0}", this.CleGeoportail);
-            connectInfoViewModel.MessageFeedbackConnect = message;
+            connectInfoViewModel.MessageFeedback = message;
             connectInfoViewModel.connectFeedbackInformationView.ShowDialog();
 
             Helper.Save_Login(this.Login);

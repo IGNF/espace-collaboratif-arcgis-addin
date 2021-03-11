@@ -32,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Le message qui affiche à l'utilisateur les informations de connexion
         /// à l'Espace collaboratif après connexion et choix de son groupe de travail
         /// </summary>
-        public string MessageFeedbackConnect { get; set; }
+        public string MessageFeedback { get; set; }
         #endregion
 
         #region Commands

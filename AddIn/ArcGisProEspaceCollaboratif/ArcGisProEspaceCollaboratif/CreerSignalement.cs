@@ -5,6 +5,7 @@ using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGisProEspaceCollaboratif.ViewModels;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -96,11 +97,12 @@ namespace ArcGisProEspaceCollaboratif
                         ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = contexte.Client.CreateSignalement(signalementVirtuel);
                         await contexte.CreerPointSignalement(signalementNouveau);
 
-                        FormInfo popupInfo = new FormInfo();
-                        popupInfo.SetLogo(contexte.Client.GetProfil().Logo);
+                        var connectInfoViewModel = new ConnectFeedbackInformationViewModel();
+                        connectInfoViewModel.connectFeedbackInformationView.DataContext = connectInfoViewModel;
+                        connectInfoViewModel.Logo = contexte.Client.GetProfil().Logo;
                         string message = string.Format("Succès : création d'un nouveau signalement n°{0}", signalementNouveau.Id);
-                        popupInfo.SetMessage(message);
-                        popupInfo.ShowDialog();
+                        connectInfoViewModel.MessageFeedback = message;
+                        connectInfoViewModel.connectFeedbackInformationView.ShowDialog();
 
                         logger.Info(message);
                     }
@@ -128,14 +130,13 @@ namespace ArcGisProEspaceCollaboratif
                             listIdNouveauxSignalements.Add(signalementNouveau.Id);
                         }
 
-                        FormInfo popupRipart = new FormInfo();
-                        popupRipart.SetLogo(contexte.Client.GetProfil().Logo);
-                        string message = "Succès de la création de " + listIdNouveauxSignalements.Count + " nouveaux signalements pour l'espace collaboratif.";
-                        popupRipart.SetMessage(message);
-                        popupRipart.AddMessage("");
-                        popupRipart.AddMessage("Les identifiants de ces nouvelles remarques vont de " + listIdNouveauxSignalements.First() + " à " + listIdNouveauxSignalements.Last() + ".");
-                        popupRipart.ShowDialog();
-
+                        var connectInfoViewModel = new ConnectFeedbackInformationViewModel();
+                        connectInfoViewModel.connectFeedbackInformationView.DataContext = connectInfoViewModel;
+                        connectInfoViewModel.Logo = contexte.Client.GetProfil().Logo;
+                        string message = string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", listIdNouveauxSignalements.Count);
+                        message += string.Format("Les identifiants de ces nouvelles remontées vont de {0} à {1}.", listIdNouveauxSignalements.First(), listIdNouveauxSignalements.Last());
+                        connectInfoViewModel.MessageFeedback = message;
+                        connectInfoViewModel.connectFeedbackInformationView.ShowDialog();
                         logger.Info(message);
                     }
                 }

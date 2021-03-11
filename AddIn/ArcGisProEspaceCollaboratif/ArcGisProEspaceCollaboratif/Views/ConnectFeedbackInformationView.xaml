@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="IGN Espace collaboratif" Height="231.4" Width="478.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
-    <Grid Margin="0,0,3.6,-9.2">
+        Title="IGN Espace collaboratif" Height="236.4" Width="478.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid Margin="0,0,4,0.6">
         <Image x:Name="LogoGroup" HorizontalAlignment="Left" Margin="21,21,0,0" VerticalAlignment="Top" Height="120" Width="120" Source="{Binding Logo}"/>
         <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="162,21,0,0" TextWrapping="Wrap" Text="{Binding MessageFeedbackConnect}" VerticalAlignment="Top" Height="120" Width="298"/>
         <Button x:Name="OkButton" IsDefault="True" Click="OkButton_Click" Content="OK" HorizontalAlignment="Left" Margin="306,161,0,0" VerticalAlignment="Top" Width="100" Height="30"/>
