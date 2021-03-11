@@ -1008,7 +1008,7 @@ namespace ArcGisProEspaceCollaboratif
             connectViewModel.Login = Helper.Load_Login();
 
             // Lancement du formulaire de saisi du login et mot de passe 
-            Nullable<bool> dialogResult = connectViewModel.connectView.ShowDialog();
+            bool? dialogResult = connectViewModel.connectView.ShowDialog();
             // Si l'utilisateur a cliqué sur le bouton "Annuler"
             // il n'y aura pas de connexion
             if (dialogResult == false)
