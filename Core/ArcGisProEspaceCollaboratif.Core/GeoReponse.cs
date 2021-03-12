@@ -44,7 +44,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <returns></returns>
         public string Titre() { return 
-            this.Groupe.Nom; 
+            this.Groupe.Name; 
         }
 
 

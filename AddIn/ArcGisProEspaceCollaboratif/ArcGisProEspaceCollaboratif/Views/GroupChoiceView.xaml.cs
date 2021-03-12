@@ -19,6 +19,9 @@ namespace ArcGisProEspaceCollaboratif.Views
     /// </summary>
     public partial class GroupChoiceView : Window
     {
+        /// <summary>
+        /// La classe du dialogue "Choix du groupe"
+        /// </summary>
         public GroupChoiceView()
         {
             InitializeComponent();

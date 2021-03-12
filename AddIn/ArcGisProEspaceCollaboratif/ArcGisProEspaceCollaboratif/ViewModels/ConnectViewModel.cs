@@ -10,15 +10,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #region Parameters
 
         /// <summary>
-        /// La boite de connexion au service de l'espace collaboratif
-        /// qui demande un login et password
+        /// L'instance du dialogue "Connexion à https://espacecollaboratif.ign.fr"
         /// </summary>
         public ConnectView connectView;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool? DialogResult { get; set; }
 
         /// <summary>
         /// Le login pas défaut récupéré
@@ -39,6 +33,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Iniialisation du dialogue "Connexion à https://espacecollaboratif.ign.fr"
+        /// </summary>
+        /// <param name="uri"></param>
         public ConnectViewModel(string uri)
         {
             this.connectView = new ConnectView();
@@ -56,15 +54,18 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             get { return string.Format("Connexion à {0}", this.Uri); }
         }
 
+        /// <summary>
+        /// Logo de l'établissement appliqué au dialogue "Connexion à https://espacecollaboratif.ign.fr"
+        /// </summary>
         public string Logo { get; set; } = "/ArcGisProEspaceCollaboratif;component/Resources/LogoIGN.gif";
 
         /// <summary>
-        /// 
+        /// Info-bulle sur la zone de texte du login
         /// </summary>
         public string LoginToolTip => "Entrez votre login utilisateur";
 
         /// <summary>
-        /// 
+        /// Info-bulle sur la zone de texte du password
         /// </summary>
         public string PasswordToolTip => "Entrez votre password utilisateur";
 

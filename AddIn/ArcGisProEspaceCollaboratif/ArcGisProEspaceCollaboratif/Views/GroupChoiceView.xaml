@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Paramétrage" Height="246.2" Width="328" WindowStartupLocation="CenterScreen">
+        Title="Choix du groupe" Height="246.2" Width="328" WindowStartupLocation="CenterScreen">
     <Grid Margin="0,0,-0.4,0.8">
         <Label Content="Dans quel groupe souhaitez-vous travailler ?" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="25" Width="245"/>
         <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="14,35,0,0" VerticalAlignment="Top" Width="190" ItemsSource="{Binding ItemsSourceGroupComboBox}"/>

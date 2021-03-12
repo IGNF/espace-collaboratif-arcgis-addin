@@ -149,12 +149,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utils\RelayCommand.cs" />
-    <Compile Include="ViewModels\ConnectFeedbackInformationViewModel.cs" />
+    <Compile Include="ViewModels\FeedbackInformationViewModel.cs" />
     <Compile Include="ViewModels\ConnectViewModel.cs" />
     <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
+    <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Views\ConnectFeedbackInformationView.xaml.cs">
-      <DependentUpon>ConnectFeedbackInformationView.xaml</DependentUpon>
+    <Compile Include="Views\FeedbackInformationView.xaml.cs">
+      <DependentUpon>FeedbackInformationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ConnectView.xaml.cs">
       <DependentUpon>ConnectView.xaml</DependentUpon>
@@ -205,6 +206,9 @@
     <Compile Include="TelechargerSignalements.cs" />
     <Compile Include="Views\GroupChoiceView.xaml.cs">
       <DependentUpon>GroupChoiceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoadGatewayView.xaml.cs">
+      <DependentUpon>LoadGatewayView.xaml</DependentUpon>
     </Compile>
     <Compile Include="VoirObjetsAssocies.cs" />
     <Compile Include="VoirSignalement.cs" />
@@ -298,7 +302,7 @@
     <Resource Include="Resources\no_logo.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Views\ConnectFeedbackInformationView.xaml">
+    <Page Include="Views\FeedbackInformationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -307,6 +311,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\GroupChoiceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LoadGatewayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

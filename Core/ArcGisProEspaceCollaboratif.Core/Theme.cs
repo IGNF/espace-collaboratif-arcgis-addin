@@ -10,8 +10,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Groupe du thème
         /// </summary>
-        public Groupe Groupe { get; set; }
-        public List<ThemeAttributes> Attributs { get; set; }
+        public Groupe Group { get; set; }
+        public List<ThemeAttributes> Attributes { get; set; }
         public bool Filtered { get; set; }
     }
 }

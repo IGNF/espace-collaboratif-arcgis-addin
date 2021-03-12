@@ -1,0 +1,39 @@
+﻿<Window x:Class="ArcGisProEspaceCollaboratif.Views.LoadGatewayView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
+        mc:Ignorable="d"
+        Title="Charger les couches de mon groupe" Height="666.3" Width="443.2">
+    <Grid Margin="0,0,-0.2,11">
+        <Label x:Name="ActiveGroupLabel" Content="{Binding AtiveGroupLabelContent}" HorizontalAlignment="Left" Margin="15,10,0,0" VerticalAlignment="Top" Width="305" Height="25" FontWeight="Bold" FontStyle="Italic" FontSize="11"/>
+        <Label Content="Mon guichet" HorizontalAlignment="Left" Margin="15,35,0,0" VerticalAlignment="Top" Width="90" FontWeight="Bold"/>
+        <ListView x:Name="LayersGateway" HorizontalAlignment="Left" Height="170" Margin="20,60,0,0" VerticalAlignment="Top" Width="400">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Label Content="Fonds Géoportail" HorizontalAlignment="Left" Margin="15,240,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <ListView x:Name="LayersGeoportailListView" HorizontalAlignment="Left" Height="170" Margin="20,266,0,0" VerticalAlignment="Top" Width="400">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock HorizontalAlignment="Left" Margin="20,450,0,0" TextWrapping="Wrap" Text="Les fonds Géoportail suivants sont également paramétrés dans la carte de votre groupe mais la clé Géoportail que vous utilisez sous QGIS ne vous y donne pas accès. Pour pouvoir les charger, veuillez modifier votre clé Géoportail en vous adressant à contact.geoservices@ign.fr." VerticalAlignment="Top" Width="400" Height="60" FontSize="10"/>
+        <ListView x:Name="LayersGeoportailBisListView" HorizontalAlignment="Left" Height="80" Margin="20,510,0,0" VerticalAlignment="Top" Width="400">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Content="Enregistrer" HorizontalAlignment="Left" Margin="130,600,0,0" VerticalAlignment="Top" Width="75" IsDefault="True"/>
+        <Button Content="Annuler" HorizontalAlignment="Left" Margin="230,600,0,0" VerticalAlignment="Top" Width="75" IsCancel="True"/>
+
+    </Grid>
+</Window>

@@ -54,7 +54,7 @@ namespace ArcGisProEspaceCollaboratif
                     int groupeId = -1;
                     if (Helper.Load_Group() == "true")
                     {
-                        groupeId = Convert.ToInt32(contexte.Profil.Groupe.Id);
+                        groupeId = Convert.ToInt32(contexte.Profil.Group.Id);
                         parameters.Add("group", groupeId.ToString());
                     }
 

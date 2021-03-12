@@ -14,12 +14,24 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     class GroupChoiceViewModel : ViewModelBase
     {
         #region Parameters
+        /// <summary>
+        /// L'instance du dialogue "Choix du groupe"
+        /// </summary>
         public GroupChoiceView groupChoiceView;
+        
+        /// <summary>
+        /// Le profil de l'utilisateur
+        /// </summary>
         public Profil _profile { get; set; }
-
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initialisation du dialogue "Choix du groupe"
+        /// </summary>
+        /// <param name="keyGeoportail"></param>
+        /// <param name="activeGroup"></param>
+        /// <param name="profile"></param>
         public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profil profile)
         {
             this._profile = profile;
@@ -29,7 +41,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             ObservableCollection<string> tmp = new ObservableCollection<string>();
             foreach (GeoGroupe geogroup in this._profile.Geogroupes)
             {
-                tmp.Add(geogroup.Nom);
+                tmp.Add(geogroup.Name);
             }
             this.ItemsSourceGroupComboBox = tmp;
 
@@ -48,7 +60,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 this.groupChoiceView.YesRadioButton.IsChecked = true;
                 KeyGeoportailTextBox = keyGeoportail;
             }
-
         }
         #endregion
 
@@ -86,7 +97,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             int index = this.groupChoiceView.GroupComboBox.SelectedIndex;
             string igGroup = this._profile.Geogroupes[index].Id;
-            string nomGroup = this._profile.Geogroupes[index].Nom;
+            string nomGroup = this._profile.Geogroupes[index].Name;
             string cleGeoportail = "";
             if (this.groupChoiceView.YesRadioButton.IsChecked == true)
             {
@@ -96,7 +107,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 cleGeoportail = Constantes.DEMO;
             }
-            this._profile.IdNomGroupeCleGeoPortail = (igGroup, nomGroup, cleGeoportail);
+            this._profile.IdNameGroupKeyGeoPortail = (igGroup, nomGroup, cleGeoportail);
         }
 
         private bool AlwaysTrue() { return true; }

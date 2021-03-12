@@ -11,7 +11,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string Id { get; set; }
 
         // Nom du Geogroupe
-        public string Nom { get; set; }
+        public string Name { get; set; }
 
         // Couches visibles sur les cartes de ce groupe (dans l'ordre dans lequel les superposer)
         public List<LayerGateway> Layers { get; set; }
@@ -22,7 +22,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         // Thèmes filtrés du groupe
         public List<string> FilteredThemes{ get; set; }
 
-        public string CommentaireGeorem { get; set; }
+        public string CommentaryGeorem { get; set; }
 
     }
 }

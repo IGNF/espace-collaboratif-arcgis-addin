@@ -77,7 +77,7 @@ namespace ArcGisProEspaceCollaboratif
             this.SetListViewFondsGeoportail();
             this.SetListViewFondsGeoportailBis();
             
-            this.labelGroupeActif.Text = string.Format("Groupe actif : {0}", this.ProfilUser.Groupe.Nom);
+            this.labelGroupeActif.Text = string.Format("Groupe actif : {0}", this.ProfilUser.Group.Name);
         }
 
         /// <summary>
@@ -155,13 +155,13 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     continue;
                 }
-                int index = this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Name.Equals(layer.Nom));
+                int index = this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Nom));
                 if (index == -1)
                 {
                     continue;
                 }
 
-                string nomLayer = string.Format("{0} ({1})", this.ProfilUser.LayersCleGeoportail[index].Title, layer.Nom);
+                string nomLayer = string.Format("{0} ({1})", this.ProfilUser.LayersKeyGeoportail[index].Title, layer.Nom);
                 this.AddItem(this.listViewGeoportail, nomLayer, layer.Role, true);
             }
         }
@@ -180,7 +180,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                if (this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Name.Equals(layer.Nom)) != -1)
+                if (this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Nom)) != -1)
                 {
                     continue;
                 }
@@ -304,10 +304,10 @@ namespace ArcGisProEspaceCollaboratif
                 List<string> layersInMap = new List<string>();
                 foreach (Layer observableLayer in observableLayers)
                 {
-                    int index = this.ProfilUser.LayersCleGeoportail.FindIndex(x => x.Title.Equals(observableLayer.Name));
+                    int index = this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Title.Equals(observableLayer.Name));
                     if (index != -1)
                     {
-                        layersInMap.Add(this.ProfilUser.LayersCleGeoportail[index].Name);
+                        layersInMap.Add(this.ProfilUser.LayersKeyGeoportail[index].Name);
                     }
                     else
                     {
@@ -353,7 +353,7 @@ namespace ArcGisProEspaceCollaboratif
             
             foreach (GeoGroupe groupe in this.ProfilUser.Geogroupes)
             {
-                if (groupe.Id != this.ProfilUser.Groupe.Id)
+                if (groupe.Id != this.ProfilUser.Group.Id)
                 {
                     continue;
                 }

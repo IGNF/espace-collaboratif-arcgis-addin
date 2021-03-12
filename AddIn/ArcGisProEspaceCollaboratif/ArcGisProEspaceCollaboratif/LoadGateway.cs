@@ -1,6 +1,7 @@
 ﻿using System;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
+using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
 
 namespace ArcGisProEspaceCollaboratif
@@ -19,25 +20,39 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Click sur le bouton de chargement des couches du groupe utilisateur");
             try
             {
-                Contexte contexte = Contexte.Instance;
-                if(contexte == null)
+                Contexte context = Contexte.Instance;
+                if (context == null)
                 {
                     Enabled = false;
                     return;
                 }
 
-                if (contexte.Profil != null)
+                if (context.Profil == null)
                 {
-                    if (contexte.Profil.Geogroupes.Count == 1)
+                    Client client = context.GetConnexionEspaceCollaboratif();
+                    if (client == null)
                     {
-                        if (contexte.Profil.Geogroupes[0].Layers.Count == 0)
-                        {
-                            throw new Exception("Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.");
-                        }
+                        throw new Exception("Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez rééssayer./");
                     }
                 }
-                FormLoadGateway formLoadGateway = new FormLoadGateway(contexte);
-                formLoadGateway.ShowDialog();
+                
+                if (string.IsNullOrEmpty(context.Profil.Group.Name))
+                {
+                    throw new Exception("Vous n'êtes pas autorisé à effectuer cette opération. Vous n'avez pas de profil actif.");
+                }
+
+                if (context.Profil.Geogroupes.Count == 1)
+                {
+                    if (context.Profil.Geogroupes[0].Layers.Count == 0)
+                    {
+                        throw new Exception("Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.");
+                    }
+                }
+            
+                // Chargement du dialogue "Charger les couches de mon groupe"
+                var loadGatewayViewModel = new LoadGatewayViewModel(context);
+                loadGatewayViewModel.loadGatewayView.DataContext = loadGatewayViewModel;
+                loadGatewayViewModel.loadGatewayView.ShowDialog();
             }
             catch (Exception e)
             {

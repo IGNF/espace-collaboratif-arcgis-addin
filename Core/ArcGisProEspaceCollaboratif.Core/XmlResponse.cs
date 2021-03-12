@@ -236,10 +236,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 string profilXpath = "/geors/AUTEUR/";
                 XPathExpression expr = navigator.Compile(profilXpath + "NOM");
                 XPathNodeIterator iterator = navigator.Select(expr);
-                profil.Auteur = new Auteur();
+                profil.Author = new Auteur();
                 if (iterator.MoveNext())
                 {
-                    profil.Auteur.Nom = EncodeToUTF8(iterator.Current.InnerXml);
+                    profil.Author.Nom = EncodeToUTF8(iterator.Current.InnerXml);
                 }
 
                 profilXpath = "/geors/PROFIL/";
@@ -254,7 +254,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
-                    profil.Titre = EncodeToUTF8(iterator.Current.InnerXml);
+                    profil.Title = EncodeToUTF8(iterator.Current.InnerXml);
                 }
 
                 Groupe gr = new Groupe();
@@ -269,9 +269,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
-                    gr.Nom = EncodeToUTF8(iterator.Current.InnerXml);
+                    gr.Name = EncodeToUTF8(iterator.Current.InnerXml);
                 }
-                profil.Groupe = gr;
+                profil.Group = gr;
 
                 expr = navigator.Compile(profilXpath + "LOGO");
                 iterator = navigator.Select(expr);
@@ -291,7 +291,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
                 {
-                    profil.Prive = iterator.Current.InnerXml.Equals("1");
+                    profil.Private = iterator.Current.InnerXml.Equals("1");
                 }
 
                 // Les thèmes associés au profil
@@ -353,8 +353,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     GeoGroupe tmpGeoGroupe = new GeoGroupe
                     {
                         Id = EncodeToUTF8(val.SelectSingleNode("ID_GEOGROUPE").Value),
-                        Nom = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
-                        CommentaireGeorem = EncodeToUTF8(val.SelectSingleNode("COMMENTAIRE_GEOREM").Value),
+                        Name = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
+                        CommentaryGeorem = EncodeToUTF8(val.SelectSingleNode("COMMENTAIRE_GEOREM").Value),
                         Layers = new List<LayerGateway>()
                     };
 
@@ -372,11 +372,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         Theme tmpTheme = new Theme()
                         {
-                            Groupe = new Groupe()
+                            Group = new Groupe()
                         };
 
                         string nom = EncodeToUTF8(th.SelectSingleNode("NOM").Value);
-                        tmpTheme.Groupe.Nom = nom;
+                        tmpTheme.Group.Name = nom;
                         if (tmpGeoGroupe.FilteredThemes.Contains(nom))
                         {
                             tmpTheme.Filtered = true;
@@ -385,9 +385,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                         {
                             List<ThemeAttributes> tmp = new List<ThemeAttributes>();
                             themesAttributesDict.TryGetValue(nom, out tmp);
-                            tmpTheme.Attributs = tmp;
+                            tmpTheme.Attributes = tmp;
                         }
-                        tmpTheme.Groupe.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
+                        tmpTheme.Group.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
                         themes.Add(tmpTheme);
                     }
                     tmpGeoGroupe.Themes = themes;
@@ -605,11 +605,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     Theme tmpTheme = new Theme()
                     {
-                        Groupe = new Groupe()
+                        Group = new Groupe()
                     };
 
                     string nom = EncodeToUTF8(val.SelectSingleNode("NOM").Value);
-                    tmpTheme.Groupe.Nom = nom;
+                    tmpTheme.Group.Name = nom;
                     if (filteredThemes.Contains(nom))
                     {
                         tmpTheme.Filtered = true;
@@ -618,9 +618,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         List<ThemeAttributes> tmp = new List<ThemeAttributes>();
                         themesAttributesDict.TryGetValue(nom, out tmp);
-                        tmpTheme.Attributs = tmp;
+                        tmpTheme.Attributes = tmp;
                     }
-                    tmpTheme.Groupe.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
+                    tmpTheme.Group.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
 
                     themes.Add(tmpTheme);
                 }
@@ -685,10 +685,10 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                         Theme theme = new Theme
                         {
-                            Groupe = new Groupe()
+                            Group = new Groupe()
                         };
-                        theme.Groupe.Id = idGroupe;
-                        theme.Groupe.Nom = nomGroupe;
+                        theme.Group.Id = idGroupe;
+                        theme.Group.Name = nomGroupe;
                         themes.Add(theme);
                     }
 
@@ -736,7 +736,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     val.MoveToFollowing("ID_DEP", "");
                     rem.Departement.Id = val.InnerXml;
                     val.MoveToFollowing("DEPARTEMENT", "");
-                    rem.Departement.Nom = EncodeToUTF8( val.InnerXml);
+                    rem.Departement.Name = EncodeToUTF8( val.InnerXml);
 
                     val.MoveToFollowing("COMMUNE", "");
                     rem.Commune = EncodeToUTF8(val.InnerXml);
@@ -754,7 +754,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     val.MoveToFollowing("ID_GEOGROUPE", "");
                     gr.Id = val.InnerXml;
                     val.MoveToFollowing("GROUPE", "");
-                    gr.Nom = val.InnerXml;
+                    gr.Name = val.InnerXml;
                     rem.Groupe = gr;
 
                     val.MoveToFollowing("ID_PARTITION", "");
@@ -908,7 +908,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Groupe gr = new Groupe
                 {
                     Id = v.SelectSingleNode("ID_GEOREP").Value,
-                    Nom = v.SelectSingleNode("TITRE").Value
+                    Name = v.SelectSingleNode("TITRE").Value
                 };
                 georep.Groupe = gr;
 
@@ -949,11 +949,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     Theme theme = new Theme
                     {
-                        Groupe = new Groupe()
+                        Group = new Groupe()
                     };
 
-                    theme.Groupe.Nom = val.SelectSingleNode(valRem.Compile(remXpath + "/NOM")).Value;
-                    theme.Groupe.Id = val.SelectSingleNode(valRem.Compile(remXpath + "/ID_GEOGROUPE")).Value;
+                    theme.Group.Name = val.SelectSingleNode(valRem.Compile(remXpath + "/NOM")).Value;
+                    theme.Group.Id = val.SelectSingleNode(valRem.Compile(remXpath + "/ID_GEOGROUPE")).Value;
                     themes.Add(theme);    
                 }
             }

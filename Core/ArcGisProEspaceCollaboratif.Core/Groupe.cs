@@ -13,7 +13,7 @@
         /// <summary>
         /// Le nom du groupe
         /// </summary>
-        public string Nom { get; set; }
+        public string Name { get; set; }
 
     }
 }

@@ -10,17 +10,17 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Nom de l'auteur
         /// </summary>
-        public Auteur Auteur { get; set; }
+        public Auteur Author { get; set; }
                 
         /// <summary>
         /// ID & Nom du Geogroupe
         /// </summary>
-        public Groupe Groupe { get; set; }
+        public Groupe Group { get; set; }
 
         /// <summary>
         /// Titre du Geogroupe
         /// </summary>
-        public string Titre { get; set; }
+        public string Title { get; set; }
         
         /// <summary>
         /// Statut (privilèges) du profil
@@ -45,7 +45,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Indique si le profil a acces aux groupes prives
         /// </summary>
-        public bool Prive { get; set; }
+        public bool Private { get; set; }
 
         /// <summary>
         /// Les éventuels thèmes attachés au profil
@@ -68,8 +68,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         public List<GeoGroupe> Geogroupes { get; set; }
 
         /// La liste des couches Geoportail visible avec la clé geoportail utilisateur
-        public List<LayerGeoportail> LayersCleGeoportail { get; set; }
+        public List<LayerGeoportail> LayersKeyGeoportail { get; set; }
 
-        public (string, string, string) IdNomGroupeCleGeoPortail { get; set; }
+        public (string, string, string) IdNameGroupKeyGeoPortail { get; set; }
     }
 }

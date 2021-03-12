@@ -91,13 +91,13 @@ namespace ArcGisProEspaceCollaboratif
 
             // Récupération du profil utilisateur
             Profil = this.Contexte.Client.GetProfil();
-            if (string.IsNullOrEmpty(Profil.Groupe.Nom))
+            if (string.IsNullOrEmpty(Profil.Group.Name))
             {
-                this.groupImageProfil.Text = string.Format("{0} (Profil par défaut)", Profil.Auteur.Nom);
+                this.groupImageProfil.Text = string.Format("{0} (Profil par défaut)", Profil.Author.Nom);
             }
             else
             {
-                this.groupImageProfil.Text = string.Format("{0} ({1})", Profil.Auteur.Nom, Profil.Groupe.Nom);
+                this.groupImageProfil.Text = string.Format("{0} ({1})", Profil.Author.Nom, Profil.Group.Name);
             }
 
             // Les thèmes du profil
@@ -110,7 +110,7 @@ namespace ArcGisProEspaceCollaboratif
             this.comboBoxGroupe.Items.Add(Constantes.AUCUN);
             foreach (GeoGroupe geogroupe in this.Profil.Geogroupes)
             {
-                this.comboBoxGroupe.Items.Add(geogroupe.Nom);
+                this.comboBoxGroupe.Items.Add(geogroupe.Name);
             }
 
             // Par défaut la liste des groupes de la combobox est positionnée sur "Aucun"
@@ -120,7 +120,7 @@ namespace ArcGisProEspaceCollaboratif
             if (!string.IsNullOrEmpty(PreferredGroup))
             {
                 // Si le groupe préféré fait parti de la liste des groupes utilisateur
-                if (this.Profil.Geogroupes.FindIndex(x => x.Nom.Equals(PreferredGroup)) != -1)
+                if (this.Profil.Geogroupes.FindIndex(x => x.Name.Equals(PreferredGroup)) != -1)
                 {
                     this.comboBoxGroupe.SelectedItem = PreferredGroup;
                 }
@@ -136,11 +136,11 @@ namespace ArcGisProEspaceCollaboratif
 
             if (!string.IsNullOrEmpty(PreferredGroup))
             {
-                this.richTextBoxMessage.Text = this.Profil.Geogroupes.Find(x => x.Nom.Equals(PreferredGroup)).CommentaireGeorem;
+                this.richTextBoxMessage.Text = this.Profil.Geogroupes.Find(x => x.Name.Equals(PreferredGroup)).CommentaryGeorem;
             }
             else
             {
-                this.richTextBoxMessage.Text = this.Profil.Geogroupes.Find(x => x.Nom.Equals(this.Contexte.Groupeactif)).CommentaireGeorem;
+                this.richTextBoxMessage.Text = this.Profil.Geogroupes.Find(x => x.Name.Equals(this.Contexte.Groupeactif)).CommentaryGeorem;
             }
 
             DisplayThemesInTreeView();
@@ -205,7 +205,7 @@ namespace ArcGisProEspaceCollaboratif
                 bool foundTheme = false;
                 foreach (Theme tmpth in ListThemes)
                 {
-                    if (thName == tmpth.Groupe.Nom)
+                    if (thName == tmpth.Group.Name)
                     {
                         foundTheme = true;
                         th = tmpth;
@@ -244,7 +244,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="index"></param>
         private void DisplayAttributsInTreeView(Theme th, int index)
         {
-            foreach (ThemeAttributes att in th.Attributs)
+            foreach (ThemeAttributes att in th.Attributes)
             {
                 this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
                 if (att.Obligatoire)

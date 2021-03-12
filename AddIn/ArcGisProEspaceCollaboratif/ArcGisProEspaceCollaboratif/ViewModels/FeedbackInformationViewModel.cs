@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
-    class ConnectFeedbackInformationViewModel : ViewModelBase
+    class FeedbackInformationViewModel : ViewModelBase
     {
         #region Parameters
         /// <summary>
+        /// L'instance du dialogue "IGN Espace collaboratif"
         /// La boite qui relaye les informations de connexion ou de création de remarques
         /// </summary>
-        public ConnectFeedbackInformationView connectFeedbackInformationView;
+        public FeedbackInformationView feedbackInformationView;
         #endregion
 
         #region Constructors
         /// <summary>
         /// Initialisation de la boite d'informations
         /// </summary>
-        public ConnectFeedbackInformationViewModel()
+        public FeedbackInformationViewModel()
         {
-            this.connectFeedbackInformationView = new ConnectFeedbackInformationView();
+            this.feedbackInformationView = new FeedbackInformationView();
         }
         #endregion
 
