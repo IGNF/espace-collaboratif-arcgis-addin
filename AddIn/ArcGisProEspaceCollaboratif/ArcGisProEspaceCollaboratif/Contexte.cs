@@ -1106,12 +1106,12 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 else
                 {
-                    message += string.Format(" Zone : {0}", zoneExtraction);
+                    message += string.Format(" Zone : {0}\n", zoneExtraction);
                 }
             }
             else
             {
-                message += string.Format(" Zone : {0}", Profil.Zone);
+                message += string.Format(" Zone : {0}\n", Profil.Zone);
             }
             message += string.Format(" Clé Géoportail : {0}", this.CleGeoportail);
             connectInfoViewModel.MessageFeedback = message;

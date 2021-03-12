@@ -165,12 +165,6 @@
     <Compile Include="FormLoadGateway.Designer.cs">
       <DependentUpon>FormLoadGateway.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormGroupChoice.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormGroupChoice.Designer.cs">
-      <DependentUpon>FormGroupChoice.cs</DependentUpon>
-    </Compile>
     <Compile Include="LoadGateway.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
@@ -237,9 +231,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormLoadGateway.resx">
       <DependentUpon>FormLoadGateway.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormGroupChoice.resx">
-      <DependentUpon>FormGroupChoice.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormProgressDownload.resx">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>
