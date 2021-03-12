@@ -75,7 +75,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #endregion
 
         #region Commands
-        public ICommand CancelCmd { get { return new RelayCommand(OnCancel, AlwaysTrue); } }
+        public ICommand CancelButtonCmd { get { return new RelayCommand(OnCancel, AlwaysTrue); } }
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Annuler".
@@ -86,7 +86,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.connectView.Close();
         }
 
-        public ICommand ConnectCmd { get { return new RelayCommand(OnConnect, AlwaysTrue); } }
+        public ICommand ConnectButtonCmd { get { return new RelayCommand(OnConnect, AlwaysTrue); } }
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Connecter".

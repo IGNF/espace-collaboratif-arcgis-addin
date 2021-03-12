@@ -10,11 +10,16 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     class ConnectFeedbackInformationViewModel : ViewModelBase
     {
         #region Parameters
+        /// <summary>
+        /// La boite qui relaye les informations de connexion ou de création de remarques
+        /// </summary>
         public ConnectFeedbackInformationView connectFeedbackInformationView;
-
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initialisation de la boite d'informations
+        /// </summary>
         public ConnectFeedbackInformationViewModel()
         {
             this.connectFeedbackInformationView = new ConnectFeedbackInformationView();
@@ -30,12 +35,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
        
         /// <summary>
         /// Le message qui affiche à l'utilisateur les informations de connexion
-        /// à l'Espace collaboratif après connexion et choix de son groupe de travail
+        /// à l'Espace collaboratif après connexion et choix de son groupe de travail.
+        /// ou les informations de création d'une nouvelle remarque.
         /// </summary>
         public string MessageFeedback { get; set; }
-        #endregion
-
-        #region Commands
         #endregion
     }
 }

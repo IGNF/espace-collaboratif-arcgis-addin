@@ -1160,22 +1160,25 @@ namespace ArcGisProEspaceCollaboratif
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
                 // afin qu'il puisse remplir sa clé Géoportail
-                FormGroupChoice FormGroupChoice = new FormGroupChoice(this.CleGeoportail, Profil.Groupe.Nom, Profil);
-                if (FormGroupChoice.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                var groupChoiceViewModel = new GroupChoiceViewModel(this.CleGeoportail, Profil.Groupe.Nom, Profil);
+                groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
+                bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
+                // Si l'utilisateur a cliqué sur le bouton "Annuler"
+                // dans son choix du groupe, on sort
+                if (dialogResult == false)
                 {
-                    // Si l'utilisateur a cliqué sur la bouton Annuler dans son choix du groupe, on sort
                     return false;
                 }
-
+               
                 // le choix du nouveau profil est validé
                 // le nouvel id et nom du groupe, la clé Geoportail sont retournés dans un tuple
-                (string, string, string) idNomGroupeCleGeoPortail = FormGroupChoice._profil.IdNomGroupeCleGeoPortail;
+                (string, string, string) idNomGroupeCleGeoPortail = groupChoiceViewModel._profile.IdNomGroupeCleGeoPortail;
                 this.CleGeoportail = idNomGroupeCleGeoPortail.Item3;
 
                 // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
-                if (FormGroupChoice._profil.Geogroupes.Count == 1)
+                if (groupChoiceViewModel._profile.Geogroupes.Count == 1)
                 {
-                    this.Profil = FormGroupChoice._profil;
+                    this.Profil = groupChoiceViewModel._profile;
                 }
                 else
                 {
@@ -1187,7 +1190,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (messTmp.Contains("actif"))
                     {
                         // le profil chargé reste actif
-                        this.Profil = FormGroupChoice._profil;
+                        this.Profil = groupChoiceViewModel._profile;
                     }
                     else
                     {

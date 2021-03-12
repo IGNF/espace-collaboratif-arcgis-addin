@@ -151,6 +151,7 @@
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="ViewModels\ConnectFeedbackInformationViewModel.cs" />
     <Compile Include="ViewModels\ConnectViewModel.cs" />
+    <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ConnectFeedbackInformationView.xaml.cs">
       <DependentUpon>ConnectFeedbackInformationView.xaml</DependentUpon>
@@ -208,6 +209,9 @@
     <Compile Include="RépondreSignalement.cs" />
     <Compile Include="SupprimerSignalements.cs" />
     <Compile Include="TelechargerSignalements.cs" />
+    <Compile Include="Views\GroupChoiceView.xaml.cs">
+      <DependentUpon>GroupChoiceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VoirObjetsAssocies.cs" />
     <Compile Include="VoirSignalement.cs" />
     <Compile Include="WebFeatureService.cs" />
@@ -308,6 +312,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ConnectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GroupChoiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
