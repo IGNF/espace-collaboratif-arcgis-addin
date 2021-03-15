@@ -16,7 +16,7 @@
         /// Balise exemple <NOM>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</NOM>
         /// ou <NOM>piste_cyclable</NOM>
         /// </summary>
-        public string Nom { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Balise exemple <DESCRIPTION>Plan cadastral informatisé vecteur de la DGFIP.</DESCRIPTION>

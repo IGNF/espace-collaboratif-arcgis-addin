@@ -74,7 +74,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                int index = LayersInMap.FindIndex(x => x.Equals(layer.Nom));
+                int index = LayersInMap.FindIndex(x => x.Equals(layer.Name));
                 if (index != -1)
                 {
                     // La couche existe déjà, on passe à la suivante
@@ -95,7 +95,7 @@ namespace ArcGisProEspaceCollaboratif
                     var connection = new CIMWMTSServiceConnection
                     {
                         Description = layer.Description,
-                        LayerName = layer.Nom,
+                        LayerName = layer.Name,
                         ServerConnection = InternetServerConnection,
                         Version = "1.0.0"
                     };

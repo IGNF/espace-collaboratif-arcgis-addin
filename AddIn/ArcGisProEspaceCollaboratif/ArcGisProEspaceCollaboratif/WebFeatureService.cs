@@ -92,7 +92,7 @@ namespace ArcGisProEspaceCollaboratif
             // Création des couches sélectionnées par l'utilisateur dans ArcGIS 
             foreach (LayerGateway layer in Layers)
             {
-                int index = LayersInMap.FindIndex(x => x.Equals(layer.Nom));
+                int index = LayersInMap.FindIndex(x => x.Equals(layer.Name));
                 if (index != -1)
                 {
                     // La couche existe déjà, on passe à la suivante
@@ -105,7 +105,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                LayerName = layer.Nom;
+                LayerName = layer.Name;
                 Url = layer.Url;
                 if (InternetServerConnection == null)
                 {

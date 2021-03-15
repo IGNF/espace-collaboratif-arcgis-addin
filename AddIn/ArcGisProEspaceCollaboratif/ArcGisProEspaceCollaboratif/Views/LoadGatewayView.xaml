@@ -5,35 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Charger les couches de mon groupe" Height="666.3" Width="443.2">
-    <Grid Margin="0,0,-0.2,11">
+        Title="Charger les couches de mon groupe" Height="681.4" Width="603">
+    <Grid Margin="0,0,-0.2,1">
         <Label x:Name="ActiveGroupLabel" Content="{Binding AtiveGroupLabelContent}" HorizontalAlignment="Left" Margin="15,10,0,0" VerticalAlignment="Top" Width="305" Height="25" FontWeight="Bold" FontStyle="Italic" FontSize="11"/>
         <Label Content="Mon guichet" HorizontalAlignment="Left" Margin="15,35,0,0" VerticalAlignment="Top" Width="90" FontWeight="Bold"/>
-        <ListView x:Name="LayersGateway" HorizontalAlignment="Left" Height="170" Margin="20,60,0,0" VerticalAlignment="Top" Width="400">
+        <ListView x:Name="LayersGatewayListView" ItemsSource="{Binding ItemsSourceLayersGateway}" HorizontalAlignment="Left" Height="170" Margin="20,60,0,0" VerticalAlignment="Top" Width="565">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
+                    <GridViewColumn Header="Nom de la couche" Width="410" DisplayMemberBinding="{Binding GatewayName}"/>
+                    <GridViewColumn Header="Rôle" Width="90" DisplayMemberBinding="{Binding GatewayRole}"/>
+                    <GridViewColumn Header="Charger" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
         <Label Content="Fonds Géoportail" HorizontalAlignment="Left" Margin="15,240,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-        <ListView x:Name="LayersGeoportailListView" HorizontalAlignment="Left" Height="170" Margin="20,266,0,0" VerticalAlignment="Top" Width="400">
+        <ListView x:Name="LayersGeoportailListView" ItemsSource="{Binding ItemsSourceLayersGeoportail}" HorizontalAlignment="Left" Height="170" Margin="20,266,0,0" VerticalAlignment="Top" Width="565">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
+                    <GridViewColumn Header="Nom de la couche" Width="410" DisplayMemberBinding="{Binding GeoportailName}"/>
+                    <GridViewColumn Header="Rôle" Width="90" DisplayMemberBinding="{Binding GeoportailRole}"/>
+                    <GridViewColumn Header="Charger" Width="50">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBlock HorizontalAlignment="Left" Margin="20,450,0,0" TextWrapping="Wrap" Text="Les fonds Géoportail suivants sont également paramétrés dans la carte de votre groupe mais la clé Géoportail que vous utilisez sous QGIS ne vous y donne pas accès. Pour pouvoir les charger, veuillez modifier votre clé Géoportail en vous adressant à contact.geoservices@ign.fr." VerticalAlignment="Top" Width="400" Height="60" FontSize="10"/>
-        <ListView x:Name="LayersGeoportailBisListView" HorizontalAlignment="Left" Height="80" Margin="20,510,0,0" VerticalAlignment="Top" Width="400">
+        <TextBlock HorizontalAlignment="Left" Margin="20,450,0,0" TextWrapping="Wrap" Text="Les fonds Géoportail suivants sont également paramétrés dans la carte de votre groupe mais la clé Géoportail que vous utilisez sous QGIS ne vous y donne pas accès. Pour pouvoir les charger, veuillez modifier votre clé Géoportail en vous adressant à contact.geoservices@ign.fr." VerticalAlignment="Top" Width="500" Height="45" FontSize="10"/>
+        <ListView x:Name="LayersGeoportailBisListView" ItemsSource="{Binding ItemsSourceLayersGeoportailBis}" HorizontalAlignment="Left" Height="90" Margin="20,500,0,0" VerticalAlignment="Top" Width="565">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn/>
+                    <GridViewColumn Header="Nom de la couche" Width="560" DisplayMemberBinding="{Binding GeoportailBisName}"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Enregistrer" HorizontalAlignment="Left" Margin="130,600,0,0" VerticalAlignment="Top" Width="75" IsDefault="True"/>
-        <Button Content="Annuler" HorizontalAlignment="Left" Margin="230,600,0,0" VerticalAlignment="Top" Width="75" IsCancel="True"/>
-
+        <Button Content="Enregistrer" HorizontalAlignment="Left" Margin="213,600,0,0" VerticalAlignment="Top" Width="75" IsDefault="True" Click="Button_Click" Command="{Binding RegisterButtonCmd}" Height="25"/>
+        <Button Content="Annuler" HorizontalAlignment="Left" Margin="313,600,0,0" VerticalAlignment="Top" Width="75" IsCancel="True" Height="25"/>
     </Grid>
 </Window>

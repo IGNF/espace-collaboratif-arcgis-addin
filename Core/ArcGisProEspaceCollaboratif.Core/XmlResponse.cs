@@ -400,7 +400,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         LayerGateway layerGateway = new LayerGateway
                         {
                             Type = EncodeToUTF8(lay.SelectSingleNode("TYPE").Value),
-                            Nom = EncodeToUTF8(lay.SelectSingleNode("NOM").Value),
+                            Name = EncodeToUTF8(lay.SelectSingleNode("NOM").Value),
                             Description = EncodeToUTF8(lay.SelectSingleNode("DESCRIPTION").Value),
                             Minzoom = Int32.Parse(lay.SelectSingleNode("MINZOOM").Value),
                             Maxzoom = Int32.Parse(lay.SelectSingleNode("MAXZOOM").Value),

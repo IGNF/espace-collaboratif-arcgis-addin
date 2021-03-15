@@ -138,7 +138,7 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                this.AddItem(this.listViewMyGateway, layer.Nom, layer.Role, true);
+                this.AddItem(this.listViewMyGateway, layer.Name, layer.Role, true);
             }     
         }
 
@@ -155,13 +155,13 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     continue;
                 }
-                int index = this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Nom));
+                int index = this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name));
                 if (index == -1)
                 {
                     continue;
                 }
 
-                string nomLayer = string.Format("{0} ({1})", this.ProfilUser.LayersKeyGeoportail[index].Title, layer.Nom);
+                string nomLayer = string.Format("{0} ({1})", this.ProfilUser.LayersKeyGeoportail[index].Title, layer.Name);
                 this.AddItem(this.listViewGeoportail, nomLayer, layer.Role, true);
             }
         }
@@ -180,11 +180,11 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
-                if (this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Nom)) != -1)
+                if (this.ProfilUser.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name)) != -1)
                 {
                     continue;
                 }
-                string nomLayer = string.Format("{0} ({1})", layer.Description, layer.Nom);
+                string nomLayer = string.Format("{0} ({1})", layer.Description, layer.Name);
                 this.AddItem(this.listViewGeoportailBis, nomLayer, layer.Role, false);
             }
         }
@@ -241,7 +241,7 @@ namespace ArcGisProEspaceCollaboratif
                         name = layerCheck;
                     }
 
-                    int index = this.ListLayers.FindIndex(x => x.Nom.Equals(name));
+                    int index = this.ListLayers.FindIndex(x => x.Name.Equals(name));
                     if (index == -1)
                     {
                         continue;
