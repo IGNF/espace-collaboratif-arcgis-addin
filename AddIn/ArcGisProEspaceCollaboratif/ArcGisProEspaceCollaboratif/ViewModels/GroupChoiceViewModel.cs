@@ -44,7 +44,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public ObservableCollection<string> ItemsSourceGroupComboBox { get; set; }
+        public ObservableCollection<string> GroupItemsSourceGroupComboBox { get; set; }
 
         /// <summary>
         /// 
@@ -117,7 +117,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 GroupNames.Add(geogroup.Name);
             }
-            this.ItemsSourceGroupComboBox = GroupNames;
+            this.GroupItemsSourceGroupComboBox = GroupNames;
         }
 
         /// <summary>

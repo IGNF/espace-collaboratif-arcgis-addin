@@ -8,7 +8,7 @@
         Title="Choix du groupe" Height="246.2" Width="328" WindowStartupLocation="CenterScreen">
     <Grid Margin="0,0,-0.4,0.8">
         <Label Content="Dans quel groupe souhaitez-vous travailler ?" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="25" Width="245"/>
-        <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="14,35,0,0" VerticalAlignment="Top" Width="190" ItemsSource="{Binding ItemsSourceGroupComboBox}"/>
+        <ComboBox x:Name="GroupComboBox" HorizontalAlignment="Left" Margin="14,35,0,0" VerticalAlignment="Top" Width="190" ItemsSource="{Binding GroupItemsSourceGroupComboBox}" SelectedItem="{Binding GroupSelectedItemComboBox}"/>
         <TextBlock HorizontalAlignment="Left" Margin="14,73,0,0" TextWrapping="Wrap" Text="Vous pouvez utiliser une clé Géoportail pour afficher les fonds IGN de votre groupe directement dans QGIS. Disposez-vous de votre propre clé Géoportail ?" VerticalAlignment="Top" Height="50" Width="291"/>
         <RadioButton x:Name="YesRadioButton" Content="Oui" HorizontalAlignment="Left" Margin="14,127,0,0" VerticalAlignment="Top" Width="41"/>
         <RadioButton x:Name="NoRadioButton" Content="Non - Utiliser la clé Géoportail de démonstration" HorizontalAlignment="Left" Margin="14,155,0,0" VerticalAlignment="Top" IsChecked="True"/>
