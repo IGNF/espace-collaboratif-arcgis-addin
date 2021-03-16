@@ -18,7 +18,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// L'instance du dialogue "Choix du groupe"
         /// </summary>
         public GroupChoiceView groupChoiceView;
-        
+
         /// <summary>
         /// Le profil de l'utilisateur
         /// </summary>
@@ -36,43 +36,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             this._profile = profile;
             this.groupChoiceView = new GroupChoiceView();
-
-            // Ajout des noms de groupes trouvés pour l'utilisateur
-            ObservableCollection<string> tmp = new ObservableCollection<string>();
-            foreach (GeoGroupe geogroup in this._profile.Geogroupes)
-            {
-                tmp.Add(geogroup.Name);
-            }
-            this.ItemsSourceGroupComboBox = tmp;
-
-            if (!string.IsNullOrEmpty(activeGroup))
-            {
-                this.groupChoiceView.GroupComboBox.SelectedItem = activeGroup;
-            }
-
-            // Quelle clé GeoPortail pour l'utilisateur ?
-            if (keyGeoportail == Constantes.DEMO || keyGeoportail == "")
-            {
-                this.groupChoiceView.NoRadioButton.IsChecked = true;
-            }
-            if (keyGeoportail != Constantes.DEMO && keyGeoportail != "")
-            {
-                this.groupChoiceView.YesRadioButton.IsChecked = true;
-                KeyGeoportailTextBox = keyGeoportail;
-            }
+            this.InitializeGroupChoiceView(keyGeoportail, activeGroup);  
         }
         #endregion
 
         #region Bindings
         /// <summary>
-        /// Clé géoportail de l'utilisateur
+        /// 
         /// </summary>
-        public string KeyGeoportailTextBox { get; set; }
+        public ObservableCollection<string> ItemsSourceGroupComboBox { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public ObservableCollection<string> ItemsSourceGroupComboBox {get;set;}
+        public string GroupSelectedItemComboBox { get; set; }
+
+        /// <summary>
+        /// Clé géoportail de l'utilisateur
+        /// </summary>
+        public string KeyGeoportailTextBox { get; set; }
+
         #endregion
 
         #region Commands
@@ -111,6 +94,61 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         private bool AlwaysTrue() { return true; }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// 
+        /// </summary>
+        private void InitializeGroupChoiceView(string keyGeoportail, string activeGroup)
+        {
+            this.SetItemsSourceGroupComboBox();
+            this.SetKeyGeoportailTextBox(keyGeoportail);
+            this.SetGroupSelectedItemComboBox(activeGroup);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetItemsSourceGroupComboBox()
+        {
+            // Ajout des noms de groupes trouvés pour l'utilisateur
+            ObservableCollection<string> GroupNames = new ObservableCollection<string>();
+            foreach (GeoGroupe geogroup in this._profile.Geogroupes)
+            {
+                GroupNames.Add(geogroup.Name);
+            }
+            this.ItemsSourceGroupComboBox = GroupNames;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="activeGroup"></param>
+        public void SetGroupSelectedItemComboBox(string activeGroup)
+        {
+            if (!string.IsNullOrEmpty(activeGroup))
+            {
+                this.GroupSelectedItemComboBox = activeGroup;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keyGeoportail"></param>
+        public void SetKeyGeoportailTextBox(string keyGeoportail)
+        {
+            // Quelle clé GeoPortail pour l'utilisateur ?
+            if (keyGeoportail == Constantes.DEMO || keyGeoportail == "")
+            {
+                this.groupChoiceView.NoRadioButton.IsChecked = true;
+            }
+            if (keyGeoportail != Constantes.DEMO && keyGeoportail != "")
+            {
+                this.groupChoiceView.YesRadioButton.IsChecked = true;
+                this.KeyGeoportailTextBox = keyGeoportail;
+            }
+        }
         #endregion
     }
 }

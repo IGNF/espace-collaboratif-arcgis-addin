@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
-    class CreateReportViewModel
+    class CreateReportViewModel : ViewModelBase
     {
         #region Parameters
         /// <summary>
@@ -77,6 +77,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        public string GroupSelectedItemComboBox { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string MessageTextBox { get; set; }
         #endregion
 
@@ -103,17 +108,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void InitializeCreateReportView()
         {
-            this.UserProfileHeaderGroupBox = this.SetUserProfileHeaderGroupBox();
-            this.GroupItemsSourceComboBox = this.SetGroupItemsSourceComboBox();
+            this.SetUserProfileHeaderGroupBox();
+            this.SetGroupItemsSourceComboBox();
             this.SetGroupSelectedItemComboBox();
-            this.MessageTextBox = this.SetMessageTextBox();
+            this.SetMessageTextBox();
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        private string SetUserProfileHeaderGroupBox()
+        private void SetUserProfileHeaderGroupBox()
         {
             string textGroupBox = "";
             if (string.IsNullOrEmpty(this.Context.Profil.Group.Name))
@@ -124,13 +129,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 textGroupBox = string.Format("{0} ({1})", this.Context.Profil.Author.Nom, this.Context.Profil.Group.Name);
             }
-            return textGroupBox;
+            this.UserProfileHeaderGroupBox = textGroupBox;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private ObservableCollection<string> SetGroupItemsSourceComboBox()
+        private void SetGroupItemsSourceComboBox()
         {
             ObservableCollection<string> listGroup = new ObservableCollection<string>
             {
@@ -140,14 +145,14 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 listGroup.Add(geogroupe.Name);
             }
-            return listGroup;
+            this.GroupItemsSourceComboBox = listGroup;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        private string SetMessageTextBox()
+        private void SetMessageTextBox()
         {
             string message = "";
             if (!string.IsNullOrEmpty(this.PreferredGroup))
@@ -158,7 +163,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(this.Context.Groupeactif)).CommentaryGeorem;
             }
-            return message;
+            this.MessageTextBox = message;
         }
 
         private void SetGroupSelectedItemComboBox()
@@ -183,7 +188,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     item = this.Context.Groupeactif;
                 }
             }
-            this.createReportView.GroupComboBox.SelectedItem = item;
+            this.GroupSelectedItemComboBox = item;
         }
         #endregion
     }

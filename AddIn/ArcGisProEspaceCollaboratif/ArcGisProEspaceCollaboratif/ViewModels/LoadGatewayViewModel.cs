@@ -60,13 +60,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public LoadGatewayViewModel(Contexte context)
         {
             this.Context = context;
-            this.AtiveGroupLabelContent = string.Format("{0}{1}", strLabel, this.Context.Profil.Group.Name);
             this.loadGatewayView = new LoadGatewayView();
-            // Remplissage des différentes ListView avec les couches disponibles
-            this.GetInfosLayers();
-            this.SetListViewMyGateway();
-            this.SetListViewFondsGeoportail();
-            this.SetListViewFondsGeoportailBis();
+            this.InitializeLoadGatewayView();
         }
         #endregion
 
@@ -75,7 +70,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Indication du groupe actif, c'est à dire le groupe
         /// à partir duquel l'utilisateur va pouvoir sélectionner ses couches WFS et WMTS
         /// </summary>
-        public string AtiveGroupLabelContent { get; set; } = strLabel;
+        public string ActiveGroupLabelContent { get; set; } = strLabel;
 
         /// <summary>
         /// Remplissage de la listView ListViewGateway
@@ -186,6 +181,120 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         #region Methods
         /// <summary>
+        /// 
+        /// </summary>
+        public void InitializeLoadGatewayView()
+        {
+            // Remplissage des différentes ListView avec les couches disponibles
+            this.GetInfosLayers();
+            this.SetActiveGroupLabelContent();
+            this.SetListViewMyGateway();
+            this.SetListViewFondsGeoportail();
+            this.SetListViewFondsGeoportailBis();
+        }
+
+        /// <summary>
+        /// Récupération des couches de l'Espace collaboratif pour le groupe choisi par l'utilisateur
+        /// </summary>
+        private void GetInfosLayers()
+        {
+            this.ListLayers.Clear();
+            foreach (GeoGroupe groupe in this.Context.Profil.Geogroupes)
+            {
+                if (groupe.Id != this.Context.Profil.Group.Id)
+                {
+                    continue;
+                }
+                foreach (LayerGateway layer in groupe.Layers)
+                {
+                    this.ListLayers.Add(layer);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SetActiveGroupLabelContent()
+        {
+            this.ActiveGroupLabelContent = string.Format("{0}{1}", strLabel, this.Context.Profil.Group.Name);
+        }
+
+        /// <summary>
+        /// Mise à jour de la ListView "Mon guichet" contenant
+        /// les couches du groupe utilisateur
+        /// </summary>
+        private void SetListViewMyGateway()
+        {
+            List<ItemsListViewGateway> items = new List<ItemsListViewGateway>();
+            foreach (LayerGateway layer in this.ListLayers)
+            {
+                if (layer.Type != Constantes.WFS)
+                {
+                    continue;
+                }
+
+                if (!layer.Url.Contains(Constantes.COLLABORATIF))
+                {
+                    continue;
+                }
+
+                items.Add(new ItemsListViewGateway() { GatewayName = layer.Name, GatewayRole = this.roleKeyValue[layer.Role] });
+            }
+            ItemsSourceLayersGateway = items;
+        }
+
+        /// <summary>
+        /// Mise à jour de la ListView "FondsGeoportail" contenant
+        /// les couches visibles avec la clé Géoportail de l'utilisateur
+        /// </summary>
+        private void SetListViewFondsGeoportail()
+        {
+            List<ItemsListViewGeoportail> items = new List<ItemsListViewGeoportail>();
+            foreach (LayerGateway layer in this.ListLayers)
+            {
+                if (layer.Type != Constantes.GEOPORTAIL)
+                {
+                    continue;
+                }
+                int index = this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name));
+                if (index == -1)
+                {
+                    continue;
+                }
+
+                string LayerName = string.Format("{0} ({1})", this.Context.Profil.LayersKeyGeoportail[index].Title, layer.Name);
+                items.Add(new ItemsListViewGeoportail() { GeoportailName = LayerName, GeoportailRole = this.roleKeyValue[layer.Role] });
+            }
+            ItemsSourceLayersGeoportail = items;
+        }
+
+        /// <summary>
+        /// Mise à jour de la ListView "FondsGeoportailBis" contenant
+        /// les autres couches visibles avec la clé Géoportail de l'utilisateur
+        /// </summary>
+        private void SetListViewFondsGeoportailBis()
+        {
+            List<ItemsListViewGeoportailBis> items = new List<ItemsListViewGeoportailBis>();
+            foreach (LayerGateway layer in this.ListLayers)
+            {
+                if (layer.Type != Constantes.GEOPORTAIL)
+                {
+                    continue;
+                }
+
+                if (this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name)) != -1)
+                {
+                    continue;
+                }
+
+                string LayerName = string.Format("{0} ({1})", layer.Description, layer.Name);
+                items.Add(new ItemsListViewGeoportailBis() { GeoportailBisName = LayerName });
+            }
+            ItemsSourceLayersGeoportailBis = items;
+        }
+
+        /// <summary>
         /// Retourne l'ensemble des couches qui ont été cochées par l'utilisateur
         /// </summary>
         /// <returns>La liste des noms de couches</returns>
@@ -269,99 +378,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 KeyGeoportail = this.Context.CleGeoportail
             };
             await wmts.AddLayersAsync();
-        }
-
-        /// <summary>
-        /// Mise à jour de la ListView "Mon guichet" contenant
-        /// les couches du groupe utilisateur
-        /// </summary>
-        private void SetListViewMyGateway()
-        {
-            List<ItemsListViewGateway> items = new List<ItemsListViewGateway>();
-            foreach (LayerGateway layer in this.ListLayers)
-            {
-                if (layer.Type != Constantes.WFS)
-                {
-                    continue;
-                }
-
-                if (!layer.Url.Contains(Constantes.COLLABORATIF))
-                {
-                    continue;
-                }
-
-                items.Add(new ItemsListViewGateway() { GatewayName = layer.Name, GatewayRole = this.roleKeyValue[layer.Role] });
-            }
-            ItemsSourceLayersGateway = items;
-        }
-
-        /// <summary>
-        /// Mise à jour de la ListView "FondsGeoportail" contenant
-        /// les couches visibles avec la clé Géoportail de l'utilisateur
-        /// </summary>
-        private void SetListViewFondsGeoportail()
-        {
-            List<ItemsListViewGeoportail> items = new List<ItemsListViewGeoportail>();
-            foreach (LayerGateway layer in this.ListLayers)
-            {
-                if (layer.Type != Constantes.GEOPORTAIL)
-                {
-                    continue;
-                }
-                int index = this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name));
-                if (index == -1)
-                {
-                    continue;
-                }
-
-                string LayerName = string.Format("{0} ({1})", this.Context.Profil.LayersKeyGeoportail[index].Title, layer.Name);
-                items.Add(new ItemsListViewGeoportail() { GeoportailName = LayerName, GeoportailRole = this.roleKeyValue[layer.Role] });
-            }
-            ItemsSourceLayersGeoportail = items;
-        }
-
-        /// <summary>
-        /// Mise à jour de la ListView "FondsGeoportailBis" contenant
-        /// les autres couches visibles avec la clé Géoportail de l'utilisateur
-        /// </summary>
-        private void SetListViewFondsGeoportailBis()
-        {
-            List<ItemsListViewGeoportailBis> items = new List<ItemsListViewGeoportailBis>();
-            foreach (LayerGateway layer in this.ListLayers)
-            {
-                if (layer.Type != Constantes.GEOPORTAIL)
-                {
-                    continue;
-                }
-
-                if (this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name)) != -1)
-                {
-                    continue;
-                }
-
-                string LayerName = string.Format("{0} ({1})", layer.Description, layer.Name);
-                items.Add(new ItemsListViewGeoportailBis() { GeoportailBisName = LayerName });
-            }
-            ItemsSourceLayersGeoportailBis = items;
-        }
-
-        /// <summary>
-        /// Récupération des couches de l'Espace collaboratif pour le groupe choisi par l'utilisateur
-        /// </summary>
-        private void GetInfosLayers()
-        {
-            this.ListLayers.Clear();
-            foreach (GeoGroupe groupe in this.Context.Profil.Geogroupes)
-            {
-                if (groupe.Id != this.Context.Profil.Group.Id)
-                {
-                    continue;
-                }
-                foreach (LayerGateway layer in groupe.Layers)
-                {
-                    this.ListLayers.Add(layer);
-                }
-            }
         }
         #endregion
     }

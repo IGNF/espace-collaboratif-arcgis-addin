@@ -17,7 +17,7 @@
         <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="606" Margin="20,20,0,0" VerticalAlignment="Top" Width="549" Grid.ColumnSpan="3">
             <StackPanel Margin="0,0,-2.6,0.2">
                 <Label Content="Groupe" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="59" Height="30" FontWeight="Bold" FontSize="14"/>
-                <ComboBox x:Name="GroupComboBox" ItemsSource="{Binding GroupItemsSourceComboBox}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="199"/>
+                <ComboBox x:Name="GroupComboBox" ItemsSource="{Binding GroupItemsSourceComboBox}" SelectedItem="{Binding GroupSelectedItemComboBox}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="199"/>
                 <Label Content="Nouveau signalement" HorizontalAlignment="Left" Margin="5,15,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="159"/>
                 <Label Content="Message" HorizontalAlignment="Left" Margin="5,340,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
                 <TextBox x:Name="MessageTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding MessageTextBox}" VerticalAlignment="Top" Width="520"/>

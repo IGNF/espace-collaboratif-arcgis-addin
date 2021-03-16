@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Charger les couches de mon groupe" Height="681.4" Width="603">
     <Grid Margin="0,0,-0.2,1">
-        <Label x:Name="ActiveGroupLabel" Content="{Binding AtiveGroupLabelContent}" HorizontalAlignment="Left" Margin="15,10,0,0" VerticalAlignment="Top" Width="305" Height="25" FontWeight="Bold" FontStyle="Italic" FontSize="11"/>
+        <Label x:Name="ActiveGroupLabel" Content="{Binding ActiveGroupLabelContent}" HorizontalAlignment="Left" Margin="15,10,0,0" VerticalAlignment="Top" Width="305" Height="25" FontWeight="Bold" FontStyle="Italic" FontSize="11"/>
         <Label Content="Mon guichet" HorizontalAlignment="Left" Margin="15,35,0,0" VerticalAlignment="Top" Width="90" FontWeight="Bold"/>
         <ListView x:Name="LayersGatewayListView" ItemsSource="{Binding ItemsSourceLayersGateway}" HorizontalAlignment="Left" Height="170" Margin="20,60,0,0" VerticalAlignment="Top" Width="565">
             <ListView.View>

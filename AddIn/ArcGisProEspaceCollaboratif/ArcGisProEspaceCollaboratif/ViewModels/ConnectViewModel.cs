@@ -38,8 +38,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="uri"></param>
         public ConnectViewModel(string uri)
         {
-            this.connectView = new ConnectView();
             this.Uri = uri;
+            this.connectView = new ConnectView(); 
         }
         #endregion
 
