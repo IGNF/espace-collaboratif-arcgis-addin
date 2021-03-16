@@ -4,6 +4,8 @@ using ArcGisProEspaceCollaboratif.Utils;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -149,18 +151,128 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public ICommand RegisterButtonCmd { get { return new RelayCommand(OnRegister, AlwaysTrue); } }
 
         /// <summary>
-        /// L'utilisateur a cliqué sur le bouton "Enregistrer".
-        /// Il faut charger les couches choisies par l'utilisateur
+        /// Import des couches sélectionnées par l'utilisateur dans ArcGIS
         /// </summary>
         private void OnRegister()
-        {
+        {            
+            //Liste des couches à afficher après la sélection de l'utilisateur
+            List<LayerGateway> layersToAppend = new List<LayerGateway>();
+            foreach (string layerCheck in this.GetLayersSelected())
+            {        
+                // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
+                string name;
+                if (layerCheck.Contains("("))
+                {
+                    string[] layerCheckName = layerCheck.Split('(');
+                    name = layerCheckName[1].Replace(")", "");
+                }
+                else
+                {
+                    name = layerCheck;
+                }
 
+                int index = this.ListLayers.FindIndex(x => x.Name.Equals(name));
+                if (index == -1)
+                {
+                    continue;
+                }
+                layersToAppend.Add(this.ListLayers[index]);
+            }
+
+            // Import des couches WFS et WMTS dans ArcGIS
+            LoadLayersAsync(layersToAppend);
         }
 
         private bool AlwaysTrue() { return true; }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Retourne l'ensemble des couches qui ont été cochées par l'utilisateur
+        /// </summary>
+        /// <returns>La liste des noms de couches</returns>
+        private List<string> GetLayersSelected()
+        {
+            List<string> checked_list = new List<string>();
+            foreach (object item in this.loadGatewayView.LayersGatewayListView.SelectedItems)
+            {
+                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGateway)item).GatewayName);
+            }
+            foreach (object item in this.loadGatewayView.LayersGeoportailListView.SelectedItems)
+            {
+                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGeoportail)item).GeoportailName);
+            }
+            foreach (object item in this.loadGatewayView.LayersGeoportailBisListView.SelectedItems)
+            {
+                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGeoportailBis)item).GeoportailBisName);
+            }
+            return checked_list;
+        }
+
+        /// <summary>
+        /// Récupère dans une liste les noms des couches existantes de la carte active
+        /// et change le nom des couches Geoportail car dans certains cas les valeurs des balises DESCRIPTION et Title sont les mêmes
+        /// dans d'autres elles sont différentes, il faut donc récupérer la valeur de la balise Name
+        ///
+        /// Espace collaboratif versus Geoportail
+        /// <NOM>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</NOM> == <Name>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</Name>
+        /// <DESCRIPTION>Plan cadastral informatisé vecteur de la DGFIP.</DESCRIPTION> != <Title>PCI vecteur</Title>
+        /// autre exemple
+        /// <NOM>ORTHOIMAGERY.ORTHOPHOTOS</NOM> == <Name>ORTHOIMAGERY.ORTHOPHOTOS</Name>
+        /// <DESCRIPTION>Photographies aériennes</DESCRIPTION> == <Title>Photographies aériennes</Title>
+        /// </summary>
+        private List<string> LayersInMap
+        {
+            get
+            {
+                System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = this.Context.MapActiveView.Map.Layers;
+                List<string> layersInMap = new List<string>();
+                foreach (Layer observableLayer in observableLayers)
+                {
+                    int index = this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Title.Equals(observableLayer.Name));
+                    if (index != -1)
+                    {
+                        layersInMap.Add(this.Context.Profil.LayersKeyGeoportail[index].Name);
+                    }
+                    else
+                    {
+                        layersInMap.Add(observableLayer.Name);
+                    }
+                }
+                return layersInMap;
+            }
+        }
+
+        /// <summary>
+        /// Import des couches WFS et WMTS sélectionnées par l'utilisateur dans ArcGIS
+        /// </summary>
+        /// <param name="layersToLoad">La liste de toutes les couches sélectionnées à importer avec leurs caractéristiques</param>
+        private async void LoadLayersAsync(List<LayerGateway> layersToLoad)
+        {
+            // Quelles sont les couches existantes dans la carte ?
+            List<string> layersInMap = LayersInMap;
+
+            // Les couches WFS de l'Espace collaboratif
+            WebFeatureService wfs = new WebFeatureService()
+            {
+                Layers = layersToLoad,
+                LayersInMap = layersInMap,
+                Login = this.Context.Login,
+                Password = this.Context.Password,
+                ActiveGroup = this.Context.Groupeactif
+            };
+            await wfs.AddLayersAsync();
+
+            // Les couches WMTS du Géoportail
+            WebMapTileService wmts = new WebMapTileService()
+            {
+                Layers = layersToLoad,
+                LayersInMap = layersInMap,
+                KeyGeoportail = this.Context.CleGeoportail
+            };
+            await wmts.AddLayersAsync();
+        }
+
         /// <summary>
         /// Mise à jour de la ListView "Mon guichet" contenant
         /// les couches du groupe utilisateur

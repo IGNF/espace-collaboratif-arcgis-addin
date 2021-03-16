@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace ArcGisProEspaceCollaboratif.Views
 {
@@ -7,6 +8,7 @@ namespace ArcGisProEspaceCollaboratif.Views
     /// </summary>
     public partial class LoadGatewayView : Window
     {
+        #region Constructors
         /// <summary>
         /// La classe du dialogue "Charger les couches de mon groupe" qui permet
         /// à l'utilisateur de choisir les différentes couches qu'il veut afficher
@@ -16,10 +18,13 @@ namespace ArcGisProEspaceCollaboratif.Views
         {
             InitializeComponent();
         }
+        #endregion
 
+        #region Events
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
         }
+        #endregion
     }
 }
