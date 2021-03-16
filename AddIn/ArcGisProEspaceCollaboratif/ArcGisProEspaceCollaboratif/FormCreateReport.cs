@@ -617,10 +617,13 @@ namespace ArcGisProEspaceCollaboratif
                     // Vérification du format du fichier (exclusion des formats potentiellement malveillants)
                     if (extension.Equals(".php") || extension.Equals(".exe") || extension.Equals(".dll"))
                     {
-                        string message = "Les fichiers de type ''" +
-                                         fichierPJ.Extension +
-                                         "'' ne sont pas autorisés comme pièce-jointe par le service Espace collaboratif.";
-                        System.Windows.Forms.MessageBox.Show(message, "IGN Espace collaboratif - STOP", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
+                        string message = string.Format("Les fichiers de type '{0}' ne sont pas autorisés comme pièce-jointe par le service Espace collaboratif.", fichierPJ.Extension);
+                        System.Windows.Forms.MessageBox.Show(
+                            message,
+                            Constantes.STOP,
+                            System.Windows.Forms.MessageBoxButtons.OK,
+                            System.Windows.Forms.MessageBoxIcon.Stop
+                        );
                        
                         this.ViewListPJ();
                         this.listViewFilePJ.Refresh();                        
@@ -632,14 +635,17 @@ namespace ArcGisProEspaceCollaboratif
                         // Vérification si le fichier a une taille acceptable pour le service Espace collaboratif.
                         if (fichierPJ.Length > this.MaxSizeFilePJ)
                         {
-                            string message = "Le fichier ''" +
-                                             fichierPJ.FullName +
-                                             "'' ne peut être envoyé au service de l'Espace collaboratif, car sa taille (" +
-                                             fichierPJ.Length / 1024 +
-                                             " Ko) dépasse celle maximale autorisée. (" +
-                                             this.MaxSizeFilePJ / 1024 +
-                                             " Ko)";
-                            System.Windows.Forms.MessageBox.Show(message, "IGN Espace collaboratif - STOP", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Stop);
+                            string message = string.Format("Le fichier '{0}' ne peut être envoyé au service de l'Espace collaboratif, car sa taille ({1} Ko) dépasse celle maximale autorisée. ({2} Ko)",
+                                fichierPJ.FullName,
+                                fichierPJ.Length / 1024,
+                                this.MaxSizeFilePJ / 1024
+                            );
+                            System.Windows.Forms.MessageBox.Show(
+                                message,
+                                Constantes.STOP,
+                                System.Windows.Forms.MessageBoxButtons.OK,
+                                System.Windows.Forms.MessageBoxIcon.Stop
+                            );
                             this.ViewListPJ();
                             this.listViewFilePJ.Refresh();
                             

@@ -16,7 +16,7 @@ namespace ArcGisProEspaceCollaboratif
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
         private readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
 
         /*public DownloadReports()
         {
@@ -43,7 +43,13 @@ namespace ArcGisProEspaceCollaboratif
                     // Test de la présence du fichier XML de paramétrage
                     if (!System.IO.File.Exists(Helper.nom_Fichier_Parametres_EspaceCollaboratif))
                     {
-                        System.Windows.Forms.MessageBox.Show("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '" + Helper.nom_Fichier_Parametres_EspaceCollaboratif + "' doit se situer dans le dossier suivant:\n'" + contexte.DirectoryWorking + "'", "IGN Espace collaboratif - ERROR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.nom_Fichier_Parametres_EspaceCollaboratif, contexte.DirectoryWorking);
+                        System.Windows.Forms.MessageBox.Show(
+                            mess,
+                            Constantes.ERROR,
+                            System.Windows.Forms.MessageBoxButtons.OK,
+                            System.Windows.Forms.MessageBoxIcon.Error
+                        );
                         return;
                     }
 

@@ -107,7 +107,7 @@
             this.webBrowserMessage.Size = new System.Drawing.Size(589, 92);
             this.webBrowserMessage.TabIndex = 5;
             // 
-            // labelIdRemarque
+            // labelIdSignalement
             // 
             this.labelIdSignalement.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelIdSignalement.AutoSize = true;
@@ -116,7 +116,7 @@
             this.labelIdSignalement.Location = new System.Drawing.Point(4, 47);
             this.labelIdSignalement.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelIdSignalement.Name = "labelIdSignalement";
-            this.labelIdSignalement.Size = new System.Drawing.Size(325, 25);
+            this.labelIdSignalement.Size = new System.Drawing.Size(333, 25);
             this.labelIdSignalement.TabIndex = 3;
             this.labelIdSignalement.Text = "Message du signalement n° 0000";
             // 

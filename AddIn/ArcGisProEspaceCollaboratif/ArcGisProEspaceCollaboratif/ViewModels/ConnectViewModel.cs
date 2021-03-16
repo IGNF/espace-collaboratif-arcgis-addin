@@ -1,7 +1,6 @@
 ﻿using ArcGisProEspaceCollaboratif.Views;
 using ArcGisProEspaceCollaboratif.Utils;
 using System.Windows.Input;
-using MvvmDialogs;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {

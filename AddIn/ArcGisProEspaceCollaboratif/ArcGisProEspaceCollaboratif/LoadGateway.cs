@@ -12,7 +12,7 @@ namespace ArcGisProEspaceCollaboratif
     internal class LoadGateway : Button
     {
         private readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
 
         protected override void OnClick()
         {
@@ -56,8 +56,12 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(e.Message,
-                 "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show(
+                    e.Message,
+                    Constantes.ERROR,
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error
+                );
                 logger.Error(e.Message + "\n" + e.StackTrace);
             }
         }

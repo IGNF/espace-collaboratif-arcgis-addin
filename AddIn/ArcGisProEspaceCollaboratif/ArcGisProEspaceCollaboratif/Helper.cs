@@ -1600,7 +1600,13 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch
             {
-                System.Windows.Forms.MessageBox.Show("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = ''" + dateExtration + "''.", "IGN EspaceCollaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                string message = string.Format("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = '{0}'", dateExtration);
+                System.Windows.Forms.MessageBox.Show(
+                    message,
+                    Constantes.ERROR,
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error
+                );
                 return Convert.ToDateTime(Helper.dateDefaut);
             }
         }
@@ -1667,7 +1673,12 @@ namespace ArcGisProEspaceCollaboratif
 
             if (Urlhost.Equals(""))
             {
-                System.Windows.Forms.MessageBox.Show("Impossible de trouver l'adresse du service de l'Espace collaboratif dans le fichier XML de paramétrage.", "IGN EspaceCollaboratif", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show(
+                    "Impossible de trouver l'adresse du service de l'Espace collaboratif dans le fichier XML de paramétrage.",
+                    Constantes.ERROR,
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error
+                );
                 return "";
             }
 

@@ -3,19 +3,19 @@
 namespace ArcGisProEspaceCollaboratif.Views
 {
     /// <summary>
-    /// Logique d'interaction pour GroupChoiceView.xaml
+    /// Logique d'interaction pour CreateReportView.xaml
     /// </summary>
-    public partial class GroupChoiceView : Window
+    public partial class CreateReportView : Window
     {
         /// <summary>
-        /// La classe du dialogue "Choix du groupe"
+        /// La classe du dialogue "Créer un nouveau signalement"
         /// </summary>
-        public GroupChoiceView()
+        public CreateReportView()
         {
             InitializeComponent();
         }
 
-        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
         }

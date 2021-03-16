@@ -41,5 +41,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string COLLABORATIF_QLF = "qlf-collaboratif.ign.fr/collaboratif-3.0";
         public const string WXSIGN = "wxs.ign.fr";
         public const string AUCUN = "Aucun";
+
+        public const string ERROR = "IGN Espace collaboratif - ERREUR";
+        public const string WARNING = "IGN Espace collaboratif - WARNING";
+        public const string STOP = "IGN Espace collaboratif - STOP";
     }
 }

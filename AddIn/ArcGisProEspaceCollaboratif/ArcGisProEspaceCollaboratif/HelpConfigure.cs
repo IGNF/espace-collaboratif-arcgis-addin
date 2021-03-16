@@ -8,7 +8,7 @@ namespace ArcGisProEspaceCollaboratif
     internal class HelpConfigure : Button
     {
         private readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connecter));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
 
         protected override void OnClick()
         {
@@ -19,8 +19,13 @@ namespace ArcGisProEspaceCollaboratif
 
                 if (!contexte.CheckConfigFile())
                 {
-                    System.Windows.Forms.MessageBox.Show(@"Le fichier " + contexte.DirectoryWorking +
-                                    Helper.nom_Fichier_Parametres_EspaceCollaboratif + @" n'existe pas");
+                    string message = string.Format("Le fichier '{0}/{1}' n'existe pas", contexte.DirectoryWorking, Helper.nom_Fichier_Parametres_EspaceCollaboratif);
+                    System.Windows.Forms.MessageBox.Show(
+                        message,
+                        Constantes.STOP,
+                        System.Windows.Forms.MessageBoxButtons.OK,
+                        System.Windows.Forms.MessageBoxIcon.Stop
+                    );
                 }
 
                 FormSetUp configurateur = new FormSetUp(contexte);
@@ -30,9 +35,13 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(e.Message,
-                 "IGN Espace collaboratif - ERREUR", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
-                logger.Error(e.Message + "\n" + e.StackTrace);
+                System.Windows.Forms.MessageBox.Show(
+                    e.Message,
+                    Constantes.ERROR,
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Error
+                );
+                logger.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
             }
         }
     }

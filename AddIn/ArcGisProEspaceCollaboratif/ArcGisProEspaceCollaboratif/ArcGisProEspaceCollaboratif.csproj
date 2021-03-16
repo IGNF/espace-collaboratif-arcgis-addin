@@ -149,11 +149,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utils\RelayCommand.cs" />
+    <Compile Include="ViewModels\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\FeedbackInformationViewModel.cs" />
     <Compile Include="ViewModels\ConnectViewModel.cs" />
     <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
     <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\CreateReportView.xaml.cs">
+      <DependentUpon>CreateReportView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FeedbackInformationView.xaml.cs">
       <DependentUpon>FeedbackInformationView.xaml</DependentUpon>
     </Compile>
@@ -161,10 +165,10 @@
       <DependentUpon>ConnectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="LoadGateway.cs" />
-    <Compile Include="Connecter.cs" />
+    <Compile Include="Connect.cs" />
     <Compile Include="Aide.cs" />
     <Compile Include="Contexte.cs" />
-    <Compile Include="CreerSignalement.cs" />
+    <Compile Include="CreateReport.cs" />
     <Compile Include="DownloadReports.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="FormSetUp.cs">
@@ -293,6 +297,10 @@
     <Resource Include="Resources\no_logo.gif" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\CreateReportView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FeedbackInformationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -310,10 +318,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:

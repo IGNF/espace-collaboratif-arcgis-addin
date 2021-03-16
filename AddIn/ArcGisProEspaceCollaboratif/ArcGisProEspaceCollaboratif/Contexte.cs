@@ -1259,10 +1259,12 @@ namespace ArcGisProEspaceCollaboratif
                             switch (geometryFeatureType)
                             {
                                 default:
-                                    System.Windows.Forms.MessageBox.Show("Géométrie non-prise en charge pour la transformer en croquis de l'Espace collaboratif.",
-                                        "IGN Espace collaboratif - WARNING",
+                                    System.Windows.Forms.MessageBox.Show(
+                                        "Géométrie non-prise en charge pour la transformer en croquis.",
+                                        Constantes.WARNING,
                                         System.Windows.Forms.MessageBoxButtons.OK,
-                                        System.Windows.Forms.MessageBoxIcon.Warning);
+                                        System.Windows.Forms.MessageBoxIcon.Warning
+                                    );
                                     break;
 
                                 case GeometryType.Point:
