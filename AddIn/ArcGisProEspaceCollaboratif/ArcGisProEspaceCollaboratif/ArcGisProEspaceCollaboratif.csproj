@@ -160,12 +160,6 @@
     <Compile Include="Views\ConnectView.xaml.cs">
       <DependentUpon>ConnectView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FormLoadGateway.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormLoadGateway.Designer.cs">
-      <DependentUpon>FormLoadGateway.cs</DependentUpon>
-    </Compile>
     <Compile Include="LoadGateway.cs" />
     <Compile Include="Connecter.cs" />
     <Compile Include="Aide.cs" />
@@ -232,9 +226,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormCreateReport.resx">
       <DependentUpon>FormCreateReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormLoadGateway.resx">
-      <DependentUpon>FormLoadGateway.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormProgressDownload.resx">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>
