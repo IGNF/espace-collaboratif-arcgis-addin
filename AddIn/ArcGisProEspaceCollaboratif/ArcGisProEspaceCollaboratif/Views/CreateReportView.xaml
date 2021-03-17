@@ -5,27 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Créer un nouveau signalement" Height="696.4" Width="608.2">
-    <Grid Margin="0,0,-0.4,-1">
+        Title="Créer un nouveau signalement" Height="740.8" Width="597">
+    <Grid Margin="0,0,-6.6,23.4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="325*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="322*"/>
             <ColumnDefinition Width="61*"/>
             <ColumnDefinition Width="189*"/>
             <ColumnDefinition Width="23*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="255,631,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SendButtonCmd}" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2"/>
-        <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="606" Margin="20,20,0,0" VerticalAlignment="Top" Width="549" Grid.ColumnSpan="3">
-            <StackPanel Margin="0,0,-2.6,0.2">
+        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SendButtonCmd}" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
+        <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="620" Margin="17.5,20,0,0" VerticalAlignment="Top" Width="549" Grid.ColumnSpan="3" Grid.Column="1">
+            <StackPanel Margin="0,0,-3,-74.4">
                 <Label Content="Groupe" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="59" Height="30" FontWeight="Bold" FontSize="14"/>
                 <ComboBox x:Name="GroupComboBox" ItemsSource="{Binding GroupItemsSourceComboBox}" SelectedItem="{Binding GroupSelectedItemComboBox}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="199"/>
                 <Label Content="Nouveau signalement" HorizontalAlignment="Left" Margin="5,15,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="159"/>
-                <Label Content="Message" HorizontalAlignment="Left" Margin="5,340,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+                <TabControl HorizontalAlignment="Left" Height="343" Margin="10,15,0,0" VerticalAlignment="Top" Width="519">
+                    <TabItem x:Name="ThemeTabItem" Header="Thèmes">
+                        <Grid Margin="0,0,0.4,-110">
+                            <ListView x:Name="ThemeListView" ItemsSource="{Binding ItemsSourceThemeListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn x:Name="ThemeGridViewVolumn" Header="Thème" Width="240" DisplayMemberBinding="{Binding ThemeGridViewColumn}"/>
+                                        <GridViewColumn x:Name="AttributeGridViewVolumn" Header="Attribut" Width="240" DisplayMemberBinding="{Binding AttributeGridViewColumn}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+                    <TabItem x:Name="OptionTabItem" Header="Options">
+                        <Grid Margin="0,0,0.4,-110">
+                            <CheckBox x:Name="JoinSketchCheckBox" Content="Joindre un croquis" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="121" Height="17"/>
+                            <CheckBox x:Name="JoinDocumentCheckBox" Content="Joindre un document" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="136" Height="17"/>
+                            <Label Content="{Binding JoinDocumentLabel}" HorizontalAlignment="Left" Margin="5,60,0,0" VerticalAlignment="Top" Width="497" Height="20" FontWeight="Bold" FontSize="14"/>
+                            <RadioButton x:Name="CreateReportRadioButton" Content="Créer un signalement unique" HorizontalAlignment="Left" Margin="5,90,0,0" VerticalAlignment="Top" IsChecked="True" />
+                            <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsRadioButton}" HorizontalAlignment="Left" Margin="5,120,0,0" VerticalAlignment="Top" Width="210"/>
+                            <Label Content="{Binding ErrorLabel}" HorizontalAlignment="Left" Margin="5,150,0,0" VerticalAlignment="Top" Width="497" Height="20" FontWeight="Bold" FontSize="14"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+                <Label Content="Message" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
                 <TextBox x:Name="MessageTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding MessageTextBox}" VerticalAlignment="Top" Width="520"/>
             </StackPanel>
         </GroupBox>
-        
-
-
-
     </Grid>
 </Window>
