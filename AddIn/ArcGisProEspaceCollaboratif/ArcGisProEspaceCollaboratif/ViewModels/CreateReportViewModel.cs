@@ -1,6 +1,7 @@
 ﻿using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
+using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -23,7 +24,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public int SketchNumber { get; set; }
+        public int SketchNumber { get; set; } = 0;
 
         /// <summary>
         /// Liste des fichiers en pièce-jointe
@@ -47,17 +48,23 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// et présents dans le fichier de configuration espace_co.xml
         /// </summary>
         public List<string> ListPreferredThemes { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Le nom du ficher qui est joint au signalement
+        /// </summary>
+        public string NameFileJoinToReport { get; set; } = "";
         #endregion
 
         #region Constructors
         /// <summary>
         /// Initialisation du dialogue "Créer un nouveau signalement"
         /// </summary>
-        public CreateReportViewModel(Contexte context)
+        public CreateReportViewModel(Contexte context, int sketchNumber)
         {
             this.Context = context;
             this.ListPreferredThemes = Helper.Load_PreferredThemes();
             this.PreferredGroup = Helper.Load_PreferredGroup();
+            this.SketchNumber = sketchNumber;
             this.createReportView = new CreateReportView();
             InitializeCreateReportView();
         }
@@ -82,13 +89,70 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public string MessageTextBox { get; set; }
+        public string JoinDocumentLabel { get; set; } = "";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool JoinSketchIsChecked { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool CreateReportIsChecked { get; set; } = true;
+       
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CreateReportsContent { get; set; } = "Créer x signalements";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool CreateReportsIsChecked { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string CommentaireTextBox { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<string> ItemsSourceThemeListView { get; set; }
         #endregion
 
         #region Class
         #endregion
 
         #region Commands
+        public ICommand JoinDocumentCmd { get { return new RelayCommand(OnJoinDocument, AlwaysTrue); } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void OnJoinDocument()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Multiselect = false,
+                InitialDirectory = this.Context.DirectoryWorking,
+                Filter = string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", Constantes.ALLFILE, Constantes.IMAGEFILE, Constantes.TRACKFILE, Constantes.TXTFILE, Constantes.SHEETFILE, Constantes.DBFILE, Constantes.SIGFILE)
+            };
+            bool? dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == true)
+            {
+                this.createReportView.JoinDocumentCheckBox.IsChecked = true;
+                this.createReportView.JoinDocumentLabel.Content = openFileDialog.FileName;
+                this.NameFileJoinToReport = openFileDialog.FileName;
+            }
+            else
+            {
+                this.createReportView.JoinDocumentLabel.Content = Constantes.NOFILE;
+                this.createReportView.JoinDocumentCheckBox.IsChecked = false;
+            }
+        }
+
         public ICommand SendButtonCmd { get { return new RelayCommand(OnSend, AlwaysTrue); } }
 
         /// <summary>
@@ -111,7 +175,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.SetUserProfileHeaderGroupBox();
             this.SetGroupItemsSourceComboBox();
             this.SetGroupSelectedItemComboBox();
-            this.SetMessageTextBox();
+            this.SetItemsSourceThemeListView();
+            this.SetJoinSketchIsChecked();
+            this.SetJoinDocumentLabel();
+            this.SetCreateReportRadioButton();
+            this.SetCommentaireTextBox();
         }
 
         /// <summary>
@@ -151,21 +219,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        /// <returns></returns>
-        private void SetMessageTextBox()
-        {
-            string message = "";
-            if (!string.IsNullOrEmpty(this.PreferredGroup))
-            {
-                message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(PreferredGroup)).CommentaryGeorem;
-            }
-            else
-            {
-                message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(this.Context.Groupeactif)).CommentaryGeorem;
-            }
-            this.MessageTextBox = message;
-        }
-
         private void SetGroupSelectedItemComboBox()
         {
             // Par défaut la liste des groupes de la combobox est positionnée sur "Aucun"
@@ -189,6 +242,151 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
             }
             this.GroupSelectedItemComboBox = item;
+        }
+
+        private void SetJoinSketchIsChecked()
+        {
+            this.JoinSketchIsChecked = false;
+            if (this.SketchNumber >= 1)
+            {
+                this.JoinSketchIsChecked = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SetJoinDocumentLabel()
+        {
+            this.JoinDocumentLabel = Constantes.NOFILE;
+        }
+
+        /// <summary>
+        /// Affiche les thèmes dans le formulaire en fonction du groupe de l'utilisateur
+        /// </summary>
+        private void SetItemsSourceThemeListView()
+        {
+            if (this.Context.Profil.Themes.Count == 0)
+            {
+                // Pas de thèmes à afficher, on sort de la fonction
+                return;
+            }
+
+            // Filtrage des thèmes utilisateur en fonction du contenu des thèmes de son profil
+            int index = 0;
+            foreach (string thName in this.Context.Profil.FilteredThemes)
+            {
+                Theme th = null;
+                bool foundTheme = false;
+                foreach (Theme tmpth in this.Context.Profil.Themes)
+                {
+                    if (thName == tmpth.Group.Name)
+                    {
+                        foundTheme = true;
+                        th = tmpth;
+                        break;
+                    }
+                }
+                if (!foundTheme)
+                {
+                    continue;
+                }
+                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
+                if (!th.Filtered)
+                {
+                    continue;
+                }
+
+                // Ajout du thème dans le treeview
+                //this.treeViewThemesAttributs.CheckBoxes = true;
+                //this.treeViewThemesAttributs.BeginUpdate();
+                //this.treeViewThemesAttributs.Nodes.Add(thName);
+                if (this.ListPreferredThemes.Contains(thName))
+                {
+                    //this.treeViewThemesAttributs.Nodes[index].Checked = true;
+                }
+
+                // Ajout des attributs du thème
+                DisplayAttributsInTreeView(th, index);
+                //this.treeViewThemesAttributs.EndUpdate();
+                index++;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        private void DisplayAttributsInTreeView(Theme th, int index)
+        {
+            foreach (ThemeAttributes att in th.Attributes)
+            {
+                //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
+                if (att.Obligatoire)
+                {
+                    //this.treeViewThemesAttributs.Nodes[index].NodeFont = new Font(Font, FontStyle.Bold);
+                }
+
+                if (att.Type == "checkbox")
+                {
+
+                }
+                else if (att.Type == "date")
+                {
+
+                }
+                else if (att.Type == "datetime")
+                {
+                    //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
+                }
+                else if (att.Type == "list")
+                {
+                    /*ComboBoxTreeNode cb = new ComboBoxTreeNode();
+                    foreach (string val in att.Valeurs)
+                    {
+                        cb.ComboBox.Items.Add(val);
+                    }
+
+                    TreeNode listNode = new TreeNode(att.Nom);
+                    listNode.Nodes.Add(cb);
+                    this.treeViewThemesAttributs.Nodes[index].Nodes.Add(listNode);*/
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void SetCreateReportRadioButton()
+        {
+            if (this.SketchNumber >= 2)
+            {
+                this.CreateReportsContent = string.Format("Créer {0} signalements", this.SketchNumber);
+                this.CreateReportIsChecked = false;
+                this.CreateReportsIsChecked = true;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private void SetCommentaireTextBox()
+        {
+            string message = "";
+            if (!string.IsNullOrEmpty(this.PreferredGroup))
+            {
+                message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(PreferredGroup)).CommentaryGeorem;
+            }
+            else
+            {
+                message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(this.Context.Groupeactif)).CommentaryGeorem;
+            }
+            this.CommentaireTextBox = message;
         }
         #endregion
     }

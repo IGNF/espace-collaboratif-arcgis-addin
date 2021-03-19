@@ -26,8 +26,8 @@
                             <ListView x:Name="ThemeListView" ItemsSource="{Binding ItemsSourceThemeListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn x:Name="ThemeGridViewVolumn" Header="Thème" Width="240" DisplayMemberBinding="{Binding ThemeGridViewColumn}"/>
-                                        <GridViewColumn x:Name="AttributeGridViewVolumn" Header="Attribut" Width="240" DisplayMemberBinding="{Binding AttributeGridViewColumn}"/>
+                                        <GridViewColumn x:Name="ThemeGridViewColumn" Header="Thème" Width="240" DisplayMemberBinding="{Binding ThemeName}"/>
+                                        <GridViewColumn x:Name="AttributeGridViewColumn" Header="Attribut" Width="240" DisplayMemberBinding="{Binding ThemeAttribute}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -35,18 +35,18 @@
                     </TabItem>
                     <TabItem x:Name="OptionTabItem" Header="Options">
                         <Grid Margin="0,0,0.4,-110">
-                            <CheckBox x:Name="JoinSketchCheckBox" Content="Joindre un croquis" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="121" Height="17"/>
-                            <CheckBox x:Name="JoinDocumentCheckBox" Content="Joindre un document" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="136" Height="17"/>
-                            <Label Content="{Binding JoinDocumentLabel}" HorizontalAlignment="Left" Margin="5,60,0,0" VerticalAlignment="Top" Width="497" Height="20" FontWeight="Bold" FontSize="14"/>
-                            <RadioButton x:Name="CreateReportRadioButton" Content="Créer un signalement unique" HorizontalAlignment="Left" Margin="5,90,0,0" VerticalAlignment="Top" IsChecked="True" />
-                            <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsRadioButton}" HorizontalAlignment="Left" Margin="5,120,0,0" VerticalAlignment="Top" Width="210"/>
-                            <Label Content="{Binding ErrorLabel}" HorizontalAlignment="Left" Margin="5,150,0,0" VerticalAlignment="Top" Width="497" Height="20" FontWeight="Bold" FontSize="14"/>
+                            <CheckBox x:Name="JoinSketchCheckBox" Content="Joindre un croquis" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="121" Height="17" IsChecked="{Binding JoinSketchIsChecked}"/>
+                            <CheckBox x:Name="JoinDocumentCheckBox" Content="Joindre un document" Command="{Binding JoinDocumentCmd}" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="136" Height="17"/>
+                            <Label x:Name="JoinDocumentLabel" Content="{Binding JoinDocumentLabel}" HorizontalAlignment="Left" Margin="5,60,0,0" VerticalAlignment="Top" Width="497" Height="23" FontSize="11" FontStyle="Italic"/>
+                            <RadioButton x:Name="CreateReportRadioButton" Content="Créer un signalement unique" HorizontalAlignment="Left" Margin="5,108,0,0" VerticalAlignment="Top" IsChecked="{Binding CreateReportIsChecked}" />
+                            <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsContent}" HorizontalAlignment="Left" Margin="5,138,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding CreateReportsIsChecked}"/>
                         </Grid>
                     </TabItem>
                 </TabControl>
-                <Label Content="Message" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
-                <TextBox x:Name="MessageTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding MessageTextBox}" VerticalAlignment="Top" Width="520"/>
+                <Label Content="Commentaire" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+                <TextBox x:Name="CommentaireTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaireTextBox}" VerticalAlignment="Top" Width="520"/>
             </StackPanel>
         </GroupBox>
+
     </Grid>
 </Window>

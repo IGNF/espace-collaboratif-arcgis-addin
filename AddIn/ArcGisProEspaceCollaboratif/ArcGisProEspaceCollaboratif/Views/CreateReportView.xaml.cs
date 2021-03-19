@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using ArcGisProEspaceCollaboratif.Core;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace ArcGisProEspaceCollaboratif.Views
 {

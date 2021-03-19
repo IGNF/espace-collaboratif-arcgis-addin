@@ -1001,7 +1001,10 @@ namespace ArcGisProEspaceCollaboratif
             this.URLHost = Helper.Load_Urlhost();
             ILog.Debug("URLHost : " + this.URLHost);
 
-            var connectViewModel = new ConnectViewModel(this.URLHost);
+            var connectViewModel = new ConnectViewModel()
+            {
+                Uri = this.URLHost
+            };
             connectViewModel.connectView.DataContext = connectViewModel;
 
             // Recherche du login par défaut dans le fichier XML de paramétrage
@@ -1172,13 +1175,13 @@ namespace ArcGisProEspaceCollaboratif
                
                 // le choix du nouveau profil est validé
                 // le nouvel id et nom du groupe, la clé Geoportail sont retournés dans un tuple
-                (string, string, string) idNomGroupeCleGeoPortail = groupChoiceViewModel._profile.IdNameGroupKeyGeoPortail;
+                (string, string, string) idNomGroupeCleGeoPortail = groupChoiceViewModel.Profile.IdNameGroupKeyGeoPortail;
                 this.CleGeoportail = idNomGroupeCleGeoPortail.Item3;
 
                 // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
-                if (groupChoiceViewModel._profile.Geogroupes.Count == 1)
+                if (groupChoiceViewModel.Profile.Geogroupes.Count == 1)
                 {
-                    this.Profil = groupChoiceViewModel._profile;
+                    this.Profil = groupChoiceViewModel.Profile;
                 }
                 else
                 {
@@ -1190,7 +1193,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (messTmp.Contains("actif"))
                     {
                         // le profil chargé reste actif
-                        this.Profil = groupChoiceViewModel._profile;
+                        this.Profil = groupChoiceViewModel.Profile;
                     }
                     else
                     {

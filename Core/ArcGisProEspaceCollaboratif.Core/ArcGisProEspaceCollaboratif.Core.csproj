@@ -48,10 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComboBoxTreeNode.cs" />
-    <Compile Include="DropDownTreeView .cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SketchAttributes.cs" />
     <Compile Include="Auteur.cs" />
     <Compile Include="Box.cs" />

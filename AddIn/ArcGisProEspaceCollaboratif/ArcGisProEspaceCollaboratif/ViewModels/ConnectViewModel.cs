@@ -36,9 +36,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Iniialisation du dialogue "Connexion à https://espacecollaboratif.ign.fr"
         /// </summary>
         /// <param name="uri"></param>
-        public ConnectViewModel(string uri)
+        public ConnectViewModel()
         {
-            this.Uri = uri;
             this.connectView = new ConnectView(); 
         }
         #endregion

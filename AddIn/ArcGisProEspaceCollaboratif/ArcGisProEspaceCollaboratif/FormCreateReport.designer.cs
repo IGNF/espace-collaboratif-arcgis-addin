@@ -51,8 +51,6 @@ namespace ArcGisProEspaceCollaboratif
             this.richTextBoxMessage = new System.Windows.Forms.RichTextBox();
             this.OpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            //this.treeViewThemesAttributs = new System.Windows.Forms.TreeView();
-            this.treeViewThemesAttributs = new DropDownTreeView();
             this.tableLayoutPanel.SuspendLayout();
             this.groupImageProfil.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -155,7 +153,6 @@ namespace ArcGisProEspaceCollaboratif
             // tabThemes
             // 
             this.tabThemes.AutoScroll = true;
-            this.tabThemes.Controls.Add(this.treeViewThemesAttributs);
             this.tabThemes.Location = new System.Drawing.Point(4, 26);
             this.tabThemes.Margin = new System.Windows.Forms.Padding(4);
             this.tabThemes.Name = "tabThemes";
@@ -326,14 +323,6 @@ namespace ArcGisProEspaceCollaboratif
             this.OpenFileDialog.ReadOnlyChecked = true;
             this.OpenFileDialog.Title = "Document à joindre pour le nouveau signalement de l\'Espace collaboratif.";
             // 
-            // treeViewThemesAttributs
-            // 
-            this.treeViewThemesAttributs.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeViewThemesAttributs.Location = new System.Drawing.Point(-1, 0);
-            this.treeViewThemesAttributs.Name = "treeViewThemesAttributs";
-            this.treeViewThemesAttributs.Size = new System.Drawing.Size(629, 146);
-            this.treeViewThemesAttributs.TabIndex = 0;
-            // 
             // FormCreateReport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -383,7 +372,5 @@ namespace ArcGisProEspaceCollaboratif
         private System.Windows.Forms.Label labelNewReport;
         private System.Windows.Forms.Label labelGroupe;
         private System.Windows.Forms.ComboBox comboBoxGroupe;
-        //private System.Windows.Forms.TreeView treeViewThemesAttributs;
-        private DropDownTreeView treeViewThemesAttributs;
     }
 }

@@ -22,7 +22,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Le profil de l'utilisateur
         /// </summary>
-        public Profil _profile { get; set; }
+        public Profil Profile { get; set; }
         #endregion
 
         #region Constructors
@@ -32,9 +32,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="keyGeoportail"></param>
         /// <param name="activeGroup"></param>
         /// <param name="profile"></param>
-        public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profil profile)
+        public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profil profil)
         {
-            this._profile = profile;
+            this.Profile = profil;
             this.groupChoiceView = new GroupChoiceView();
             this.InitializeGroupChoiceView(keyGeoportail, activeGroup);  
         }
@@ -79,8 +79,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void OnRegister()
         {
             int index = this.groupChoiceView.GroupComboBox.SelectedIndex;
-            string igGroup = this._profile.Geogroupes[index].Id;
-            string nomGroup = this._profile.Geogroupes[index].Name;
+            string igGroup = this.Profile.Geogroupes[index].Id;
+            string nomGroup = this.Profile.Geogroupes[index].Name;
             string cleGeoportail = "";
             if (this.groupChoiceView.YesRadioButton.IsChecked == true)
             {
@@ -90,7 +90,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 cleGeoportail = Constantes.DEMO;
             }
-            this._profile.IdNameGroupKeyGeoPortail = (igGroup, nomGroup, cleGeoportail);
+            this.Profile.IdNameGroupKeyGeoPortail = (igGroup, nomGroup, cleGeoportail);
         }
 
         private bool AlwaysTrue() { return true; }
@@ -113,7 +113,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             // Ajout des noms de groupes trouvés pour l'utilisateur
             ObservableCollection<string> GroupNames = new ObservableCollection<string>();
-            foreach (GeoGroupe geogroup in this._profile.Geogroupes)
+            foreach (GeoGroupe geogroup in this.Profile.Geogroupes)
             {
                 GroupNames.Add(geogroup.Name);
             }

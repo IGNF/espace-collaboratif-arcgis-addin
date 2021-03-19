@@ -48,9 +48,12 @@ namespace ArcGisProEspaceCollaboratif
                         throw new Exception("Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.");
                     }
                 }
-            
+
                 // Chargement du dialogue "Charger les couches de mon groupe"
-                var loadGatewayViewModel = new LoadGatewayViewModel(context);
+                var loadGatewayViewModel = new LoadGatewayViewModel()
+                {
+                    Context = context
+                };
                 loadGatewayViewModel.loadGatewayView.DataContext = loadGatewayViewModel;
                 loadGatewayViewModel.loadGatewayView.ShowDialog();
             }

@@ -74,7 +74,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="iclient">La connexion avec le service en-ligne Ripart.</param>
         public void SetForm()
         {
-            this.toolTip.SetToolTip(this.treeViewThemesAttributs, "Sélectionnez les thèmes auxquels vous souhaitez associer le nouveau signalement.");
+            //this.toolTip.SetToolTip(this.treeViewThemesAttributs, "Sélectionnez les thèmes auxquels vous souhaitez associer le nouveau signalement.");
             this.toolTip.SetToolTip(this.richTextBoxMessage, "Rédigez ici le message pour le nouveau signalement.");
             this.toolTip.SetToolTip(this.buttonCreer, "Créer le nouveau signalement.\nNécessite au moins qu'un thème soit associé et qu'un message ait été rédigé.");
             
@@ -224,16 +224,16 @@ namespace ArcGisProEspaceCollaboratif
 
                 // Ajout du thème dans le treeview
                 //this.treeViewThemesAttributs.CheckBoxes = true;
-                this.treeViewThemesAttributs.BeginUpdate();
-                this.treeViewThemesAttributs.Nodes.Add(thName);
+                //this.treeViewThemesAttributs.BeginUpdate();
+                //this.treeViewThemesAttributs.Nodes.Add(thName);
                 if (this.ListPreferredThemes.Contains(thName))
                 {
-                    this.treeViewThemesAttributs.Nodes[index].Checked = true;
+                    //this.treeViewThemesAttributs.Nodes[index].Checked = true;
                 }
 
                 // Ajout des attributs du thème
                 DisplayAttributsInTreeView(th, index);
-                this.treeViewThemesAttributs.EndUpdate();
+                //this.treeViewThemesAttributs.EndUpdate();
                 index++;
             }
         }
@@ -246,10 +246,10 @@ namespace ArcGisProEspaceCollaboratif
         {
             foreach (ThemeAttributes att in th.Attributes)
             {
-                this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
+                //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
                 if (att.Obligatoire)
                 {
-                    this.treeViewThemesAttributs.Nodes[index].NodeFont = new Font(Font, FontStyle.Bold);
+                    //this.treeViewThemesAttributs.Nodes[index].NodeFont = new Font(Font, FontStyle.Bold);
                 }
 
                 if (att.Type == "checkbox")
@@ -262,19 +262,19 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 else if (att.Type == "datetime")
                 {
-                    this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
+                    //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
                 }
                 else if (att.Type == "list")
                 {
-                    ComboBoxTreeNode cb = new ComboBoxTreeNode();
+                    //ComboBoxTreeNode cb = new ComboBoxTreeNode();
                     foreach (string val in att.Valeurs)
                     {
-                        cb.ComboBox.Items.Add(val);
+                        //cb.ComboBox.Items.Add(val);
                     }
                     
-                    TreeNode listNode = new TreeNode(att.Nom);
+                    /*TreeNode listNode = new TreeNode(att.Nom);
                     listNode.Nodes.Add(cb);
-                    this.treeViewThemesAttributs.Nodes[index].Nodes.Add(listNode);
+                    this.treeViewThemesAttributs.Nodes[index].Nodes.Add(listNode);*/
                 }
                 else
                 {
