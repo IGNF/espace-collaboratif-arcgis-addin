@@ -247,7 +247,7 @@ namespace ArcGisProEspaceCollaboratif
             foreach (ThemeAttributes att in th.Attributes)
             {
                 //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
-                if (att.Obligatoire)
+                if (att.Required)
                 {
                     //this.treeViewThemesAttributs.Nodes[index].NodeFont = new Font(Font, FontStyle.Bold);
                 }
@@ -267,7 +267,7 @@ namespace ArcGisProEspaceCollaboratif
                 else if (att.Type == "list")
                 {
                     //ComboBoxTreeNode cb = new ComboBoxTreeNode();
-                    foreach (string val in att.Valeurs)
+                    foreach (string val in att.Values)
                     {
                         //cb.ComboBox.Items.Add(val);
                     }

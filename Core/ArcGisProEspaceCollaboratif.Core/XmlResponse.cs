@@ -531,14 +531,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                 ThemeAttributes themeAttribut = new ThemeAttributes
                 {
                     Theme = EncodeToUTF8(val.SelectSingleNode("NOM").Value),
-                    Nom = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
+                    Name = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
                     Type = EncodeToUTF8(val.SelectSingleNode("TYPE").Value),
-                    Valeurs = new List<string>()
+                    Values = new List<string>()
                 };
                 XPathNavigator obligatoire = val.SelectSingleNode("OBLIGATOIRE");
                 if (obligatoire != null)
                 {
-                    themeAttribut.Obligatoire = true;                   
+                    themeAttribut.Required = true;                   
                 }
 
                 XPathNavigator valVALEURS = val.SelectSingleNode("VALEURS");
@@ -548,14 +548,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     if (valeurs.Name == "DEFAULTVAL")
                     {
-                        themeAttribut.DefaultVal = EncodeToUTF8(valeurs.InnerXml);
+                        themeAttribut.DefaultValue = EncodeToUTF8(valeurs.InnerXml);
                     }
                     if (valeurs.Name == "VAL")
                     {
                         lTmp.Add(EncodeToUTF8(valeurs.InnerXml));
                     }
                 }
-                themeAttribut.Valeurs = lTmp;
+                themeAttribut.Values = lTmp;
                 themesAttributesDict.AddOrUpdate(themeAttribut.Theme, new List<ThemeAttributes> { themeAttribut }, (nomTheme, attTheme) => { attTheme.Add(themeAttribut); return attTheme; });
             };
             return themesAttributesDict;

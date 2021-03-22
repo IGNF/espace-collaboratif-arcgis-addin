@@ -15,22 +15,22 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// 
         /// </summary>
-        public string Nom { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Valeur { get; set; }
+        public string Value { get; set; }
         
         /// <summary>
         /// 
         /// </summary>
-        public string DefaultVal { get; set; }
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public List<string> Valeurs { get; set; }
+        public List<string> Values { get; set; }
 
         /// <summary>
         /// 
@@ -40,6 +40,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// 
         /// </summary>
-        public bool Obligatoire { get; set; } = false;
+        public bool Required { get; set; } = false;
     }
 }

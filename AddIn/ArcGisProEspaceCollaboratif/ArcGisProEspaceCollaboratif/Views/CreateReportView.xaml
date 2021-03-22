@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Créer un nouveau signalement" Height="740.8" Width="597">
+        Title="Créer un nouveau signalement" Height="740.8" Width="597" Topmost="True">
     <Grid Margin="0,0,-6.6,23.4">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
@@ -24,10 +24,30 @@
                     <TabItem x:Name="ThemeTabItem" Header="Thèmes">
                         <Grid Margin="0,0,0.4,-110">
                             <ListView x:Name="ThemeListView" ItemsSource="{Binding ItemsSourceThemeListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
+                                <ListView.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <StackPanel>
+                                                    <Grid HorizontalAlignment="Left">
+                                                        <CheckBox HorizontalAlignment="Left" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                                                        <TextBlock HorizontalAlignment="Left" FontWeight="Bold" FontSize="12" Text="{Binding ThemeName}"/>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListView.GroupStyle>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn x:Name="ThemeGridViewColumn" Header="Thème" Width="240" DisplayMemberBinding="{Binding ThemeName}"/>
-                                        <GridViewColumn x:Name="AttributeGridViewColumn" Header="Attribut" Width="240" DisplayMemberBinding="{Binding ThemeAttribute}"/>
+                                        <GridViewColumn x:Name="AttributeColumn" Header="Attribut" Width="230" DisplayMemberBinding="{Binding Attribute}"/>
+                                        <GridViewColumn x:Name="ValueColumn" Header="Valeur" Width="230">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBox Text="{Binding Value}" HorizontalAlignment="Left" Width="180" Height="25"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -40,6 +60,12 @@
                             <Label x:Name="JoinDocumentLabel" Content="{Binding JoinDocumentLabel}" HorizontalAlignment="Left" Margin="5,60,0,0" VerticalAlignment="Top" Width="497" Height="23" FontSize="11" FontStyle="Italic"/>
                             <RadioButton x:Name="CreateReportRadioButton" Content="Créer un signalement unique" HorizontalAlignment="Left" Margin="5,108,0,0" VerticalAlignment="Top" IsChecked="{Binding CreateReportIsChecked}" />
                             <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsContent}" HorizontalAlignment="Left" Margin="5,138,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding CreateReportsIsChecked}"/>
+                        </Grid>
+                    </TabItem>
+                    <TabItem x:Name="TestTabItem" Header="Test">
+                        <Grid>
+                            <TreeView x:Name="Essai" ItemsSource="{Binding ItemsSourceTreeView}">
+                            </TreeView>
                         </Grid>
                     </TabItem>
                 </TabControl>

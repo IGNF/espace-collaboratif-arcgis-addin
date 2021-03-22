@@ -4,6 +4,8 @@ using ArcGisProEspaceCollaboratif.Views;
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
@@ -66,7 +68,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.PreferredGroup = Helper.Load_PreferredGroup();
             this.SketchNumber = sketchNumber;
             this.createReportView = new CreateReportView();
-            InitializeCreateReportView();
+            this.InitializeCreateReportView();
         }
         #endregion
 
@@ -119,10 +121,30 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public ObservableCollection<string> ItemsSourceThemeListView { get; set; }
+        public List<ItemTheme> ItemsSourceThemeListView { get; set; }
+
+        public TreeViewItem ItemsSourceTreeView { get; set; }
         #endregion
 
         #region Class
+
+        public class ItemTheme
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Attribute { get; set; } = "";
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Value { get; set; } = "";
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string ThemeName { get; set; }
+        }
         #endregion
 
         #region Commands
@@ -172,6 +194,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void InitializeCreateReportView()
         {
+            
             this.SetUserProfileHeaderGroupBox();
             this.SetGroupItemsSourceComboBox();
             this.SetGroupSelectedItemComboBox();
@@ -180,6 +203,51 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.SetJoinDocumentLabel();
             this.SetCreateReportRadioButton();
             this.SetCommentaireTextBox();
+            this.SetItemsTreeView();
+        }
+
+        private void SetItemsTreeView()
+        {
+            TreeViewItem treeViewItem = new TreeViewItem();
+            foreach (string thName in this.Context.Profil.FilteredThemes)
+            {
+                Theme th = null;
+                bool foundTheme = false;
+                foreach (Theme tmpth in this.Context.Profil.Themes)
+                {
+                    if (thName == tmpth.Group.Name)
+                    {
+                        foundTheme = true;
+                        th = tmpth;
+                        break;
+                    }
+                }
+                if (!foundTheme)
+                {
+                    continue;
+                }
+                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
+                if (!th.Filtered)
+                {
+                    continue;
+                }
+                treeViewItem.Header = thName;
+                foreach (ThemeAttributes att in th.Attributes)
+                {
+                    string value = "";
+                    if (!string.IsNullOrEmpty(att.Value))
+                    {
+                        value = att.Value;
+                    }
+                    TreeViewItem newChild = new TreeViewItem
+                    {
+                        Header = att.Name
+                    };
+                    treeViewItem.Items.Add(newChild);
+                    //items.Add(new ItemTheme() { Attribute = att.Name, Value = value, ThemeName = thName });
+                }
+            }
+            ItemsSourceTreeView = treeViewItem;
         }
 
         /// <summary>
@@ -264,7 +332,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Affiche les thèmes dans le formulaire en fonction du groupe de l'utilisateur
         /// </summary>
-        private void SetItemsSourceThemeListView()
+        public void SetItemsSourceThemeListView()
         {
             if (this.Context.Profil.Themes.Count == 0)
             {
@@ -273,7 +341,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
 
             // Filtrage des thèmes utilisateur en fonction du contenu des thèmes de son profil
-            int index = 0;
+            List<ItemTheme> items = new List<ItemTheme>();
             foreach (string thName in this.Context.Profil.FilteredThemes)
             {
                 Theme th = null;
@@ -297,20 +365,20 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     continue;
                 }
 
-                // Ajout du thème dans le treeview
-                //this.treeViewThemesAttributs.CheckBoxes = true;
-                //this.treeViewThemesAttributs.BeginUpdate();
-                //this.treeViewThemesAttributs.Nodes.Add(thName);
-                if (this.ListPreferredThemes.Contains(thName))
+                foreach (ThemeAttributes att in th.Attributes)
                 {
-                    //this.treeViewThemesAttributs.Nodes[index].Checked = true;
+                    string value = "";
+                    if (!string.IsNullOrEmpty(att.Value))
+                    {
+                        value = att.Value;
+                    }
+                    items.Add(new ItemTheme() { Attribute = att.Name, Value = value, ThemeName = thName });
                 }
-
-                // Ajout des attributs du thème
-                DisplayAttributsInTreeView(th, index);
-                //this.treeViewThemesAttributs.EndUpdate();
-                index++;
             }
+            ItemsSourceThemeListView = items;
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(this.ItemsSourceThemeListView);
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("ThemeName");
+            view.GroupDescriptions.Add(groupDescription);
         }
 
         /// <summary>
@@ -322,7 +390,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             foreach (ThemeAttributes att in th.Attributes)
             {
                 //this.treeViewThemesAttributs.Nodes[index].Nodes.Add(att.Nom);
-                if (att.Obligatoire)
+                if (att.Required)
                 {
                     //this.treeViewThemesAttributs.Nodes[index].NodeFont = new Font(Font, FontStyle.Bold);
                 }
