@@ -50,10 +50,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
 
                 // Chargement du dialogue "Charger les couches de mon groupe"
-                var loadGatewayViewModel = new LoadGatewayViewModel()
-                {
-                    Context = context
-                };
+                var loadGatewayViewModel = new LoadGatewayViewModel(context);
                 loadGatewayViewModel.loadGatewayView.DataContext = loadGatewayViewModel;
                 loadGatewayViewModel.loadGatewayView.ShowDialog();
             }

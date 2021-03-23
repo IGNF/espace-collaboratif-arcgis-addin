@@ -4,6 +4,7 @@ using ArcGisProEspaceCollaboratif.Views;
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -102,7 +103,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         public bool CreateReportIsChecked { get; set; } = true;
-       
+
         /// <summary>
         /// 
         /// </summary>
@@ -121,9 +122,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public List<ItemTheme> ItemsSourceThemeListView { get; set; }
+        public List<ItemTheme> lvThemesItemsSource { get; set; }
 
-        public TreeViewItem ItemsSourceTreeView { get; set; }
+        public List<ItemTest> ItemsSourceTestListView { get; set; }
         #endregion
 
         #region Class
@@ -138,7 +139,27 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             /// <summary>
             /// 
             /// </summary>
-            public string Value { get; set; } = "";
+            public string Value { get; set; }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public string ThemeName { get; set; }
+        }
+
+        public class ItemTest
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            public string Attribute { get; set; } = "";
+
+            /// <summary>
+            /// 
+            /// </summary>
+            //public string Value { get; set; }
+
+            public DataTemplate CellTemplate { get; set; }
 
             /// <summary>
             /// 
@@ -198,17 +219,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.SetUserProfileHeaderGroupBox();
             this.SetGroupItemsSourceComboBox();
             this.SetGroupSelectedItemComboBox();
-            this.SetItemsSourceThemeListView();
             this.SetJoinSketchIsChecked();
             this.SetJoinDocumentLabel();
             this.SetCreateReportRadioButton();
             this.SetCommentaireTextBox();
-            this.SetItemsTreeView();
+            this.SetItemsSourceTestListView();
+            this.SetThemes();
         }
 
-        private void SetItemsTreeView()
+        /// <summary>
+        /// Affiche les thèmes dans le formulaire en fonction du groupe de l'utilisateur
+        /// </summary>
+        private void SetThemes()
         {
-            TreeViewItem treeViewItem = new TreeViewItem();
+            if (this.Context.Profil.Themes.Count == 0)
+            {
+                // Pas de thèmes à afficher, on sort de la fonction
+                return;
+            }
+
+            List<ItemTheme> items = new List<ItemTheme>();
             foreach (string thName in this.Context.Profil.FilteredThemes)
             {
                 Theme th = null;
@@ -231,7 +261,63 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     continue;
                 }
-                treeViewItem.Header = thName;
+
+                foreach (ThemeAttributes att in th.Attributes)
+                {
+                    string value = "";
+                    if (!string.IsNullOrEmpty(att.Value))
+                    {
+                        if (!string.IsNullOrEmpty(att.DefaultValue))
+                        {
+                            value = att.DefaultValue;
+                        }
+                            
+                    }
+                    items.Add(new ItemTheme() { Attribute = att.Name, Value = value, ThemeName = thName });
+                }
+            }
+
+            //this.createReportView.lvThemes.ItemsSource = items;
+            this.lvThemesItemsSource = items;
+
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(this.lvThemesItemsSource);
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("ThemeName");
+            view.GroupDescriptions.Add(groupDescription);
+        }
+
+        private void SetItemsSourceTestListView()
+        {
+            if (this.Context.Profil.Themes.Count == 0)
+            {
+                // Pas de thèmes à afficher, on sort de la fonction
+                return;
+            }
+
+            // Filtrage des thèmes utilisateur en fonction du contenu des thèmes de son profil
+            List<ItemTest> items = new List<ItemTest>();
+            foreach (string thName in this.Context.Profil.FilteredThemes)
+            {
+                Theme th = null;
+                bool foundTheme = false;
+                foreach (Theme tmpth in this.Context.Profil.Themes)
+                {
+                    if (thName == tmpth.Group.Name)
+                    {
+                        foundTheme = true;
+                        th = tmpth;
+                        break;
+                    }
+                }
+                if (!foundTheme)
+                {
+                    continue;
+                }
+                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
+                if (!th.Filtered)
+                {
+                    continue;
+                }
+
                 foreach (ThemeAttributes att in th.Attributes)
                 {
                     string value = "";
@@ -239,15 +325,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         value = att.Value;
                     }
-                    TreeViewItem newChild = new TreeViewItem
+
+                    FrameworkElementFactory frameworkElementFactory = new FrameworkElementFactory(typeof(ComboBox));
+                    //frameworkElementFactory.SetBinding(TextBox.PaddingProperty, new Binding("Value"));
+                    DataTemplate dataTemplate = new DataTemplate
                     {
-                        Header = att.Name
+                        VisualTree = frameworkElementFactory
                     };
-                    treeViewItem.Items.Add(newChild);
-                    //items.Add(new ItemTheme() { Attribute = att.Name, Value = value, ThemeName = thName });
+                    /*{
+                        DataType = typeof(TextBox),
+                        VisualTree = frameworkElementFactory
+                    };*/
+
+                    items.Add(new ItemTest() { Attribute = att.Name, CellTemplate = dataTemplate, ThemeName = thName });
+
                 }
             }
-            ItemsSourceTreeView = treeViewItem;
+            ItemsSourceTestListView = items;
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(this.ItemsSourceTestListView);
+            PropertyGroupDescription groupDescription = new PropertyGroupDescription("ThemeName");
+            view.GroupDescriptions.Add(groupDescription);
         }
 
         /// <summary>
@@ -327,58 +424,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void SetJoinDocumentLabel()
         {
             this.JoinDocumentLabel = Constantes.NOFILE;
-        }
-
-        /// <summary>
-        /// Affiche les thèmes dans le formulaire en fonction du groupe de l'utilisateur
-        /// </summary>
-        public void SetItemsSourceThemeListView()
-        {
-            if (this.Context.Profil.Themes.Count == 0)
-            {
-                // Pas de thèmes à afficher, on sort de la fonction
-                return;
-            }
-
-            // Filtrage des thèmes utilisateur en fonction du contenu des thèmes de son profil
-            List<ItemTheme> items = new List<ItemTheme>();
-            foreach (string thName in this.Context.Profil.FilteredThemes)
-            {
-                Theme th = null;
-                bool foundTheme = false;
-                foreach (Theme tmpth in this.Context.Profil.Themes)
-                {
-                    if (thName == tmpth.Group.Name)
-                    {
-                        foundTheme = true;
-                        th = tmpth;
-                        break;
-                    }
-                }
-                if (!foundTheme)
-                {
-                    continue;
-                }
-                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
-                if (!th.Filtered)
-                {
-                    continue;
-                }
-
-                foreach (ThemeAttributes att in th.Attributes)
-                {
-                    string value = "";
-                    if (!string.IsNullOrEmpty(att.Value))
-                    {
-                        value = att.Value;
-                    }
-                    items.Add(new ItemTheme() { Attribute = att.Name, Value = value, ThemeName = thName });
-                }
-            }
-            ItemsSourceThemeListView = items;
-            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(this.ItemsSourceThemeListView);
-            PropertyGroupDescription groupDescription = new PropertyGroupDescription("ThemeName");
-            view.GroupDescriptions.Add(groupDescription);
         }
 
         /// <summary>

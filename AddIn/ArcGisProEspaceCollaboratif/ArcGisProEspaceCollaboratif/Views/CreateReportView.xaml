@@ -21,39 +21,36 @@
                 <ComboBox x:Name="GroupComboBox" ItemsSource="{Binding GroupItemsSourceComboBox}" SelectedItem="{Binding GroupSelectedItemComboBox}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="199"/>
                 <Label Content="Nouveau signalement" HorizontalAlignment="Left" Margin="5,15,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="159"/>
                 <TabControl HorizontalAlignment="Left" Height="343" Margin="10,15,0,0" VerticalAlignment="Top" Width="519">
-                    <TabItem x:Name="ThemeTabItem" Header="Thèmes">
-                        <Grid Margin="0,0,0.4,-110">
-                            <ListView x:Name="ThemeListView" ItemsSource="{Binding ItemsSourceThemeListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
-                                <ListView.GroupStyle>
-                                    <GroupStyle>
-                                        <GroupStyle.HeaderTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <Grid HorizontalAlignment="Left">
-                                                        <CheckBox HorizontalAlignment="Left" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
-                                                        <TextBlock HorizontalAlignment="Left" FontWeight="Bold" FontSize="12" Text="{Binding ThemeName}"/>
-                                                    </Grid>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </GroupStyle.HeaderTemplate>
-                                    </GroupStyle>
-                                </ListView.GroupStyle>
+                    <TabItem x:Name="Themes" Header="Thèmes">
+                        <Grid Margin="10">
+                            <ListView x:Name="lvThemes" ItemsSource="{Binding lvThemesItemsSource}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn x:Name="AttributeColumn" Header="Attribut" Width="230" DisplayMemberBinding="{Binding Attribute}"/>
-                                        <GridViewColumn x:Name="ValueColumn" Header="Valeur" Width="230">
+                                        <GridViewColumn Header="Attribut" Width="120" DisplayMemberBinding="{Binding Attribute}"/>
+                                        <GridViewColumn Header="Valeur" Width="220">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <TextBox Text="{Binding Value}" HorizontalAlignment="Left" Width="180" Height="25"/>
+                                                    <TextBox Text="{Binding Value}" HorizontalAlignment="Left" Width="180" Height="23"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
+                                <ListView.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <CheckBox HorizontalAlignment="Left" FontSize="12" Content="{Binding Name}" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListView.GroupStyle>
                             </ListView>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="OptionTabItem" Header="Options">
+                    <TabItem x:Name="OptionsTabItem" Header="Options">
                         <Grid Margin="0,0,0.4,-110">
                             <CheckBox x:Name="JoinSketchCheckBox" Content="Joindre un croquis" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" Width="121" Height="17" IsChecked="{Binding JoinSketchIsChecked}"/>
                             <CheckBox x:Name="JoinDocumentCheckBox" Content="Joindre un document" Command="{Binding JoinDocumentCmd}" HorizontalAlignment="Left" Margin="5,30,0,0" VerticalAlignment="Top" Width="136" Height="17"/>
@@ -62,10 +59,29 @@
                             <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsContent}" HorizontalAlignment="Left" Margin="5,138,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding CreateReportsIsChecked}"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="TestTabItem" Header="Test">
-                        <Grid>
-                            <TreeView x:Name="Essai" ItemsSource="{Binding ItemsSourceTreeView}">
-                            </TreeView>
+                    <TabItem x:Name="Test" Header="Test">
+                        <Grid Margin="0,0,0.4,-110">
+                            <ListView x:Name="TestListView" ItemsSource="{Binding ItemsSourceTestListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
+                                <ListView.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <StackPanel>
+                                                    <Grid HorizontalAlignment="Left">
+                                                        <CheckBox HorizontalAlignment="Left" FontWeight="Bold" FontSize="12" Content="{Binding Name}" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ListView.GroupStyle>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Attribut" Width="230" DisplayMemberBinding="{Binding Attribute}"/>
+                                        <GridViewColumn x:Name="testValue" Header="Valeur" Width="230" CellTemplate="{Binding CellTemplate}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
                         </Grid>
                     </TabItem>
                 </TabControl>
