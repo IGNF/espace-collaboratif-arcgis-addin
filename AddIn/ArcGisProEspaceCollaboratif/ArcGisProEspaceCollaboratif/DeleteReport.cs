@@ -19,7 +19,7 @@ using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class SupprimerSignalements : Button
+    internal class DeleteReport : Button
     {
         protected override void OnClick()
         {

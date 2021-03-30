@@ -14,7 +14,6 @@
             <ColumnDefinition Width="189*"/>
             <ColumnDefinition Width="23*"/>
         </Grid.ColumnDefinitions>
-        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SendButtonCmd}" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
         <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="620" Margin="17.5,20,0,0" VerticalAlignment="Top" Width="549" Grid.ColumnSpan="3" Grid.Column="1">
             <StackPanel Margin="0,0,-3,-74.4">
                 <Label Content="Groupe" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="59" Height="30" FontWeight="Bold" FontSize="14"/>
@@ -22,33 +21,7 @@
                 <Label Content="Nouveau signalement" HorizontalAlignment="Left" Margin="5,15,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Width="159"/>
                 <TabControl HorizontalAlignment="Left" Height="343" Margin="10,15,0,0" VerticalAlignment="Top" Width="519">
                     <TabItem x:Name="Themes" Header="Thèmes">
-                        <Grid Margin="10">
-                            <ListView x:Name="lvThemes" ItemsSource="{Binding lvThemesItemsSource}">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Attribut" Width="120" DisplayMemberBinding="{Binding Attribute}"/>
-                                        <GridViewColumn Header="Valeur" Width="220">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBox Text="{Binding Value}" HorizontalAlignment="Left" Width="180" Height="23"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                                <ListView.GroupStyle>
-                                    <GroupStyle>
-                                        <GroupStyle.HeaderTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <CheckBox HorizontalAlignment="Left" FontSize="12" Content="{Binding Name}" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </GroupStyle.HeaderTemplate>
-                                    </GroupStyle>
-                                </ListView.GroupStyle>
-                            </ListView>
-                        </Grid>
+                        <Grid x:Name="GridGeneral" Margin="10" Width="Auto" Height="Auto"/>
                     </TabItem>
                     <TabItem x:Name="OptionsTabItem" Header="Options">
                         <Grid Margin="0,0,0.4,-110">
@@ -59,36 +32,11 @@
                             <RadioButton x:Name="CreateReportsRadioButton" Content="{Binding CreateReportsContent}" HorizontalAlignment="Left" Margin="5,138,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding CreateReportsIsChecked}"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="Test" Header="Test">
-                        <Grid Margin="0,0,0.4,-110">
-                            <ListView x:Name="TestListView" ItemsSource="{Binding ItemsSourceTestListView}" HorizontalAlignment="Left" Height="300" Margin="5,10,0,0" VerticalAlignment="Top" Width="480">
-                                <ListView.GroupStyle>
-                                    <GroupStyle>
-                                        <GroupStyle.HeaderTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <Grid HorizontalAlignment="Left">
-                                                        <CheckBox HorizontalAlignment="Left" FontWeight="Bold" FontSize="12" Content="{Binding Name}" IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}}"/>
-                                                    </Grid>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </GroupStyle.HeaderTemplate>
-                                    </GroupStyle>
-                                </ListView.GroupStyle>
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Attribut" Width="230" DisplayMemberBinding="{Binding Attribute}"/>
-                                        <GridViewColumn x:Name="testValue" Header="Valeur" Width="230" CellTemplate="{Binding CellTemplate}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-                    </TabItem>
                 </TabControl>
                 <Label Content="Commentaire" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
                 <TextBox x:Name="CommentaireTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaireTextBox}" VerticalAlignment="Top" Width="520"/>
             </StackPanel>
         </GroupBox>
-
+        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SendButtonCmd}" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
     </Grid>
 </Window>

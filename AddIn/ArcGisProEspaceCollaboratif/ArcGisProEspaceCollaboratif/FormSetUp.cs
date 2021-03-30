@@ -54,9 +54,9 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             this.dateTimePicker.Value = System.DateTime.Now;
-            this.dateTimePicker.MinDate = Convert.ToDateTime(Helper.dateDefaut).Date;
+            this.dateTimePicker.MinDate = Convert.ToDateTime(Helper.dateDefault).Date;
             System.DateTime dateDefaut = Helper.Load_DateExtraction();
-            if (dateDefaut.Date == Convert.ToDateTime(Helper.dateDefaut).Date)
+            if (dateDefaut.Date == Convert.ToDateTime(Helper.dateDefault).Date)
             {
                 this.dateTimePicker.Enabled = false;
                 this.numericUpDownDate.Enabled = false;
@@ -72,12 +72,12 @@ namespace ArcGisProEspaceCollaboratif
 
             // Récupération des couches et attributs
             IReadOnlyList<Layer> mapLayers = contexte.MapActiveView.Map.GetLayersAsFlattenedList();
-            List<String> collabSpaceLayers = new List<String>
+            List<string> collabSpaceLayers = new List<string>
             {
-                Helper.nom_Calque_Signalement,
-                Helper.nom_Calque_Croquis_Polygone,
-                Helper.nom_Calque_Croquis_Ligne,
-                Helper.nom_Calque_Croquis_Point
+                Helper.name_layer_Signalement,
+                Helper.name_layer_Croquis_Polygone,
+                Helper.name_layer_Croquis_Ligne,
+                Helper.name_layer_Croquis_Point
             };
 
             foreach (var layer in mapLayers)
@@ -332,7 +332,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             else
             {
-                Helper.Save_DateExtraction(Convert.ToDateTime(Helper.dateDefaut));
+                Helper.Save_DateExtraction(Convert.ToDateTime(Helper.dateDefault));
             }
 
             if (this.checkBoxGroup.Checked)

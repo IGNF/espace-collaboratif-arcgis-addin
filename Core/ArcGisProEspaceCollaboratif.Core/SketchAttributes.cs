@@ -8,8 +8,8 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class SketchAttributes
     {
-        public String Nom ;   //nom de l'attribut
-        public String Valeur ;//valeur de l'attribut
+        public string Nom ;   //nom de l'attribut
+        public string Valeur ;//valeur de l'attribut
 
         public SketchAttributes()
         {
@@ -17,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Valeur = "";
         }
 
-        public SketchAttributes(String nom, String valeur)
+        public SketchAttributes(string nom, string valeur)
         {
             this.Nom = nom;
             this.Valeur = valeur;

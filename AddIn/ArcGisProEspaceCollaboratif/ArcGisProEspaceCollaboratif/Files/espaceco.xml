@@ -1,0 +1,15 @@
+<Parametres_connexion_a_EspaceCollaboratif>
+  <Serveur>
+    <URLHost>https://espacecollaboratif.ign.fr</URLHost>
+  </Serveur>
+  <Map>
+    <Pagination>100</Pagination>
+    <Afficher_Croquis>Oui</Afficher_Croquis>
+    <Zone_extraction>
+    </Zone_extraction>
+    <Date_extraction>01/01/2000 00:00:00</Date_extraction>
+    <Import_pour_groupe>false</Import_pour_groupe>
+    <Themes_preferes>
+    </Themes_preferes>
+  </Map>
+</Parametres_connexion_a_EspaceCollaboratif>

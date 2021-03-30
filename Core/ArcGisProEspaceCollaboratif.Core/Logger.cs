@@ -14,12 +14,12 @@ namespace ArcGisProEspaceCollaboratif.Core
        private static readonly object padlock = new object();
 
        //le fichier de configuration du log
-       private readonly String configFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\log4net.config";
+       private readonly string configFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\log4net.config";
        //le chemin vers le répertoire du fichier de log
-       private static String logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\logs";
+       private static string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\logs";
 
        //niveau de log
-       private readonly String level = "ALL";
+       private readonly string level = "ALL";
 
         /// <summary>
         /// retourne l'instance du Logger
@@ -64,7 +64,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {                    
             if (!File.Exists(configFile))
             {
-                String logConfig = "<log4net>\n" +
+                string logConfig = "<log4net>\n" +
                                   "<appender name=\"RollingFile\" type=\"log4net.Appender.RollingFileAppender\">\n" +
                                    "<file value=\"${APPDATA}\\EspaceCollaboratif\\logs\\\"/>\n" +
                                     "<appendToFile value=\"true\" />\n" +
@@ -89,7 +89,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             //on ne garde que le fichier de log du jour courant
             DirectoryInfo d = new DirectoryInfo(logPath);
             FileInfo[] Files = d.GetFiles("*.log");
-            String date = DateTime.Now.Year + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + (DateTime.Now.Day).ToString().PadLeft(2, '0');
+            string date = DateTime.Now.Year + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + (DateTime.Now.Day).ToString().PadLeft(2, '0');
 
             foreach (FileInfo file in Files)
             {

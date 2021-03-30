@@ -19,7 +19,7 @@ using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class RepondreSignalement : Button
+    internal class AnswerReport : Button
     {
         protected override void OnClick()
         {

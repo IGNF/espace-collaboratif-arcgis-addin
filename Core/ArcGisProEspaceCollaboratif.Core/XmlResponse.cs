@@ -17,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     public class XmlResponse
     {
         //la réponse du serveur (au format xml)
-        private readonly String response;
+        private readonly string response;
 
         private XPathDocument docxpath;
 
@@ -35,7 +35,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// initialisation du XPathDocument
         /// </summary>
         /// <param name="response">la réponse reçue du serveur au format xml </param>
-        public XmlResponse(String response)
+        public XmlResponse(string response)
         {
             this.response = response;
             docxpath = new XPathDocument(StringToStream(response));
@@ -48,10 +48,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Contrôle la validité de la réponse. 
         /// Si le code erreur="OK", la réponse est valide
         /// </summary>
-        /// <returns>Dictionary<String,String>  à 2 clés: message et code"</returns>
-        public Dictionary<String, String> CheckResponseValidity()
+        /// <returns>Dictionary<string,string>  à 2 clés: message et code"</returns>
+        public Dictionary<string, string> CheckResponseValidity()
         {
-            Dictionary<String, String> errMessage = new Dictionary<string, string>();
+            Dictionary<string, string> errMessage = new Dictionary<string, string>();
             try
             {
                 XPathExpression expr = navigator.Compile("/geors/REPONSE/ERREUR");
@@ -71,9 +71,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Extraction des Aleas
         /// </summary>
         /// <returns>une liste contenant les 2 aleas</returns>
-        public List<String> GetAleas()
+        public List<string> GetAleas()
         {
-            List<String> aleas = new List<string>();
+            List<string> aleas = new List<string>();
 
             try
             {
@@ -109,9 +109,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Extraction des paramètres de connexion
         /// </summary>
         /// <returns>un dictionnaire contenant les paramètres de connexion (ID_AUTEUR, JETON, SITE)</returns>
-        public Dictionary<String, String> GetConnectValues() {
+        public Dictionary<string, string> GetConnectValues() {
 
-            Dictionary<String, String> connectValues = new Dictionary<String, String>();
+            Dictionary<string, string> connectValues = new Dictionary<string, string>();
 
             try
             {
@@ -153,8 +153,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Extraction du nouveau jeton
         /// </summary>
         /// <returns>le jeton</returns>
-        public String GetCurrentJeton() {
-            String jeton = "";
+        public string GetCurrentJeton() {
+            string jeton = "";
 
             try
             {
@@ -656,7 +656,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
 
             Signalement rem = null;
-            String remXpath = "/geors/GEOREM";
+            string remXpath = "/geors/GEOREM";
 
             try
             {
@@ -677,8 +677,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     XPathNodeIterator it = val.Select("THEME");
                     foreach (XPathNavigator v in it)
                     {
-                        String nomGroupe = v.SelectSingleNode("NOM").Value;
-                        String idGroupe = v.SelectSingleNode("ID_GEOGROUPE").Value;
+                        string nomGroupe = v.SelectSingleNode("NOM").Value;
+                        string idGroupe = v.SelectSingleNode("ID_GEOGROUPE").Value;
                
                         nomGroupe = EncodeToUTF8( nomGroupe);
 
@@ -701,7 +701,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     DateTime dateValue = new DateTime();
                     val.MoveToFollowing("DATE", "");
-                    String d = val.InnerXml;
+                    string d = val.InnerXml;
                     rem.DateCreation = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
 
                     val.MoveToFollowing("MAJ", "");
@@ -807,7 +807,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Sketch.SketchType type =
                     (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
 
-                String nomCr = EncodeToUTF8(v.SelectSingleNode("nom").Value);
+                string nomCr = EncodeToUTF8(v.SelectSingleNode("nom").Value);
 
                 //attributs
                 XPathNodeIterator itAttribut = v.Select("attributs/attribut");
@@ -837,17 +837,17 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                 }
 
-                String sCoord = v.InnerXml;
-                String s = " ";
+                string sCoord = v.InnerXml;
+                string s = " ";
 
-                String[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
+                string[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
 
 
                 Point pt = new Point();
                 for (int i = 0; i < tCoord.Length; i++)
                 {                 
                     pt = new Point();
-                    String[] latlon = tCoord[i].Split(',');
+                    string[] latlon = tCoord[i].Split(',');
                     if (latlon.Length==4)
                     {
                         pt.Longitude = double.Parse(latlon[0] + "."+latlon[1], invC);
@@ -939,7 +939,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             List<Theme> themes = new List<Theme>();
 
-           String remXpath ="/geors/GEOREM/THEME";
+           string remXpath ="/geors/GEOREM/THEME";
 
             try
             {    
@@ -974,7 +974,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public int GetTotalResponse()
         {
             int total = 0;
-            String xpath = "/geors/PAGE/TOTAL";
+            string xpath = "/geors/PAGE/TOTAL";
 
             try
             {
@@ -996,10 +996,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// retourne la version du service EspaceCollaboratif
         /// </summary>
         /// <returns>version du service EspaceCollaboratif</returns>
-        public String GetVersion()
+        public string GetVersion()
         {
-            String v = "";
-            String xpath = "/geors";
+            string v = "";
+            string xpath = "/geors";
 
             try
             {
@@ -1022,10 +1022,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Retourne la date/heure de la réponse
         /// </summary>
         /// <returns></returns>
-        public String GetDate()
+        public string GetDate()
         {
-            String sdate = "";
-            String xpath = "/geors/PAGE/DATE";
+            string sdate = "";
+            string xpath = "/geors/PAGE/DATE";
 
             try
             {
@@ -1044,7 +1044,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Transformation d'un String en Stream
+        /// Transformation d'un string en Stream
         /// </summary>
         /// <param name="str">la chaîne de caractère à transformer</param>
         /// <returns>le Stream</returns>
@@ -1065,7 +1065,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="str">la chaîne de caractère</param>
         /// <returns>la chaîne de caractère en UTF8</returns>
-        protected static String EncodeToUTF8(String str)
+        protected static string EncodeToUTF8(string str)
         {            
             byte[] bytes = Encoding.Default.GetBytes(str);
             str = Encoding.UTF8.GetString(bytes);

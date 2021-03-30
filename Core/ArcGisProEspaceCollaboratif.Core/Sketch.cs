@@ -26,7 +26,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Nom du croquis
         /// </summary>
-        public String Name;
+        public string Name;
 
         /// <summary>
         /// La liste des attributs (clé,valeur)
@@ -54,7 +54,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="nom">nom du croquis</param>
         /// <param name="type">type du croquis</param>
-        public Sketch(String name, SketchType type)
+        public Sketch(string name, SketchType type)
         {
             this.Name = name;
             this.Type = type;
@@ -67,7 +67,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="name">nom du croquis</param>
         /// <param name="type">type du croquis</param>
         /// <param name="points">liste de Point </param>
-        public Sketch(String name, SketchType type, List<Point> points)
+        public Sketch(string name, SketchType type, List<Point> points)
         {
             this.Name = name;
             this.Type = type;
@@ -81,7 +81,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="name">nom du croquis</param>
         /// <param name="type">type du croquis</param>
         /// <param name="attributs">liste d'Attributs lié au croquis</param>
-        public Sketch(String name, SketchType type, List<Point> points, List<SketchAttributes> attributes)
+        public Sketch(string name, SketchType type, List<Point> points, List<SketchAttributes> attributes)
         {
             this.Name = name;
             this.Type = type;
@@ -135,7 +135,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="key">nom de l'attribut</param>
         /// <param name="value">valeur de l'attribut</param>
-        public void AddAttribute(String key, String value)
+        public void AddAttribute(string key, string value)
         {
             this.Attributes.Add(new SketchAttributes(key, value));
         }

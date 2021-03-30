@@ -199,8 +199,8 @@
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
-    <Compile Include="RépondreSignalement.cs" />
-    <Compile Include="SupprimerSignalements.cs" />
+    <Compile Include="AnswerReport.cs" />
+    <Compile Include="DeleteReport.cs" />
     <Compile Include="TelechargerSignalements.cs" />
     <Compile Include="Views\GroupChoiceView.xaml.cs">
       <DependentUpon>GroupChoiceView.xaml</DependentUpon>
@@ -319,6 +319,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Files\espaceco.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Files\formats.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:

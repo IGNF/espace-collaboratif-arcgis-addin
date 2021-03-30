@@ -22,55 +22,56 @@ namespace ArcGisProEspaceCollaboratif
     /// </summary>
     public class Helper
     {
-        public const String nom_Fichier_EspaceCollaboratif = "espaceco.gdb";
-        public const String nom_Fichier_Parametres_EspaceCollaboratif = "espaceco.xml";
+        public const string name_file_espaceco_gdb = "espaceco.gdb";
+        public const string name_file_espaceco_xml = "espaceco.xml";
+        public const string name_file_extensions = "formats.txt";
 
-        public const String nom_Calque_Signalement = "Signalement";
-        public const String nom_Calque_Croquis_Polygone = "Croquis_EC_Polygone";
-        public const String nom_Calque_Croquis_Ligne = "Croquis_EC_Ligne";
-        public const String nom_Calque_Croquis_Point = "Croquis_EC_Point";
+        public const string name_layer_Signalement = "Signalement";
+        public const string name_layer_Croquis_Polygone = "Croquis_EC_Polygone";
+        public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
+        public const string name_layer_Croquis_Point = "Croquis_EC_Point";
 
-        public const String nom_Champ_IdRemarque = "N°remarque";
-        public const String nom_Champ_Auteur = "Auteur";
-        public const String nom_Champ_Commune = "Commune";
-        public const String nom_Champ_Departement = "Département";
-        public const String nom_Champ_IDDepartement = "Département_ID";
-        public const String nom_Champ_DateCreation = "Date_de_création";
-        public const String nom_Champ_DateMAJ = "Date_MAJ";
-        public const String nom_Champ_DateValidation = "Date_de_validation";
-        public const String nom_Champ_Themes = "Thèmes";
-        public const String nom_Champ_Statut = "Statut";
-        public const String nom_Champ_Message = "Message";
-        public const String nom_Champ_Reponse = "Réponses";
-        public const String nom_Champ_Url = "URL";
-        public const String nom_Champ_UrlPrive = "URL_privé";
-        public const String nom_Champ_Document = "Document";
-        public const String nom_Champ_Autorisation = "Autorisation";
-        public const String nom_Champ_LienRemarque = "Lien_remarque";
-        public const String nom_Champ_NomCroquis = "Nom";
-        public const String nom_Champ_Attributs = "Attributs_croquis";
-        public const String nom_Champ_LienBDuni = "Lien_object_BDUni";
+        public const string name_field_IdRemarque = "N°remarque";
+        public const string name_field_Auteur = "Auteur";
+        public const string name_field_Commune = "Commune";
+        public const string name_field_Departement = "Département";
+        public const string name_field_IDDepartement = "Département_ID";
+        public const string name_field_DateCreation = "Date_de_création";
+        public const string name_field_DateMAJ = "Date_MAJ";
+        public const string name_field_DateValidation = "Date_de_validation";
+        public const string name_field_Themes = "Thèmes";
+        public const string name_field_Statut = "Statut";
+        public const string name_field_Message = "Message";
+        public const string name_field_Reponse = "Réponses";
+        public const string name_field_Url = "URL";
+        public const string name_field_UrlPrive = "URL_privé";
+        public const string name_field_Document = "Document";
+        public const string name_field_Autorisation = "Autorisation";
+        public const string name_field_LienRemarque = "Lien_remarque";
+        public const string name_field_NomCroquis = "Nom";
+        public const string name_field_Attributs = "Attributs_croquis";
+        public const string name_field_LienBDuni = "Lien_object_BDUni";
 
-        public const String xml_UrlHost = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/URLHost";
-        public const String xml_Login = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/Login";
-        public const String xml_DateExtraction = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Date_extraction";
-        public const String xml_Pagination = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Pagination";
-        public const String xml_Themes = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Thèmes_préférés/Thème";
-        public const String xml_Zone_extraction = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Zone_extraction";
-        public const String xml_AfficherCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Afficher_Croquis";
-        public const String xml_AttributsCroquis = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Attributs_croquis";
-        public const String xml_BaliseNomCalque = "Calque_Nom";
-        public const String xml_BaliseChampCalque = "Calque_Champ";
-        public const String xml_Group = "/Paramètres_connexion_à_EspaceCollaboratif/Map/Import_pour_groupe";
-        public const String xml_Proxy = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/Proxy";
-        public const String xml_CleGeoPortail = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/cle_geoportail";
-        public const String xml_GroupeActif = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/groupe_actif";
-        public const String xml_GroupePrefere = "/Paramètres_connexion_à_EspaceCollaboratif/Serveur/groupe_prefere";
+        public const string xml_UrlHost = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/URLHost";
+        public const string xml_Login = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Login";
+        public const string xml_DateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Date_extraction";
+        public const string xml_Pagination = "/Parametres_connexion_a_EspaceCollaboratif/Map/Pagination";
+        public const string xml_Themes = "/Parametres_connexion_a_EspaceCollaboratif/Map/Themes_preferes/Theme";
+        public const string xml_Zone_extraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Zone_extraction";
+        public const string xml_AfficherCroquis = "/Parametres_connexion_a_EspaceCollaboratif/Map/Afficher_Croquis";
+        public const string xml_AttributsCroquis = "/Parametres_connexion_a_EspaceCollaboratif/Map/Attributs_croquis";
+        public const string xml_BaliseNomCalque = "Calque_Nom";
+        public const string xml_BaliseChampCalque = "Calque_Champ";
+        public const string xml_Group = "/Parametres_connexion_a_EspaceCollaboratif/Map/Import_pour_groupe";
+        public const string xml_Proxy = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Proxy";
+        public const string xml_CleGeoPortail = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/cle_geoportail";
+        public const string xml_GroupeActif = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_actif";
+        public const string xml_GroupePrefere = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_prefere";
 
-        public const String dateDefaut = "01/01/1900";
-        public const int longueurMaxChamp = 5000;
+        public const string dateDefault = "01/01/1900";
+        public const int lengthMaxField = 5000;
 
-        public static String EspaceCollaboratifAssemblyDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\";
+        public static string EspaceCollaboratifAssemblyDir = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
@@ -78,33 +79,58 @@ namespace ArcGisProEspaceCollaboratif
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
         public static Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
-            { nom_Champ_IdRemarque,     new KeyValuePair<string,string> ("LONG","")      },
-            { nom_Champ_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
-            { nom_Champ_Commune,        new KeyValuePair<string,string> ("TEXT", "")     },
-            { nom_Champ_Departement,    new KeyValuePair<string,string> ("TEXT", "23")   },
-            { nom_Champ_IDDepartement,  new KeyValuePair<string,string> ("TEXT", "3")    },
-            { nom_Champ_DateCreation,   new KeyValuePair<string,string> ("DATE", "")     },
-            { nom_Champ_DateMAJ,        new KeyValuePair<string,string> ("DATE", "")     },
-            { nom_Champ_DateValidation, new KeyValuePair<string,string> ("DATE", "")     },
-            { nom_Champ_Themes,         new KeyValuePair<string,string> ("TEXT", "")     },
-            { nom_Champ_Statut,         new KeyValuePair<string,string> ("LONG", "")     },
-            { nom_Champ_Message,        new KeyValuePair<string,string> ("TEXT", Helper.longueurMaxChamp.ToString()) },
-            { nom_Champ_Reponse,        new KeyValuePair<string,string> ("TEXT", Helper.longueurMaxChamp.ToString()) },
-            { nom_Champ_Url,            new KeyValuePair<string,string> ("TEXT", "")     },
-            { nom_Champ_UrlPrive,       new KeyValuePair<string,string> ("TEXT", "")     },
-            { nom_Champ_Document,       new KeyValuePair<string,string> ("TEXT", "")     },
-            { nom_Champ_Autorisation,   new KeyValuePair<string,string> ("TEXT", "")     }
+            { name_field_IdRemarque,     new KeyValuePair<string,string> ("LONG","")      },
+            { name_field_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
+            { name_field_Commune,        new KeyValuePair<string,string> ("TEXT", "")     },
+            { name_field_Departement,    new KeyValuePair<string,string> ("TEXT", "23")   },
+            { name_field_IDDepartement,  new KeyValuePair<string,string> ("TEXT", "3")    },
+            { name_field_DateCreation,   new KeyValuePair<string,string> ("DATE", "")     },
+            { name_field_DateMAJ,        new KeyValuePair<string,string> ("DATE", "")     },
+            { name_field_DateValidation, new KeyValuePair<string,string> ("DATE", "")     },
+            { name_field_Themes,         new KeyValuePair<string,string> ("TEXT", "")     },
+            { name_field_Statut,         new KeyValuePair<string,string> ("LONG", "")     },
+            { name_field_Message,        new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_Reponse,        new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_Url,            new KeyValuePair<string,string> ("TEXT", "")     },
+            { name_field_UrlPrive,       new KeyValuePair<string,string> ("TEXT", "")     },
+            { name_field_Document,       new KeyValuePair<string,string> ("TEXT", "")     },
+            { name_field_Autorisation,   new KeyValuePair<string,string> ("TEXT", "")     }
 
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
         public static Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
-            { nom_Champ_LienRemarque, new KeyValuePair<string,string> ("LONG", "") },
-            { nom_Champ_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
-            { nom_Champ_Attributs, new KeyValuePair<string, string>("TEXT", Helper.longueurMaxChamp.ToString()) },
-            { nom_Champ_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
+            { name_field_LienRemarque, new KeyValuePair<string,string> ("LONG", "") },
+            { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
+            { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
         };
+
+        /// <summary>
+        /// Vérifie si l'extension du fichier joint à un nouveau signalement
+        /// est inclu dans le fichier
+        /// ~\source\repos\arcgis_pro_espace_collaboratif\AddIn\ArcGisProEspaceCollaboratif\ArcGisProEspaceCollaboratif\Files
+        /// </summary>
+        /// <param name="extension">L'extension du fichier à vérifier</param>
+        /// <returns>false si l'extension n'existe pas dans le fichier formats.txt</returns>
+        public static bool IsFileExtensionAuthorised(string extension)
+        {
+            string assemblyDir = Helper.EspaceCollaboratifAssemblyDir;
+            string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_extensions);
+            using (StreamReader sr = new StreamReader(fileTxt))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line == extension)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
         /// <summary>
         /// Teste si la remarque donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
@@ -315,9 +341,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>L'object champ raccourcie à ses EspaceCollaboratifHelper.longueurMaxChamp premiers caractères si il dépasse cette taille limite</returns>
         public static string Limite(string champ)
         {
-            if (champ.Length > Helper.longueurMaxChamp)
+            if (champ.Length > Helper.lengthMaxField)
             {
-                return champ.Substring(0, Helper.longueurMaxChamp);
+                return champ.Substring(0, Helper.lengthMaxField);
             }
             else
             {
@@ -1011,7 +1037,7 @@ namespace ArcGisProEspaceCollaboratif
                 int assetNameIndex = feature.FindField(field.Name);
                 QueuedTask.Run(() =>
                 {
-                    string originalValue = feature.GetOriginalValue(assetNameIndex) as String;
+                    string originalValue = feature.GetOriginalValue(assetNameIndex) as string;
                     // Suppression de la partie heure 00:00:00 si le champ est de type date
                     if (field.FieldType == FieldType.Date && originalValue.Length != 0)
                     {
@@ -1190,14 +1216,14 @@ namespace ArcGisProEspaceCollaboratif
 
 
         /// <summary>
-        /// Renvoie le chemin complet d'accès du fichier XML de paramétrage pour le fonctionnement de l'add-on EspaceCollaboratif pour ArcMap.
-        /// Il doit être situé dans le même répertoire que celui où se trouve le fichier de la carte ouverte en cours dans ArcMap, et son nom est EspaceCollaboratif.xml.
+        /// Renvoie le chemin complet d'accès du fichier XML de paramétrage pour le fonctionnement de l'add-in EspaceCollaboratif pour ArcGis Pro.
+        /// Il doit être situé dans le même répertoire que celui où se trouve le fichier de la carte ouverte en cours dans ArcGios Pro, et son nom est "espaceco.xml".
         /// </summary>     
         /// <returns>Le chemin complet + nom du fichier du fichier de paramétrage.</returns>
         public static string XML_NameFile()
         {
             string workDir = Contexte.Instance.DirectoryWorking;
-            return System.IO.Path.GetFullPath(workDir) + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
+            return string.Format("{0}{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
         }
 
 
@@ -1461,7 +1487,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde les thèmes préférés dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
-        public static void Save_PreferredThemes(List<String> preferedThemes)
+        public static void Save_PreferredThemes(List<string> preferedThemes)
         {
             Helper.XML_WriteElement(preferedThemes, Helper.xml_Themes);
         }
@@ -1472,7 +1498,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
         public static void Save_PreferredThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
         {
-            List<String> ListThemes = new List<string>();
+            List<string> ListThemes = new List<string>();
 
             foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
             {
@@ -1595,7 +1621,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 else
                 {
-                    return Convert.ToDateTime(Helper.dateDefaut);
+                    return Convert.ToDateTime(Helper.dateDefault);
                 }
             }
             catch
@@ -1607,7 +1633,7 @@ namespace ArcGisProEspaceCollaboratif
                     System.Windows.Forms.MessageBoxButtons.OK,
                     System.Windows.Forms.MessageBoxIcon.Error
                 );
-                return Convert.ToDateTime(Helper.dateDefaut);
+                return Convert.ToDateTime(Helper.dateDefault);
             }
         }
        

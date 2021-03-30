@@ -407,7 +407,7 @@ namespace ArcGisProEspaceCollaboratif
             this.listViewFilePJ.Clear();
             ImageList imageList = new ImageList();
 
-            foreach (String file in this.ListFilesPJ)
+            foreach (string file in this.ListFilesPJ)
             {
                 System.IO.FileInfo fichierPJ = new System.IO.FileInfo(file);
 
@@ -449,10 +449,10 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>        
         private void SetPreferredThemes()
         {
-/*            List<String> themesPreferes = EspaceCollaboratifHelper.Load_PreferedThemes();
+/*            List<string> themesPreferes = EspaceCollaboratifHelper.Load_PreferedThemes();
             if (themesPreferes.Count == 0) { return; }
 
-            foreach (String themeRecherche in themesPreferes)
+            foreach (string themeRecherche in themesPreferes)
             {
                 for (int i = 0; i < this.checkedListBoxThemes.Items.Count; i++)
                 {
@@ -478,7 +478,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Le message saisi dans le formulaire FormCreerSignalement et à affecter dans le nouveau signalement de l'Espace collaboratif.
         /// </summary>  
         /// <returns>Le message saisi pour le nouveau signalement.</returns>
-        public String GetMessage()
+        public string GetMessage()
         {
             return this.richTextBoxMessage.Text;
         }
@@ -548,7 +548,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Donne la liste des fichiers sélectionnés dans le formulaire FormCreerSignalement et à mettre en pièce-jointe dans le nouveau signalement à créer.
         /// </summary>         
         /// <returns>Liste du chemin d'accès complet de chaque fichier choisi comme pièce-jonte.</returns>
-        public List<String> GetFichierPJ()
+        public List<string> GetFichierPJ()
         {
             if (this.checkBoxDocument.Checked == true)
             {

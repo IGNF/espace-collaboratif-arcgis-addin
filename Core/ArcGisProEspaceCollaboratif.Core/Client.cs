@@ -64,19 +64,19 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="uri">partie de l'url définissant la requête à effectuer</param>
         /// <param name="parameters">paramètres à envoyer en GET</param>
         /// <returns>Resultat de la requête (xml)</returns>
-        public String MakeGetRequest(String url, Dictionary<String, String> parameters)
+        public string MakeGetRequest(string url, Dictionary<string, string> parameters)
         {
-            String res = null;
+            string res = null;
 
             WebClient client = new WebClient();
-            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
+            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
             /*System.Net.ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);*/
             System.Net.ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(delegate { return true; });
 
-            String paramString = "";
+            string paramString = "";
             if (parameters != null)
             {
                 foreach (var item in parameters)
@@ -90,7 +90,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception e)
             {
-                String err = "";
+                string err = "";
                 if (e.Message.Contains("(401) Unauthorized"))
                 {
                     err = "(401) Unauthorized";
@@ -111,15 +111,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="uri"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public String MakePostRequest(String uri, Dictionary<String, String> parameters)
+        public string MakePostRequest(string uri, Dictionary<string, string> parameters)
         {
-            String res = null;
+            string res = null;
 
             WebClient wclient = new WebClient();
             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             wclient.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
-            String paramString = "";
+            string paramString = "";
             if (parameters != null)
             {
                 foreach (var item in parameters)
@@ -151,9 +151,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="docs">files to upload</param>
         /// <returns></returns>
 
-        public String MakeMultiPartPostRequest(String url, Dictionary<String, String> parameters, Dictionary<String, String> docs)
+        public string MakeMultiPartPostRequest(string url, Dictionary<string, string> parameters, Dictionary<string, string> docs)
         {
-            String result = "";
+            string result = "";
             string boundary = "-----------------------------19746328113";
             byte[] boundarybytes = System.Text.Encoding.UTF8.GetBytes("\r\n--" + boundary + "\r\n");
 
@@ -162,7 +162,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             wr.Method = "POST";
             wr.KeepAlive = true;
 
-            String credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
+            string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             wr.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
             string contentType = "multipart/form-data";
@@ -181,10 +181,10 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (docs != null)
             {
-                foreach (KeyValuePair<String, String> kv in docs)
+                foreach (KeyValuePair<string, string> kv in docs)
                 {
                     string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
-                    String filename = System.IO.Path.GetFileName(kv.Value);
+                    string filename = System.IO.Path.GetFileName(kv.Value);
 
                     string header = string.Format(headerTemplate, kv.Key, filename, contentType);
                     byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
@@ -263,12 +263,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         private Profil GetProfilFromService()
         {
             Profil profil = new Profil();
-            String data = "";
+            string data = "";
 
             data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.Url), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
-            Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
+            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
 
             if (errMessage["code"].Equals("OK"))
             {
@@ -292,9 +292,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             //on stocke d'abord les objets Signalement dans un dictionnaire, pour éviter d'éventuels doublons.
             SortedDictionary<UInt64, Signalement> dicoRems = new SortedDictionary<ulong, Signalement>();
 
-            Dictionary<String, String> totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
+            Dictionary<string, string> totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
             int total = Int32.Parse(totalAndDate["total"]);
-            String sdate = totalAndDate["sdate"];
+            string sdate = totalAndDate["sdate"];
 
             //Mise-à-jour éventuelle à partir du dateTime du début de la requête
             while (total > 1)
@@ -318,7 +318,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters"></param>
         /// <param name="dicoSignalements"></param>
         /// <returns></returns>
-        private Dictionary<String, String> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Signalement> dicoSignalements)
+        private Dictionary<string, string> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Signalement> dicoSignalements)
         {
             int pagination = 100;
             int total = 0;
@@ -328,7 +328,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             var data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.Url), parameters);
 
             XmlResponse xmlResponse = new XmlResponse(data);
-            Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
+            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
 
             Dictionary<string, string> totalAndDate = new Dictionary<string, string>();
 
@@ -394,7 +394,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idSignalement.ToString()), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
-            Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
+            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
 
             int total = xmlResponse.GetTotalResponse();
 
@@ -421,7 +421,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             Signalement signalementModif = null;
             try
             {
-                Dictionary<String, String> parameters = new Dictionary<String, String>
+                Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "id", signalement.Id.ToString() },
                     { "title", titreReponse },
@@ -429,10 +429,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     { "status", (signalement.Statut).ToString().ToLower() }
                 };
 
-                String data = this.MakeMultiPartPostRequest(this.Url + "/api/georem/georep_post.xml", parameters, null);
+                string data = this.MakeMultiPartPostRequest(this.Url + "/api/georem/georep_post.xml", parameters, null);
 
                 XmlResponse xmlResponse = new XmlResponse(data);
-                Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
+                Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
                     List<Signalement> signalements = new List<Signalement>();
@@ -467,14 +467,14 @@ namespace ArcGisProEspaceCollaboratif.Core
             Signalement signal = null;
             try
             {
-                Dictionary<String, String> parameters = new Dictionary<String, String>
+                Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "version", Constantes.EspaceCollaboratif_CLIENT_VERSION },
                     { "protocol", Constantes.EspaceCollaboratif_CLIENT_PROTOCOL },
                     { "comment", signalement.Commentaire }
                 };
 
-                String geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) + " " +
+                string geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) + " " +
                                  Convert.ToString(signalement.GetLatitude(), invC) + ")";
                 parameters.Add("geometry", geometry);
 
@@ -486,7 +486,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (themes != null && themes.Count > 0)
                 {
                     XDocument doc = new XDocument(new XElement("THEMES"));
-                    String attributes = "";
+                    string attributes = "";
                     foreach (Theme t in themes)
                     {
                         attributes += "\"" + t.Group.Id + "::" + t.Group.Name + "\"=>\"1\",";
@@ -513,12 +513,12 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //ajout des documents joints      
-                List<String> documents = signalement.Documents;
+                List<string> documents = signalement.Documents;
 
                 int docCount = 0;
 
-                Dictionary<String, String> docs = new Dictionary<string, string>();
-                foreach (String document in documents)
+                Dictionary<string, string> docs = new Dictionary<string, string>();
+                foreach (string document in documents)
                 {
                     if (File.Exists(document))
                     {
@@ -536,10 +536,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //envoi de la requête
-                String data = this.MakeMultiPartPostRequest(Url + "/api/georem/georem_post.xml", parameters, docs);
+                string data = this.MakeMultiPartPostRequest(Url + "/api/georem/georem_post.xml", parameters, docs);
 
                 XmlResponse xmlResponse = new XmlResponse(data);
-                Dictionary<String, String> errMessage = xmlResponse.CheckResponseValidity();
+                Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
                     List<Signalement> signalements = new List<Signalement>();
@@ -567,15 +567,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
 
             return signal;
-        }
-
-        /// <summary>
-        /// Retourne la taille maximum d'un fichier uploadé
-        /// </summary>
-        /// <returns></returns>
-        public int Get_MAX_TAILLE_UPLOAD_FILE()
-        {
-            return Constantes.MAX_TAILLE_UPLOAD_FILE;
         }
 
         /// <summary>

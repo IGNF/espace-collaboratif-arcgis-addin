@@ -19,7 +19,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 if (!contexte.CheckConfigFile())
                 {
-                    string message = string.Format("Le fichier '{0}/{1}' n'existe pas", contexte.DirectoryWorking, Helper.nom_Fichier_Parametres_EspaceCollaboratif);
+                    string message = string.Format("Le fichier '{0}{1}' n'existe pas", contexte.DirectoryWorking, Helper.name_file_espaceco_xml);
                     System.Windows.Forms.MessageBox.Show(
                         message,
                         Constantes.STOP,

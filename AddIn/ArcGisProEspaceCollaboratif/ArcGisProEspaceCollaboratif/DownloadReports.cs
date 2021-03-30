@@ -41,9 +41,9 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Test de la présence du fichier XML de paramétrage
-                    if (!System.IO.File.Exists(Helper.nom_Fichier_Parametres_EspaceCollaboratif))
+                    if (!System.IO.File.Exists(Helper.name_file_espaceco_xml))
                     {
-                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.nom_Fichier_Parametres_EspaceCollaboratif, contexte.DirectoryWorking);
+                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, contexte.DirectoryWorking);
                         System.Windows.Forms.MessageBox.Show(
                             mess,
                             Constantes.ERROR,
@@ -65,7 +65,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Paramtère date d'extraction
-                    String sdate = String.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
+                    string sdate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
                     parameters.Add("updatingDate", sdate);
 
                     // Paramètre filtrage spatial
@@ -130,7 +130,7 @@ namespace ArcGisProEspaceCollaboratif
                     progressDownload.Close();
 
                     //Zoom sur la couche des signalements
-                    FeatureLayer reportLayer = contexte.GetLayerByName(Helper.nom_Calque_Signalement);
+                    FeatureLayer reportLayer = contexte.GetLayerByName(Helper.name_layer_Signalement);
                     contexte.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation

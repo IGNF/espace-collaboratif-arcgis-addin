@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La réponse incluse dans l'object GeoReponse
         /// </summary>
-        public String Reponse;
+        public string Reponse;
 
         /// <summary>
         /// La date de la réponse

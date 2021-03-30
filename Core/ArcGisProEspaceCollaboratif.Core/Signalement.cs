@@ -19,12 +19,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// URL publique vers le signalement sur le site web de l'espace collaboratif.
         /// </summary>
-        public String Lien;
+        public string Lien;
 
         /// <summary>
         /// URL vers la partie privée du site web de l'Espace collaboratif.
         /// </summary>
-        public String LienPrive;
+        public string LienPrive;
 
         /// <summary>
         /// La date de création de la remarque EspaceCollaboratif.
@@ -60,12 +60,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La commune où est situé le signalement (nom)
         /// </summary>
-        public String Commune;
+        public string Commune;
 
         /// <summary>
         /// Le texte du message du signalement.
         /// </summary>
-        public String Commentaire;
+        public string Commentaire;
 
         /// <summary>
         /// L'auteur du signalement
@@ -75,12 +75,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         ///	Définit les droits d'action de l'utilisateur en cours sur le signalement.
         /// </summary>
-        public String Autorisation;
+        public string Autorisation;
 
         /// <summary>
         ///	
         /// </summary>
-        public String Id_partition;
+        public string Id_partition;
 
         /// <summary>
         /// Le groupe sous lequel l'auteur a créé le signalement. 
@@ -100,25 +100,25 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Les éventuels documents attachés au signalement
         /// </summary>
-        public List<String> Documents = new List<String>();
+        public List<string> Documents = new List<string>();
 
         /// <summary>
         /// Les éventuels thèmes attachés au signalement
         /// </summary>
         public List<Theme> Themes = new List<Theme>();
 
-        public String Hash;
+        public string Hash;
 
-        public String Source;
+        public string Source;
 
         /// <summary>
         /// brief Getter pour concaténer sur une seule ligne le nom de tous les thèmes contenus dans le signalement.
         /// return Un texte qui est la concaténation des noms de tous les thèmes contenus dans le signalement. 
         /// </summary>
         /// <returns></returns>
-        public String ConcatenateThemes()
+        public string ConcatenateThemes()
         {
-            String result = "";
+            string result = "";
 
             for ( int i = 0; i < this.Themes.Count; i++ ){
                 if (i != 0)
@@ -143,9 +143,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         ///	\brief Getter du nom de l'auteur du signalement.
         /// \return Le nom de l'auteur du signalement.
         /// <returns></returns>
-        public String GetAuteurNom()
+        public string GetAuteurNom()
         {
-            String result = "";
+            string result = "";
             if (!this.Auteur.Nom.Equals("")) { result = this.Auteur.Nom; }
             return result;
         }
@@ -154,9 +154,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         ///	\brief Getter de l'Id de l'auteur du signalement.
         /// \return L'Id de l'auteur ddu signalement.
         /// <returns></returns>
-        public String GetAuteurId()
+        public string GetAuteurId()
         {
-            String result = "";
+            string result = "";
             if (!this.Auteur.Id.Equals("")) { result = this.Auteur.Id; }
             return result;
         }
@@ -171,7 +171,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             return this.Position.Latitude;
         }
 
-        public String GetFirstDocument()
+        public string GetFirstDocument()
         {
             if (this.Documents.Count == 0)
             { return ""; }
@@ -179,14 +179,14 @@ namespace ArcGisProEspaceCollaboratif.Core
             { return this.Documents.First(); }                        
         }
 
-        public String GetUrlDecodedComment()
+        public string GetUrlDecodedComment()
         {
             return HttpUtility.UrlDecode(this.Commentaire);
         }
 
-        public String ConcatenateReponseHTML()
+        public string ConcatenateReponseHTML()
         {
-            String concatenate = "";
+            string concatenate = "";
 
             if (this.Reponses.Count == 0)
             {
@@ -214,9 +214,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             return concatenate;
         }
 
-        public String ConcatenateReponse()
+        public string ConcatenateReponse()
         {
-            String concatenate = "";
+            string concatenate = "";
 
             if (this.Reponses.Count == 0)
             {
@@ -273,7 +273,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Position = new ArcGisProEspaceCollaboratif.Core.Point();
         }
 
-        public void SetCommentaire(String message)
+        public void SetCommentaire(string message)
         {
             this.Commentaire = message;
         }
@@ -283,14 +283,14 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Commentaire = "";
         }
 
-        public void AddDocument(String unDocument)
+        public void AddDocument(string unDocument)
         {
             this.Documents.Add(unDocument);
         }
 
-        public void AddDocument(List<String> listeDocument)
+        public void AddDocument(List<string> listeDocument)
         {
-            foreach (String document in listeDocument)
+            foreach (string document in listeDocument)
             {
                 this.AddDocument(document);
             }
@@ -342,7 +342,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Themes.Clear();
         }
 
-        public  String Utf8Encode(String str)
+        public  string Utf8Encode(string str)
         {
             return Encoding.UTF8.GetString(Encoding.Default.GetBytes(str));
         }  

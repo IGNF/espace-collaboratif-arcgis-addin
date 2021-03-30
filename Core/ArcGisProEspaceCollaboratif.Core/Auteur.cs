@@ -7,8 +7,8 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class Auteur
     {
-        public String Id; //identifiant de l'auteur
-        public String Nom;//nom de l'auteur
+        public string Id; //identifiant de l'auteur
+        public string Nom;//nom de l'auteur
        
         /// <summary>
         /// constructeur
@@ -24,7 +24,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="id"></param>
         /// <param name="nom"></param>
-         public Auteur(String id, String nom)
+         public Auteur(string id, string nom)
         {
             this.Id  = id;
             this.Nom = nom;

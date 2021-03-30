@@ -68,7 +68,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Get point as WKT
         /// </summary>
         /// <returns></returns>
-        public String AsText(){
+        public string AsText(){
             if (this.IsEmpty())
             {
                 return "POINT EMPTY";

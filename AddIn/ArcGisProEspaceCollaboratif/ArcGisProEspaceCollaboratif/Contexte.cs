@@ -177,12 +177,12 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
         public bool CheckConfigFile()
         {
-            string fileConfiguration = this.DirectoryWorking + "\\" + Helper.nom_Fichier_Parametres_EspaceCollaboratif;
+            string fileConfiguration = string.Format("{0}{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
             if (!File.Exists(fileConfiguration))
             {
                 try
                 {
-                    File.Copy(Helper.EspaceCollaboratifAssemblyDir + Helper.nom_Fichier_Parametres_EspaceCollaboratif, fileConfiguration);
+                    File.Copy(Helper.EspaceCollaboratifAssemblyDir + Helper.name_file_espaceco_xml, fileConfiguration);
                 }
                 catch (Exception e)
                 {
@@ -199,10 +199,10 @@ namespace ArcGisProEspaceCollaboratif
         public async Task CreateOrLoadReportLayers()
         {
             // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
-            string polygonSketchLayer = Helper.nom_Calque_Croquis_Polygone;
-            string lineSketchLayer = Helper.nom_Calque_Croquis_Ligne;
-            string pointSketchLayer = Helper.nom_Calque_Croquis_Point;
-            string reportLayer = Helper.nom_Calque_Signalement;
+            string polygonSketchLayer = Helper.name_layer_Croquis_Polygone;
+            string lineSketchLayer = Helper.name_layer_Croquis_Ligne;
+            string pointSketchLayer = Helper.name_layer_Croquis_Point;
+            string reportLayer = Helper.name_layer_Signalement;
 
             // Signalements
             await Helper.LoadOrCreateCollaborativeSpaceLayer(
@@ -251,7 +251,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="layerName">nom de la couche</param> Change en layerPath
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-/*        private FeatureLayer LoadLayer(String layerName, string symbolName = "")
+/*        private FeatureLayer LoadLayer(string layerName, string symbolName = "")
         {
 
             FeatureLayer result = null;
@@ -434,7 +434,7 @@ namespace ArcGisProEspaceCollaboratif
                 return await QueuedTask.Run(() =>
                 {
 
-                    FeatureLayer reportLayer = this.GetLayerByName(Helper.nom_Calque_Signalement);
+                    FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
                     EditOperation editOperation = new EditOperation();
@@ -452,22 +452,22 @@ namespace ArcGisProEspaceCollaboratif
                             // Préparation des attributs de l'objet signalement à créer
                             rowBuffer = reportFeatureClass.CreateRowBuffer();
 
-                            rowBuffer[Helper.nom_Champ_IdRemarque] = newReport.Id;
-                            rowBuffer[Helper.nom_Champ_Auteur] = newReport.Auteur.Nom;
-                            rowBuffer[Helper.nom_Champ_Commune] = newReport.Commune;
-                            rowBuffer[Helper.nom_Champ_Departement] = newReport.Departement.Name;
-                            rowBuffer[Helper.nom_Champ_IDDepartement] = newReport.Departement.Id;
-                            rowBuffer[Helper.nom_Champ_DateCreation] = newReport.DateCreation;
-                            rowBuffer[Helper.nom_Champ_DateMAJ] = newReport.DateMiseAJour;
-                            rowBuffer[Helper.nom_Champ_DateValidation] = newReport.DateValidation;
-                            rowBuffer[Helper.nom_Champ_Statut] = newReport.Statut;
-                            rowBuffer[Helper.nom_Champ_Themes] = newReport.ConcatenateThemes();
-                            rowBuffer[Helper.nom_Champ_Url] = newReport.Lien;
-                            rowBuffer[Helper.nom_Champ_UrlPrive] = newReport.LienPrive;
-                            rowBuffer[Helper.nom_Champ_Document] = newReport.GetFirstDocument();
-                            rowBuffer[Helper.nom_Champ_Message] = Helper.Limite(newReport.Commentaire);
-                            rowBuffer[Helper.nom_Champ_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
-                            rowBuffer[Helper.nom_Champ_Autorisation] = newReport.Autorisation;
+                            rowBuffer[Helper.name_field_IdRemarque] = newReport.Id;
+                            rowBuffer[Helper.name_field_Auteur] = newReport.Auteur.Nom;
+                            rowBuffer[Helper.name_field_Commune] = newReport.Commune;
+                            rowBuffer[Helper.name_field_Departement] = newReport.Departement.Name;
+                            rowBuffer[Helper.name_field_IDDepartement] = newReport.Departement.Id;
+                            rowBuffer[Helper.name_field_DateCreation] = newReport.DateCreation;
+                            rowBuffer[Helper.name_field_DateMAJ] = newReport.DateMiseAJour;
+                            rowBuffer[Helper.name_field_DateValidation] = newReport.DateValidation;
+                            rowBuffer[Helper.name_field_Statut] = newReport.Statut;
+                            rowBuffer[Helper.name_field_Themes] = newReport.ConcatenateThemes();
+                            rowBuffer[Helper.name_field_Url] = newReport.Lien;
+                            rowBuffer[Helper.name_field_UrlPrive] = newReport.LienPrive;
+                            rowBuffer[Helper.name_field_Document] = newReport.GetFirstDocument();
+                            rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentaire);
+                            rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
+                            rowBuffer[Helper.name_field_Autorisation] = newReport.Autorisation;
 
                             // Création de l'objet signalement dans la classe des signalements
                             featureReport = reportFeatureClass.CreateRow(rowBuffer);
@@ -549,7 +549,7 @@ namespace ArcGisProEspaceCollaboratif
                 try
                 {
                     // Récupération des attributs du croquis transmis par l'API (champ attributes)
-                    String attributes = "";
+                    string attributes = "";
                     foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
                         attributes += attribut.Nom + " = '" + attribut.Valeur + "' | ";
 
@@ -559,9 +559,9 @@ namespace ArcGisProEspaceCollaboratif
                     // Préparation des attributs de l'objet croquis à créer
                     rowBuffer = sketchFeatureClass.CreateRowBuffer();
 
-                    rowBuffer[Helper.nom_Champ_LienRemarque] = idNewReport;
-                    rowBuffer[Helper.nom_Champ_NomCroquis] = currSketch.Name;
-                    rowBuffer[Helper.nom_Champ_Attributs] = Helper.Limite(attributes);
+                    rowBuffer[Helper.name_field_LienRemarque] = idNewReport;
+                    rowBuffer[Helper.name_field_NomCroquis] = currSketch.Name;
+                    rowBuffer[Helper.name_field_Attributs] = Helper.Limite(attributes);
 
                     // Création de l'objet signalement dans la classe des signalements
                     sketchFeature = sketchFeatureClass.CreateRow(rowBuffer);
@@ -1362,11 +1362,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
         public int CountReportsByStatus(int status)
         {
-            FeatureLayer reportLayer = this.GetLayerByName(Helper.nom_Calque_Signalement);
+            FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
             FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
             QueryFilter queryFilter = new QueryFilter
             {
-                WhereClause = Helper.nom_Champ_Statut + " = " + status
+                WhereClause = Helper.name_field_Statut + " = " + status
             };
            
             return reportFeatureClass.GetCount(queryFilter);
