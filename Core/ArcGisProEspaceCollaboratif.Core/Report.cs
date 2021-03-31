@@ -9,7 +9,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe représentant un signalement
     /// </summary>
-    public class Signalement
+    public class Report
     {
         /// <summary>
         /// Identifiant du signalement
@@ -63,9 +63,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string Commune;
 
         /// <summary>
-        /// Le texte du message du signalement.
+        /// Le texte du commentaire lié au signalement.
         /// </summary>
-        public string Commentaire;
+        public string Commentaire { get; set; }
 
         /// <summary>
         /// L'auteur du signalement
@@ -271,16 +271,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         public void ClearPosition()
         {
             this.Position = new ArcGisProEspaceCollaboratif.Core.Point();
-        }
-
-        public void SetCommentaire(string message)
-        {
-            this.Commentaire = message;
-        }
-
-        public void ClearCommentaire()
-        {
-            this.Commentaire = "";
         }
 
         public void AddDocument(string unDocument)

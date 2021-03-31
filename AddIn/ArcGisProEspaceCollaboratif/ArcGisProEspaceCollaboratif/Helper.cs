@@ -138,7 +138,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="remarqueTest">La remarque EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si la remarque à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Signalement report, List<Geometry> geometries)
+        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<Geometry> geometries)
         {
             MapPoint reportPoint = Helper.TransformPoint(report.Position);
 
@@ -1223,7 +1223,7 @@ namespace ArcGisProEspaceCollaboratif
         public static string XML_NameFile()
         {
             string workDir = Contexte.Instance.DirectoryWorking;
-            return string.Format("{0}{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
+            return string.Format("{0}\\{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
         }
 
 

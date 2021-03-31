@@ -33,7 +33,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
 
-        public void GetStatut(ref ArcGisProEspaceCollaboratif.Core.Signalement signalement)
+        public void GetStatut(ref ArcGisProEspaceCollaboratif.Core.Report signalement)
         {
             signalement.Statut = (ArcGisProEspaceCollaboratif.Core.Statut) this.comboBoxStatut.SelectedIndex;
         }
@@ -74,7 +74,7 @@ namespace ArcGisProEspaceCollaboratif
             this.buttonRepondre.Enabled = ( richTextBoxReponse.TextLength != 0 );
         }
 
-        public void SetFormulaire(ArcGisProEspaceCollaboratif.Core.Signalement signalement)
+        public void SetFormulaire(ArcGisProEspaceCollaboratif.Core.Report signalement)
         {
             this.SetIdRemarque(signalement.Id.ToString() );
             this.SetStatut((uint)signalement.Statut);

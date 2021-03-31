@@ -46,12 +46,11 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string WARNING = "IGN Espace collaboratif - WARNING";
         public const string STOP = "IGN Espace collaboratif - STOP";
 
-        public const string IMAGEFILE = "Image files (*.BMP;*.JPG;*.GIF;*.JPG2000;*.TIFF;*.ECW;*.PSD)|*.bmp;*.jpg;*.jp2;*.tiff;*.ecw;*.psd";
-        public const string TRACKFILE = "Track files (*.KML;*.GPX;*.SWG;*.WMF;*.AI)|*.kml;*.gpx;*.swg;*.wmf;*.ai";
-        public const string TXTFILE = "Text files (*.TXT;*.PDF;*.RTF;*.DOC;*.DOCX;*.ODT)|*.txt;*.pdf;*.rtf;*.doc;*.docx;*.odt";
-        public const string DBFILE = "Database files (*.MDB;*.MDBX;*.ODB;*.DBF)|*.mdb;*.mdbx;*.odb;*.dbf";
-        public const string SHEETFILE = "(*.XML;*.CSV;*XLS;*.XLSX;*.ODS)|*.xml;*.csv;*.xls;*.xlsx;*.ods";
-        public const string SIGFILE = "Sig files (*.SHP;*.LYR;*.GDB;*.MXD;*GCM;*.GCR;*.DXF;*.DWG;*.QGS;*.MIF;*MID)|*.shp;*.lyr;*.gdb;*.mxd;*gcm;*.gcr;*.dxf;*.dwg;*.qgs;*.mif;*.mid";
+        public const string IMAGEFILE = "Image files (*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG)|*.bmp;*.gif;*.jpg;*.jpeg;*.png";
+        public const string TRACKFILE = "Track files (*.GPX)|*.gpx";
+        public const string TXTFILE = "Text files (*.DOC;*.DOCX;*.ODT;*.PDF;*.TXT)|*.doc;*.docx;*.odt;*.pdf;*.txt";
+        public const string SHEETFILE = "Sheet files (*.CSV;*.KML;*.ODS;*XLS;*.XLSX)|*.csv;*.kml;*.ods;*.xls;*.xlsx";
+        public const string ZIPFILE = "Zip files (*.ZIP;*.7Z)|*.zip;*.7z";
         public const string ALLFILE = "All files(*.*)|*.*";
         public const string NOFILE = "Pas de document sélectionné";
     }

@@ -427,7 +427,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
-        public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Signalement newReport)
+        public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Report newReport)
         {
             try
             {

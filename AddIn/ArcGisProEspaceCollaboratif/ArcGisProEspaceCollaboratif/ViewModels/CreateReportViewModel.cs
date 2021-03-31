@@ -164,7 +164,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 Title = "Document à joindre au signalement",
                 Multiselect = false,
                 InitialDirectory = this.Context.DirectoryWorking,
-                Filter = string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}", Constantes.ALLFILE, Constantes.IMAGEFILE, Constantes.TRACKFILE, Constantes.TXTFILE, Constantes.SHEETFILE, Constantes.DBFILE, Constantes.SIGFILE)
+                Filter = string.Format("{0}|{1}|{2}|{3}|{4}|{5}", Constantes.ALLFILE, Constantes.IMAGEFILE, Constantes.TRACKFILE, Constantes.TXTFILE, Constantes.SHEETFILE, Constantes.ZIPFILE)
             };
             bool? dialogResult = openFileDialog.ShowDialog();
             if (dialogResult == true)
@@ -206,15 +206,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
         }
 
-        public ICommand SendButtonCmd { get { return new RelayCommand(OnSend, AlwaysTrue); } }
+        /*public ICommand SendButtonCmd { get { return new RelayCommand(OnSend, AlwaysTrue); } }
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Envoyer"
         /// </summary>
         private void OnSend()
         {
-
-        }
+            CreateReport
+        }*/
 
         private bool AlwaysTrue() { return true; }
         #endregion
@@ -428,14 +428,23 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         /// <param name="header">Le nom du thème</param>
         /// <returns>L'expander mis à jour</returns>
-        private Expander SetExpander(string header)
+        private Expander SetExpander()
         {
-            Expander expander = new Expander()
-            {
-                Header = header,
-                HorizontalAlignment = System.Windows.HorizontalAlignment.Left
-            };
+            Expander expander = new Expander();
             return expander;
+        }
+
+        /// <summary>
+        /// Création d'un control "StackPanel"
+        /// </summary>
+        /// <returns>Le StackPanel mis à jour</returns>
+        private StackPanel SetStackPanel()
+        {
+            StackPanel stackPanel = new StackPanel()
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal
+            };
+            return stackPanel;
         }
 
         /// <summary>
@@ -509,10 +518,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         continue;
                     }
                     // Un expander par theme qui contient tous les attributs initialisés par type
-                    Expander expander = SetExpander(thName);
+                    string check = "0";
+                    if (this.ListPreferredThemes.Contains(thName))
+                    {
+                        check = "1";
+                    }
+                    StackPanel stackPanelExpander = SetStackPanel();
+                    stackPanelExpander.Children.Add(SetCheckBox(thName, check));                    
+                    Expander expander = SetExpander();
                     expander.Content = DisplayTypeAttributes(thGroup);
-                    // Ajout de l'expander au StackPanel global
-                    this.StackPanelGlobal.Children.Add(expander);
+                    stackPanelExpander.Children.Add(expander);
+                    this.StackPanelGlobal.Children.Add(stackPanelExpander);
                 }
             }
             ScrollViewer scrollViewer = SetScrollViewer();

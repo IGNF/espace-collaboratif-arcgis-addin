@@ -67,17 +67,22 @@ namespace ArcGisProEspaceCollaboratif
                     // Lancement du formulaire pour créer un nouveau signalement
                     var createReportViewModel = new CreateReportViewModel(context, futursSketch.Count);
                     createReportViewModel.createReportView.DataContext = createReportViewModel;
-                    createReportViewModel.createReportView.ShowDialog();
-
-                    /*FormCreateReport formCreateReport = new FormCreateReport(context)
-                    {
-                        SketchNumber = futursSketch.Count,
-                        ListFilesPJ = new List<string>()
-                    };
-                    if (formCreateReport.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    bool? dialogResult = createReportViewModel.createReportView.ShowDialog();
+                    // Si l'utilisateur a cliqué sur le bouton "Annuler"
+                    // dans son choix du groupe, on sort
+                    if (dialogResult == false)
                     {
                         return;
-                    }*/
+                    }
+
+                    // Création d'un nouveau signalement temporaire.
+                    ArcGisProEspaceCollaboratif.Core.Report virtualReport = new ArcGisProEspaceCollaboratif.Core.Report()
+                    {
+                        // Affectation du commentaire du nouveau signalement.
+                        Commentaire = createReportViewModel.createReportView.CommentaireTextBox.Text
+                    };
+
+
                     /*
                         // Création d'un nouveau signalement temporaire.
                         ArcGisProEspaceCollaboratif.Core.Signalement signalementVirtuel = new ArcGisProEspaceCollaboratif.Core.Signalement();
@@ -162,6 +167,11 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Error(string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message,e.StackTrace));
                 }
             });
+        }
+
+        private void CreateNewReport()
+        {
+
         }
     }
 }

@@ -89,14 +89,14 @@ namespace ArcGisProEspaceCollaboratif
                     contexte.Client.SetProgressBar(progressDownload.GetProgressBar());
                     progressDownload.Refresh();
 
-                    List<Signalement> signalements = contexte.Client.GetGeoRems(parameters);
+                    List<Report> signalements = contexte.Client.GetGeoRems(parameters);
 
                     // Filtrage spatial affiné des signalements
                     if (hasFilter)
                     {
-                        List<Signalement> signalementAConserver = new List<Signalement>();
+                        List<Report> signalementAConserver = new List<Report>();
 
-                        foreach (Signalement signalementTest in signalements)
+                        foreach (Report signalementTest in signalements)
                         {
                             if (Helper.IsInGeometry(signalementTest, filterParameters.Item4))
                                 signalementAConserver.Add(signalementTest);
@@ -120,7 +120,7 @@ namespace ArcGisProEspaceCollaboratif
                     progressDownload.SetBar(1);
 
                     // Placement des signalements importés et filtrés sur la carte.
-                    foreach (Signalement remarque in signalements)
+                    foreach (Report remarque in signalements)
                     {
                         countBar++;
                         progressDownload.NextProgressor("Placement sur la carte du signalement " + countBar + "/" + signalements.Count);

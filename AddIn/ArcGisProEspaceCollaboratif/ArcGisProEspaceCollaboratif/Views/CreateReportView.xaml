@@ -37,6 +37,6 @@
                 <TextBox x:Name="CommentaireTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaireTextBox}" VerticalAlignment="Top" Width="520"/>
             </StackPanel>
         </GroupBox>
-        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" Command="{Binding SendButtonCmd}" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
+        <Button x:Name="SendButton" Content="Envoyer" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
     </Grid>
 </Window>

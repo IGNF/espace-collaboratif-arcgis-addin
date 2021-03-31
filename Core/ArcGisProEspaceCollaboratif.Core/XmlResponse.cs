@@ -637,11 +637,11 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="remarques">la liste de remarques</param>
         /// <returns>la liste de remarques (dans l'ordre inverse d'identifiants)</returns>
-        public List<Signalement> ExtractSignalements(List<Signalement> signalements)
+        public List<Report> ExtractSignalements(List<Report> signalements)
         {
-            SortedDictionary<UInt64, Signalement> dicSignalement = new SortedDictionary<ulong, Signalement>();
+            SortedDictionary<UInt64, Report> dicSignalement = new SortedDictionary<ulong, Report>();
             dicSignalement = this.ExtractSignalements(dicSignalement);
-            signalements = new List<Signalement>(dicSignalement.Values);
+            signalements = new List<Report>(dicSignalement.Values);
             signalements.Reverse();
 
             return signalements;
@@ -652,10 +652,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="remarques">SortedDictionary key:indentifiant de la remarque, value: la remarque</param>
         /// <returns>le dictionnaire de remarques</returns>
-        public SortedDictionary<UInt64, Signalement> ExtractSignalements(SortedDictionary<UInt64, Signalement> signalements)
+        public SortedDictionary<UInt64, Report> ExtractSignalements(SortedDictionary<UInt64, Report> signalements)
         {
 
-            Signalement rem = null;
+            Report rem = null;
             string remXpath = "/geors/GEOREM";
 
             try
@@ -666,7 +666,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 foreach (XPathNavigator val in iterator)
                 {
                     List<Theme> themes = new List<Theme>();
-                    rem = new Signalement();
+                    rem = new Report();
                     val.MoveToFollowing("ID_GEOREM", "");
                     rem.Id = Convert.ToUInt64(val.InnerXml);
 
@@ -795,7 +795,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="rem">un objet Signalement</param>
         /// <param name="val">xpathnavigator</param>
         /// <returns>XPathNodeIterator</returns>
-        private XPathNodeIterator GetCroquisForRem(Signalement rem, XPathNavigator val )
+        private XPathNodeIterator GetCroquisForRem(Report rem, XPathNavigator val )
         {
             val.MoveToParent();
             XPathNodeIterator it = val.Select("CROQUIS/objet");
@@ -880,7 +880,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="rem">le signalement</param>
         /// <param name="val">XPathNavigator (le xml contenant le signalement)</param>
-        private void GetDoc(Signalement rem, XPathNavigator val)
+        private void GetDoc(Report rem, XPathNavigator val)
         {
             XPathNodeIterator it = val.Select("DOC");
               
@@ -897,7 +897,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="rem">la remarque</param>
         /// <param name="val">XPathNavigator (le xml contenant la remarque)</param>
-        private void GetGeoRep(Signalement rem, XPathNavigator val)
+        private void GetGeoRep(Report rem, XPathNavigator val)
         {
             XPathNodeIterator it = val.Select("GEOREP");
 

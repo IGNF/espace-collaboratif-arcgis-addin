@@ -285,12 +285,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public List<Signalement> GetGeoRems(Dictionary<string, string> parameters)
+        public List<Report> GetGeoRems(Dictionary<string, string> parameters)
         {
-            List<Signalement> signalements = new List<Signalement>();
+            List<Report> signalements = new List<Report>();
 
             //on stocke d'abord les objets Signalement dans un dictionnaire, pour éviter d'éventuels doublons.
-            SortedDictionary<UInt64, Signalement> dicoRems = new SortedDictionary<ulong, Signalement>();
+            SortedDictionary<UInt64, Report> dicoRems = new SortedDictionary<ulong, Report>();
 
             Dictionary<string, string> totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
             int total = Int32.Parse(totalAndDate["total"]);
@@ -307,7 +307,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 sdate = totalAndDate["sdate"];
             }
 
-            signalements = new List<Signalement>(dicoRems.Values);
+            signalements = new List<Report>(dicoRems.Values);
 
             return signalements;
         }
@@ -318,7 +318,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters"></param>
         /// <param name="dicoSignalements"></param>
         /// <returns></returns>
-        private Dictionary<string, string> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Signalement> dicoSignalements)
+        private Dictionary<string, string> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Report> dicoSignalements)
         {
             int pagination = 100;
             int total = 0;
@@ -384,10 +384,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="idSignalement">identifiant de la remarque</param>
         /// <returns>la remarque</returns>
-        public Signalement GetGeoRem(ulong idSignalement)
+        public Report GetGeoRem(ulong idSignalement)
         {
-            Signalement signalement = new Signalement();
-            List<Signalement> signalements = new List<Signalement>();
+            Report signalement = new Report();
+            List<Report> signalements = new List<Report>();
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -416,9 +416,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="signalement">Le signalement</param>
         /// <param name="reponse">la réponse</param>
         /// <returns>La remarque à laquelle a été ajoutée la réponse</returns>
-        public Signalement AddReponse(Signalement signalement, string reponse, string titreReponse)
+        public Report AddReponse(Report signalement, string reponse, string titreReponse)
         {
-            Signalement signalementModif = null;
+            Report signalementModif = null;
             try
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
@@ -435,7 +435,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Signalement> signalements = new List<Signalement>();
+                    List<Report> signalements = new List<Report>();
                     signalements = xmlResponse.ExtractSignalements(signalements);
                     if (signalements.Count == 1)
                     {
@@ -462,9 +462,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="signalement">le signalement à créer</param>
         /// <returns>Le signalement créé (un objet signalement)</returns>
-        public Signalement CreateSignalement(Signalement signalement)
+        public Report CreateSignalement(Report signalement)
         {
-            Signalement signal = null;
+            Report signal = null;
             try
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
@@ -542,7 +542,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Signalement> signalements = new List<Signalement>();
+                    List<Report> signalements = new List<Report>();
                     signalements = xmlResponse.ExtractSignalements(signalements);
                     if (signalements.Count == 1)
                     {

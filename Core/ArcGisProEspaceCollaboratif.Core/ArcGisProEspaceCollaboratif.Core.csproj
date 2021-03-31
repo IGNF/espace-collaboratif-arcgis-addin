@@ -63,7 +63,7 @@
     <Compile Include="Profil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Question.cs" />
-    <Compile Include="Signalement.cs" />
+    <Compile Include="Report.cs" />
     <Compile Include="ServiceRequest.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Statut.cs" />
