@@ -916,10 +916,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                             val = "0";
                         }
 
+                        // Il faut chercher la correspondance entre le nom de l'attribut affiché
+                        // et le nom de la colonne dans la table
+                        string tagName = GetCorrespondenceAttributeColumn(checkBox.Content.ToString(), cb.Content.ToString());
+
                         tmpThemeAttributes = new ThemeAttributes
                         {
                             UserSelectedValue = val,
                             TagDisplay = checkBox.Content.ToString(),
+                            TagName = tagName,
                             ThemeName = cb.Content.ToString()
                         };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
@@ -929,9 +934,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(Label))
                     {
                         Label label = (Label)this.createReportView.FindName(str);
+
+                        // Il faut chercher la correspondance entre le nom de l'attribut affiché
+                        // et le nom de la colonne dans la table
+                        string tagName = GetCorrespondenceAttributeColumn(label.Content.ToString(), cb.Content.ToString());
+
                         tmpThemeAttributes = new ThemeAttributes
                         {
                             TagDisplay = label.Content.ToString(),
+                            TagName = tagName,
                             ThemeName = cb.Content.ToString()
                         };
                     }
@@ -939,7 +950,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(TextBox))
                     {
                         TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = textBox.SelectedText;
+                        tmpThemeAttributes.UserSelectedValue = textBox.Text;
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -947,7 +958,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(ComboBox))
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = comboBox.Text;
+                        string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, cb.Content.ToString());
+                        tmpThemeAttributes.UserSelectedValue = value;
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -974,6 +986,84 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 themesSelected.Add(tmpTheme);
             }
             return themesSelected;
+        }
+
+        /// <summary>
+        /// Retrouve pour un attribut d'un thème, la correspondance
+        ///  entre son nom d'affichage et son nom de colonne dans la table
+        /// </summary>
+        /// <param name="display">le nom affiché à l'utilisateur</param>
+        /// <param name="theme">le thème de l'attribut</param>
+        /// <returns>Le nom de la colonne dans la table</returns>
+        private string GetCorrespondenceAttributeColumn(string display, string theme)
+        {
+            string tmp = "";
+            foreach (GeoGroup geoGroup in this.Context.Profil.Geogroupes)
+            {
+                foreach (Theme th in geoGroup.Themes)
+                {
+                    if (th.Group.Name != theme)
+                    {
+                        continue;
+                    }
+
+                    if (th.Attributes == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (ThemeAttributes thAtt in th.Attributes)
+                    {
+                        if (thAtt.TagDisplay == display)
+                        {
+                            return thAtt.TagName;
+                        }
+                    }
+                }
+            }
+            return tmp;
+        }
+
+        private string GetCorrespondenceValueAttributeColumn(string display, string attributeName, string theme)
+        {
+            string tmp = "";
+            foreach (GeoGroup geoGroup in this.Context.Profil.Geogroupes)
+            {
+                foreach (Theme th in geoGroup.Themes)
+                {
+                    if (th.Group.Name != theme)
+                    {
+                        continue;
+                    }
+
+                    if (th.Attributes == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (ThemeAttributes thAtt in th.Attributes)
+                    {
+                        if (thAtt.TagName != attributeName)
+                        {
+                            continue;
+                        }
+
+                        if (thAtt.Values == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (KeyValuePair<string, string> kvp in thAtt.Values)
+                        {
+                            if (kvp.Value == display)
+                            {
+                                return kvp.Key;
+                            }
+                        }        
+                    }
+                }
+            }
+            return tmp;
         }
 
         /// <summary>
