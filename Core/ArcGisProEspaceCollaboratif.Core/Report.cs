@@ -29,17 +29,17 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La date de création de la remarque EspaceCollaboratif.
         /// </summary>
-        public DateTime DateCreation;
+        public DateTime DateCreation { get; set; }
 
         /// <summary>
-        /// La date de mise-à-jour du signalement.
+        /// La date de mise à jour du signalement.
         /// </summary>
-        public DateTime DateMiseAJour;
+        public DateTime DateUpdate { get; set; }
 
         /// <summary>
         /// La date de validation du signalement.
         /// </summary>
-        public DateTime DateValidation;
+        public DateTime DateValidation { get; set; }
 
         /// <summary>
         /// La position du signalement (lon/lat)
@@ -49,13 +49,13 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le statut du signalement
         /// </summary>
-        public Statut Statut;
+        public Status Status { get; set; }
 
 
         /// <summary>
         /// Le département où est situé le signalement (indicatif + nom)
         /// </summary>
-        public Groupe Departement;
+        public Group Departement;
 
         /// <summary>
         /// La commune où est situé le signalement (nom)
@@ -65,12 +65,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le texte du commentaire lié au signalement.
         /// </summary>
-        public string Commentaire { get; set; }
+        public string Commentary { get; set; }
 
         /// <summary>
         /// L'auteur du signalement
         /// </summary>
-        public Auteur Auteur;
+        public Author Author { get; set; }
 
         /// <summary>
         ///	Définit les droits d'action de l'utilisateur en cours sur le signalement.
@@ -85,12 +85,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le groupe sous lequel l'auteur a créé le signalement. 
         /// </summary>
-        public Groupe Groupe;
+        public Group Group { get; set; }
 
         /// <summary>
         /// les éventuelles réponses du signalement.
         /// </summary>
-        public List<GeoReponse> Reponses = new List<GeoReponse>() ;
+        public List<GeoResponse> Reponses = new List<GeoResponse>() ;
 
         /// <summary>
         /// les éventuelles croquis de la remarque EspaceCollaboratif.
@@ -146,7 +146,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string GetAuteurNom()
         {
             string result = "";
-            if (!this.Auteur.Nom.Equals("")) { result = this.Auteur.Nom; }
+            if (!this.Author.Name.Equals("")) { result = this.Author.Name; }
             return result;
         }
 
@@ -157,7 +157,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string GetAuteurId()
         {
             string result = "";
-            if (!this.Auteur.Id.Equals("")) { result = this.Auteur.Id; }
+            if (!this.Author.Id.Equals("")) { result = this.Author.Id; }
             return result;
         }
 
@@ -181,7 +181,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public string GetUrlDecodedComment()
         {
-            return HttpUtility.UrlDecode(this.Commentaire);
+            return HttpUtility.UrlDecode(this.Commentary);
         }
 
         public string ConcatenateReponseHTML()
@@ -198,9 +198,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     concatenate += "<li><b><font color=\"green\">Réponse n°" + (this.Reponses.Count - i);
 
-                    if (this.Reponses[i].Auteur.Nom.Length != 0)
+                    if (this.Reponses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.Utf8Encode(this.Reponses[i].Auteur.Nom);
+                        concatenate += " par " + this.Utf8Encode(this.Reponses[i].Author.Name);
                     }
                     if (this.Reponses[i].Date != null)
                     {
@@ -228,9 +228,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     concatenate += "Réponse n°" + (this.Reponses.Count - i);
 
-                    if (this.Reponses[i].Auteur.Nom.Length != 0)
+                    if (this.Reponses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.Reponses[i].Auteur.Nom;
+                        concatenate += " par " + this.Reponses[i].Author.Name;
                     }
                     if (this.Reponses[i].Date != null)
                     {
@@ -250,7 +250,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             System.Xml.Linq.XElement reponsesXML = new System.Xml.Linq.XElement("GEOREM_GEOREP");
           
-            foreach (ArcGisProEspaceCollaboratif.Core.GeoReponse uneGeoReponse in this.Reponses)
+            foreach (ArcGisProEspaceCollaboratif.Core.GeoResponse uneGeoReponse in this.Reponses)
             {
                 reponsesXML.Add(uneGeoReponse.EncodeToXML());
             }
@@ -304,7 +304,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
         }
 
-        public void AddGeoReponse(GeoReponse uneReponse)
+        public void AddGeoReponse(GeoResponse uneReponse)
         {
             this.Reponses.Add(uneReponse);
         }

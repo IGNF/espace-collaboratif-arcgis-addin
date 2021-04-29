@@ -31,7 +31,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Le profil de l'utilisateur
         /// </summary>
-        public Profil UserProfile { get; set; }
+        public Profile UserProfile { get; set; }
 
         public const string strLabel = "Groupe actif : ";
 
@@ -199,7 +199,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void GetInfosLayers()
         {
             this.ListLayers.Clear();
-            foreach (GeoGroupe groupe in this.Context.Profil.Geogroupes)
+            foreach (GeoGroup groupe in this.Context.Profil.Geogroupes)
             {
                 if (groupe.Id != this.Context.Profil.Group.Id)
                 {

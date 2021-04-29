@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        public Profil Profil { get; set; }
+        public Profile Profil { get; set; }
 
         /// <summary>
         /// Liste des fichiers en pièce-jointe
@@ -93,11 +93,11 @@ namespace ArcGisProEspaceCollaboratif
             Profil = this.Contexte.Client.GetProfil();
             if (string.IsNullOrEmpty(Profil.Group.Name))
             {
-                this.groupImageProfil.Text = string.Format("{0} (Profil par défaut)", Profil.Author.Nom);
+                this.groupImageProfil.Text = string.Format("{0} (Profil par défaut)", Profil.Author.Name);
             }
             else
             {
-                this.groupImageProfil.Text = string.Format("{0} ({1})", Profil.Author.Nom, Profil.Group.Name);
+                this.groupImageProfil.Text = string.Format("{0} ({1})", Profil.Author.Name, Profil.Group.Name);
             }
 
             // Les thèmes du profil
@@ -108,7 +108,7 @@ namespace ArcGisProEspaceCollaboratif
 
             // Ajout des noms de groupes trouvés pour l'utilisateur
             this.comboBoxGroupe.Items.Add(Constantes.AUCUN);
-            foreach (GeoGroupe geogroupe in this.Profil.Geogroupes)
+            foreach (GeoGroup geogroupe in this.Profil.Geogroupes)
             {
                 this.comboBoxGroupe.Items.Add(geogroupe.Name);
             }
@@ -267,10 +267,10 @@ namespace ArcGisProEspaceCollaboratif
                 else if (att.Type == "list")
                 {
                     //ComboBoxTreeNode cb = new ComboBoxTreeNode();
-                    foreach (string val in att.Values)
+                    /*foreach (string val in att.Values)
                     {
                         //cb.ComboBox.Items.Add(val);
-                    }
+                    }*/
                     
                     /*TreeNode listNode = new TreeNode(att.Nom);
                     listNode.Nodes.Add(cb);
@@ -488,7 +488,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>  
         /// <param name="profil">Le profil du rédacteur du nouveau signalement et qui contient les thèmes pour lesquels il peut y contribuer.</param>
         /// <returns>La liste des thèmes à affecter au nouveau signalement.</returns>
-        public List<ArcGisProEspaceCollaboratif.Core.Theme> GetSelectedThemes(ArcGisProEspaceCollaboratif.Core.Profil profil)
+        public List<ArcGisProEspaceCollaboratif.Core.Theme> GetSelectedThemes(ArcGisProEspaceCollaboratif.Core.Profile profil)
         {
             /*            List<ArcGisProEspaceCollaboratif.Core.Theme> selectedTheme = new List<ArcGisProEspaceCollaboratif.Core.Theme>();
 

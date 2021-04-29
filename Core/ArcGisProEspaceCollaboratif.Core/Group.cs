@@ -3,7 +3,7 @@
     /// <summary>
     /// Un groupe de l'Espace collaboratif
     /// </summary>
-    public class Groupe
+    public class Group
     {
         /// <summary>
         /// L'identifiant du groupe

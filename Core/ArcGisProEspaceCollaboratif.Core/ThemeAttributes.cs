@@ -10,18 +10,18 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// 
         /// </summary>
-        public string Theme { get; set; }
+        public string ThemeName { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Name { get; set; }
+        public string TagName { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Value { get; set; }
-        
+        public string TagDisplay { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -30,7 +30,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// 
         /// </summary>
-        public List<string> Values { get; set; }
+        public string UserSelectedValue { get; set; } = "";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Dictionary<string,string> Values { get; set; }
 
         /// <summary>
         /// 

@@ -5,7 +5,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe représentant les infos du <GEOGROUPE> de l'utilisateur
     /// </summary>
-    public class GeoGroupe
+    public class GeoGroup
     {
         // ID Geogroupe
         public string Id { get; set; }

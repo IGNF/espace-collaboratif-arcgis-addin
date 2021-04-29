@@ -1,9 +1,9 @@
 ﻿namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
-    /// Statut d'une remarque
+    /// Statut d'un signalement
     /// </summary>
-    public enum Statut
+    public enum Status
     {
         Undefined = -1,
         Submit,

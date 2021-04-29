@@ -96,7 +96,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        public Profil Profil { get; set; }
+        public Profile Profil { get; set; }
 
         /// <summary>
         /// 
@@ -453,19 +453,19 @@ namespace ArcGisProEspaceCollaboratif
                             rowBuffer = reportFeatureClass.CreateRowBuffer();
 
                             rowBuffer[Helper.name_field_IdRemarque] = newReport.Id;
-                            rowBuffer[Helper.name_field_Auteur] = newReport.Auteur.Nom;
+                            rowBuffer[Helper.name_field_Auteur] = newReport.Author.Name;
                             rowBuffer[Helper.name_field_Commune] = newReport.Commune;
                             rowBuffer[Helper.name_field_Departement] = newReport.Departement.Name;
                             rowBuffer[Helper.name_field_IDDepartement] = newReport.Departement.Id;
                             rowBuffer[Helper.name_field_DateCreation] = newReport.DateCreation;
-                            rowBuffer[Helper.name_field_DateMAJ] = newReport.DateMiseAJour;
+                            rowBuffer[Helper.name_field_DateMAJ] = newReport.DateUpdate;
                             rowBuffer[Helper.name_field_DateValidation] = newReport.DateValidation;
-                            rowBuffer[Helper.name_field_Statut] = newReport.Statut;
+                            rowBuffer[Helper.name_field_Statut] = newReport.Status;
                             rowBuffer[Helper.name_field_Themes] = newReport.ConcatenateThemes();
                             rowBuffer[Helper.name_field_Url] = newReport.Lien;
                             rowBuffer[Helper.name_field_UrlPrive] = newReport.LienPrive;
                             rowBuffer[Helper.name_field_Document] = newReport.GetFirstDocument();
-                            rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentaire);
+                            rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentary);
                             rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
                             rowBuffer[Helper.name_field_Autorisation] = newReport.Autorisation;
 
@@ -1186,7 +1186,7 @@ namespace ArcGisProEspaceCollaboratif
                 else
                 {
                     // récupère le profil et un message dans un tuple
-                    (Profil, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupeCleGeoPortail.Item1);
+                    (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupeCleGeoPortail.Item1);
                     string messTmp = profilMessage.Item2;
 
                     // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
@@ -1377,7 +1377,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Statut status)
+        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Status status)
         {
             return this.CountReportsByStatus((int)status);
         }

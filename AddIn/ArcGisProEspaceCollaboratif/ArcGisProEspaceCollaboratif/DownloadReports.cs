@@ -134,10 +134,10 @@ namespace ArcGisProEspaceCollaboratif
                     contexte.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
-                    int newReports = contexte.CountReportsByStatus(Statut.Submit);
-                    int pendingReports = contexte.CountReportsByStatus(Statut.Pending) + contexte.CountReportsByStatus(Statut.Pending0) + contexte.CountReportsByStatus(Statut.Pending1) + contexte.CountReportsByStatus(Statut.Pending2);
-                    int rejectedReports = contexte.CountReportsByStatus(Statut.Reject) + contexte.CountReportsByStatus(Statut.Reject0);
-                    int validatedReports = contexte.CountReportsByStatus(Statut.Valid) + contexte.CountReportsByStatus(Statut.Valid0);
+                    int newReports = contexte.CountReportsByStatus(Status.Submit);
+                    int pendingReports = contexte.CountReportsByStatus(Status.Pending) + contexte.CountReportsByStatus(Status.Pending0) + contexte.CountReportsByStatus(Status.Pending1) + contexte.CountReportsByStatus(Status.Pending2);
+                    int rejectedReports = contexte.CountReportsByStatus(Status.Reject) + contexte.CountReportsByStatus(Status.Reject0);
+                    int validatedReports = contexte.CountReportsByStatus(Status.Valid) + contexte.CountReportsByStatus(Status.Valid0);
 
                     string message = "Import de " + countBar + " signalement(s) depuis l'Espace collaboratif :\n";
 

@@ -29,7 +29,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private readonly string version = "";
 
         //le profil de l'utilisateur
-        public Profil Profil { get; set; }
+        public Profile Profil { get; set; }
 
         //pour rendre indifférent à la culture (utilisé ici pour les nombres)
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
@@ -247,7 +247,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// retourne le profil de l'utilisateur
         /// </summary>
         /// <returns>le profil </returns>
-        public Profil GetProfil()
+        public Profile GetProfil()
         {
             if (this.Profil == null)
             {
@@ -260,9 +260,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Requête au service pour le profil de l'utilisateur
         /// </summary>
         /// <returns>le profil de l'utilisateur</returns>
-        private Profil GetProfilFromService()
+        private Profile GetProfilFromService()
         {
-            Profil profil = new Profil();
+            Profile profil = new Profile();
             string data = "";
 
             data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.Url), null);
@@ -272,7 +272,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (errMessage["code"].Equals("OK"))
             {
-                profil = xmlResponse.ExtractProfil();
+                profil = xmlResponse.ExtractProfile();
             }
             else {
                 throw new Exception(errMessage["code"]);
@@ -426,7 +426,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     { "id", signalement.Id.ToString() },
                     { "title", titreReponse },
                     { "content", reponse },
-                    { "status", (signalement.Statut).ToString().ToLower() }
+                    { "status", (signalement.Status).ToString().ToLower() }
                 };
 
                 string data = this.MakeMultiPartPostRequest(this.Url + "/api/georem/georep_post.xml", parameters, null);
@@ -471,7 +471,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     { "version", Constantes.EspaceCollaboratif_CLIENT_VERSION },
                     { "protocol", Constantes.EspaceCollaboratif_CLIENT_PROTOCOL },
-                    { "comment", signalement.Commentaire }
+                    { "comment", signalement.Commentary }
                 };
 
                 string geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) + " " +
@@ -578,9 +578,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             return Constantes.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
         }
 
-        public (Profil, string) SetChangeUserProfil(string idProfil)
+        public (Profile, string) SetChangeUserProfil(string idProfil)
         {
-            Profil profil = new Profil();
+            Profile profil = new Profile();
             string message = "";
             string url = string.Format("{0}/api/georem/geoaut_switch_profile/{1}", this.Url, idProfil);
             string data = this.MakeGetRequest(url, null);
@@ -589,7 +589,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (errMessage["code"].Equals("OK"))
             {
-                profil = xmlResponse.ExtractProfil();
+                profil = xmlResponse.ExtractProfile();
             }
             else if (errMessage["message"] != "")
             {

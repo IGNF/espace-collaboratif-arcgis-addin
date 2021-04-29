@@ -9,8 +9,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         //variable permettant de rendre indifférent à la culture (par exemple pour les nombre à virgule)
         public static CultureInfo invC = CultureInfo.InvariantCulture;
 
-       // public const uint MAX_TENTATIVE = 2;
-
         //taille maximale pour un document uploadé
         public const long MAX_TAILLE_UPLOAD_FILE =  16000000;
 

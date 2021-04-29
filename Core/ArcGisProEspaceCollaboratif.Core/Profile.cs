@@ -5,17 +5,17 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe représentant le profil de l'utilisateur
     /// </summary>
-    public class Profil
+    public class Profile
     {
         /// <summary>
         /// Nom de l'auteur
         /// </summary>
-        public Auteur Author { get; set; }
+        public Author Author { get; set; }
                 
         /// <summary>
         /// ID & Nom du Geogroupe
         /// </summary>
-        public Groupe Group { get; set; }
+        public Group Group { get; set; }
 
         /// <summary>
         /// Titre du Geogroupe
@@ -65,7 +65,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Les différents groupes de l'utilisateur
         /// </summary>
-        public List<GeoGroupe> Geogroupes { get; set; }
+        public List<GeoGroup> Geogroupes { get; set; }
 
         /// La liste des couches Geoportail visible avec la clé geoportail utilisateur
         public List<LayerGeoportail> LayersKeyGeoportail { get; set; }

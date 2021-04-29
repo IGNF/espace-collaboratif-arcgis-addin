@@ -65,7 +65,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Lancement du formulaire pour créer un nouveau signalement
-                    var createReportViewModel = new CreateReportViewModel(context, futursSketch.Count);
+                    var createReportViewModel = new CreateReportViewModel(context, futursSketch);
                     createReportViewModel.createReportView.DataContext = createReportViewModel;
                     bool? dialogResult = createReportViewModel.createReportView.ShowDialog();
                     // Si l'utilisateur a cliqué sur le bouton "Annuler"
@@ -74,87 +74,6 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         return;
                     }
-
-                    // Création d'un nouveau signalement temporaire.
-                    ArcGisProEspaceCollaboratif.Core.Report virtualReport = new ArcGisProEspaceCollaboratif.Core.Report()
-                    {
-                        // Affectation du commentaire du nouveau signalement.
-                        Commentaire = createReportViewModel.createReportView.CommentaireTextBox.Text
-                    };
-
-
-                    /*
-                        // Création d'un nouveau signalement temporaire.
-                        ArcGisProEspaceCollaboratif.Core.Signalement signalementVirtuel = new ArcGisProEspaceCollaboratif.Core.Signalement();
-
-                        // Affectation du message de la nouvelle remarque.
-                        signalementVirtuel.SetCommentaire(formCreateReport.GetMessage());
-
-                        // Récupération des thèmes sélectionnés qui sont ensuite enregistrés dans le fichier XML de paramétrage Ripart.               
-                        //signalementVirtuel.AddTheme(formCreateReport.GetSelectedThemes());
-
-                        // Ajout du fichier en pièce-jointe.
-                        signalementVirtuel.AddDocument(formCreateReport.GetFichierPJ());
-
-                        // Selon l'option création d'un signalement unique ou un par croquis.
-                        if (formCreateReport.OptionSingleSignalement())
-                        {
-                            // Positionnement du signalement unique par rapport à l'ensemble des croquis.
-                            signalementVirtuel.SetPosition(Helper.CalculatePointReport(futursSketch));
-
-                            // Si option de joindre un croquis au nouveau signalement.
-                            if (formCreateReport.OptionWithCroquis())
-                            {
-                                signalementVirtuel.AddCroquis(futursSketch);
-                            }
-
-                            // Création du nouveau signalement
-                            ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = context.Client.CreateSignalement(signalementVirtuel);
-                            await context.CreerPointSignalement(signalementNouveau);
-
-                            var connectInfoViewModel = new FeedbackInformationViewModel();
-                            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-                            connectInfoViewModel.Logo = context.Client.GetProfil().Logo;
-                            string message = string.Format("Succès : création d'un nouveau signalement n°{0}", signalementNouveau.Id);
-                            connectInfoViewModel.MessageFeedback = message;
-                            connectInfoViewModel.feedbackInformationView.ShowDialog();
-
-                            logger.Info(message);
-                        }
-                        else
-                        {
-                            // Parcours des croquis un par un
-                            List<ulong> listIdNouveauxSignalements = new List<ulong>();
-
-                            foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in futursSketch)
-                            {
-                                // Positionnement de la remarque par rapport au croquis un par un.
-                                signalementVirtuel.SetPosition(Helper.CalculatePointReport(croquis));
-                                signalementVirtuel.ClearCroquis();
-
-                                // Si option de joindre un croquis à la nouvelle remarque.
-                                if (formCreateReport.OptionWithCroquis())
-                                {
-                                    signalementVirtuel.AddCroquis(croquis);
-                                }
-
-                                // Création de la nouvelle remarque.
-                                ArcGisProEspaceCollaboratif.Core.Signalement signalementNouveau = context.Client.CreateSignalement(signalementVirtuel);
-                                await context.CreerPointSignalement(signalementNouveau);
-
-                                listIdNouveauxSignalements.Add(signalementNouveau.Id);
-                            }
-
-                            var connectInfoViewModel = new FeedbackInformationViewModel();
-                            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-                            connectInfoViewModel.Logo = context.Client.GetProfil().Logo;
-                            string message = string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", listIdNouveauxSignalements.Count);
-                            message += string.Format("Les identifiants de ces nouvelles remontées vont de {0} à {1}.", listIdNouveauxSignalements.First(), listIdNouveauxSignalements.Last());
-                            connectInfoViewModel.MessageFeedback = message;
-                            connectInfoViewModel.feedbackInformationView.ShowDialog();
-                            logger.Info(message);
-                        }*/
-
                 }
                 catch (Exception e)
                 {
@@ -167,11 +86,6 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Error(string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message,e.StackTrace));
                 }
             });
-        }
-
-        private void CreateNewReport()
-        {
-
         }
     }
 }

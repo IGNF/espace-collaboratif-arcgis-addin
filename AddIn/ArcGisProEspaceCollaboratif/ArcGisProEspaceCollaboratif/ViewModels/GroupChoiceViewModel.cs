@@ -22,7 +22,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Le profil de l'utilisateur
         /// </summary>
-        public Profil Profile { get; set; }
+        public Profile Profile { get; set; }
         #endregion
 
         #region Constructors
@@ -32,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="keyGeoportail"></param>
         /// <param name="activeGroup"></param>
         /// <param name="profile"></param>
-        public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profil profil)
+        public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profile profil)
         {
             this.Profile = profil;
             this.groupChoiceView = new GroupChoiceView();
@@ -113,7 +113,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             // Ajout des noms de groupes trouvés pour l'utilisateur
             ObservableCollection<string> GroupNames = new ObservableCollection<string>();
-            foreach (GeoGroupe geogroup in this.Profile.Geogroupes)
+            foreach (GeoGroup geogroup in this.Profile.Geogroupes)
             {
                 GroupNames.Add(geogroup.Name);
             }
