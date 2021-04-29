@@ -561,7 +561,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     if (valeurs.Name == "VAL")
                     {
-                        string valeur = "";
+                        string valeur = valeurs.InnerXml;
                         if (valeurs.HasAttributes)
                         {
                             valeur = valeurs.GetAttribute("display", "");
