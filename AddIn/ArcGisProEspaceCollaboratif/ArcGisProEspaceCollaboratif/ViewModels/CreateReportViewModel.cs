@@ -889,10 +889,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     continue;
                 }
-
+                string themeName = cb.Content.ToString();
                 Group group = new Group
                 {
                     Name = cb.Content.ToString(),
+                    Id = GetCorrespondenceIdNameTheme(themeName)
                 };
 
                 Theme tmpTheme = new Theme()
@@ -918,7 +919,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                         // Il faut chercher la correspondance entre le nom de l'attribut affiché
                         // et le nom de la colonne dans la table
-                        string tagName = GetCorrespondenceAttributeColumn(checkBox.Content.ToString(), cb.Content.ToString());
+                        string tagName = GetCorrespondenceAttributeColumn(checkBox.Content.ToString(), themeName);
 
                         tmpThemeAttributes = new ThemeAttributes
                         {
@@ -937,13 +938,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                         // Il faut chercher la correspondance entre le nom de l'attribut affiché
                         // et le nom de la colonne dans la table
-                        string tagName = GetCorrespondenceAttributeColumn(label.Content.ToString(), cb.Content.ToString());
+                        string tagName = GetCorrespondenceAttributeColumn(label.Content.ToString(), themeName);
 
                         tmpThemeAttributes = new ThemeAttributes
                         {
                             TagDisplay = label.Content.ToString(),
                             TagName = tagName,
-                            ThemeName = cb.Content.ToString()
+                            ThemeName = themeName
                         };
                     }
 
@@ -958,7 +959,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(ComboBox))
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
-                        string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, cb.Content.ToString());
+                        string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
                         tmpThemeAttributes.UserSelectedValue = value;
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
@@ -967,9 +968,71 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(DatePicker))
                     {
                         DatePicker datePicker = (DatePicker)this.createReportView.FindName(str);
-                        // La date récupérée est de la forme 29/04/2021 mais doit être de la forme 'yyyy-MM-dd'
-                        string[] tmp = datePicker.Text.Split('/');
-                        tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0]);
+                        string tmpDate = datePicker.Text;
+                        // Si la date récupérée est de la forme jeudi 29 avril 2021
+                        if (tmpDate.Length > 11)
+                        {
+                            string[] tmp = tmpDate.Split(' ');
+                            string mois="";
+                            switch (tmp[1])
+                            {
+                                case "janvier":
+                                    mois = "01";
+                                    break;
+                                case "février":
+                                    mois = "02";
+                                    break;
+                                case "mars":
+                                    mois = "03";
+                                    break;
+                                case "avril":
+                                    mois = "04";
+                                    break;
+                                case "mai":
+                                    mois = "05";
+                                    break;
+                                case "juin":
+                                    mois = "06";
+                                    break;
+                                case "juillet":
+                                    mois = "07";
+                                    break;
+                                case "août":
+                                    mois = "08";
+                                    break;
+                                case "septembre":
+                                    mois = "09";
+                                    break;
+                                case "octobre":
+                                    mois = "10";
+                                    break;
+                                case "novembre":
+                                    mois = "11";
+                                    break;
+                                case "décembre":
+                                    mois = "12";
+                                    break;
+                            }
+                            // Si la transformation du mois a échoué
+                            if (mois == "")
+                            {
+                                // On prend la date du jour
+                                string nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+                                tmpThemeAttributes.UserSelectedValue = nowDate;
+                            }
+                            else
+                            {
+                                // Le mois a bien été codé en chiffre
+                                tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[3], mois, tmp[1]);
+                            }
+                        }
+                        // sinon la date récupérée est de la forme 29/04/2021
+                        // il faut la transformer en 'yyyy-MM-dd'
+                        else
+                        {
+                            string[] tmp = tmpDate.Split('/');
+                            tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0]);
+                        }
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -989,8 +1052,30 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         /// <summary>
+        /// Retrouve pour un thème donné son identifiant
+        /// </summary>
+        /// <param name="theme">Le nom du thème</param>
+        /// <returns>L'identifiant du thème</returns>
+        private string GetCorrespondenceIdNameTheme( string theme)
+        {
+            string id = "";
+            foreach (GeoGroup geoGroup in this.Context.Profil.Geogroupes)
+            {
+                foreach (Theme th in geoGroup.Themes)
+                {
+                    if (th.Group.Name != theme)
+                    {
+                        continue;
+                    }
+                    return th.Group.Id;
+                }
+            }
+            return id;
+        }
+
+        /// <summary>
         /// Retrouve pour un attribut d'un thème, la correspondance
-        ///  entre son nom d'affichage et son nom de colonne dans la table
+        /// entre son nom d'affichage et son nom de colonne dans la table
         /// </summary>
         /// <param name="display">le nom affiché à l'utilisateur</param>
         /// <param name="theme">le thème de l'attribut</param>

@@ -489,7 +489,12 @@ namespace ArcGisProEspaceCollaboratif.Core
                     string attributes = "";
                     foreach (Theme t in themes)
                     {
-                        attributes += "\"" + t.Group.Id + "::" + t.Group.Name + "\"=>\"1\",";
+                        string groupIdAndName = "\"" + t.Group.Id + "::" + t.Group.Name;
+                        attributes += groupIdAndName + "\"=>\"1\",";
+                        foreach(ThemeAttributes att in t.Attributes)
+                        {
+                            attributes += groupIdAndName + "::" + att.TagName + "\"=>\"" + att.UserSelectedValue + "\",";
+                        }
                     }
                     attributes = attributes.Substring(0, attributes.Length - 1);
                     parameters.Add("attributes", attributes);
