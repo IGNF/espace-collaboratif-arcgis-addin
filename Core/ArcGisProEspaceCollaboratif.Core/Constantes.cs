@@ -5,12 +5,11 @@ namespace ArcGisProEspaceCollaboratif.Core
 {
     public class Constantes
     {
-
         //variable permettant de rendre indifférent à la culture (par exemple pour les nombre à virgule)
         public static CultureInfo invC = CultureInfo.InvariantCulture;
 
         //taille maximale pour un document uploadé
-        public const long MAX_TAILLE_UPLOAD_FILE =  16000000;
+        public const long MAX_TAILLE_UPLOAD_FILE = 16000000;
 
         //nombre par défaut de remarques par page
         public const int NB_DEFAULT_SIGNALEMENTS_PAGINATION = 100;

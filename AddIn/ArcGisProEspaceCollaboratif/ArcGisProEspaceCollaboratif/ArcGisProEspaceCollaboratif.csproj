@@ -177,12 +177,6 @@
     <Compile Include="FormSetUp.designer.cs">
       <DependentUpon>FormSetUp.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormCreateReport.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormCreateReport.designer.cs">
-      <DependentUpon>FormCreateReport.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormProgressDownload.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -227,9 +221,6 @@
   <ItemGroup>
     <EmbeddedResource Include="FormSetUp.resx">
       <DependentUpon>FormSetUp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormCreateReport.resx">
-      <DependentUpon>FormCreateReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormProgressDownload.resx">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>

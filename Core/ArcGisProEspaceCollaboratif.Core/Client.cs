@@ -29,7 +29,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private readonly string version = "";
 
         //le profil de l'utilisateur
-        public Profile Profil { get; set; }
+        public Profile Profile { get; set; }
 
         //pour rendre indifférent à la culture (utilisé ici pour les nombres)
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
@@ -150,7 +150,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters">parameters to send</param>
         /// <param name="docs">files to upload</param>
         /// <returns></returns>
-
         public string MakeMultiPartPostRequest(string url, Dictionary<string, string> parameters, Dictionary<string, string> docs)
         {
             string result = "";
@@ -247,22 +246,22 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// retourne le profil de l'utilisateur
         /// </summary>
         /// <returns>le profil </returns>
-        public Profile GetProfil()
+        public Profile GetProfile()
         {
-            if (this.Profil == null)
+            if (this.Profile == null)
             {
-                this.Profil = this.GetProfilFromService();
+                this.Profile = this.GetProfileFromService();
             }
-            return this.Profil;
+            return this.Profile;
         }
 
         /// <summary>
         /// Requête au service pour le profil de l'utilisateur
         /// </summary>
         /// <returns>le profil de l'utilisateur</returns>
-        private Profile GetProfilFromService()
+        private Profile GetProfileFromService()
         {
-            Profile profil = new Profile();
+            Profile profile = new Profile();
             string data = "";
 
             data = this.MakeGetRequest(string.Format("{0}/api/georem/geoaut_get.xml", this.Url), null);
@@ -272,12 +271,12 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (errMessage["code"].Equals("OK"))
             {
-                profil = xmlResponse.ExtractProfile();
+                profile = xmlResponse.ExtractProfile();
             }
             else {
                 throw new Exception(errMessage["code"]);
             }
-            return profil;
+            return profile;
         }
 
         /// <summary>
@@ -380,18 +379,18 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// retourne un simple signalement, donné par son identifiant
+        /// Retourne un simple signalement, donné par son identifiant
         /// </summary>
-        /// <param name="idSignalement">identifiant de la remarque</param>
+        /// <param name="idReport">identifiant du signalement</param>
         /// <returns>la remarque</returns>
-        public Report GetGeoRem(ulong idSignalement)
+        public Report GetGeoRem(ulong idReport)
         {
-            Report signalement = new Report();
-            List<Report> signalements = new List<Report>();
+            Report report = new Report();
+            List<Report> reports = new List<Report>();
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idSignalement.ToString()), null);
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idReport.ToString()), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
@@ -402,12 +401,12 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 if (total == 1)
                 {
-                    signalements = xmlResponse.ExtractSignalements(signalements);
-                    signalement = signalements[0];
+                    reports = xmlResponse.ExtractSignalements(reports);
+                    report = reports[0];
                 }
             }
 
-            return signalement;
+            return report;
         }
 
         /// <summary>
@@ -457,32 +456,31 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Ajout d'un nouveau signalement
-        /// 
+        /// Création d'un nouveau signalement
         /// </summary>
-        /// <param name="signalement">le signalement à créer</param>
-        /// <returns>Le signalement créé (un objet signalement)</returns>
-        public Report CreateSignalement(Report signalement)
+        /// <param name="tmpReport">Le signalement temporaire à compléter</param>
+        /// <returns>L'objet signalement créé</returns>
+        public Report CreateReport(Report tmpReport)
         {
-            Report signal = null;
+            Report newReport = null;
             try
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "version", Constantes.EspaceCollaboratif_CLIENT_VERSION },
                     { "protocol", Constantes.EspaceCollaboratif_CLIENT_PROTOCOL },
-                    { "comment", signalement.Commentary }
+                    { "comment", tmpReport.Commentary }
                 };
 
-                string geometry = "POINT(" + Convert.ToString(signalement.GetLongitude(), invC) + " " +
-                                 Convert.ToString(signalement.GetLatitude(), invC) + ")";
+                string geometry = "POINT(" + Convert.ToString(tmpReport.GetLongitude(), invC) + " " +
+                                 Convert.ToString(tmpReport.GetLatitude(), invC) + ")";
                 parameters.Add("geometry", geometry);
 
                 // zone géographique 
-                parameters.Add("territory", this.GetProfil().Zone.ToString());
+                parameters.Add("territory", this.GetProfile().Zone.ToString());
 
                 // Ajout des thèmes selectionnés 
-                List<Theme> themes = signalement.Themes;
+                List<Theme> themes = tmpReport.Themes;
                 if (themes != null && themes.Count > 0)
                 {
                     XDocument doc = new XDocument(new XElement("THEMES"));
@@ -501,15 +499,15 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //ajout des croquis
-                if (!signalement.IsCroquisEmpty())
+                if (!tmpReport.IsCroquisEmpty())
                 {
-                    List<Sketch> croquis = signalement.Sketch;
+                    List<Sketch> sketches = tmpReport.Sketch;
                     XNamespace gml = "http://www.opengis.net/gml";
 
                     XDocument doc = new XDocument(new XElement("CROQUIS",
                         new XAttribute(XNamespace.Xmlns + "gml", "http://www.opengis.net/gml")));
 
-                    foreach (Sketch cr in croquis)
+                    foreach (Sketch cr in sketches)
                     {
                         doc = cr.EncodeToXML(doc, gml);
                     }
@@ -518,7 +516,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 //ajout des documents joints      
-                List<string> documents = signalement.Documents;
+                List<string> documents = tmpReport.Documents;
 
                 int docCount = 0;
 
@@ -547,16 +545,16 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Report> signalements = new List<Report>();
-                    signalements = xmlResponse.ExtractSignalements(signalements);
-                    if (signalements.Count == 1)
+                    List<Report> reports = new List<Report>();
+                    reports = xmlResponse.ExtractSignalements(reports);
+                    if (reports.Count == 1)
                     {
-                        signal = signalements[0];
+                        newReport = reports[0];
                     }
                     else
                     {
-                        logger.Error("Problème lors de l'ajout de la remarque");
-                        throw new Exception("Problème lors de l'ajout de la remarque");
+                        logger.Error("Problème lors de l'ajout du signalement");
+                        throw new Exception("Problème lors de l'ajout du signalement");
                     }
                 }
                 else
@@ -571,7 +569,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 throw new Exception(e.Message);
             }
 
-            return signal;
+            return newReport;
         }
 
         /// <summary>

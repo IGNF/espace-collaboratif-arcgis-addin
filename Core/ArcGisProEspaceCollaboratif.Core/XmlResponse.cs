@@ -829,8 +829,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     SketchAttributes attribut = new SketchAttributes
                     {
-                        Nom = EncodeToUTF8(att.GetAttribute("name", "")),
-                        Valeur = EncodeToUTF8(att.InnerXml)
+                        Name = EncodeToUTF8(att.GetAttribute("name", "")),
+                        Value = EncodeToUTF8(att.InnerXml)
                     };
                     croquis.AddAttribute(attribut);
                 }

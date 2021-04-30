@@ -826,12 +826,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
 
             // Création du nouveau signalement
-            ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateSignalement(this.VirtualReport);
+            ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
             this.Context.CreerPointSignalement(newReport);
 
             var connectInfoViewModel = new FeedbackInformationViewModel();
             connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-            connectInfoViewModel.Logo = this.Context.Client.GetProfil().Logo;
+            connectInfoViewModel.Logo = this.Context.Client.GetProfile().Logo;
             string message = string.Format("Succès : création d'un nouveau signalement n°{0}", newReport.Id);
             connectInfoViewModel.MessageFeedback = message;
             connectInfoViewModel.feedbackInformationView.ShowDialog();
@@ -858,7 +858,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
 
                 // Création du nouveau signalement
-                ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateSignalement(this.VirtualReport);
+                ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
                 this.Context.CreerPointSignalement(newReport);
 
                 listIdNouveauxSignalements.Add(newReport.Id);
@@ -866,7 +866,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             var connectInfoViewModel = new FeedbackInformationViewModel();
             connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-            connectInfoViewModel.Logo = this.Context.Client.GetProfil().Logo;
+            connectInfoViewModel.Logo = this.Context.Client.GetProfile().Logo;
             string message = string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", listIdNouveauxSignalements.Count);
             message += string.Format("Les identifiants de ces nouvelles remontées vont de {0} à {1}.", listIdNouveauxSignalements.FirstOrDefault(), listIdNouveauxSignalements.LastOrDefault());
             connectInfoViewModel.MessageFeedback = message;

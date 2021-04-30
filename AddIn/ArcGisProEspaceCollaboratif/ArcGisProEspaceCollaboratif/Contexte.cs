@@ -551,7 +551,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Récupération des attributs du croquis transmis par l'API (champ attributes)
                     string attributes = "";
                     foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
-                        attributes += attribut.Nom + " = '" + attribut.Valeur + "' | ";
+                        attributes += attribut.Name + " = '" + attribut.Value + "' | ";
 
                     if (currSketch.Attributes.Count != 0)
                         attributes = attributes.Substring(0, attributes.Length - 3);
@@ -1033,7 +1033,7 @@ namespace ArcGisProEspaceCollaboratif
                 ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
                 
                 // Récupération du profil utilisateur
-                this.Profil = connexionServer.GetProfil();
+                this.Profil = connexionServer.GetProfile();
                 if (this.Profil == null)
                 {
                     throw new Exception("Connexion impossible au serveur de l'Espace collaboratif");

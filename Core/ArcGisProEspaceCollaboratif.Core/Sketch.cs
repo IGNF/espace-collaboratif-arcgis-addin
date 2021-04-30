@@ -137,7 +137,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="value">valeur de l'attribut</param>
         public void AddAttribute(string key, string value)
         {
-            this.Attributes.Add(new SketchAttributes(key, value));
+            SketchAttributes sketchAttributes = new SketchAttributes()
+            {
+                Name = key,
+                Value = value
+            };
+            this.Attributes.Add(sketchAttributes);
         }
 
         /// <summary>
@@ -313,7 +318,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             foreach (SketchAttributes att in this.Attributes)
             {
                 XElement xattribut = new XElement("attribut");
-                xattribut.Add(new XAttribute("name", att.Nom), att.Valeur);
+                xattribut.Add(new XAttribute("name", att.Name), att.Value);
                 xattributs.Add(xattribut);
                 
             }

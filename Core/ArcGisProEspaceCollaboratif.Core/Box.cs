@@ -7,13 +7,10 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class Box
     {
-
         public double XMin ;
         public double YMin ;
         public double XMax ;
         public double YMax ;
-
-
 
         /// <summary>
         /// Constructeur d'une boite vide
@@ -68,9 +65,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.YMax = other.YMax;
         }
 
-
         /// <summary>
-        /// Test si la boite est vide 
+        /// Teste si la boite est vide 
         /// </summary>
         /// <returns></returns>
         public bool IsEmpty()
@@ -78,7 +74,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             return double.IsNaN(this.XMin) || double.IsNaN(this.YMin) || double.IsNaN(this.XMax) || double.IsNaN(this.YMax);
         }
 
-
+        /// <summary>
+        /// Transformation des coordonnées de la box en chaine de caractères
+        /// </summary>
+        /// <returns>La chaine de caractères contenant les coordonnées de la box</returns>
         public string BoxToString(){
             string strBox = Convert.ToString(this.XMin, Constantes.invC)+ "," +
                             Convert.ToString(this.YMin, Constantes.invC) + "," +
@@ -86,6 +85,5 @@ namespace ArcGisProEspaceCollaboratif.Core
                             Convert.ToString(this.YMax, Constantes.invC) ;
             return strBox;
         }
-
     }
 }

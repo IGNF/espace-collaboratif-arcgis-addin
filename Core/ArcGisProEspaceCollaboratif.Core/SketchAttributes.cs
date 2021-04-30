@@ -8,19 +8,29 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class SketchAttributes
     {
-        public string Nom ;   //nom de l'attribut
-        public string Valeur ;//valeur de l'attribut
+        #region Parameters
+        /// <summary>
+        /// Nom de l'attribut
+        /// </summary>
+        public string Name { get; set; } = "";
 
-        public SketchAttributes()
-        {
-            this.Nom = "";
-            this.Valeur = "";
-        }
+        /// <summary>
+        /// Valeur de l'attribut
+        /// </summary>
+        public string Value { get; set; } = "";
+        #endregion
 
-        public SketchAttributes(string nom, string valeur)
+        #region Constructor
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /*public SketchAttributes(string name, string value)
         {
-            this.Nom = nom;
-            this.Valeur = valeur;
-        }
+            this.Name = name;
+            this.Value = value;
+        }*/
+        #endregion
     }
 }

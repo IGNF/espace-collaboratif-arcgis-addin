@@ -1060,7 +1060,12 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le <paramref name="croquis"/> complété de l'attribut supplémentaire issu de la paire <paramref name="nom"/> et <paramref name="val"/>.</returns>
         public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Sketch croquis, string nom, string val)
         {
-            croquis.AddAttribute(new ArcGisProEspaceCollaboratif.Core.SketchAttributes(nom, val));
+            SketchAttributes sketchAttributes = new SketchAttributes()
+            {
+                Name = nom,
+                Value = val
+            };
+            croquis.AddAttribute(sketchAttributes);
         }
 
         /// <summary>
