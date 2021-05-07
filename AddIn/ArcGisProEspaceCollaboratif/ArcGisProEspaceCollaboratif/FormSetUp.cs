@@ -96,7 +96,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.comboBoxCalque.SelectedIndex = this.comboBoxCalque.FindStringExact(calqueFiltrageDefaut);
             }
 
-            if (Helper.Load_AttributsCroquis().Nodes.Count >0)
+            if (Helper.Load_AttributesSketch().Nodes.Count >0)
             {
                 this.checkBoxCroquis.Checked = true;
             }

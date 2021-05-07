@@ -228,20 +228,22 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             return this.Points.Count == 0;
         }
-
-       
+    
         public bool IsClosed()
         {
             return this.FirstCoord() == this.LastCoord();
         }
-
-       
+   
         public bool IsOpenLine()
         {
             return ((this.Type == SketchType.Fleche || this.Type == SketchType.Ligne) && !(this.IsClosed()));
         }
 
 
+        /// <summary>
+        /// Contrôle la validité du croquis en vérifiant le nombre de points
+        /// </summary>
+        /// <returns>True si le nombre de points est valide</returns>
         public bool IsValid()
         {
             int nPoints = this.Points.Count;

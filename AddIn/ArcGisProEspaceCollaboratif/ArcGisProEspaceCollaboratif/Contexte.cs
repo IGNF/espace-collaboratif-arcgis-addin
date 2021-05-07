@@ -1224,10 +1224,10 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Transforme en croquis Ripart les object sélectionnés dans la carte en cours.
+        /// Transforme en croquis les objets sélectionnés dans la carte en cours.
         /// </summary>
-        /// <returns>Liste de croquis Ripart créés à partir des objects sélectionnés.</returns>
-        public List<ArcGisProEspaceCollaboratif.Core.Sketch > MakeCroquis_from_Selection()
+        /// <returns>Liste de croquis créés à partir des objects sélectionnés.</returns>
+        public List<ArcGisProEspaceCollaboratif.Core.Sketch > MakeSketchFromSelection()
         {
             // TODO : on ne peut pas modifier la status bar dans arcgis pro,
             // question Noémie, on remplace par quoi ?
@@ -1235,13 +1235,12 @@ namespace ArcGisProEspaceCollaboratif
             ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
             mess = application.StatusBar;*/
 
-                        if (this.MapActiveView == null)
+            if (this.MapActiveView == null)
             {
                 return null;
             }
 
-            List<ArcGisProEspaceCollaboratif.Core.Sketch> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
-            System.Windows.Forms.TreeNode treeAttributs = Helper.Load_AttributsCroquis();
+            List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
 
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
@@ -1251,78 +1250,32 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     //get the layer of the selected feature
                     var featureLayer = kvp.Key as FeatureLayer;
+                    List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();
+                   
                     List<long> lOid = kvp.Value;
                     foreach (long oid in lOid)
                     {
                         QueuedTask.Run(() =>
                         {
-                            var feature = featureLayer.Inspect(oid);
-                            var geometryFeature = feature.Shape;
-                            var geometryFeatureType = geometryFeature.GeometryType;
-                            switch (geometryFeatureType)
+                            // Initialisation d'un nouveau croquis avec la géométrie
+                            var inspector = featureLayer.Inspect(oid);
+                            Geometry geometryFeature = inspector.Shape;
+                            ArcGisProEspaceCollaboratif.Core.Sketch tmpSketch = Helper.MakeSketch(geometryFeature);
+
+                            // Ajouts des attributs au nouveau croquis
+                            Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
+                            foreach (KeyValuePair<string, string> kv in attributes)
                             {
-                                default:
-                                    System.Windows.Forms.MessageBox.Show(
-                                        "Géométrie non-prise en charge pour la transformer en croquis.",
-                                        Constantes.WARNING,
-                                        System.Windows.Forms.MessageBoxButtons.OK,
-                                        System.Windows.Forms.MessageBoxIcon.Warning
-                                    );
-                                    break;
-
-                                case GeometryType.Point:
-                                    ArcGIS.Core.Geometry.MapPoint pointGeom = geometryFeature as ArcGIS.Core.Geometry.MapPoint;
-                                    ArcGisProEspaceCollaboratif.Core.Sketch croquisTemp = Helper.MakeSketch(pointGeom);
-                                    //TODO Ajouter les champs du croquis
-                                    //EspaceCollaboratifHelper.AddAttributs(croquisTemp, feature, treeAttributs);
-                                    listCroquis.Add(croquisTemp);
-                                    break;
-
-                                    /*case GeometryType.Polyline:
-                                        for (int i = 0; i < collectionPolyline.GeometryCount; i++)
-                                        {
-                                            Geometry geomPath = collectionPolyline.Geometry[i];
-                                            IPath path = geomPath as IPath;
-                                            ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(path);
-                                            EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
-
-                                            if (collectionPolyline.GeometryCount > 1)
-                                            {
-                                                string multigeom = "" + (i + 1) + "/" + collectionPolyline.GeometryCount;
-                                                EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
-                                            }
-                                            listCroquis.Add(croquisTemp);
-                                        }
-                                        break;
-
-                                    case GeometryType.Polygon:
-                                        IGeometryCollection collectionPolygon = feature.GetShape() as IGeometryCollection;
-
-                                        for (int i = 0; i < collectionPolygon.GeometryCount; i++)
-                                        {
-                                            IRing ring = collectionPolygon.Geometry[i] as IRing;
-
-                                            if (ring.IsExterior)
-                                            {
-                                                ArcGisProEspaceCollaboratif.Core.Croquis croquisTemp = EspaceCollaboratifHelper.MakeCroquis(ring);
-                                                EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, feature, treeAttributs);
-
-                                                if (collectionPolygon.GeometryCount > 1)
-                                                {
-                                                    string multigeom = "" + (i + 1) + "/" + collectionPolygon.GeometryCount;
-                                                    EspaceCollaboratifHelper.AddAttributs(ref croquisTemp, "Multigéométrie", multigeom);
-                                                }
-                                                listCroquis.Add(croquisTemp);
-                                            }
-                                        }
-                                        break;*/
+                                tmpSketch.AddAttribute(kv.Key, kv.Value);
                             }
+
+                            sketches.Add(tmpSketch);
                         }); 
                     }
                 }
             });
                        
-            return listCroquis;
+            return sketches;
         }
 
         /// <summary>

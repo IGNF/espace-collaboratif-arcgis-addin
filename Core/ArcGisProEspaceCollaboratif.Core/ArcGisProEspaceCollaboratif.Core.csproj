@@ -62,7 +62,6 @@
     <Compile Include="Point.cs" />
     <Compile Include="Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Question.cs" />
     <Compile Include="Report.cs" />
     <Compile Include="ServiceRequest.cs" />
     <Compile Include="Logger.cs" />

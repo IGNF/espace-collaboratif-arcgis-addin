@@ -550,8 +550,14 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le Point ArcGIS positionné sur le barycentre calculé.</returns>
         public static MapPoint Barycentre(List<MapPoint> points)
         {
-            if (points.Count == 0) { return null; }
-            if (points.Count == 1) { return points.First(); }
+            if (points.Count == 0)
+            {
+                throw new Exception("Helper.Barycentre : pas de points, impossible de calculer le barycentre");
+            }
+            if (points.Count == 1)
+            {
+                return points.First();
+            }
 
             double barycentreX = 0;
             double barycentreY = 0;
@@ -577,7 +583,7 @@ namespace ArcGisProEspaceCollaboratif
 
             if (pointResult.IsEmpty)
             {
-                return null;
+                throw new Exception("Helper.Barycentre.MapPointBuilder : impossible de déterminer un barycentre avec les coordonnées de la liste de points en entrée");
             }
 
             return pointResult;
@@ -1016,13 +1022,43 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
+        /// Récupère l'ensemble des attributs d'un objet sous la forme d'un dictionnaire [Nom:valeur]
+        /// Supprime pour un champ 'Date' les hh:mm:ss
+        /// </summary>
+        /// <param name="inspector">Accès aux attributs d'un objet</param>
+        /// <param name="fieldDescription">La liste des attributs</param>
+        /// <returns>Retourne un dictionnaire avec nom et valeur des attributs</returns>
+        public static Dictionary<string, string> GetAttributes(
+            ArcGIS.Desktop.Editing.Attributes.Inspector inspector,
+            List<FieldDescription> fieldDescription
+        )
+        {
+            Dictionary<string, string> attributes = new Dictionary<string, string>();
+
+            foreach(FieldDescription fieldDesc in fieldDescription)
+            {
+                string originalValue = inspector[fieldDesc.Name].ToString();
+                if (fieldDesc.Type == FieldType.Date && originalValue.Length != 0)
+                {
+                    if (originalValue.Substring(originalValue.Length - 9).Equals(" 00:00:00"))
+                    {
+                        originalValue = originalValue.Substring(0, originalValue.Length - 9);
+                    }
+                }
+                attributes.Add(fieldDesc.Name, originalValue);
+            }
+
+            return attributes;
+        }
+
+        /// <summary>
         /// Ajoute des attributs à un croquis en fonction des propriétés de la feature donnée en entrée.
         /// </summary>
-        /// <param name="croquis">Le croquis auquel on veut ajouter des attributs.</param>
-        /// <param name="feature">La feature initiale contenant les champs qu'on veut mettre en attribut dans le croquis.</param>
+        /// <param name="sketch">Le croquis auquel on veut ajouter des attributs.</param>
+        /// <param name="feature">L'objet initial contenant les champs qu'on veut mettre en attribut dans le croquis.</param>
         /// <param name="treeLayerAndField">L'arborescence des calques et de leurs champs devant être mis en attribut pour le nouveau croquis.</param>
-        /// <returns>Le <paramref name="croquis"/> complété d'attributs supplémentaires issus des propriétés de la <paramref name="feature"/>.</returns>
-        public static void AddAttributs(ArcGisProEspaceCollaboratif.Core.Sketch croquis, Feature feature, System.Windows.Forms.TreeNode treeLayerAndField)
+        /// <returns>Le <paramref name="sketch"/> complété d'attributs supplémentaires issus des propriétés de la <paramref name="feature"/>.</returns>
+        public static void AddAttributs(ArcGisProEspaceCollaboratif.Core.Sketch sketch, Feature feature, System.Windows.Forms.TreeNode treeLayerAndField)
         {
             // Parcours des champs du feature.
             IReadOnlyList<Field> fields = feature.GetFields();
@@ -1046,7 +1082,7 @@ namespace ArcGisProEspaceCollaboratif
                             originalValue = originalValue.Substring(0, originalValue.Length - 9);
                         }
                     }
-                    croquis.AddAttribute(field.Name, originalValue);
+                    sketch.AddAttribute(field.Name, originalValue);
                 });
             }
         }
@@ -1072,8 +1108,8 @@ namespace ArcGisProEspaceCollaboratif
         /// Génère un croquis pour l'Espace collaboratif à partir d'une géométrie ArcGIS pro.
         /// La géométrie du nouveau croquis est celle issue de la conversion de la géométrie donnée en entrée.
         /// </summary>
-        /// <param name="geometry">La géométrie qu'il faut convertir en croquis de l'Espace collaboratif.</param>        
-        /// <returns>Le croquis de l'Espace collaboratif issu depuis <paramref name="geometryEntree"/>.</returns>
+        /// <param name="geometry">La géométrie qu'il faut convertir en croquis de l'Espace collaboratif</param>
+        /// <returns>Le croquis pour l'Espace collaboratif</returns>
         public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(Geometry geometry)
         {
             ArcGisProEspaceCollaboratif.Core.Sketch newSketch = new ArcGisProEspaceCollaboratif.Core.Sketch();
@@ -1081,62 +1117,80 @@ namespace ArcGisProEspaceCollaboratif
             // Selon le type géométrique de la géométrie à traiter.
             switch (geometry.GeometryType)
             {
-                /*case esriGeometryType.esriGeometryRing:
-                    IRing ring = geometryEntree as IRing;
-                    IPointCollection vertexRing = ring as IPointCollection;
-                    newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexRing, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Polygone);
-                    break;*/
-
-                /*case esriGeometryType.esriGeometryPath:
-                    IPath path = geometryEntree as IPath;
-                    IPointCollection vertexPath = path as IPointCollection;
-                    newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexPath, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
-                    break;*/
-
-                /*case esriGeometryType.esriGeometryLine:
-                    newCroquis.SetType(ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
-                    LineSegment ligne = geometryEntree as LineSegment;
-                    newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(ligne.FromPoint));
-                    newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(ligne.ToPoint));
-                    break;*/
-
                 case GeometryType.Point:
-                    newSketch.SetType(ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Point);
+                    newSketch.SetType(Sketch.SketchType.Point);
                     MapPoint point = geometry as MapPoint;
                     newSketch.AddPoint(Helper.TransformPoint(point));
                     break;
 
-/*                case GeometryType.Polygon:
-                    newSketch.SetType(ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygon);
-                    Polygon polygon = geometry as Polygon;
-                    ReadOnlyPointCollection vertexPolygon = geometry as ReadOnlyPointCollection;
-                    newSketch = EspaceCollaboratifHelper.PointCollectionToSketch(vertexPolygon, ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygon);
+                case GeometryType.Polyline:
+                    newSketch.SetType(Sketch.SketchType.Ligne);
+                    Polyline polyline = geometry as Polyline;
+                    foreach (MapPoint mapPoint in polyline.Points)
+                    {
+                        newSketch.AddPoint(Helper.TransformPoint(mapPoint));
+                    }
                     break;
-*/
-                /*case GeometryType.Polyline:
-                    Polyline polyligne = geometryEntree as Polyline;
-                    IPointCollection vertexPolyligne = polyligne as IPointCollection;
-                    newCroquis = EspaceCollaboratifHelper.PointCollectionToCroquis(vertexPolyligne, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType.Ligne);
-                    break;*/
+                  
+                case GeometryType.Polygon:
+                    newSketch.SetType(Sketch.SketchType.Polygone);
+                    Polygon polygon = geometry as Polygon;
+                    foreach (MapPoint mp in polygon.Points)
+                    {
+                        newSketch.AddPoint(Helper.TransformPoint(mp));
+                    }
+                    break;
+
+                default:
+                    System.Windows.Forms.MessageBox.Show(
+                        "Géométrie non-prise en charge pour la transformer en croquis.",
+                        Constantes.WARNING,
+                        System.Windows.Forms.MessageBoxButtons.OK,
+                        System.Windows.Forms.MessageBoxIcon.Warning
+                    );
+                    break;
             }
 
-            if (!newSketch.IsValid()) { return new ArcGisProEspaceCollaboratif.Core.Sketch(); }
             return newSketch;
         }
 
-
-        /// <summary>
-        /// Calcule le point d'application pour un nouveau signalement à partir des croquis associés à ce futur signalement.
-        /// On calcule le centroïde de chaque croquis contenu dans <paramref name="listSketchs"/>, puis le barycentre de l'ensemble de ces centroïdes calculés et enfin on retient celui qui est le plus proche du barycentre calculé.
-        /// </summary>
-        /// <param name="listSketchs">La liste contenant les croquis du futur signalement.</param>        
-        /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
+        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePositionReport(List<Point> points)
         {
+            Point pointResult = new Point();
+
+            double barycentreX = 0;
+            double barycentreY = 0;
+
+            foreach (Point point in points)
+            {
+                barycentreX += point.Longitude;
+                barycentreY += point.Latitude;
+            }
+
+            pointResult.Longitude /= points.Count;
+            pointResult.Latitude /= points.Count;
+
+            return pointResult;
+        }
+
+            /// <summary>
+            /// Calcule le point d'application pour un nouveau signalement à partir des croquis associés à ce futur signalement.
+            /// On calcule le centroïde de chaque croquis contenu dans <paramref name="listSketchs"/>, puis le barycentre de l'ensemble de ces centroïdes calculés et enfin on retient celui qui est le plus proche du barycentre calculé.
+            /// </summary>
+            /// <param name="listSketchs">La liste contenant les croquis du futur signalement.</param>        
+            /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
+            public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
+        {
+            
+
+
+
+
+
             switch (listSketchs.Count)
             {
                 case 0:
-                    return null;
+                    throw new Exception("Aucun objet sélectionné.\nIl est donc impossible de déterminer la position du nouveau signalement à créer.");
 
                 case 1:
                     ArcGisProEspaceCollaboratif.Core.Sketch sketchOne = listSketchs.First();
@@ -1160,8 +1214,6 @@ namespace ArcGisProEspaceCollaboratif
                     foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in listSketchs)
                     {               
                         MapPoint ptTemp = Helper.Centroid(croquis);
-             
-
                         centroidSketch.Add(ptTemp);
                         distanceSketch.Add(Helper.Distance(ptTemp, barycentre));
                     }
@@ -1364,7 +1416,6 @@ namespace ArcGisProEspaceCollaboratif
             return balise.Substring(balise.LastIndexOf("/") + 1);
         }
 
-
         /// <summary>
         /// Ajoute à l'emplacement indiqué, un nouvel élément et sa valeur associée dans le fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary> 
@@ -1383,7 +1434,6 @@ namespace ArcGisProEspaceCollaboratif
             noeudRoot.AppendChild(noeud);
             paramsXML.Save(Helper.XML_NameFile());
         }
-
 
         /// <summary>
         /// Renvoie le premier élément indiqué l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
@@ -1478,7 +1528,6 @@ namespace ArcGisProEspaceCollaboratif
             }
         }        
        
-
         /// <summary>
         /// Renvoie la liste des thèmes préférés contenus à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
@@ -1513,7 +1562,6 @@ namespace ArcGisProEspaceCollaboratif
             Helper.Save_PreferredThemes(ListThemes);
         }
         
-
         /// <summary>
         /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
         /// </summary>
@@ -1853,7 +1901,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Renvoie depuis le fichier XML de paramétrage, la liste des calques et de leurs champs qu'il faut mettre en attribut dans la génération des croquis EspaceCollaboratif.
         /// </summary>
         /// <returns> Les calques et leurs champs sous forme d'un System.Windows.Forms.TreeView </returns>
-        public static System.Windows.Forms.TreeNode Load_AttributsCroquis()
+        public static System.Windows.Forms.TreeNode Load_AttributesSketch()
         {
             System.Windows.Forms.TreeNode attributs = new System.Windows.Forms.TreeNode();
             XmlDocument paramsEspaceCollaboratif = Helper.XML_Load();              

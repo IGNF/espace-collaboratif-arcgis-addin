@@ -49,7 +49,7 @@ namespace ArcGisProEspaceCollaboratif
                     } 
 
                     // Transformation des objets sélectionnés en croquis.
-                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeCroquis_from_Selection();
+                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeSketchFromSelection();
                     logger.Debug(futursSketch.Count + " croquis générés.");
                     if (futursSketch.Count == 0)
                     {

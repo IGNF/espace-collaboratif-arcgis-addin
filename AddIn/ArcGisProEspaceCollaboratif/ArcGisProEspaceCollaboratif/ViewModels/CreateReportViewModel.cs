@@ -816,8 +816,16 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void CreateReport()
         {
-            // Positionnement du signalement unique par rapport à l'ensemble des croquis.
-            this.VirtualReport.SetPosition(Helper.CalculatePointReport(this.Sketches));
+            // Calcul du positionnement du signalement par rapport à l'ensemble des croquis.
+            List<Core.Point> points = new List<Core.Point>();
+            foreach (Sketch sketch in this.Sketches)
+            {
+                foreach (Core.Point point in sketch.Points)
+                {
+                    points.Add(point);
+                }
+            }
+            this.VirtualReport.SetPosition(Helper.CalculatePositionReport(points));
 
             // Si option de joindre un croquis au nouveau signalement.
             if (this.JoinSketchIsChecked)
@@ -848,7 +856,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             foreach (ArcGisProEspaceCollaboratif.Core.Sketch sketch in this.Sketches)
             {
                 // Positionnement du signalement par rapport au croquis un par un.
-                this.VirtualReport.SetPosition(Helper.CalculatePointReport(sketch));
+                this.VirtualReport.SetPosition(Helper.CalculatePositionReport(sketch.Points));
                 this.VirtualReport.ClearCroquis();
 
                 // Si option de joindre un croquis au nouveau signalement
