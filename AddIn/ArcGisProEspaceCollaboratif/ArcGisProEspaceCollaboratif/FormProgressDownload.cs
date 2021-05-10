@@ -9,8 +9,6 @@ namespace ArcGisProEspaceCollaboratif
         public FormProgressDownload()
         {
             InitializeComponent();
-          //  Color vertIGN = System.Drawing.Color.FromArgb(148, 192, 26);
-          //  this.progressBar.ForeColor = vertIGN;
         }
 
         public void SetBar(int position)

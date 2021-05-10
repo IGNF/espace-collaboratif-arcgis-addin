@@ -202,7 +202,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         concatenate += " par " + this.Utf8Encode(this.Reponses[i].Author.Name);
                     }
-                    if (this.Reponses[i].Date != null)
+                    if (!string.IsNullOrEmpty(this.Reponses[i].Date.ToString()))
                     {
                         concatenate += " le " + this.Reponses[i].Date.ToString();
                     }
@@ -232,7 +232,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         concatenate += " par " + this.Reponses[i].Author.Name;
                     }
-                    if (this.Reponses[i].Date != null)
+                    if (!string.IsNullOrEmpty(this.Reponses[i].Date.ToString()))
                     {
                         concatenate += " le " + this.Reponses[i].Date.ToString();
                     }

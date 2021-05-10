@@ -12,13 +12,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
-        private readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
-
-        /*public DownloadReports()
-        {
-        }*/
-
 
         protected override async void OnClick()
         {
@@ -137,9 +131,6 @@ namespace ArcGisProEspaceCollaboratif
                     int validatedReports = contexte.CountReportsByStatus(Status.Valid) + contexte.CountReportsByStatus(Status.Valid0);
 
                     string message = "Import de " + countBar + " signalement(s) depuis l'Espace collaboratif :\n";
-
-                    //mess.set_Message(0, message + " !");
-
                     message += "\n _ " + newReports + " nouveaux signalements.";
                     message += "\n _ " + pendingReports + " signalement(s) en cours de traitement.";
                     message += "\n _ " + validatedReports + " signalement(s) validé(s).";
@@ -216,21 +207,16 @@ namespace ArcGisProEspaceCollaboratif
                     return noFilterTuple;
             }
 
-
             // On ajoute la BBOX comme paramètre de la requête
             bboxFiltrageSpatial = contexte.GetBBox(spatialFilterGeometry);
             
             return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
         }
 
-
         protected override void OnUpdate()
         {
-            // Enabled = true;
-            //this.Enabled = ArcMap.Application != null;
             // Pas trop sure...
             this.Enabled = Project.Current != null;
         }
-
     }
 }

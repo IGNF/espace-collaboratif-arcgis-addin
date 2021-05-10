@@ -10,17 +10,22 @@ namespace ArcGisProEspaceCollaboratif.Utils
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
         }
-        private Action methodToExecute;
-        private Func<bool> canExecuteEvaluator;
+
+        private readonly Action methodToExecute;
+
+        private readonly Func<bool> canExecuteEvaluator;
+
         public RelayCommand(Action methodToExecute, Func<bool> canExecuteEvaluator)
         {
             this.methodToExecute = methodToExecute;
             this.canExecuteEvaluator = canExecuteEvaluator;
         }
+
         public RelayCommand(Action methodToExecute)
             : this(methodToExecute, null)
         {
         }
+
         public bool CanExecute(object parameter)
         {
             if (this.canExecuteEvaluator == null)
@@ -66,10 +71,7 @@ namespace ArcGisProEspaceCollaboratif.Utils
         /// <param name="canExecute">The execution status logic.</param>
         public RelayCommand(Action<T> execute, Predicate<T> canExecute)
         {
-            if (execute == null)
-                throw new ArgumentNullException("execute");
-
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException("execute");
             _canExecute = canExecute;
         }
 
