@@ -7,7 +7,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class Connect : Button
     {
-        private readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
 
         protected override void OnClick()
@@ -15,7 +14,7 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Click sur le bouton de connexion au service de l'Espace collaboratif");
             try
             {
-                Contexte context = Contexte.Instance;
+                Context context = Context.Instance;
                 context.Client = context.GetConnexionEspaceCollaboratif();
             }
             catch (Exception e)

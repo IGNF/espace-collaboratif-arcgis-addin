@@ -166,8 +166,8 @@
     </Compile>
     <Compile Include="LoadGateway.cs" />
     <Compile Include="Connect.cs" />
-    <Compile Include="Aide.cs" />
-    <Compile Include="Contexte.cs" />
+    <Compile Include="Help.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="CreateReport.cs" />
     <Compile Include="DownloadReports.cs" />
     <Compile Include="Helper.cs" />

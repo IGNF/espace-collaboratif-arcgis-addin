@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Toutes les données contextuelles liées à la carte et à l'Espace collaboratif
         /// </summary>
-        public Contexte Context { get; set; }
+        public Context Context { get; set; }
 
         /// <summary>
         /// La liste de toutes les couches disponibles pour le groupe de l'utilisateur 
@@ -57,7 +57,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Initialisation du dialogue "Charger les couches de mon groupe"
         /// </summary>
-        public LoadGatewayViewModel(Contexte context)
+        public LoadGatewayViewModel(Context context)
         {
             this.Context = context;
             this.loadGatewayView = new LoadGatewayView();

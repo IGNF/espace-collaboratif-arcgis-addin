@@ -20,7 +20,7 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Click sur le bouton de chargement des couches du groupe utilisateur");
             try
             {
-                Contexte context = Contexte.Instance;
+                Context context = Context.Instance;
                 if (context == null)
                 {
                     Enabled = false;

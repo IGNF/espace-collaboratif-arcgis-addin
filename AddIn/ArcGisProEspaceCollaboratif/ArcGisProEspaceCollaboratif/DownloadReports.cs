@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Editing;
-using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
@@ -31,7 +28,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 await QueuedTask.Run(async() =>
                 {
-                    Contexte contexte = Contexte.Instance;
+                    Context contexte = Context.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
                     if (contexte.Client == null)
@@ -196,7 +193,7 @@ namespace ArcGisProEspaceCollaboratif
                     return noFilterTuple;
             }
 
-            Contexte contexte = Contexte.Instance;
+            Context contexte = Context.Instance;
             Layer filterLayer = contexte.GetLayerByName(filterLayerName);
 
             if (filterLayer == null)

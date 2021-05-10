@@ -21,7 +21,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 try
                 {
-                    Contexte context = Contexte.Instance;
+                    Context context = Context.Instance;
 
                     // Il faut s'être connecté au service pour la créer un signalement
                     if (context.Client == null)

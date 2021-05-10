@@ -19,16 +19,13 @@ namespace ArcGisProEspaceCollaboratif.Core
         //la réponse du serveur (au format xml)
         private readonly string response;
 
-        private XPathDocument docxpath;
+        private readonly XPathDocument docxpath;
 
-        private XPathNavigator navigator;
+        private readonly XPathNavigator navigator;
 
         private readonly CultureInfo invC = CultureInfo.InvariantCulture;
 
-
-        private readonly Logger riplogger = Logger.Instance;
         private ILog logger = LogManager.GetLogger(typeof(XmlResponse));
-
 
         /// <summary>
         /// Constructeur. 
@@ -41,8 +38,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             docxpath = new XPathDocument(StringToStream(response));
             navigator = docxpath.CreateNavigator();
         }
-
-
 
         /// <summary>
         /// Contrôle la validité de la réponse. 
@@ -83,7 +78,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     aleas.Add(iterator.Current.InnerXml);
                 }
-                else throw new Exception("Problème de connexion");
+                else
+                {
+                    throw new Exception("Problème de connexion");
+                }
 
 
                 expr = navigator.Compile("/geors/REPONSE/ALEA2");
@@ -92,18 +90,18 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     aleas.Add(iterator.Current.InnerXml);
                 }
-                else throw new Exception("Problème de connexion");
+                else
+                {
+                    throw new Exception("Problème de connexion");
+                }
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message + "\n" + ex.StackTrace);
-
             }
 
             return aleas;
         }
-
-
 
         /// <summary>
         /// Extraction des paramètres de connexion
@@ -118,36 +116,46 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathExpression expr = navigator.Compile("/geors/REPONSE/ID_AUTEUR");
                 XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
+                {
                     connectValues.Add("ID_AUTEUR", iterator.Current.InnerXml);
+                }
                 else
+                {
                     throw new Exception("ID_AUTEUR inexistant dans la réponse xml");
+                }
 
                 expr = navigator.Compile("/geors/REPONSE/JETON");
                 iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
+                {
                     connectValues.Add("JETON", iterator.Current.InnerXml);
+                }
                 else
+                {
                     throw new Exception("JETON inexistant dans la réponse xml");
+                }
 
 
                 expr = navigator.Compile("/geors/REPONSE/SITE");
                 iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
+                {
                     connectValues.Add("SITE", iterator.Current.InnerXml);
+                }
                 else
+                {
                     throw new Exception("SITE inexistant dans la réponse xml");
+                }
 
             }
             catch (Exception ex)
             {
                 logger.Error(ex.Message + "\n" + ex.StackTrace);
-
                 throw new Exception("Problème de connexion au serveur");
 
             }
             return connectValues;
         }
-
 
         /// <summary>
         /// Extraction du nouveau jeton
@@ -161,9 +169,13 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathExpression expr = navigator.Compile("/geors/REPONSE/JETON");
                 XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator.MoveNext())
+                {
                     jeton = iterator.Current.InnerXml;
+                }
                 else
+                {
                     throw new Exception();
+                }
             }
             catch (Exception e)
             {
@@ -198,6 +210,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                                 tmpLayer.Name = EncodeToUTF8(element.InnerXml);
                             }
                         }
+
                         if (element.Name == "Title")
                         {
                             if (string.IsNullOrEmpty(tmpLayer.Title))
@@ -205,6 +218,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                                 tmpLayer.Title = EncodeToUTF8(element.InnerXml);
                             }
                         }
+
                         if (element.Name == "Abstract")
                         {
                             if (string.IsNullOrEmpty(tmpLayer.Abstract))
@@ -312,6 +326,13 @@ namespace ArcGisProEspaceCollaboratif.Core
             return profile;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ToTransform"></param>
+        /// <param name="newString"></param>
+        /// <param name="toInt"></param>
+        /// <returns></returns>
         public int TransformStringOrInt(string ToTransform, ref string newString, bool toInt)
         {
             int newInt = 0;
@@ -333,7 +354,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             
             return newInt;
         }
-
 
         /// <summary>
         /// Récupération des infos sur les balises <GEOGROUPE>
@@ -523,6 +543,11 @@ namespace ArcGisProEspaceCollaboratif.Core
             return filteredThemes;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="iterator"></param>
+        /// <returns></returns>
         public ConcurrentDictionary<string, List<ThemeAttributes>> GetThemesAttributes(XPathNodeIterator iterator)
         {
             ConcurrentDictionary<string, List<ThemeAttributes>> themesAttributesDict = new ConcurrentDictionary<string, List<ThemeAttributes>>();
@@ -1070,8 +1095,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             stream.Position = 0;
             return stream;
         }
-
-
 
         /// <summary>
         /// Encode une chaîne de caractères en UTF8

@@ -12,9 +12,9 @@ namespace ArcGisProEspaceCollaboratif
     public partial class FormSetUp : Form
     {
         bool majAttributs = false;
-        Contexte contexte = null;
+        Context contexte = null;
 
-        public FormSetUp(Contexte contexte)
+        public FormSetUp(Context contexte)
         {
             InitializeComponent();
 
@@ -120,7 +120,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Complète treeViewAttributs avec les calques et leurs champs présents sur la carte en cours. 
         /// </summary>
         /// <param name="contexte">Le contexte de la carte en cours</param>        
-       public void SetTreeViewAttributs(Contexte contexte)
+       public void SetTreeViewAttributs(Context contexte)
         {
 /*            for (int numLayer = 0; numLayer < contexte.Map.LayerCount; numLayer++)
             {

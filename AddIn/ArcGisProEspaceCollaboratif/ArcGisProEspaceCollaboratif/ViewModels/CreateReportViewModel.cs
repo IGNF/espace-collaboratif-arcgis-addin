@@ -13,7 +13,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -30,7 +29,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Le contexte de travail qui contient le résultat de la requete
         /// vers l'espace collaboratif Profil/GeoGroupes/Groupes/Thèmes/Attributs
         /// </summary>
-        public Contexte Context { get; set; }
+        public Context Context { get; set; }
 
         /// <summary>
         /// Le nombre d'objets sélectionnés lié au signalement
@@ -91,7 +90,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Initialisation du dialogue "Créer un nouveau signalement"
         /// </summary>
-        public CreateReportViewModel(Contexte context, List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches)
+        public CreateReportViewModel(Context context, List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches)
         {
             this.Context = context;
             this.ListPreferredThemes = Helper.Load_PreferredThemes();
@@ -812,6 +811,32 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #region Methods
 
         /// <summary>
+        /// Affiche les informations de création d'un ou plusieurs signalements
+        /// </summary>
+        /// <param name="reports">La liste des identifiants des nouveaux signalements</param>
+        private void ShowFeedbackInformation(List<ulong> reports)
+        {
+            string message = "";
+            if (reports.Count == 1)
+            {
+                message = string.Format("Succès : création d'un nouveau signalement n°{0}", reports[0]);
+            }
+            else
+            {
+                message += string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", reports.Count);
+                message += string.Format("Les identifiants vont de {0} à {1}.", reports.FirstOrDefault(), reports.LastOrDefault());
+            }
+            var connectInfoViewModel = new FeedbackInformationViewModel();
+            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
+            if (!string.IsNullOrEmpty(this.Context.Client.GetProfile().Logo))
+            {
+                connectInfoViewModel.Logo = string.Format("{0}{1}", this.Context.URLHost, this.Context.Client.GetProfile().Logo);
+            }
+            connectInfoViewModel.MessageFeedback = message;
+            connectInfoViewModel.feedbackInformationView.ShowDialog();
+        }
+
+        /// <summary>
         /// Création d'un signalement unique
         /// </summary>
         private void CreateReport()
@@ -837,12 +862,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
             this.Context.CreerPointSignalement(newReport);
 
-            var connectInfoViewModel = new FeedbackInformationViewModel();
-            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-            connectInfoViewModel.Logo = this.Context.Client.GetProfile().Logo;
-            string message = string.Format("Succès : création d'un nouveau signalement n°{0}", newReport.Id);
-            connectInfoViewModel.MessageFeedback = message;
-            connectInfoViewModel.feedbackInformationView.ShowDialog();
+            List<ulong> listIdNouveauxSignalements = new List<ulong>
+            {
+                newReport.Id
+            };
+
+            ShowFeedbackInformation(listIdNouveauxSignalements);
         }
 
         /// <summary>
@@ -872,13 +897,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 listIdNouveauxSignalements.Add(newReport.Id);
             }
 
-            var connectInfoViewModel = new FeedbackInformationViewModel();
-            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-            connectInfoViewModel.Logo = this.Context.Client.GetProfile().Logo;
-            string message = string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", listIdNouveauxSignalements.Count);
-            message += string.Format("Les identifiants de ces nouvelles remontées vont de {0} à {1}.", listIdNouveauxSignalements.FirstOrDefault(), listIdNouveauxSignalements.LastOrDefault());
-            connectInfoViewModel.MessageFeedback = message;
-            connectInfoViewModel.feedbackInformationView.ShowDialog();
+            ShowFeedbackInformation(listIdNouveauxSignalements);
         }
 
         /// <summary>
@@ -959,7 +978,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(TextBox))
                     {
                         TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = textBox.Text;
+                        byte[] bytes = Encoding.Default.GetBytes(textBox.Text);
+                        tmpThemeAttributes.UserSelectedValue = Encoding.UTF8.GetString(bytes);
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -968,7 +988,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
                         string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
-                        tmpThemeAttributes.UserSelectedValue = value;
+                        byte[] bytes = Encoding.Default.GetBytes(value);
+                        tmpThemeAttributes.UserSelectedValue = Encoding.UTF8.GetString(bytes);
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }

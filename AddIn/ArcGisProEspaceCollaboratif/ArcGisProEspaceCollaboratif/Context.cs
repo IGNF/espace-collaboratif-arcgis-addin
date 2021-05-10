@@ -21,7 +21,7 @@ using System.Security;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    public sealed class Contexte
+    public sealed class Context
     {
         /// <summary>
         /// 
@@ -91,7 +91,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        static ILog ILog { get; set; } = LogManager.GetLogger(typeof(Contexte));
+        static ILog ILog { get; set; } = LogManager.GetLogger(typeof(Context));
 
         /// <summary>
         /// 
@@ -106,8 +106,8 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        private static Contexte _instance = null;
-        public static Contexte Instance
+        private static Context _instance = null;
+        public static Context Instance
         {
             get
             {
@@ -117,7 +117,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         if (_instance == null)
                         {
-                            _instance = new Contexte();
+                            _instance = new Context();
                             ILog.Debug("Instance de contexte créée");
                         }
                     }
@@ -129,7 +129,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Constructeur pour un contexte à partir de la carte courante
         /// </summary>
-        private Contexte()
+        private Context()
         {
             this.Init(MapView.Active);
         }
@@ -139,7 +139,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
         //private Contexte(IActiveView activeView)
-        private Contexte(MapView activeView)
+        private Context(MapView activeView)
         {
             this.Init(activeView);
         }
@@ -1094,7 +1094,7 @@ namespace ArcGisProEspaceCollaboratif
             // Le logo du groupe auquel l'utilisateur appartient
             if (!string.IsNullOrEmpty(Profil.Logo))
             {
-                connectInfoViewModel.Logo = this.URLHost + Profil.Logo;
+                connectInfoViewModel.Logo = string.Format("{0}{1}", this.URLHost, Profil.Logo);
             }
             string message = "Connexion réussie à l'Espace collaboratif\n\n";
             message += string.Format(" Serveur : {0}\n", this.URLHost);
@@ -1251,7 +1251,6 @@ namespace ArcGisProEspaceCollaboratif
                     //get the layer of the selected feature
                     var featureLayer = kvp.Key as FeatureLayer;
                     List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();
-                   
                     List<long> lOid = kvp.Value;
                     foreach (long oid in lOid)
                     {
@@ -1262,7 +1261,7 @@ namespace ArcGisProEspaceCollaboratif
                             Geometry geometryFeature = inspector.Shape;
                             ArcGisProEspaceCollaboratif.Core.Sketch tmpSketch = Helper.MakeSketch(geometryFeature);
 
-                            // Ajouts des attributs au nouveau croquis
+                            // Ajout des attributs au nouveau croquis
                             Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
                             foreach (KeyValuePair<string, string> kv in attributes)
                             {

@@ -1,33 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ArcGIS.Core.CIM;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Geometry;
-using ArcGIS.Desktop.Catalog;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Editing;
-using ArcGIS.Desktop.Extensions;
-using ArcGIS.Desktop.Framework;
-using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Dialogs;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Layouts;
-using ArcGIS.Desktop.Mapping;
+﻿using ArcGIS.Desktop.Framework.Contracts;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class Aide_configurer : Button
+    /*internal class HelpOpenDialogConfigure : Button
     {
         protected override void OnClick()
         {
             ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Aide-Configurer", "Espace collaboratif");
         }
-    }
+    }*/
 
-    internal class Aide_ouvrirmanuel : Button
+    internal class HelpOpenManual : Button
     {
         protected override void OnClick()
         {
@@ -35,7 +18,7 @@ namespace ArcGisProEspaceCollaboratif
         }
     }
 
-    internal class Aide_ouvrirlog : Button
+    internal class HelpOpenFileLog : Button
     {
         protected override void OnClick()
         {
@@ -43,7 +26,7 @@ namespace ArcGisProEspaceCollaboratif
         }
     }
 
-    internal class Aide_apropos : Button
+    internal class HelpAbout : Button
     {
         protected override void OnClick()
         {

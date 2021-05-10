@@ -5,7 +5,7 @@ using log4net;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class HelpConfigure : Button
+    internal class HelpOpenDialogConfigure : Button
     {
         private readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
@@ -15,7 +15,7 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Clic sur le bouton de configuration de l'add-in Espace collaboratif");
             try
             {
-                Contexte contexte = Contexte.Instance;
+                Context contexte = Context.Instance;
 
                 if (!contexte.CheckConfigFile())
                 {

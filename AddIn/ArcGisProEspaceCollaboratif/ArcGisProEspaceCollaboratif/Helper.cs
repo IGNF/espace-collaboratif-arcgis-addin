@@ -165,7 +165,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 await QueuedTask.Run(() =>
                 {
-                    Contexte contexte = Contexte.Instance;
+                    Context contexte = Context.Instance;
 
                     // On vérifie si la feature class existe déjà dans la geodatabase du projet
                     string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
@@ -174,7 +174,7 @@ namespace ArcGisProEspaceCollaboratif
                     bool bFcExists = ExistsFcInGdb(fcName, gdbCollaborativeSpace);
         
                     // Si la feature class existe et est déjà chargée dans la carte, on sort
-                    if (bFcExists && Contexte.Instance.IsLayerInMap(fcName))
+                    if (bFcExists && Context.Instance.IsLayerInMap(fcName))
                     {
                         return;
                     }
@@ -519,10 +519,10 @@ namespace ArcGisProEspaceCollaboratif
                 }
             });
 
-            if (point.IsEmpty)
+            /*if (point.IsEmpty)
             {
                 return null;
-            }
+            }*/
 
             return point;
         }
@@ -1105,6 +1105,19 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static Point ReplaceSpatialReferenceToPoint(MapPoint point)
+        {
+            Geometry result = GeometryEngine.Instance.Project(point, SpatialReferences.WGS84);
+            MapPoint projectedPt = result as MapPoint;
+            return TransformPoint(projectedPt);
+        }
+       
+
+        /// <summary>
         /// Génère un croquis pour l'Espace collaboratif à partir d'une géométrie ArcGIS pro.
         /// La géométrie du nouveau croquis est celle issue de la conversion de la géométrie donnée en entrée.
         /// </summary>
@@ -1120,7 +1133,7 @@ namespace ArcGisProEspaceCollaboratif
                 case GeometryType.Point:
                     newSketch.SetType(Sketch.SketchType.Point);
                     MapPoint point = geometry as MapPoint;
-                    newSketch.AddPoint(Helper.TransformPoint(point));
+                    newSketch.AddPoint(ReplaceSpatialReferenceToPoint(point));
                     break;
 
                 case GeometryType.Polyline:
@@ -1128,7 +1141,7 @@ namespace ArcGisProEspaceCollaboratif
                     Polyline polyline = geometry as Polyline;
                     foreach (MapPoint mapPoint in polyline.Points)
                     {
-                        newSketch.AddPoint(Helper.TransformPoint(mapPoint));
+                        newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mapPoint));
                     }
                     break;
                   
@@ -1137,7 +1150,7 @@ namespace ArcGisProEspaceCollaboratif
                     Polygon polygon = geometry as Polygon;
                     foreach (MapPoint mp in polygon.Points)
                     {
-                        newSketch.AddPoint(Helper.TransformPoint(mp));
+                        newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mp));
                     }
                     break;
 
@@ -1167,8 +1180,11 @@ namespace ArcGisProEspaceCollaboratif
                 barycentreY += point.Latitude;
             }
 
-            pointResult.Longitude /= points.Count;
-            pointResult.Latitude /= points.Count;
+            barycentreX /= points.Count;
+            barycentreY /= points.Count;
+
+            pointResult.Longitude = barycentreX;
+            pointResult.Latitude = barycentreY;
 
             return pointResult;
         }
@@ -1181,11 +1197,6 @@ namespace ArcGisProEspaceCollaboratif
             /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
             public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
         {
-            
-
-
-
-
 
             switch (listSketchs.Count)
             {
@@ -1279,7 +1290,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le chemin complet + nom du fichier du fichier de paramétrage.</returns>
         public static string XML_NameFile()
         {
-            string workDir = Contexte.Instance.DirectoryWorking;
+            string workDir = Context.Instance.DirectoryWorking;
             return string.Format("{0}\\{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
         }
 
