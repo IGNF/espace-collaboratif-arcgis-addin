@@ -74,10 +74,10 @@ namespace ArcGisProEspaceCollaboratif
         public static string EspaceCollaboratifAssemblyDir = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
+        public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
-        public static Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        public static readonly Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
             { name_field_IdRemarque,     new KeyValuePair<string,string> ("LONG","")      },
             { name_field_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
@@ -99,7 +99,7 @@ namespace ArcGisProEspaceCollaboratif
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
-        public static Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        public static readonly Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
             { name_field_LienRemarque, new KeyValuePair<string,string> ("LONG", "") },
             { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },

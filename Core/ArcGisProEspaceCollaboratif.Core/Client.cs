@@ -31,9 +31,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         //le profil de l'utilisateur
         public Profile Profile { get; set; }
 
-        //pour rendre indifférent à la culture (utilisé ici pour les nombres)
-        private readonly CultureInfo invC = CultureInfo.InvariantCulture;
-
         //message d'erreur lors de la connexion ou d'un appel au service ("OK" ou message d'erreur)
         public string Message { get; set; }
 
@@ -336,7 +333,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 total = xmlResponse.GetTotalResponse();
                 sdate = xmlResponse.GetDate();
 
-                dicoSignalements = xmlResponse.ExtractSignalements(dicoSignalements);
+                dicoSignalements = xmlResponse.ExtractReports(dicoSignalements);
 
                 pagination = dicoSignalements.Count;
                 count = pagination;
@@ -353,7 +350,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (errMessage["code"].Equals("OK"))
                     {
-                        dicoSignalements = xmlResponse.ExtractSignalements(dicoSignalements);
+                        dicoSignalements = xmlResponse.ExtractReports(dicoSignalements);
                     }
 
                     this.progressbar.Increment(pagination);
@@ -401,7 +398,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 if (total == 1)
                 {
-                    reports = xmlResponse.ExtractSignalements(reports);
+                    reports = xmlResponse.ExtractReports(reports);
                     report = reports[0];
                 }
             }
@@ -435,7 +432,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (errMessage["code"].Equals("OK"))
                 {
                     List<Report> signalements = new List<Report>();
-                    signalements = xmlResponse.ExtractSignalements(signalements);
+                    signalements = xmlResponse.ExtractReports(signalements);
                     if (signalements.Count == 1)
                     {
                         signalementModif = signalements[0];
@@ -472,8 +469,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     { "comment", tmpReport.Commentary }
                 };
 
-                string geometry = "POINT(" + Convert.ToString(tmpReport.GetLongitude(), invC) + " " +
-                                 Convert.ToString(tmpReport.GetLatitude(), invC) + ")";
+                string geometry = "POINT(" + Convert.ToString(tmpReport.GetLongitude(), Constantes.invC) + " " +
+                                 Convert.ToString(tmpReport.GetLatitude(), Constantes.invC) + ")";
                 parameters.Add("geometry", geometry);
 
                 // zone géographique 
@@ -546,7 +543,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (errMessage["code"].Equals("OK"))
                 {
                     List<Report> reports = new List<Report>();
-                    reports = xmlResponse.ExtractSignalements(reports);
+                    reports = xmlResponse.ExtractReports(reports);
                     if (reports.Count == 1)
                     {
                         newReport = reports[0];

@@ -15,9 +15,7 @@ using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
-using System.Xml;
 using ArcGisProEspaceCollaboratif.ViewModels;
-using System.Security;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -135,16 +133,6 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Constructeur à partir d'une vue active
-        /// </summary>
-        /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        //private Contexte(IActiveView activeView)
-        private Context(MapView activeView)
-        {
-            this.Init(activeView);
-        }
-
-        /// <summary>
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
@@ -155,7 +143,7 @@ namespace ArcGisProEspaceCollaboratif
             Project project = Project.Current;
             if (project.Name.Length == 0)
             {
-                throw new Exception(@"Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
+                throw new ArgumentNullException(@"Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
             }
 
             this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
@@ -194,7 +182,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// création ou chargement des couches de signalement de l'espace collaboratif
+        /// Création ou chargement des couches de signalement de l'espace collaboratif
         /// </summary>
         public async Task CreateOrLoadReportLayers()
         {
@@ -239,11 +227,10 @@ namespace ArcGisProEspaceCollaboratif
 
             // Ajout des couches à la liste collaboratifSpaceLayers
             this.CollaborativeSpaceLayers.Clear();
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer) as FeatureLayer);
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer) as FeatureLayer);
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer) as FeatureLayer);
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer) as FeatureLayer);
-
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer));
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer));
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer));
+            this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer));
         }
 
         /// <summary>
@@ -323,76 +310,26 @@ namespace ArcGisProEspaceCollaboratif
             return false;
         }
 
-        //
-        // INUTILE si on travaille dans la gdb créée automatiquement avec le projet ArcGIS Pro
-        // A CONFIRMER ET SUPPRIMER
-
         /// <summary>
-        /// Ouvre les fichiers géodatabase EspaceCollaboratif.gdb contenant les données de l'espace collaboratif dans la carte en cours.
-        /// Si ces fichiers n'existent pas, ils sont préalablement créés dans le même répertoire où se situe la carte en cours.
+        /// Vide les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point"
+        /// de tous leurs contenus.
         /// </summary>
-        /// <returns>L'IFeatureWorkspace de l'espace de travail des calques dédiés à l'espace collaboratif.</returns>
-/*       Remplace : private Geodatabase GetOrCreateFeatureWorkspace()
-         A priori inutile avec ArcGIS Pro car une geodatabase est automatiquement créée et associée au projet ArcGIS Pro -> on l'utilise pour
-         stocker les signalements (et à terme les couches guichets).*/
-        private async Task<bool> GetOrCreateFileGeodatabase()
-        {
-            try
-            {
-                return await QueuedTask.Run(() =>
-                {
-
-                    var fGdbPath = this.DirectoryWorking;
-                    var fGdbName = string.Format("{0}_EspaceCollaboratif.gdb", this.FileMapWorking);
-                    var fGdb = string.Format("{0}\\{1}", fGdbPath, fGdbName);
-
-                    // Si la gdb n'existe pas, on la crée
-                    if (!System.IO.Directory.Exists(fGdb))
-                    {
-                        var fGdbVersion = "Current";  // create the 'latest' version of file Geodatabase
-                        System.Diagnostics.Debug.WriteLine($@"create {fGdbPath} {fGdbName}");
-
-                        var parameters = Geoprocessing.MakeValueArray(fGdbPath, fGdbName, fGdbVersion);
-                        var cts = new CancellationTokenSource();
-                        var results = Geoprocessing.ExecuteToolAsync("management.CreateFileGDB", parameters, null, cts.Token,
-                            (eventName, o) =>
-                            {
-                                System.Diagnostics.Debug.WriteLine($@"GP event: {eventName}");
-                            });
-                    }
-
-                    // Sinon, on ouvre la gdb existante
-                    Geodatabase geodatabase = new Geodatabase(new FileGeodatabaseConnectionPath(new Uri(fGdb)));
-                    return true;     
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                return false;
-            }
-        }
-
-
-
-        /// <summary>
-        // Vide les calques de l'espace collaboratif de tous leurs contenus.
-        /// </summary>
-        public void EmptyCollaborativeSpaceLayers()
+        public void RemoveAllObjectsFromLayers()
         {
             try
             {
                 foreach (FeatureLayer layer in this.CollaborativeSpaceLayers)
                 {
                     FeatureClass fcCollabSpace = layer.GetFeatureClass();
-                    var result = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
+                    Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
                 }
             }
             catch (Exception e)
             {
-                ILog.Error(e.Message + "\n" + e.StackTrace);
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                ILog.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
+                throw new Exception(message);          
             }
-
         }
 
         /// <summary>
@@ -508,18 +445,16 @@ namespace ArcGisProEspaceCollaboratif
                         {
                             if (currSketch.Points.Count == 0)
                             {
-                                //   this.debugForm.WriteLine("Croquis sans coordonnées dans la remarque n°" + uneRemarque.Id);
                                 continue;
                             }
-                            else
-                            {
-                                // on cast le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
-                                FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type] as FeatureLayer;
-                                FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
+                           
+                            // on cast le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
+                            FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type];
+                            FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
 
-                                // Création de l'objet croquis dans la classe correpondant à son type
-                                CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
-                            }
+                            // Création de l'objet croquis dans la classe correpondant à son type
+                            CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
+                           
                         }
                     }
 
@@ -551,7 +486,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Récupération des attributs du croquis transmis par l'API (champ attributes)
                     string attributes = "";
                     foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
-                        attributes += attribut.Name + " = '" + attribut.Value + "' | ";
+                        attributes += string.Format("{0} = '{1}' | ", attribut.Name, attribut.Value);
 
                     if (currSketch.Attributes.Count != 0)
                         attributes = attributes.Substring(0, attributes.Length - 3);
@@ -1036,7 +971,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.Profil = connexionServer.GetProfile();
                 if (this.Profil == null)
                 {
-                    throw new Exception("Connexion impossible au serveur de l'Espace collaboratif");
+                    throw new ArgumentNullException("Connexion impossible au serveur de l'Espace collaboratif");
                 }
 
                 // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
@@ -1057,19 +992,16 @@ namespace ArcGisProEspaceCollaboratif
                 switch (erreurConnexion.Message.ToString())
                 {
                     case "(401) Unauthorized":
-                        //connectViewModel.Error = "Login et/ou mot de passe incorrect(s)";
                         string message = "Login et/ou mot de passe incorrect(s)";
                         MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
 
                     case "Login inconnu":
-                        //connectViewModel.Error = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
                         message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
                         MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
 
                     case "no_group":
-                        //connectViewModel.Error = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
                         message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
                         MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
@@ -1229,18 +1161,12 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Liste de croquis créés à partir des objects sélectionnés.</returns>
         public List<ArcGisProEspaceCollaboratif.Core.Sketch > MakeSketchFromSelection()
         {
-            // TODO : on ne peut pas modifier la status bar dans arcgis pro,
-            // question Noémie, on remplace par quoi ?
-            /*ESRI.ArcGIS.esriSystem.IStatusBar mess; 
-            ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
-            mess = application.StatusBar;*/
+            List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
 
             if (this.MapActiveView == null)
             {
-                return null;
+                return sketches;
             }
-
-            List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
 
             // Get the currently selected features in the map
             QueuedTask.Run(()=>

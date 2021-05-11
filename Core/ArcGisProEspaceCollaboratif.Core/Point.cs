@@ -44,16 +44,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return double.IsNaN(this.Longitude) || double.IsNaN(this.Latitude);
         }
 
-        public static bool operator ==(Point point1, Point point2)
-        {
-            return (point1.Longitude == point2.Longitude) && (point1.Latitude == point2.Latitude);
-        }
-
-        public static bool operator !=(Point point1, Point point2)
-        {
-            return !( point1 == point2 ) ;
-        }
-
         public override bool Equals(Object obj)
         {
             return (this.Longitude == ((Point)obj).Longitude) && (this.Latitude == ((Point)obj).Latitude);

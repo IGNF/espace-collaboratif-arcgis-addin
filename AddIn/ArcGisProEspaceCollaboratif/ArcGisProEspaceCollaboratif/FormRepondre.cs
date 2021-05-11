@@ -23,10 +23,6 @@ namespace ArcGisProEspaceCollaboratif
             this.richTextBoxReponse.Focus();
         }
 
-        private void FormReponse_Load(object sender, EventArgs e)
-        {
-        }
-
         public void SetStatut( uint statut )
         {
             this.comboBoxStatut.SelectedIndex = (int) statut;
@@ -80,11 +76,6 @@ namespace ArcGisProEspaceCollaboratif
             this.SetStatut((uint)signalement.Status);
             this.SetMessage(signalement.GetUrlDecodedComment());
             this.SetAnciennesReponses(signalement.ConcatenateReponseHTML() ); 
-        }
-
-        private void TableLayoutPanel_Paint(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }

@@ -100,7 +100,7 @@ namespace ArcGisProEspaceCollaboratif
                     await contexte.CreateOrLoadReportLayers();
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
-                    contexte.EmptyCollaborativeSpaceLayers();
+                    contexte.RemoveAllObjectsFromLayers();
 
                     // Barre de progression
                     int countBar = 0;
