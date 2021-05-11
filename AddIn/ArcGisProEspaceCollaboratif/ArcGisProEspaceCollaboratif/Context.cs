@@ -951,7 +951,7 @@ namespace ArcGisProEspaceCollaboratif
             // il n'y aura pas de connexion
             if (dialogResult == false)
             {
-                return null;
+                throw new Exception ("Opération annulée");
             }
             // Récupération du login et mot de passe introduits.
             this.Login = connectViewModel.Login;
@@ -971,7 +971,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.Profil = connexionServer.GetProfile();
                 if (this.Profil == null)
                 {
-                    throw new ArgumentNullException("Connexion impossible au serveur de l'Espace collaboratif");
+                    throw new ArgumentNullException("Impossible de récupérer le profil de l'utilisateur");
                 }
 
                 // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur

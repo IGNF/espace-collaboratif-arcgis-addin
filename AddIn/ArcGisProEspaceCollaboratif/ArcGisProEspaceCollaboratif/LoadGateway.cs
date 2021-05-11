@@ -32,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif
                     Client client = context.GetConnexionEspaceCollaboratif();
                     if (client == null)
                     {
-                        throw new Exception("Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-éssayer.");
+                        throw new Exception("Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-essayer.");
                     }
                 }
                 

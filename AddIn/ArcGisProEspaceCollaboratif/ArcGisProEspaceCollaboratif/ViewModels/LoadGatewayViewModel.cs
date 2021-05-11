@@ -4,6 +4,7 @@ using ArcGisProEspaceCollaboratif.Utils;
 using System.Collections.Generic;
 using System.Windows.Input;
 using ArcGIS.Desktop.Mapping;
+using System.Threading.Tasks;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -354,7 +355,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Import des couches WFS et WMTS sélectionnées par l'utilisateur dans ArcGIS
         /// </summary>
         /// <param name="layersToLoad">La liste de toutes les couches sélectionnées à importer avec leurs caractéristiques</param>
-        private async void LoadLayersAsync(List<LayerGateway> layersToLoad)
+        public async Task LoadLayersAsync(List<LayerGateway> layersToLoad)
         {
             // Quelles sont les couches existantes dans la carte ?
             List<string> layersInMap = LayersInMap;

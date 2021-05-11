@@ -96,9 +96,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     err = e.Message;
                 }
+                client.Dispose();
                 throw new Exception(err);
             }
-
+            client.Dispose();
             return res;
         }
 
@@ -113,6 +114,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             string res = null;
 
             WebClient wclient = new WebClient();
+          
             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             wclient.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
 
@@ -134,9 +136,11 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception e)
             {
+                wclient.Dispose();
                 Console.Write(e.Message);
             }
 
+            wclient.Dispose();
             return res;
         }
 
