@@ -18,9 +18,9 @@ namespace ArcGisProEspaceCollaboratif
         {
             FormProgressDownload progressDownload = new FormProgressDownload();
 
-            try
+            await QueuedTask.Run(async() =>
             {
-                await QueuedTask.Run(async() =>
+                try
                 {
                     Context contexte = Context.Instance;
 
@@ -72,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
-                                    
+
                     // Envoi de la requête au serveur et création de la liste des signalements
                     progressDownload.Show();
                     progressDownload.SetText("Import des signalements depuis le serveur: \n" + contexte.URLHost);
@@ -139,16 +139,16 @@ namespace ArcGisProEspaceCollaboratif
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
 
                     MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
-                });
-            }
+                catch (Exception e)
+                {
+                    logger.Error(e.Message + "\n" + e.StackTrace);
+                    progressDownload.Close();
+                    MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            });
 
-            catch (Exception e)
-            {
-                logger.Error(e.Message + "\n" + e.StackTrace);
-                progressDownload.Close();
-                MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         /// <summary>

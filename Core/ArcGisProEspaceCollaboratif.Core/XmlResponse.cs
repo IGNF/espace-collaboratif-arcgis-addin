@@ -621,6 +621,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         TagDisplay = EncodeToUTF8(val.SelectSingleNode("ATT").Value),
                         Values = new Dictionary<string, string>()
                     };
+
                     XPathNavigator pathNavigator = val.SelectSingleNode("ATT");
                     if (pathNavigator.HasAttributes)
                     {
@@ -649,7 +650,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                             {
                                 valeur = valeurs.GetAttribute("display", "");
                             }
-                            lTmp.Add(EncodeToUTF8(valeurs.InnerXml), EncodeToUTF8(valeur));
+
+                            if (!lTmp.ContainsKey(valeurs.InnerXml))
+                                lTmp.Add(EncodeToUTF8(valeurs.InnerXml), EncodeToUTF8(valeur));
                         }
                     }
                     themeAttributes.Values = lTmp;
