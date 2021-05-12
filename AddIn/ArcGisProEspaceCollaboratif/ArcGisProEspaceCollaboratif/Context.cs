@@ -165,7 +165,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
         public bool CheckConfigFile()
         {
-            string fileConfiguration = string.Format("{0}{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
+            string fileConfiguration = string.Format("{0}\\{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
             if (!File.Exists(fileConfiguration))
             {
                 try
