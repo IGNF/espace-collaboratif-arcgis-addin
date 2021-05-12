@@ -10,11 +10,11 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La longitude (WGS84 en degrés décimaux) du point
         /// </summary>
-        public double Longitude;
+        public double Longitude { get; set; }
         /// <summary>
         /// La latitude (WGS84 en degrés décimaux) du point
         /// </summary>
-        public double Latitude;
+        public double Latitude { get; set; }
 
         /// <summary>
         /// Constructeur d'un point vide

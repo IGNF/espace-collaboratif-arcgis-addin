@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Net;
-using System.Globalization;
 using log4net;
 using System.Xml.Linq;
 
@@ -17,13 +16,12 @@ namespace ArcGisProEspaceCollaboratif.Core
     {
         //url du service EspaceCollaboratif
         public string Url { get; set; }
+
         //login de l'utilisateur
         public string Login { get; set; }
+
         //mot de passe de l'utilisateur
         public string Password { get; set; }
-
-        //utilisateur courant connecté
-        //private readonly Auteur auteur=null;
 
         //version du service
         private readonly string version = "";

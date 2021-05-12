@@ -102,7 +102,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Ajout de la couche Geoportail dans la carte
                     ILayerFactory lf = LayerFactory.Instance;
-                    var layerWMTScreate = lf.CreateLayer(connection, Map);
+                    lf.CreateLayer(connection, Map);
                 });
             }
         }

@@ -89,13 +89,12 @@ namespace ArcGisProEspaceCollaboratif.Core
             //on ne garde que le fichier de log du jour courant
             DirectoryInfo d = new DirectoryInfo(logPath);
             FileInfo[] Files = d.GetFiles("*.log");
-            string date = DateTime.Now.Year + "." + DateTime.Now.Month.ToString().PadLeft(2, '0') + "." + (DateTime.Now.Day).ToString().PadLeft(2, '0');
-
+            string date = string.Format("{0}.{1}.{2}", DateTime.Now.Year, DateTime.Now.Month.ToString().PadLeft(2, '0'), DateTime.Now.Day.ToString().PadLeft(2, '0'));
             foreach (FileInfo file in Files)
             {
                 if (!file.Name.StartsWith(date))
                 {
-                    File.Delete(logPath + "\\" + file);
+                    File.Delete(string.Format("{0}\\{1}", logPath, file));
                 }
             }
         }

@@ -2,14 +2,6 @@
 
 namespace ArcGisProEspaceCollaboratif
 {
-    /*internal class HelpOpenDialogConfigure : Button
-    {
-        protected override void OnClick()
-        {
-            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Aide-Configurer", "Espace collaboratif");
-        }
-    }*/
-
     internal class HelpOpenManual : Button
     {
         protected override void OnClick()
