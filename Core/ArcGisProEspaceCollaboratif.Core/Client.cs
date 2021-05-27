@@ -10,37 +10,56 @@ namespace ArcGisProEspaceCollaboratif.Core
 {
     /// <summary>
     /// Implémentation de l'interface IClient
-    /// Cette classe sert de client pour le service EspaceCollaboratif
+    /// Cette classe sert de client pour le service de l'espace collaboratif
     /// </summary>
     public class Client
     {
-        //url du service EspaceCollaboratif
+        #region Parameters
+        /// <summary>
+        /// L'url du service de l'espace collaboratif
+        /// </summary>
         public string Url { get; set; }
 
-        //login de l'utilisateur
+        /// <summary>
+        /// Le login de l'utilisateur
+        /// </summary>
         public string Login { get; set; }
 
-        //mot de passe de l'utilisateur
+        /// <summary>
+        /// Le mot de passe de l'utilisateur
+        /// </summary>
         public string Password { get; set; }
 
-        //version du service
+        /// <summary>
+        /// La version du service
+        /// </summary>
         private readonly string version = "";
 
-        //le profil de l'utilisateur
+        /// <summary>
+        /// Le profil de l'utilisateur
+        /// </summary>
         public Profile Profile { get; set; }
 
-        //message d'erreur lors de la connexion ou d'un appel au service ("OK" ou message d'erreur)
+        /// <summary>
+        /// Message d'erreur lors de la connexion ou d'un appel au service ("OK" ou message d'erreur)
+        /// </summary>
         public string Message { get; set; }
 
-        //barre de progression durant le chargement des signalements
+        /// <summary>
+        /// La barre de progression durant le chargement des signalements
+        /// </summary>
         private System.Windows.Forms.ProgressBar progressbar = new System.Windows.Forms.ProgressBar();
 
-        //logger
-        readonly Logger riplogger = Logger.Instance;
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
         private ILog logger = LogManager.GetLogger(typeof(Client));
 
-        /// <summary>
-        /// Constructeur
+        #endregion
+
+        #region Constructeur
+
+        /// <summary> 
         /// Initialisation du client et connexion au service EspaceCollaboratif
         /// </summary>
         /// <param name="url">url du service EspaceCollaboratif</param>
@@ -52,6 +71,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Login = login;
             this.Password = password;
         }
+
+        #endregion
+
+        #region Class methods
 
         /// <summary>
         /// Requête GET
@@ -216,14 +239,14 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception ex)
             {
-                logger.Error("Création d'une nouvelle remarque:" + ex.Message, ex);
+                logger.Error("Création d'un nouveau signalement : " + ex.Message, ex);
 
                 if (wresp != null)
                 {
                     wresp.Close();
                     wresp = null;
                 }
-                throw new Exception("La remarque n'a pas pu être ajoutée \n" + ex.Message);
+                throw new Exception("le signalement n'a pas pu être ajoutée \n" + ex.Message);
             }
             finally
             {
@@ -323,7 +346,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             int count = 0;
             string sdate = "";
 
-            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georems_get.xml",this.Url), parameters);
+            string uri = string.Format("{0}/api/georem/georems_get.xml", this.Url);
+            var data = this.MakeGetRequest(uri, parameters);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
@@ -381,15 +405,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Retourne un simple signalement, donné par son identifiant
         /// </summary>
         /// <param name="idReport">identifiant du signalement</param>
-        /// <returns>la remarque</returns>
-        public Report GetGeoRem(ulong idReport)
+        /// <returns>le signalement</returns>
+        public Report GetGeoRem(string idReport)
         {
             Report report = new Report();
             List<Report> reports = new List<Report>();
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idReport.ToString()), null);
+            var data = this.MakeGetRequest(string.Format("{0}/api/georem/georem_get/{1}.xml",this.Url, idReport), null);
 
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
@@ -413,7 +437,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="signalement">Le signalement</param>
         /// <param name="reponse">la réponse</param>
-        /// <returns>La remarque à laquelle a été ajoutée la réponse</returns>
+        /// <returns>le signalement à laquelle a été ajoutée la réponse</returns>
         public Report AddReponse(Report signalement, string reponse, string titreReponse)
         {
             Report signalementModif = null;
@@ -580,6 +604,11 @@ namespace ArcGisProEspaceCollaboratif.Core
             return Constantes.NB_DEFAULT_SIGNALEMENTS_PAGINATION;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idProfil"></param>
+        /// <returns></returns>
         public (Profile, string) SetChangeUserProfil(string idProfil)
         {
             Profile profil = new Profile();
@@ -637,5 +666,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             return layers;
         }
+
+        #endregion
     }
 }

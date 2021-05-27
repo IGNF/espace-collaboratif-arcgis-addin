@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -49,5 +51,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string ZIPFILE = "Zip files (*.ZIP;*.7Z)|*.zip;*.7z";
         public const string ALLFILE = "All files(*.*)|*.*";
         public const string NOFILE = "Pas de document sélectionné";
+
+        static public readonly List<string> listAuthorisation = new List<string>()
+        {
+            "RW",
+            "RW+",
+            "RW-"
+        };
     }
 }

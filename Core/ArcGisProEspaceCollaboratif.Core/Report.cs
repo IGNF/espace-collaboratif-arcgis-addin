@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -11,6 +12,8 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// </summary>
     public class Report
     {
+        #region Parameters
+
         /// <summary>
         /// Identifiant du signalement
         /// </summary>
@@ -27,7 +30,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string LienPrive;
 
         /// <summary>
-        /// La date de création de la remarque EspaceCollaboratif.
+        /// La date de création du signalement EspaceCollaboratif.
         /// </summary>
         public DateTime DateCreation { get; set; }
 
@@ -49,8 +52,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le statut du signalement
         /// </summary>
-        public Status Status { get; set; }
-
+        public EnumStatus Status { get; set; }
 
         /// <summary>
         /// Le département où est situé le signalement (indicatif + nom)
@@ -75,7 +77,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         ///	Définit les droits d'action de l'utilisateur en cours sur le signalement.
         /// </summary>
-        public string Autorisation;
+        public string Authorisation { get; set; }
 
         /// <summary>
         ///	
@@ -93,7 +95,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public List<GeoResponse> Reponses = new List<GeoResponse>() ;
 
         /// <summary>
-        /// les éventuelles croquis de la remarque EspaceCollaboratif.
+        /// les éventuelles croquis du signalement EspaceCollaboratif.
         /// </summary>
         public List<Sketch> Sketch = new List<Sketch>();
 
@@ -107,9 +109,17 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public List<Theme> Themes = new List<Theme>();
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Hash;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Source;
+
+        #endregion
 
         /// <summary>
         /// brief Getter pour concaténer sur une seule ligne le nom de tous les thèmes contenus dans le signalement.
@@ -161,16 +171,28 @@ namespace ArcGisProEspaceCollaboratif.Core
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public double GetLongitude()
         {
             return this.Position.Longitude;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public double GetLatitude()
         {
             return this.Position.Latitude;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetFirstDocument()
         {
             if (this.Documents.Count == 0)
@@ -179,18 +201,26 @@ namespace ArcGisProEspaceCollaboratif.Core
             { return this.Documents.First(); }                        
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetUrlDecodedComment()
         {
             return HttpUtility.UrlDecode(this.Commentary);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string ConcatenateReponseHTML()
         {
             string concatenate = "";
 
             if (this.Reponses.Count == 0)
             {
-                concatenate = "<font color=\"red\">Pas de réponse actuellement pour la remarque n°" + this.Id + ".</font>";
+                concatenate = "<font color=\"red\">Pas de réponse actuellement pour le signalement n°" + this.Id + ".</font>";
             }
             else
             {
@@ -214,13 +244,17 @@ namespace ArcGisProEspaceCollaboratif.Core
             return concatenate;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string ConcatenateReponse()
         {
             string concatenate = "";
 
             if (this.Reponses.Count == 0)
             {
-                concatenate = "Pas de réponse actuellement pour la remarque n°" + this.Id + ".";
+                concatenate = "Pas de réponse actuellement pour le signalement n°" + this.Id + ".";
             }
             else
             {
@@ -243,7 +277,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Retourne les GeoReponse de la Remarque sous forme d'un XML.
+        /// Retourne les GeoReponse du signalement sous forme d'un XML.
         /// </summary>
         /// <returns></returns
         public System.Xml.Linq.XElement ReponsesEncodeToXML()
@@ -258,26 +292,46 @@ namespace ArcGisProEspaceCollaboratif.Core
             return reponsesXML;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="position"></param>
         public void SetPosition(ArcGisProEspaceCollaboratif.Core.Point position)
         {
             this.Position = position;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="longitude"></param>
+        /// <param name="latitude"></param>
         public void SetPosition(double longitude, double latitude)
         {
             this.Position = new ArcGisProEspaceCollaboratif.Core.Point( longitude, latitude);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ClearPosition()
         {
             this.Position = new ArcGisProEspaceCollaboratif.Core.Point();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unDocument"></param>
         public void AddDocument(string unDocument)
         {
             this.Documents.Add(unDocument);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="listeDocument"></param>
         public void AddDocument(List<string> listeDocument)
         {
             foreach (string document in listeDocument)
@@ -286,16 +340,23 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ClearDocuments()
         {
             this.Documents.Clear();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unCroquis"></param>
         public void AddCroquis(Sketch unCroquis)
         {
             this.Sketch.Add(unCroquis);
         }
-
+ 
         public void AddCroquis(List<Sketch> listeCroquis)
         {
             foreach (Sketch croquis in listeCroquis)
@@ -303,22 +364,37 @@ namespace ArcGisProEspaceCollaboratif.Core
                 this.AddCroquis(croquis);
             }
         }
-
+ 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uneReponse"></param>
         public void AddGeoReponse(GeoResponse uneReponse)
         {
             this.Reponses.Add(uneReponse);
         }
-
+ 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ClearCroquis()
         {
             this.Sketch.Clear();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unTheme"></param>
         public void AddTheme(Theme unTheme)
         {
             this.Themes.Add(unTheme);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="listeTheme"></param>
         public void AddTheme(List<Theme> listeTheme)
         {
             foreach (Theme theme in listeTheme)
@@ -327,11 +403,19 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void ClearThemes()
         {
             this.Themes.Clear();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public  string Utf8Encode(string str)
         {
             return Encoding.UTF8.GetString(Encoding.Default.GetBytes(str));

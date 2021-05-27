@@ -7,6 +7,7 @@ using System.Globalization;
 using log4net;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -758,8 +759,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Extraction des remarques de la réponse xml
         /// </summary>
-        /// <param name="remarques">SortedDictionary key:indentifiant de la remarque, value: la remarque</param>
-        /// <returns>le dictionnaire de remarques</returns>
+        /// <param name="remarques">SortedDictionary key:indentifiant du signalement, value: le signalement</param>
+        /// <returns>le dictionnaire de signalements</returns>
         public SortedDictionary<UInt64, Report> ExtractReports(SortedDictionary<UInt64, Report> signalements)
         {
             Report report = null;
@@ -781,7 +782,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     report.Id = Convert.ToUInt64(val.InnerXml);
 
                     val.MoveToFollowing("AUTORISATION", "");
-                    report.Autorisation = val.InnerXml;
+                    report.Authorisation = val.InnerXml;
 
                     val.MoveToParent();
                     XPathNodeIterator it = val.Select("THEME");
@@ -834,7 +835,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     val.MoveToFollowing("STATUT", "");
                     try
                     {
-                        report.Status = (Status)Enum.Parse(typeof(Status), val.InnerXml, true);
+                        report.Status = (EnumStatus)Enum.Parse(typeof(EnumStatus), val.InnerXml, true);
                     }
                     catch (Exception e)
                     {
@@ -934,24 +935,19 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
 
                     v.MoveToFollowing("geometrie", "");
-
                     v.MoveToChild(XPathNodeType.Element);
-
 
                     while (!v.LocalName.Equals("coordinates"))
                     {
-
                         v.MoveToChild(XPathNodeType.Element);
                         if (!v.HasChildren)
                         {
-
                             v.MoveToFollowing(XPathNodeType.Element);
                         }
                     }
 
                     string sCoord = v.InnerXml;
                     string s = " ";
-
                     string[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
 
                     for (int i = 0; i < tCoord.Length; i++)
@@ -1008,10 +1004,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Extraction des réponses d'une remarque
+        /// Extraction des réponses d'un signalement
         /// </summary>
-        /// <param name="rem">la remarque</param>
-        /// <param name="val">XPathNavigator (le xml contenant la remarque)</param>
+        /// <param name="rem">le signalement</param>
+        /// <param name="val">XPathNavigator (le xml contenant le signalement)</param>
         private void GetGeoRep(Report rem, XPathNavigator val)
         {
             XPathNodeIterator it = val.Select("GEOREP");
@@ -1032,7 +1028,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     Name = EncodeToUTF8(v.SelectSingleNode("AUTEUR").Value)
                 };
 
-                georep.Statut =(Status) Enum.Parse(typeof(Status),v.SelectSingleNode("STATUT").Value,true);      
+                georep.Statut =(EnumStatus) Enum.Parse(typeof(EnumStatus),v.SelectSingleNode("STATUT").Value,true);      
                 georep.Date = Convert.ToDateTime(v.SelectSingleNode("DATE").Value);
                 georep.Reponse= EncodeToUTF8(v.SelectSingleNode("REPONSE").Value);
                
@@ -1078,7 +1074,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return themes;           
         }
 
-
         /// <summary>
         /// Retourne le nombre total de réponses
         /// </summary>
@@ -1109,7 +1104,6 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             return total;
         }
-
 
         /// <summary>
         /// retourne la version du service EspaceCollaboratif

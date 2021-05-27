@@ -7,6 +7,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -22,19 +23,19 @@ namespace ArcGisProEspaceCollaboratif
             {
                 try
                 {
-                    Context contexte = Context.Instance;
+                    Context context = Context.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
-                    if (contexte.Client == null)
+                    if (context.Client == null)
                     {
-                        contexte.Client = (Client)contexte.GetConnexionEspaceCollaboratif();
-                        if (contexte.Client == null) return;
+                        context.Client = (Client)context.GetConnexionEspaceCollaboratif();
+                        if (context.Client == null) return;
                     }
 
                     // Test de la présence du fichier XML de paramétrage
                     if (!System.IO.File.Exists(Helper.name_file_espaceco_xml))
                     {
-                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, contexte.DirectoryWorking);
+                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, context.DirectoryWorking);
                         System.Windows.Forms.MessageBox.Show(
                             mess,
                             Constantes.ERROR,
@@ -51,7 +52,7 @@ namespace ArcGisProEspaceCollaboratif
                     int groupeId = -1;
                     if (Helper.Load_Group() == "true")
                     {
-                        groupeId = Convert.ToInt32(contexte.Profil.Group.Id);
+                        groupeId = Convert.ToInt32(context.Profil.Group.Id);
                         parameters.Add("group", groupeId.ToString());
                     }
 
@@ -75,62 +76,60 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Envoi de la requête au serveur et création de la liste des signalements
                     progressDownload.Show();
-                    progressDownload.SetText("Import des signalements depuis le serveur: \n" + contexte.URLHost);
+                    progressDownload.SetText("Import des signalements depuis le serveur: \n" + context.URLHost);
 
-                    contexte.Client.SetProgressBar(progressDownload.GetProgressBar());
+                    context.Client.SetProgressBar(progressDownload.GetProgressBar());
                     progressDownload.Refresh();
 
-                    List<Report> signalements = contexte.Client.GetGeoRems(parameters);
+                    List<Report> reports = context.Client.GetGeoRems(parameters);
 
-                    // Filtrage spatial affiné des signalements
+                    // Filtrage spatial des signalements
                     if (hasFilter)
                     {
-                        List<Report> signalementAConserver = new List<Report>();
+                        List<Report> reportToKeep = new List<Report>();
 
-                        foreach (Report signalementTest in signalements)
+                        foreach (Report testReport in reports)
                         {
-                            if (Helper.IsInGeometry(signalementTest, filterParameters.Item4))
-                                signalementAConserver.Add(signalementTest);
+                            if (Helper.IsInGeometry(testReport, filterParameters.Item4))
+                                reportToKeep.Add(testReport);
                         }
-
-                        signalements = signalementAConserver;
+                        reports = reportToKeep;
                     }
 
                     // Chargement ou création des couches liées aux signalements
-                    await contexte.CreateOrLoadReportLayers();
+                    await context.CreateOrLoadReportLayers();
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
-                    contexte.RemoveAllObjectsFromLayers();
+                    context.RemoveAllObjectsFromLayers();
 
                     // Barre de progression
-                    int countBar = 0;
-
-                    progressDownload.GetProgressBar().Maximum = signalements.Count;
+                    int countReports = 0;
+                    progressDownload.GetProgressBar().Maximum = reports.Count;
                     progressDownload.GetProgressBar().Step = 1;
-                    progressDownload.SetMaxProgressor(signalements.Count);
+                    progressDownload.SetMaxProgressor(reports.Count);
                     progressDownload.SetBar(1);
 
                     // Placement des signalements importés et filtrés sur la carte.
-                    foreach (Report remarque in signalements)
+                    foreach (Report report in reports)
                     {
-                        countBar++;
-                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countBar + "/" + signalements.Count);
-                        await contexte.CreerPointSignalement(remarque);
+                        countReports++;
+                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
+                        await context.CreerPointSignalement(report);
                     }
 
                     progressDownload.Close();
 
                     //Zoom sur la couche des signalements
-                    FeatureLayer reportLayer = contexte.GetLayerByName(Helper.name_layer_Signalement);
-                    contexte.MapActiveView.ZoomTo(reportLayer.QueryExtent());
+                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
+                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
-                    int newReports = contexte.CountReportsByStatus(Status.Submit);
-                    int pendingReports = contexte.CountReportsByStatus(Status.Pending) + contexte.CountReportsByStatus(Status.Pending0) + contexte.CountReportsByStatus(Status.Pending1) + contexte.CountReportsByStatus(Status.Pending2);
-                    int rejectedReports = contexte.CountReportsByStatus(Status.Reject) + contexte.CountReportsByStatus(Status.Reject0);
-                    int validatedReports = contexte.CountReportsByStatus(Status.Valid) + contexte.CountReportsByStatus(Status.Valid0);
+                    int newReports = context.CountReportsByStatus(EnumStatus.submit);
+                    int pendingReports = context.CountReportsByStatus(EnumStatus.pending) + context.CountReportsByStatus(EnumStatus.pending0) + context.CountReportsByStatus(EnumStatus.pending1) + context.CountReportsByStatus(EnumStatus.pending2);
+                    int rejectedReports = context.CountReportsByStatus(EnumStatus.reject) + context.CountReportsByStatus(EnumStatus.reject0);
+                    int validatedReports = context.CountReportsByStatus(EnumStatus.valid) + context.CountReportsByStatus(EnumStatus.valid0);
 
-                    string message = "Import de " + countBar + " signalement(s) depuis l'Espace collaboratif :\n";
+                    string message = "Import de " + countReports + " signalement(s) depuis l'Espace collaboratif :\n";
                     message += "\n _ " + newReports + " nouveaux signalements.";
                     message += "\n _ " + pendingReports + " signalement(s) en cours de traitement.";
                     message += "\n _ " + validatedReports + " signalement(s) validé(s).";

@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -99,7 +100,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.Sketches = sketches;
             this.createReportView = new CreateReportView();
             this.InitializeCreateReportView();
-
         }
         #endregion
 
@@ -706,7 +706,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         #region Commands
 
-        public ICommand SendButtonCmd { get { return new RelayCommand(OnSend, AlwaysTrue); } }
+        public ICommand SendNewReportButtonCmd { get { return new RelayCommand(OnSend, AlwaysTrue); } }
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Envoyer"
@@ -728,7 +728,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 Group = this.GetGroupSelectedItemComboBox(),
                 DateCreation = DateTime.Today,
                 DateValidation = DateTime.Today,
-                Status = Status.Undefined
+                Status = EnumStatus.undefined
             };
 
             this.VirtualReport.AddTheme(themesSelected);

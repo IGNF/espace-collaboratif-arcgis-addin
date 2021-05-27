@@ -25,13 +25,14 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_file_espaceco_gdb = "espaceco.gdb";
         public const string name_file_espaceco_xml = "espaceco.xml";
         public const string name_file_extensions = "formats.txt";
+        public const string name_file_about_status = "AboutStatusResponse.txt";
 
         public const string name_layer_Signalement = "Signalement";
         public const string name_layer_Croquis_Polygone = "Croquis_EC_Polygone";
         public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
 
-        public const string name_field_IdRemarque = "N°remarque";
+        public const string name_field_IdReport = "N°remarque";
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
         public const string name_field_Departement = "Département";
@@ -47,7 +48,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_UrlPrive = "URL_privé";
         public const string name_field_Document = "Document";
         public const string name_field_Autorisation = "Autorisation";
-        public const string name_field_LienRemarque = "Lien_remarque";
+        public const string name_field_LienReport = "Lien_signalement";
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
         public const string name_field_LienBDuni = "Lien_object_BDUni";
@@ -79,7 +80,7 @@ namespace ArcGisProEspaceCollaboratif
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
         public static readonly Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
-            { name_field_IdRemarque,     new KeyValuePair<string,string> ("LONG","")      },
+            { name_field_IdReport,     new KeyValuePair<string,string> ("LONG","")      },
             { name_field_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
             { name_field_Commune,        new KeyValuePair<string,string> ("TEXT", "")     },
             { name_field_Departement,    new KeyValuePair<string,string> ("TEXT", "23")   },
@@ -101,11 +102,32 @@ namespace ArcGisProEspaceCollaboratif
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
         public static readonly Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
-            { name_field_LienRemarque, new KeyValuePair<string,string> ("LONG", "") },
+            { name_field_LienReport, new KeyValuePair<string,string> ("LONG", "") },
             { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
             { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Helper.lengthMaxField.ToString()) },
             { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
         };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static string GetFileAboutStatusResponse()
+        {
+            string about = "";
+            string assemblyDir = Helper.EspaceCollaboratifAssemblyDir;
+            string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_about_status);
+            using (StreamReader sr = new StreamReader(fileTxt))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    about += string.Format("{0}\n", line);
+                }
+            }
+            return about;
+        }
+
 
         /// <summary>
         /// Vérifie si l'extension du fichier joint à un nouveau signalement
@@ -133,11 +155,11 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Teste si la remarque donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
+        /// Teste si le signalement donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
         /// </summary>    
-        /// <param name="remarqueTest">La remarque EspaceCollaboratif à tester.</param>
+        /// <param name="remarqueTest">le signalement EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
-        /// <returns>True si la remarque à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
+        /// <returns>True si le signalement à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
         public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<Geometry> geometries)
         {
             MapPoint reportPoint = Helper.TransformPoint(report.Position);
@@ -165,7 +187,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 await QueuedTask.Run(() =>
                 {
-                    Context contexte = Context.Instance;
+                    Context context = Context.Instance;
 
                     // On vérifie si la feature class existe déjà dans la geodatabase du projet
                     string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
@@ -194,7 +216,7 @@ namespace ArcGisProEspaceCollaboratif
                         };
 
                         // Ajout de la référence spatiale
-                        arguments.Add(contexte.SpatialReference);
+                        arguments.Add(context.SpatialReference);
 
                         // Création de la feature class
                         var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
@@ -205,7 +227,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         // La nouvelle feature class est chargée automatiquement dans la carte.
                         // On récupère le FeatureLayer correspondant.
-                        collabSpaceLayer = contexte.GetLayerByName(fcName);
+                        collabSpaceLayer = context.GetLayerByName(fcName);
                     }
 
                     // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
@@ -217,7 +239,7 @@ namespace ArcGisProEspaceCollaboratif
                         // Ajout en tant que FeatureLayer à la carte
                         collabSpaceLayer = LayerFactory.Instance.CreateFeatureLayer(
                             collabSpaceFc,
-                            contexte.MapActiveView.Map,
+                            context.MapActiveView.Map,
                             layerPosition,
                             fcName
                         );
@@ -408,7 +430,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Renvoie la longueur du plus long message contenu dans une liste de remarque EspaceCollaboratif.
+        /// Renvoie la longueur du plus long message contenu dans une liste de signalement EspaceCollaboratif.
         /// </summary>
         /// <param name="signalements">La liste des signalements de l'Espace collaboratif dans laquelle on veut chercher celle qui a le message le plus long.</param>
         /// <returns>La longueur du plus long message.</returns>
@@ -428,9 +450,9 @@ namespace ArcGisProEspaceCollaboratif
                 }
         */
         /// <summary>
-        /// Renvoie la longueur de la plus longue des concaténations de réponses des remarques EspaceCollaboratif, en tenant compte du formatge HTML.
+        /// Renvoie la longueur de la plus longue des concaténations de réponses des signalements EspaceCollaboratif, en tenant compte du formatge HTML.
         /// </summary>
-        /// <param name="remarques">La liste des remarques EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
+        /// <param name="remarques">La liste des signalements EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
         /// <returns>La longueur de la plus longue concaténation de réponse.</returns>
         /*        public static int Max_Length_concatenateReponseHTML(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
                 {
@@ -448,9 +470,9 @@ namespace ArcGisProEspaceCollaboratif
                }
         */
         /// <summary>
-        /// Renvoie la longueur de la plus longue des concaténations de réponses des remarques EspaceCollaboratif, sans tenir compte du formatge HTML.
+        /// Renvoie la longueur de la plus longue des concaténations de réponses des signalements EspaceCollaboratif, sans tenir compte du formatge HTML.
         /// </summary>
-        /// <param name="remarques">La liste des remarques EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
+        /// <param name="remarques">La liste des signalements EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
         /// <returns>La longueur de la plus longue concaténation de réponse.</returns>
         /*       public static int Max_Length_concatenateReponse(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
                {
@@ -469,7 +491,7 @@ namespace ArcGisProEspaceCollaboratif
        */
         /*
                 /// <summary>
-                /// Teste si la géometrie d'une Feature est utilisable ou non pour le filtrage spatial lors de l'importation des remarques EspaceCollaboratif.
+                /// Teste si la géometrie d'une Feature est utilisable ou non pour le filtrage spatial lors de l'importation des signalements EspaceCollaboratif.
                 /// </summary>
                 /// <param name="featureTest">La Feature dont veut tester sa géométrie.</param>
                 /// <returns>True si <paramref name="featureTest"/> est de type Polygon, Envelope ou est une ligne fermée.</returns>
@@ -1245,7 +1267,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Calcule le point d'application pour un nouveau signalement de l'Espace collaboratif à partir d'un unique croquis EspaceCollaboratif associé à cette future remarque.
+        /// Calcule le point d'application pour un nouveau signalement de l'Espace collaboratif à partir d'un unique croquis EspaceCollaboratif associé à cette future signalement.
         /// Il s'agit du centroïde du croquis<paramref name="croquisEntree"/>.
         /// </summary>
         /// <param name="croquisEntree">Le croquis dont son centroïde sera le point d'application du nouveau signalement.</param>        
@@ -1597,7 +1619,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la taille de la pagination pour l'importation des remarques.
+        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
         /// </summary>
         /// <returns>La taille de pagination contenue dans le fichier de paramétrage. Renvoie 0 si cette valeur est absente.</returns>
         public static int Load_Pagination()
@@ -1621,7 +1643,7 @@ namespace ArcGisProEspaceCollaboratif
         }
         
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des remarques.
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
         /// </summary>
         /// <param name="pagination">La taille de pagination à sauvegarder dans le fichier de paramétrage.</param>
         public static void Save_Pagination(uint pagination)
@@ -1635,7 +1657,7 @@ namespace ArcGisProEspaceCollaboratif
         }
         
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille par défaut de la pagination pour l'importation des remarques.
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille par défaut de la pagination pour l'importation des signalements.
         /// </summary>
         /*        public static void Save_Pagination()
                 {
@@ -1702,7 +1724,7 @@ namespace ArcGisProEspaceCollaboratif
         }
        
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des remarques.
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
         /// </summary>
         /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
         public static void Save_DateExtraction(System.DateTime date)
@@ -1725,7 +1747,7 @@ namespace ArcGisProEspaceCollaboratif
         */
 
         /// <summary>
-        /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des remarques.
+        /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des signalements.
         /// </summary>
         /// <returns>Le nom du calque pour le filtrage spatiale stocké dans le fichier de paramétrage.</returns>
         public static string Load_FilterLayer()
@@ -1734,7 +1756,7 @@ namespace ArcGisProEspaceCollaboratif
         }
         
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des signalements.
         /// </summary>
         /// <param name="layer">Le nom du calque à enregistrer dans le fichier de paramétrage pour le filtrage spatiale.</param>
         public static void Save_CalqueFiltrage(string layer)
@@ -1744,7 +1766,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des remarques.
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des signalements.
         /// </summary>
         /// <param name="layer">Le calque dont on enregistre son nom dans le fichier de paramétrage pour le filtrage spatiale.</param>
         public static void Save_CalqueFiltrage(Layer layer)

@@ -19,18 +19,5 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public string Value { get; set; } = "";
         #endregion
-
-        #region Constructor
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /*public SketchAttributes(string name, string value)
-        {
-            this.Name = name;
-            this.Value = value;
-        }*/
-        #endregion
     }
 }

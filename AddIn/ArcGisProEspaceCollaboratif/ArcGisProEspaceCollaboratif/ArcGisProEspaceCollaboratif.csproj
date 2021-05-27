@@ -154,6 +154,7 @@
     <Compile Include="ViewModels\ConnectViewModel.cs" />
     <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
     <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
+    <Compile Include="ViewModels\ReplyReportViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\CreateReportView.xaml.cs">
       <DependentUpon>CreateReportView.xaml</DependentUpon>
@@ -183,17 +184,11 @@
     <Compile Include="FormProgressDownload.Designer.cs">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormRepondre.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormRepondre.designer.cs">
-      <DependentUpon>FormRepondre.cs</DependentUpon>
-    </Compile>
     <Compile Include="HelpConfigure.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
-    <Compile Include="AnswerReport.cs" />
+    <Compile Include="ReplyReport.cs" />
     <Compile Include="DeleteReport.cs" />
     <Compile Include="TelechargerSignalements.cs" />
     <Compile Include="Views\GroupChoiceView.xaml.cs">
@@ -201,6 +196,9 @@
     </Compile>
     <Compile Include="Views\LoadGatewayView.xaml.cs">
       <DependentUpon>LoadGatewayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReplyReportView.xaml.cs">
+      <DependentUpon>ReplyReportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="VoirObjetsAssocies.cs" />
     <Compile Include="VoirSignalement.cs" />
@@ -224,9 +222,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormProgressDownload.resx">
       <DependentUpon>FormProgressDownload.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormRepondre.resx">
-      <DependentUpon>FormRepondre.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
@@ -308,8 +303,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ReplyReportView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Files\AboutStatusResponse.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\espaceco.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

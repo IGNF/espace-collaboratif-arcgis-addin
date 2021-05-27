@@ -1,4 +1,5 @@
 ﻿using System;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -31,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le statut de la GeoReponse
         /// </summary>
-        public Status Statut;
+        public EnumStatus Statut;
         
         /// <summary>
         /// Retourne l'id de la GeoReponse 

@@ -14,11 +14,11 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Clic sur le bouton de configuration de l'add-in Espace collaboratif");
             try
             {
-                Context contexte = Context.Instance;
+                Context context = Context.Instance;
 
-                if (!contexte.CheckConfigFile())
+                if (!context.CheckConfigFile())
                 {
-                    string message = string.Format("Le fichier '{0}{1}' n'existe pas", contexte.DirectoryWorking, Helper.name_file_espaceco_xml);
+                    string message = string.Format("Le fichier '{0}{1}' n'existe pas", context.DirectoryWorking, Helper.name_file_espaceco_xml);
                     System.Windows.Forms.MessageBox.Show(
                         message,
                         Constantes.STOP,
@@ -27,8 +27,8 @@ namespace ArcGisProEspaceCollaboratif
                     );
                 }
 
-                FormSetUp configurateur = new FormSetUp(contexte);
-                configurateur.SetTreeViewAttributs(contexte);
+                FormSetUp configurateur = new FormSetUp(context);
+                configurateur.SetTreeViewAttributs(context);
                 configurateur.Show();
 
             }

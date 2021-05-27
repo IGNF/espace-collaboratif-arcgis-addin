@@ -12,22 +12,22 @@ namespace ArcGisProEspaceCollaboratif
     public partial class FormSetUp : Form
     {
         bool majAttributs = false;
-        Context contexte = null;
+        Context context = null;
 
-        public FormSetUp(Context contexte)
+        public FormSetUp(Context context)
         {
             InitializeComponent();
 
             this.toolTip.SetToolTip(this.textBoxUrl, "L'adresse en ligne pour accéder au service de l'espace collaboratif.");
             this.toolTip.SetToolTip(this.textBoxLogin, "Le login du compte utilisateur à utiliser par défaut pour se connecter au service de l'espace collaboratif.");
-            this.toolTip.SetToolTip(this.dateTimePicker, "La date limite à partir de laquelle seront extraites que les remarques plus récentes que cette date.");
-            this.toolTip.SetToolTip(this.numericUpDownDate, "Nombre de jours par rapport aujourd'hui limitant les remarques importées.");
-            this.toolTip.SetToolTip(this.comboBoxCalque, "Le calque à utiliser pour le filtrage spatial lors de l'importation des remarques de l'espace collaboratif.");
+            this.toolTip.SetToolTip(this.dateTimePicker, "La date limite à partir de laquelle seront extraites que les signalements plus récents que cette date.");
+            this.toolTip.SetToolTip(this.numericUpDownDate, "Nombre de jours par rapport aujourd'hui limitant les signalements importés.");
+            this.toolTip.SetToolTip(this.comboBoxCalque, "Le calque à utiliser pour le filtrage spatial lors de l'importation des signalements de l'espace collaboratif.");
             this.toolTip.SetToolTip(this.treeViewAttributs, "Les calques et leurs champs qu'il faut mettre en attribut lors de la génération des croquis de l'espace collaboratif.");
-            this.toolTip.SetToolTip(this.numericUpDownPagination, "Le nombre de remarques de l'espace collaboratif contenues dans un bloc de communication entre le serveur de l'espace collaboratif et l'add-in.");
+            this.toolTip.SetToolTip(this.numericUpDownPagination, "Le nombre de signalements de l'espace collaboratif contenues dans un bloc de communication entre le serveur de l'espace collaboratif et l'add-in.");
             this.toolTip.SetToolTip(this.buttonOK, "Pour sauvegarder la configuration dans le fichier EspaceCollaboratif.xml.");
 
-            this.contexte = contexte;
+            this.context = context;
         }
 
 
@@ -71,7 +71,7 @@ namespace ArcGisProEspaceCollaboratif
             string calqueFiltrageDefaut = Helper.Load_FilterLayer();
 
             // Récupération des couches et attributs
-            IReadOnlyList<Layer> mapLayers = contexte.MapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = context.MapActiveView.Map.GetLayersAsFlattenedList();
             List<string> collabSpaceLayers = new List<string>
             {
                 Helper.name_layer_Signalement,

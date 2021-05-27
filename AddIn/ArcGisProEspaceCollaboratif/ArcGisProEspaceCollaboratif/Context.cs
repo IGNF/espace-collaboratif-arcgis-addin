@@ -333,9 +333,9 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        // Efface de la carte en cours la remarque (et ses croquis associés s'ils existent) donnée par son identifiant.
+        // Efface de la carte en cours le signalement (et ses croquis associés s'ils existent) donnée par son identifiant.
         /// </summary>
-        /// <param name="idRemarque">Le numéro de la remarque qu'on souhaite effacer de la carte en cours.</param>
+        /// <param name="idRemarque">Le numéro du signalement qu'on souhaite effacer de la carte en cours.</param>
         /*        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
                 {
                     int indexCalque = 0;
@@ -389,7 +389,7 @@ namespace ArcGisProEspaceCollaboratif
                             // Préparation des attributs de l'objet signalement à créer
                             rowBuffer = reportFeatureClass.CreateRowBuffer();
 
-                            rowBuffer[Helper.name_field_IdRemarque] = newReport.Id;
+                            rowBuffer[Helper.name_field_IdReport] = newReport.Id;
                             rowBuffer[Helper.name_field_Auteur] = newReport.Author.Name;
                             rowBuffer[Helper.name_field_Commune] = newReport.Commune;
                             rowBuffer[Helper.name_field_Departement] = newReport.Departement.Name;
@@ -404,7 +404,7 @@ namespace ArcGisProEspaceCollaboratif
                             rowBuffer[Helper.name_field_Document] = newReport.GetFirstDocument();
                             rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentary);
                             rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
-                            rowBuffer[Helper.name_field_Autorisation] = newReport.Autorisation;
+                            rowBuffer[Helper.name_field_Autorisation] = newReport.Authorisation;
 
                             // Création de l'objet signalement dans la classe des signalements
                             featureReport = reportFeatureClass.CreateRow(rowBuffer);
@@ -494,7 +494,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Préparation des attributs de l'objet croquis à créer
                     rowBuffer = sketchFeatureClass.CreateRowBuffer();
 
-                    rowBuffer[Helper.name_field_LienRemarque] = idNewReport;
+                    rowBuffer[Helper.name_field_LienReport] = idNewReport;
                     rowBuffer[Helper.name_field_NomCroquis] = currSketch.Name;
                     rowBuffer[Helper.name_field_Attributs] = Helper.Limite(attributes);
 
@@ -632,9 +632,9 @@ namespace ArcGisProEspaceCollaboratif
                 }
         */
         /// <summary>
-        /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de remarques Ripart.
+        /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de signalements Ripart.
         /// </summary>
-        /// <param name="remarques">La liste des remarques Ripart sur lesquelles il faut faire le zoom à l'écran.</param>
+        /// <param name="remarques">La liste des signalements Ripart sur lesquels il faut faire le zoom à l'écran.</param>
         /*       public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
                {
                    if (remarques.Count == 0) { return; }
@@ -663,9 +663,9 @@ namespace ArcGisProEspaceCollaboratif
 
         // INUTILE ?
         /// <summary>
-        /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques.
+        /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements.
         /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
+        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
 /*        public List<Geometry> GetSpatialFilterGeometry()
         {
             List<Geometry> geometryFiltreSpatial = new List<Geometry>();
@@ -690,10 +690,10 @@ namespace ArcGisProEspaceCollaboratif
 */
 
         /// <summary>
-        /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
+        /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
         /// </summary>
         /// <param name="calqueFiltrage">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
+        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
         public List<Geometry> GetSpatialFilterGeometry(string filterLayerName)
         {
             List<Geometry> spatialFilterGeometry = new List<Geometry>();
@@ -795,9 +795,9 @@ namespace ArcGisProEspaceCollaboratif
 
         // INUTILE ?
         /// <summary>
-        /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des remarques .
+        /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
         /// </summary>
-        /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des remarques.</returns>
+        /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
 
 /*        TO-DO
  *        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
@@ -1204,9 +1204,9 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Renvoie la date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.
+        /// Renvoie la date de mise-à-jour la plus récente contenue dans les signalements présents sur la carte.
         /// </summary>
-        /// <returns>La date de mise-à-jour la plus récente contenue dans les remarques présentes sur la carte.</returns>
+        /// <returns>La date de mise-à-jour la plus récente contenue dans les signalements présents sur la carte.</returns>
 /*        public System.DateTime Get_LastUpdate()
         {
             FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
@@ -1234,10 +1234,10 @@ namespace ArcGisProEspaceCollaboratif
         }
 */
         /// <summary>
-        /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
+        /// Donne le décompte de signalements Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
-        /// <param name="status">Le statut des remarques Ripart qu'on veut dénombrer.</param>
-        /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
+        /// <param name="status">Le statut des signalements Ripart qu'on veut dénombrer.</param>
+        /// <returns>Le décompte de signalements Ripart sur la carte ayant le statut indiqué.</returns>
         public int CountReportsByStatus(int status)
         {
             FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
@@ -1251,20 +1251,20 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Donne le décompte de remarques Ripart présentes sur la carte en cours ayant le statut indiqué.
+        /// Donne le décompte de signalements Ripart présents sur la carte en cours ayant le statut indiqué.
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut dénombrer.</param>
-        /// <returns>Le décompte de remarques Ripart sur la carte ayant le statut indiqué.</returns>
-        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Status status)
+        /// <param name="statut">Le statut des signalements Ripart qu'on veut dénombrer.</param>
+        /// <returns>Le décompte de signalements Ripart sur la carte ayant le statut indiqué.</returns>
+        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Status.EnumStatus status)
         {
             return this.CountReportsByStatus((int)status);
         }
 
 
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
         /// </summary>
-        /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>
+        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
 /*        public void Select_Remarque_by_Statut(List<int> statut, bool zoom_to_selected_Remarque)
         {
@@ -1282,7 +1282,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 IFeatureCursor pFeatureCursor = featureClass.Search(queryFilter, false);
                 IFeature pFeature = pFeatureCursor.NextFeature();
-                IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des remarques     
+                IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des signalements     
 
                 remarqueSelect.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultNew, false);
             }
@@ -1290,11 +1290,11 @@ namespace ArcGisProEspaceCollaboratif
             {
                 foreach (int statutTemp in statut)
                 {
-                    queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_Statut + " = " + statutTemp; // Requête pour trouver les remarques au statut voulu.
+                    queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_Statut + " = " + statutTemp; // Requête pour trouver les signalements au statut voulu.
 
                     IFeatureCursor pFeatureCursor = featureClass.Search(queryFilter, false);
                     IFeature pFeature = pFeatureCursor.NextFeature();
-                    IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des remarques     
+                    IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des signalements     
 
                     remarqueSelect.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultAdd, false);
                 }
@@ -1319,7 +1319,7 @@ namespace ArcGisProEspaceCollaboratif
                 feature = enumFeature.Next();
             }
 
-            // Option pour zoomer sur les remarques sélectionnées
+            // Option pour zoomer sur les signalements sélectionnés
             if (zoom_to_selected_Remarque && coordX.Count != 0)
             {
                 ArcGisProEspaceCollaboratif.Core.Box emprise = new ArcGisProEspaceCollaboratif.Core.Box(coordX.Min(), coordY.Min(), coordX.Max(), coordY.Max());
@@ -1328,22 +1328,22 @@ namespace ArcGisProEspaceCollaboratif
 
             this.ActiveView.Refresh();
 
-            EspaceCollaboratifHelper.MessageBar(" " + coordX.Count + " remarque(s) sélectionnée(s).");
+            EspaceCollaboratifHelper.MessageBar(" " + coordX.Count + " signalement(s) sélectionnée(s).");
         }
 */
 
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués.
+        /// Met dans la sélection courante, les signalements Ripart présentes sur la carte et ayants un des statuts indiqués.
         /// </summary>
-        /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>       
+        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>       
 /*        public void Select_Remarque_by_Statut(List<int> statut)
         {
             this.Select_Remarque_by_Statut(statut, false);
         }
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
         /// </summary>
-        /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>
+        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
         public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut, bool zoom_to_selected_Remarque)
         {
@@ -1359,18 +1359,18 @@ namespace ArcGisProEspaceCollaboratif
 */
 
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants un des statuts indiqués. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
         /// </summary>
-        /// <param name="statut">La liste des statuts des remarques Ripart qu'on veut mettre en sélection.</param>     
+        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>     
 /*        public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut)
         {
             this.Select_Remarque_by_Statut(statut);
         }
 */
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>
+        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
 /*        public void Select_Remarque_by_Statut(int statut, bool zoom_to_selected_Remarque)
         {
@@ -1384,18 +1384,18 @@ namespace ArcGisProEspaceCollaboratif
 */
 
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>        
+        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>        
 /*        public void Select_Remarque_by_Statut(int statut)
         {
             this.Select_Remarque_by_Statut(statut, false);
         }
 */
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>
+        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>
         /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
 /*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut, bool zoom_to_selected_Remarque)
         {
@@ -1403,9 +1403,9 @@ namespace ArcGisProEspaceCollaboratif
         }
 */
         /// <summary>
-        /// Met dans la sélection courante, les remarques Ripart présentes sur la carte et ayants le statut indiqué. 
+        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
         /// </summary>
-        /// <param name="statut">Le statut des remarques Ripart qu'on veut mettre en sélection.</param>       
+        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>       
 /*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
         {
             this.Select_Remarque_by_Statut((int)statut, false);

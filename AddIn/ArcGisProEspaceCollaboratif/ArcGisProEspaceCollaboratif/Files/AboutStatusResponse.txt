@@ -1,0 +1,18 @@
+﻿A propos des statuts de réponse
+
+En cours de traitement : le signalement est en cours d'analyse ou de traitement par un responsable.
+
+En attente de saisie : la prise en compte effective du signalement nécessite un laps de temps plus long (attente de passage terrain par exemple). La mise à jour des données est donc différée.
+
+Pris en compte : le signalement est clos et a été pris en compte dans nos données.
+
+Déjà pris en compte : le signalement est clos. Aucune modification n'a été faite dans les données car la mise à jour avait déjà été faite par ailleurs.
+
+Rejeté (hors spéc.) : le signalement est clos et n'a pas été pris en compte car il n'entre pas dans le champs des spécifications des données.
+
+Rejeté (hors de propos) : le signalement est clos et n'a pas été pris en compte car hors de propos par rapport aux données.
+
+
+La clôture d'un signalement (un des 4 derniers statuts) nécessite l'intervention d'un valideur : votre gestionnaire de groupe. Le statut du signalement restera à en attente de validation tant qu'il n'aura pas validé votre réponse.
+
+Si le gestionnaire de groupe l'a autorisé, la clôture du signalement peut également être automatique dès lors que vous choisissez un des 4 derniers statuts. 

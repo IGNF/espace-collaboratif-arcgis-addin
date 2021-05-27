@@ -11,11 +11,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         public enum SketchType
         {
             Vide = 0,
-            Point,    /*!< Pour un point du croquis. */
-            Ligne,    /*!< Pour une polyligne du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
-            Polygone, /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
-            Texte,    /*!< Pour un un champ texte du croquis. */
-            Fleche    /*!< Pour une flêche du croquis. */
+            Point,      /*!< Pour un point du croquis. */
+            Ligne,      /*!< Pour une polyligne du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
+            Polygone,   /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
+            Texte,      /*!< Pour un un champ texte du croquis. */
+            Fleche,     /*!< Pour une flêche du croquis. */
+            MultiLigne
         };
 
         /// <summary>
@@ -118,9 +119,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Points.Add(new Point(longitude, latitude));
         }
 
-
-     
-
         /// <summary>
         /// Ajoute un attribut à la liste des attributs du croquis
         /// </summary>
@@ -201,7 +199,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return this.Attributes[i];
         }
 
-
         /// <summary>
         /// Retourne le premier point de la liste
         /// </summary>
@@ -228,17 +225,24 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             return this.Points.Count == 0;
         }
-    
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool IsClosed()
         {
             return this.FirstCoord() == this.LastCoord();
         }
-   
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool IsOpenLine()
         {
             return ((this.Type == SketchType.Fleche || this.Type == SketchType.Ligne) && !(this.IsClosed()));
         }
-
 
         /// <summary>
         /// Contrôle la validité du croquis en vérifiant le nombre de points
@@ -266,21 +270,17 @@ namespace ArcGisProEspaceCollaboratif.Core
             return true;
         }
 
-
         /// <summary>
         /// Transforme le croquis en xml 
         /// </summary>
         /// <param name="doc">le document xml</param>
         /// <returns>le xml au format string</returns>
         public XDocument EncodeToXML(XDocument doc, XNamespace gml)
-        {
-            
+        { 
             XElement objet= new  XElement("objet", new XAttribute("type", this.Type.ToString()),
                                        new  XElement("nom", this.Name) );
-
             XElement geom =  new  XElement("geometrie");
 
-         
             string coord="";
             foreach (Point pt in this.Points){
                 coord += Convert.ToString(pt.Longitude, Constantes.invC) + "," + Convert.ToString(pt.Latitude, Constantes.invC) + " ";
@@ -314,25 +314,18 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             objet.Add(geom);
 
-
             //Ajout des attributs
             XElement xattributs=new XElement("attributs"); ;
             foreach (SketchAttributes att in this.Attributes)
             {
                 XElement xattribut = new XElement("attribut");
                 xattribut.Add(new XAttribute("name", att.Name), att.Value);
-                xattributs.Add(xattribut);
-                
+                xattributs.Add(xattribut);   
             }
 
             objet.Add(xattributs);
-
             doc.Root.Add(objet);
-
-
             return doc;
-        }
-
-        
+        }      
     }
 }
