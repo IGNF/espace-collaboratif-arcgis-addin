@@ -11,11 +11,11 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
-using System.Threading;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
+using System.Text;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -196,8 +196,8 @@ namespace ArcGisProEspaceCollaboratif
             await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 reportLayer,
                 "POINT",
-                Helper.reportAttributes, 
-                0, 
+                Helper.reportAttributes,
+                0,
                 "Tear pin 2"
                 );
 
@@ -238,42 +238,42 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="layerName">nom de la couche</param> Change en layerPath
         /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-/*        private FeatureLayer LoadLayer(string layerName, string symbolName = "")
-        {
+        /*        private FeatureLayer LoadLayer(string layerName, string symbolName = "")
+                {
 
-            FeatureLayer result = null;
+                    FeatureLayer result = null;
 
-            // Chemin complet de la couche
-            string layerPath = this.gdbPath + "\\" + layerName ;
+                    // Chemin complet de la couche
+                    string layerPath = this.gdbPath + "\\" + layerName ;
 
-            try
-            {
-                int indexNumber = 0;
-                System.Uri layerUri = new System.Uri(layerPath);
+                    try
+                    {
+                        int indexNumber = 0;
+                        System.Uri layerUri = new System.Uri(layerPath);
 
-                // Création de la nouvelle couche (objet layer à partir d'une feature class existante)
-                FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
-                    layerUri,
-                    this.mapActiveView.Map,
-                    indexNumber,
-                    layerName
-                );
+                        // Création de la nouvelle couche (objet layer à partir d'une feature class existante)
+                        FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
+                            layerUri,
+                            this.mapActiveView.Map,
+                            indexNumber,
+                            layerName
+                        );
 
-                if (symbolName != "")
-                    setReportLayerStyle(result, symbolName);
-                
-                result = layer;
-            }
-            catch (Exception e)
-            {
-                logger.Info(layerName + " n'existe pas dans la gdb\n" + e.Message);
-                result = null;
-            }
+                        if (symbolName != "")
+                            setReportLayerStyle(result, symbolName);
 
-            return result;
-        }
-*/
-        
+                        result = layer;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Info(layerName + " n'existe pas dans la gdb\n" + e.Message);
+                        result = null;
+                    }
+
+                    return result;
+                }
+        */
+
 
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                 ILog.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
-                throw new Exception(message);          
+                throw new Exception(message);
             }
         }
 
@@ -360,10 +360,74 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
         */
+ 
         /// <summary>
-        /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
+        /// 
         /// </summary>
-        /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
+        /// <param name="reportUdating"></param>
+        public void UpdateGeodatabase(Report reportUdating)
+        {
+            try
+            {
+                FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
+                FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
+
+                EditOperation editOperation = new EditOperation();
+                editOperation.Callback(context =>
+                {
+                    try
+                    {
+                        QueryFilter queryFilter = new QueryFilter
+                        {
+                            WhereClause = string.Format("N_Remarque = {0}", reportUdating.Id)
+                        };
+
+                        using (RowCursor rowCursor = reportFeatureClass.Search(queryFilter, false))
+                        {
+                            while (rowCursor.MoveNext())
+                            {
+                                
+                                using (Feature feature = (Feature)rowCursor.Current)
+                                {
+                                    // In order to update the Map and/or the attribute table.
+                                    // Has to be called before any changes are made to the row
+                                    context.Invalidate(feature);
+                                    feature["Date_MAJ"] = reportUdating.DateUpdate;
+                                    feature["Date_de_validation"] = reportUdating.DateValidation;
+                                    byte[] bytes = Encoding.Default.GetBytes(reportUdating.ConcatenateReponse());
+                                    feature["Réponses"] = (Encoding.UTF8.GetString(bytes));
+                                    feature["Statut"] = reportUdating.Status;
+
+                                    feature.Store();
+                                    // Has to be called after the store too
+                                    context.Invalidate(feature);
+                                }
+                            }
+                        }
+                    }
+
+                    catch (GeodatabaseException exObj)
+                    {
+                        throw new Exception (exObj.Message);
+                    }
+
+                }, reportFeatureClass);
+                Helper.ExecuteEditOperation(editOperation);
+
+                // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
+                Project.Current.SaveEditsAsync();
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+/// <summary>
+/// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
+/// </summary>
+/// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
         public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Report newReport)
         {
             try
@@ -421,7 +485,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         catch (GeodatabaseException exObj)
                         {
-                            Console.WriteLine(exObj);
+                            Console.WriteLine(exObj.Message);
                         }
                         finally
                         {
@@ -432,13 +496,9 @@ namespace ArcGisProEspaceCollaboratif
                                 featureReport.Dispose();
                         }
                     }, reportFeatureClass);
+                    Helper.ExecuteEditOperation(editOperation);
 
-                    bool editResult = editOperation.Execute();
-
-
-                    //Récupération des croquis associés au signalement
-
-                    //  Traitement du ou des croquis associé(s) au signalement     
+                    //Récupération des croquis associés au signalement   
                     if (!newReport.IsCroquisEmpty())
                     {
                         foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketch)
@@ -473,7 +533,7 @@ namespace ArcGisProEspaceCollaboratif
         }
 
 
-        public bool CreateSketchObject(ArcGisProEspaceCollaboratif.Core.Sketch currSketch, FeatureClass sketchFeatureClass, ulong idNewReport)
+        public void CreateSketchObject(ArcGisProEspaceCollaboratif.Core.Sketch currSketch, FeatureClass sketchFeatureClass, ulong idNewReport)
         {
             EditOperation editOperation = new EditOperation();
             editOperation.Callback(context =>
@@ -544,9 +604,7 @@ namespace ArcGisProEspaceCollaboratif
                         sketchFeature.Dispose();
                 }
             }, sketchFeatureClass);
-
-            bool editResult = editOperation.Execute();
-            return editResult;
+            Helper.ExecuteEditOperation(editOperation);
         }
 
 

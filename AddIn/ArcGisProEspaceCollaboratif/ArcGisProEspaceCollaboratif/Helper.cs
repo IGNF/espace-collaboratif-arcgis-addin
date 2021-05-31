@@ -14,6 +14,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Windows.Forms;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Core.CIM;
+using ArcGIS.Desktop.Editing;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -107,6 +108,29 @@ namespace ArcGisProEspaceCollaboratif
             { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Helper.lengthMaxField.ToString()) },
             { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
         };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="editOperation"></param>
+        public static void ExecuteEditOperation(EditOperation editOperation)
+        {
+            string messageError = "";
+            try
+            {
+                bool editResult = editOperation.Execute();
+                if (!editResult)
+                {
+                    messageError = editOperation.ErrorMessage;
+                }
+            }
+            catch (GeodatabaseException exObj)
+            {
+                string message = string.Format("{0}\n{1}", exObj.Message, messageError);
+                Console.WriteLine(message);
+                throw new Exception(message);
+            }
+        }
 
         /// <summary>
         /// 

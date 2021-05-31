@@ -144,7 +144,7 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     logger.Error(e.Message + "\n" + e.StackTrace);
                     progressDownload.Close();
-                    MessageBox.Show(e.Message, "IGN Espace collaboratif - ERREUR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(e.Message, Constantes.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             });
 

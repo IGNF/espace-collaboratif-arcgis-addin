@@ -416,7 +416,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public  string Utf8Encode(string str)
+        public string Utf8Encode(string str)
         {
             return Encoding.UTF8.GetString(Encoding.Default.GetBytes(str));
         }  

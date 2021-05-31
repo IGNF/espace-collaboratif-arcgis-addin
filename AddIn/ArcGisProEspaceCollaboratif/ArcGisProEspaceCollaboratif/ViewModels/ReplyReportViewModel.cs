@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Collections.Generic;
 using static ArcGisProEspaceCollaboratif.Core.Status;
+using ArcGIS.Desktop.Editing;
+using System;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -29,7 +31,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// Le message qui contient les signalements qui n'auront pas de réponses
-        /// PAs d'autorisation d'écriture sur le serveur ou statut clôturé
+        /// Pas d'autorisation d'écriture sur le serveur ou statut clôturé
         /// </summary>
         string Message { get; set; }
 
@@ -59,7 +61,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void InitializeCreateReportView()
         {
             // Mise à jour de la ComboBox "Statut" avec ses libellés
-            this.StatutItemsSourceComboBox = ListStatutWording;
+            this.StatutItemsSourceComboBox = ListWordings;
             int numberReports = this.Reports.Count;
             if (numberReports == 1)
             {
@@ -89,7 +91,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public string StatutSelectedItemComboBox { get; set; } = Status.ListStatutWording[0];
+        public string StatutSelectedItemComboBox { get; set; } = Status.ListWordings[0];
 
         /// <summary>
         /// 
@@ -110,39 +112,21 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void OnSend()
         {
-            /*string groupName = this.GroupSelectedItemComboBox;
-            Helper.Save_PreferredGroup(groupName);
-
-            List<Theme> themesSelected = GetSelectedThemes();
-            Helper.Save_PreferredThemes(themesSelected);
-
-            // Création d'un nouveau signalement temporaire.
-            this.VirtualReport = new ArcGisProEspaceCollaboratif.Core.Report()
+            try
             {
-                Commentary = CommentaryTextBox,
-                Author = this.Context.Profil.Author,
-                Group = this.GetGroupSelectedItemComboBox(),
-                DateCreation = DateTime.Today,
-                DateValidation = DateTime.Today,
-                Status = Status.Undefined
-            };
-
-            this.VirtualReport.AddTheme(themesSelected);
-            this.VirtualReport.AddDocument(this.NameFileJoinToReport);
-
-            // Option création d'un signalement unique
-            if (this.CreateReportIsChecked)
+                foreach (Report report in this.Reports)
+                {
+                    report.Status = Status.CorrespondenceStatusWording[this.StatutSelectedItemComboBox];
+                    Report reportUpdating = this.Context.Client.AddReponse(report, this.NewResponseTextBox);
+                    this.Context.UpdateGeodatabase(reportUpdating);
+                }
+            }
+            catch(Exception e)
             {
-                CreateReport();
+                this.Message += e.Message.ToString();
             }
 
-            // Option création de plusieurs signalements
-            if (this.CreateReportsIsChecked)
-            {
-                CreateReports();
-            }*/
-
-            if (Message != "")
+            if (this.Message != "")
             {
                 System.Windows.Forms.MessageBox.Show(
                     this.Message,

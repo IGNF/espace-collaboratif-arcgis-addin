@@ -435,20 +435,20 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Ajoute une réponse à un signalement
         /// </summary>
-        /// <param name="signalement">Le signalement</param>
-        /// <param name="reponse">la réponse</param>
+        /// <param name="report">Le signalement</param>
+        /// <param name="response">la réponse</param>
         /// <returns>le signalement à laquelle a été ajoutée la réponse</returns>
-        public Report AddReponse(Report signalement, string reponse, string titreReponse)
+        public Report AddReponse(Report report, string response)
         {
-            Report signalementModif = null;
+            Report reportUpdating = null;
             try
             {
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
-                    { "id", signalement.Id.ToString() },
-                    { "title", titreReponse },
-                    { "content", reponse },
-                    { "status", (signalement.Status).ToString().ToLower() }
+                    { "id", report.Id.ToString() },
+                    { "content", response },
+                    { "status", (report.Status).ToString().ToLower() },
+                    { "title", "" }
                 };
 
                 string data = this.MakeMultiPartPostRequest(this.Url + "/api/georem/georep_post.xml", parameters, null);
@@ -457,11 +457,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
                 if (errMessage["code"].Equals("OK"))
                 {
-                    List<Report> signalements = new List<Report>();
-                    signalements = xmlResponse.ExtractReports(signalements);
-                    if (signalements.Count == 1)
+                    List<Report> reports = new List<Report>();
+                    reports = xmlResponse.ExtractReports(reports);
+                    if (reports.Count == 1)
                     {
-                        signalementModif = signalements[0];
+                        reportUpdating = reports[0];
                     }
                     else throw new Exception("Problème lors de l'ajout d'une réponse");
                 }
@@ -469,13 +469,12 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     throw new Exception(errMessage["message"]);
                 }
-
             }
             catch (Exception e) {
                 throw new Exception(e.Message);
             }
 
-            return signalementModif;
+            return reportUpdating;
         }
 
         /// <summary>
