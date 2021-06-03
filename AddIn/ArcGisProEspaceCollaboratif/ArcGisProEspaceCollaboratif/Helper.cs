@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Editing;
+using System.Text;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -2034,6 +2035,18 @@ namespace ArcGisProEspaceCollaboratif
             }
             // Fermeture du fichier XML.
             paramsXML.Save(Helper.XML_NameFile()); 
+        }
+
+        /// <summary>
+        /// Encode une chaîne de caractères en UTF8
+        /// </summary>
+        /// <param name="str">la chaîne de caractères à transformer</param>
+        /// <returns>la chaîne de caractères transformée en UTF8</returns>
+        public static string EncodeToUTF8(string str)
+        {
+            byte[] bytes = Encoding.Default.GetBytes(str);
+            str = Encoding.UTF8.GetString(bytes);
+            return str;
         }
     }  
 }

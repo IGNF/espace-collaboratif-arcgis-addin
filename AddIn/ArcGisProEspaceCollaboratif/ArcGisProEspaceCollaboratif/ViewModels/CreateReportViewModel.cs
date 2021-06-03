@@ -978,8 +978,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(TextBox))
                     {
                         TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        byte[] bytes = Encoding.Default.GetBytes(textBox.Text);
-                        tmpThemeAttributes.UserSelectedValue = Encoding.UTF8.GetString(bytes);
+                        tmpThemeAttributes.UserSelectedValue = Helper.EncodeToUTF8(textBox.Text);
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -988,8 +987,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
                         string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
-                        byte[] bytes = Encoding.Default.GetBytes(value);
-                        tmpThemeAttributes.UserSelectedValue = Encoding.UTF8.GetString(bytes);
+                        tmpThemeAttributes.UserSelectedValue = Helper.EncodeToUTF8(value);
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }

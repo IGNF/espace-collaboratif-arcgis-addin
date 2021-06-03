@@ -2,11 +2,11 @@
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class VoirObjetsAssocies : Button
+    internal class SeeReport : Button
     {
         protected override void OnClick()
         {
-            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Voir les objets associes", "Espace collaboratif");
+            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Voir le signalement", "Espace collaboratif");
         }
     }
 }

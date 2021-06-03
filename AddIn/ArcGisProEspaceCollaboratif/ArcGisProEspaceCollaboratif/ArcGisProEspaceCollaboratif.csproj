@@ -148,6 +148,8 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssociatedObjects.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="ViewModels\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\FeedbackInformationViewModel.cs" />
@@ -171,7 +173,6 @@
     <Compile Include="Context.cs" />
     <Compile Include="CreateReport.cs" />
     <Compile Include="DownloadReports.cs" />
-    <Compile Include="Helper.cs" />
     <Compile Include="FormSetUp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -190,7 +191,6 @@
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="ReplyReport.cs" />
     <Compile Include="DeleteReport.cs" />
-    <Compile Include="TelechargerSignalements.cs" />
     <Compile Include="Views\GroupChoiceView.xaml.cs">
       <DependentUpon>GroupChoiceView.xaml</DependentUpon>
     </Compile>
@@ -200,8 +200,8 @@
     <Compile Include="Views\ReplyReportView.xaml.cs">
       <DependentUpon>ReplyReportView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VoirObjetsAssocies.cs" />
-    <Compile Include="VoirSignalement.cs" />
+    <Compile Include="SeeAssociatedObjects.cs" />
+    <Compile Include="SeeReport.cs" />
     <Compile Include="WebFeatureService.cs" />
     <Compile Include="WebMapTileService.cs" />
   </ItemGroup>

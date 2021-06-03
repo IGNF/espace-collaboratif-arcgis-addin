@@ -230,14 +230,14 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (this.Reponses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.Utf8Encode(this.Reponses[i].Author.Name);
+                        concatenate += " par " + this.EncodeToUTF8(this.Reponses[i].Author.Name);
                     }
                     if (!string.IsNullOrEmpty(this.Reponses[i].Date.ToString()))
                     {
                         concatenate += " le " + this.Reponses[i].Date.ToString();
                     }
                     concatenate += ".</font></b><br>";
-                    concatenate += "<b>" + HttpUtility.UrlDecode(this.Utf8Encode(this.Reponses[i].Titre())) + "</b><br>";
+                    concatenate += "<b>" + HttpUtility.UrlDecode(this.EncodeToUTF8(this.Reponses[i].Titre())) + "</b><br>";
                     concatenate += "" + HttpUtility.UrlDecode(this.Reponses[i].Reponse) + "</li><br><br>";
                 }
             }
@@ -412,13 +412,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// 
+        /// Encode une chaîne de caractères en UTF8
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public string Utf8Encode(string str)
+        /// <param name="str">la chaîne de caractère</param>
+        /// <returns>la chaîne de caractère en UTF8</returns>
+        public string EncodeToUTF8(string str)
         {
-            return Encoding.UTF8.GetString(Encoding.Default.GetBytes(str));
-        }  
+            byte[] bytes = Encoding.Default.GetBytes(str);
+            str = Encoding.UTF8.GetString(bytes);
+            return str;
+        }
     }
 }

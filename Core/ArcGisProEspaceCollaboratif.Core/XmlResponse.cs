@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.XPath;
 using System.IO;
-using System.Globalization;
 using log4net;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;

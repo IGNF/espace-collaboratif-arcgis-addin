@@ -52,7 +52,7 @@ namespace ArcGisProEspaceCollaboratif
                     var selectedFeatures = context.MapActiveView.Map.GetSelection();
                     foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
                     {
-                        if (kvp.Key.Name != "Signalement")
+                        if (kvp.Key.Name != Helper.name_layer_Signalement)
                         {
                             continue;
                         }
