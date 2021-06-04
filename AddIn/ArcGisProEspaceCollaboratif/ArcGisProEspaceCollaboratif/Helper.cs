@@ -34,7 +34,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
 
-        public const string name_field_IdReport = "N°remarque";
+        public const string name_field_IdReport = "N°remarque";// ne pas changer pour l'instant
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
         public const string name_field_Departement = "Département";
@@ -50,7 +50,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_UrlPrive = "URL_privé";
         public const string name_field_Document = "Document";
         public const string name_field_Autorisation = "Autorisation";
-        public const string name_field_LienReport = "Lien_signalement";
+        public const string name_field_LienReport = "Lien_remarque"; //ne pas changer pour l'instant
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
         public const string name_field_LienBDuni = "Lien_object_BDUni";

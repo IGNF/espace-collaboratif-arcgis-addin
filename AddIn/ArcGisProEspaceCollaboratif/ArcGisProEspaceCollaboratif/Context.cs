@@ -159,6 +159,18 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="listNumberOfReports"></param>
+        public void SelectReportsByListNumber(List<long> listNumberOfReports)
+        {
+            foreach(long numberReport in listNumberOfReports)
+            {
+
+            }
+        }
+
+        /// <summary>
         /// Teste si le fichier de configuration espaceco.xml n'existe pas dans le répertoire de travail, on le copie 
         /// du répertoire d'installation 
         /// </summary>
@@ -423,10 +435,10 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-/// <summary>
-/// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
-/// </summary>
-/// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
+        /// <summary>
+        /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
+        /// </summary>
+        /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
         public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Report newReport)
         {
             try
@@ -507,11 +519,11 @@ namespace ArcGisProEspaceCollaboratif
                                 continue;
                             }
                            
-                            // on cast le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
+                            // on caste le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
                             FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type];
                             FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
 
-                            // Création de l'objet croquis dans la classe correpondant à son type
+                            // Création de l'objet croquis dans la classe correspondant à son type
                             CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
                            
                         }
@@ -583,7 +595,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     }
 
-                    // Enregristrement
+                    // Enregistrement
                     sketchFeature.Store();
 
                     //To Indicate that the attribute table has to be updated

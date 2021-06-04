@@ -66,7 +66,7 @@ namespace ArcGisProEspaceCollaboratif
                             {
                                 var inspector = featureLayer.Inspect(oid);
                                 Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
-                                string IdReport = attributes["N_remarque"];
+                                string IdReport = attributes[Constantes.N_REPORT];
                                 Report report = context.Client.GetGeoRem(IdReport);
 
                                 // Le statut du signalement est-il cloturé ?

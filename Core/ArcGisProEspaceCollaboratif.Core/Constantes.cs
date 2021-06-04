@@ -58,5 +58,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             "RW+",
             "RW-"
         };
+
+        public const string N_REPORT = "N_remarque";
     }
 }

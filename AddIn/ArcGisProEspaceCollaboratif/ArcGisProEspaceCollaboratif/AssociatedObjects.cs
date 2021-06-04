@@ -1,4 +1,5 @@
-﻿using ArcGIS.Desktop.Mapping;
+﻿using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Mapping;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -127,7 +128,21 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         private void SelectAssociatedReports()
         {
+           
 
+                    /*remNos = ""
+                mapLayers = self.context.mapCan.layers()
+
+                for ml in mapLayers:
+                    if ml.name() in RipartHelper.croquis_layers and len(ml.selectedFeatures()) > 0:
+
+                        for feat in ml.selectedFeatures():
+                            idx = ml.fields().lookupField("NoSignalement")
+                            noSignalement = feat.attributes()[idx]
+                            remNos += str(noSignalement) + ","
+                            ml.removeSelection()
+
+                self.context.selectRemarkByNo(remNos[:-1])*/
         }
 
         /// <summary>
@@ -135,7 +150,24 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         private void SelectAssociatedSketchs()
         {
-
+            List<long> listNumberReports = new List<long>();
+            var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+            {
+                var featureLayer = kvp.Key as FeatureLayer;
+                List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();
+                List<long> lOid = kvp.Value;
+                foreach (long oid in lOid)
+                {
+                    QueuedTask.Run(() =>
+                    {
+                        var inspector = featureLayer.Inspect(oid);
+                        Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
+                        listNumberReports.Add(Convert.ToInt64(attributes[Constantes.N_REPORT]));
+                    });
+                }
+            }
+            this.Context.SelectReportsByListNumber(listNumberReports);
         }
 
         #endregion
