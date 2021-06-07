@@ -15,12 +15,12 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
-using System.Text;
 
 namespace ArcGisProEspaceCollaboratif
 {
     public sealed class Context
     {
+        #region Parameters
         /// <summary>
         /// 
         /// </summary>
@@ -34,7 +34,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        public string GeoDatabasePath { get; set; } = CoreModule.CurrentProject.DefaultGeodatabasePath;
+        public CollaborativeSpaceGeodatabase CollaborativeSpaceGeodatabase { get; set; }
 
         /// <summary>
         /// Le répertoire où est la carte ArcGIS Pro sur laquelle on travaille
@@ -124,6 +124,9 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Constructeur pour un contexte à partir de la carte courante
         /// </summary>
@@ -150,6 +153,7 @@ namespace ArcGisProEspaceCollaboratif
             this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
+            this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
 
             //création ou chargement des couches ripart
             //TODO : question Noémie pourquoi cette création ici ?
@@ -158,14 +162,18 @@ namespace ArcGisProEspaceCollaboratif
             ILog.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
+        #endregion
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="listNumberOfReports"></param>
-        public void SelectReportsByListNumber(List<long> listNumberOfReports)
+        public void SelectReportsByListNumber(List<string> listNumberOfReports)
         {
-            foreach(long numberReport in listNumberOfReports)
+            List<Row> rows = this.CollaborativeSpaceGeodatabase.SelectRowInTable(Helper.name_layer_Signalement, Constantes.N_REPORT_IN_GDB, "long", listNumberOfReports);
+            foreach (Row row in rows)
             {
+                long RowObjectID = row.GetObjectID();
 
             }
         }
@@ -229,7 +237,7 @@ namespace ArcGisProEspaceCollaboratif
                 2
                 );
 
-            // Croquis linéaires
+            // Croquis polygones
             await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 polygonSketchLayer,
                 "POLYGON",

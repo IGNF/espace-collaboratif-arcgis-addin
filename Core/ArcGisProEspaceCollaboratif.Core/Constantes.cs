@@ -59,6 +59,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             "RW-"
         };
 
-        public const string N_REPORT = "N_remarque";
+        public const string N_REPORT_IN_GDB = "N_remarque";
+        public const string LIEN_REPORT = "Lien_remarque";
     }
 }

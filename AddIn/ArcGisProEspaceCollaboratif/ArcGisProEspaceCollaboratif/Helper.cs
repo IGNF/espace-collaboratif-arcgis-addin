@@ -34,7 +34,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
 
-        public const string name_field_IdReport = "N°remarque";// ne pas changer pour l'instant
+        public const string name_field_IdReport = "N°remarque";// anciennement N°signalement
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
         public const string name_field_Departement = "Département";
@@ -50,7 +50,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_UrlPrive = "URL_privé";
         public const string name_field_Document = "Document";
         public const string name_field_Autorisation = "Autorisation";
-        public const string name_field_LienReport = "Lien_remarque"; //ne pas changer pour l'instant
+        public const string name_field_LienReport = "Lien_remarque";// anciennement Lien_signalement
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
         public const string name_field_LienBDuni = "Lien_object_BDUni";
@@ -215,11 +215,13 @@ namespace ArcGisProEspaceCollaboratif
                     Context context = Context.Instance;
 
                     // On vérifie si la feature class existe déjà dans la geodatabase du projet
-                    string gdbPath = CoreModule.CurrentProject.DefaultGeodatabasePath;
+                    /*string gdbPath = context.GeoDatabasePath;
                     Uri gdbUri = new Uri(uriString: gdbPath);
                     Geodatabase gdbCollaborativeSpace = new Geodatabase(new FileGeodatabaseConnectionPath(gdbUri));
-                    bool bFcExists = ExistsFcInGdb(fcName, gdbCollaborativeSpace);
-        
+                    bool bFcExists = ExistsFcInGdb(fcName, gdbCollaborativeSpace);*/
+                    string gdbPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath;
+                    bool bFcExists = context.CollaborativeSpaceGeodatabase.IsFeatureClassExistInGeodatabase(fcName);
+
                     // Si la feature class existe et est déjà chargée dans la carte, on sort
                     if (bFcExists && Context.Instance.IsLayerInMap(fcName))
                     {
@@ -247,7 +249,7 @@ namespace ArcGisProEspaceCollaboratif
                         var result = Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
 
                         // Ajout des champs à la nouvelle feature class
-                        string fcPath = CoreModule.CurrentProject.DefaultGeodatabasePath + "\\" + fcName;
+                        string fcPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
                         AddFieldsToFc(fcPath, fcAttributesDict);
 
                         // La nouvelle feature class est chargée automatiquement dans la carte.
@@ -259,7 +261,7 @@ namespace ArcGisProEspaceCollaboratif
                     else
                     {
                         // Ouverture de la feature class
-                        FeatureClass collabSpaceFc = gdbCollaborativeSpace.OpenDataset<FeatureClass>(fcName);
+                        FeatureClass collabSpaceFc = context.CollaborativeSpaceGeodatabase.Geodatabase.OpenDataset<FeatureClass>(fcName);
 
                         // Ajout en tant que FeatureLayer à la carte
                         collabSpaceLayer = LayerFactory.Instance.CreateFeatureLayer(
@@ -357,28 +359,6 @@ namespace ArcGisProEspaceCollaboratif
                     return fieldSupp;
                 }
         */
-
-        /// <summary>
-        /// Vérifie si une feature class existe dans une geodatabase.
-        /// </summary>
-        /// <param name="fcName"> Nom de la feature class à chercher.
-        /// <param name="gdbPath"> Chemin de la geodatabase.
-        /// <returns>Vrai si la feature class existe dans la geodatabase, Faux sinon.</returns>
-        public static bool ExistsFcInGdb(string fcName, Geodatabase gdbCollaborativeSpace)
-        {
-            IReadOnlyList<FeatureClassDefinition> fcdList = gdbCollaborativeSpace.GetDefinitions<FeatureClassDefinition>();
-
-            bool bExists = false;
-            foreach (FeatureClassDefinition fcd in fcdList)
-            {
-                if (fcd.GetName() == fcName)
-                {
-                    bExists = true;
-                    break;
-                }
-            }
-            return bExists;
-        }
 
         /// <summary>
         /// Limite la longueur d'une string pour ne pas dépasser la taille maximale que ne peut contenir les attributs d'un calque.

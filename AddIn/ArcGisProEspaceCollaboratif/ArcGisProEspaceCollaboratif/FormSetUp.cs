@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-//using ESRI.ArcGIS.Geodatabase;
-//using ESRI.ArcGIS.Carto;
-//using ESRI.ArcGIS.ArcMapUI;
-using ArcGIS.Core.Data;
 using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif

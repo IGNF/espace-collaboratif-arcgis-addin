@@ -128,29 +128,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         private void SelectAssociatedReports()
         {
-           
-
-                    /*remNos = ""
-                mapLayers = self.context.mapCan.layers()
-
-                for ml in mapLayers:
-                    if ml.name() in RipartHelper.croquis_layers and len(ml.selectedFeatures()) > 0:
-
-                        for feat in ml.selectedFeatures():
-                            idx = ml.fields().lookupField("NoSignalement")
-                            noSignalement = feat.attributes()[idx]
-                            remNos += str(noSignalement) + ","
-                            ml.removeSelection()
-
-                self.context.selectRemarkByNo(remNos[:-1])*/
-        }
-
-        /// <summary>
-        /// Sélectionne les croquis associés aux signalements sélectionnés
-        /// </summary>
-        private void SelectAssociatedSketchs()
-        {
-            List<long> listNumberReports = new List<long>();
+            List<string> listNumberReports = new List<string>();
             var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
             {
@@ -163,11 +141,19 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         var inspector = featureLayer.Inspect(oid);
                         Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
-                        listNumberReports.Add(Convert.ToInt64(attributes[Constantes.N_REPORT]));
+                        listNumberReports.Add(attributes[Constantes.LIEN_REPORT]);
                     });
                 }
             }
             this.Context.SelectReportsByListNumber(listNumberReports);
+        }
+
+        /// <summary>
+        /// Sélectionne les croquis associés aux signalements sélectionnés
+        /// </summary>
+        private void SelectAssociatedSketchs()
+        {
+           
         }
 
         #endregion
