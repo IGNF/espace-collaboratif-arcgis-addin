@@ -2,6 +2,7 @@
 using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
+using ArcGIS.Desktop.Mapping;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -66,16 +67,16 @@ namespace ArcGisProEspaceCollaboratif
         #region Select rows in table
 
         /// <summary>
-        /// Sélectionne des enregistrements dans une table en fionction d'une liste de valeurs
+        /// Création d'une requête en fonction d'une liste de valeurs
         /// </summary>
         /// <param name="tableName">le nom de la table à requêter</param>
         /// <param name="fieldName">le nom du champ</param>
         /// <param name="fieldType">le type du champ</param>
         /// <param name="listValue">les valeurs à trouver</param>
-        /// <returns>une liste remplie, vide sinon</returns>
-        public List<Row> SelectRowInTable(string tableName, string fieldName, string fieldType, List<string> listValue)
+        /// <returns>la requête construite</returns>
+        public QueryFilter GetQueryFilter(string tableName, string fieldName, string fieldType, List<string> listValue)
         {
-            List<Row> rows = new List<Row>();
+            QueryFilter queryFilter = new QueryFilter();
 
             try
             {
@@ -84,7 +85,7 @@ namespace ArcGisProEspaceCollaboratif
                     // si la table n'existe pas, on renvoie une liste vide
                     if (table == null)
                     {
-                        return rows;
+                        return queryFilter;
                     }
 
                     // Est-ce que le champ existe
@@ -92,12 +93,8 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         throw new Exception(string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName()));
                     }
-                    
-                    foreach (string value in listValue)
-                    {
-                        QueryFilter queryFilter = MadeQueryFilter(fieldType, fieldName, value);
-                        rows = GetListRows(table, queryFilter);
-                    }
+
+                    queryFilter = MakeQueryFilter(fieldType, fieldName, listValue);
                 }
             }
             catch(Exception e)
@@ -105,7 +102,7 @@ namespace ArcGisProEspaceCollaboratif
                 throw new Exception(e.Message);
             }
 
-            return rows;
+            return queryFilter;
         }
 
        /// <summary>
@@ -149,19 +146,21 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="fieldType">le type du champ long, string, ...</param>
         /// <param name="fieldName">le nom du champ</param>
-        /// <param name="value">la valeur du champ</param>
+        /// <param name="values">les valeurs à chercher</param>
         /// <returns>retourne la requête remplie</returns>
-        private QueryFilter MadeQueryFilter(string fieldType, string fieldName, string value)
+        private QueryFilter MakeQueryFilter(string fieldType, string fieldName, List<string> values)
         { 
-            string whereClause = "";
-            if (fieldType == "long")
+            string tmp = string.Format("{0} IN (", fieldName) ;
+            foreach (string value in values)
             {
-                whereClause = string.Format("{0} = {1}", fieldName, value);
+                if (fieldType == "long")
+                {
+                    tmp += string.Format("{0},", value);
+                }
             }
-            if (fieldType == "string")
-            {
-                whereClause = string.Format("{0} = '{1}'", fieldName, value);
-            }
+            string whereClause = tmp.Remove((tmp.Length - 1), 1);
+            whereClause += ")";
+
             QueryFilter queryFilter = new QueryFilter
             {
                 WhereClause = whereClause
@@ -170,34 +169,6 @@ namespace ArcGisProEspaceCollaboratif
             return queryFilter;
         }
 
-        /// <summary>
-        /// Retourne les enregistrements liés à la table à partir de la requête fournie en entrée.
-        /// </summary>
-        /// <param name="table">la table a requêter</param>
-        /// <param name="queryFilter">la requête</param>
-        /// <returns>une liste remplie ou vide si problème</returns>
-        private List<Row> GetListRows(Table table, QueryFilter queryFilter)
-        {
-            List<Row> rows = new List<Row>();
-            try
-            {
-                using (RowCursor rowCursor = table.Search(queryFilter, false))
-                {
-                    while (rowCursor.MoveNext())
-                    {
-                        rows.Add(rowCursor.Current);
-                    }
-                }
-            }
-            catch (GeodatabaseFieldException fieldException)
-            {
-                throw new Exception(fieldException.Message);
-            }
-
-            return rows;
-        }
-
         #endregion
-
     }
 }

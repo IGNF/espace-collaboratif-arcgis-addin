@@ -165,20 +165,6 @@ namespace ArcGisProEspaceCollaboratif
         #endregion
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="listNumberOfReports"></param>
-        public void SelectReportsByListNumber(List<string> listNumberOfReports)
-        {
-            List<Row> rows = this.CollaborativeSpaceGeodatabase.SelectRowInTable(Helper.name_layer_Signalement, Constantes.N_REPORT_IN_GDB, "long", listNumberOfReports);
-            foreach (Row row in rows)
-            {
-                long RowObjectID = row.GetObjectID();
-
-            }
-        }
-
-        /// <summary>
         /// Teste si le fichier de configuration espaceco.xml n'existe pas dans le répertoire de travail, on le copie 
         /// du répertoire d'installation 
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using ArcGIS.Desktop.Framework.Threading.Tasks;
+﻿using ArcGIS.Core.Data;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using log4net;
 using System;
@@ -44,17 +45,28 @@ namespace ArcGisProEspaceCollaboratif.Core
         public void SelectObjects()
         {
             string result = this.CheckSelectedObjects();
-            if (string.IsNullOrEmpty(result))
+            
+            // Sélectionne les signalements associés aux croquis sélectionnés
+            if (result == strSketch)
             {
-                return;
+                List<string> layersName = new List<string>
+                {
+                    Helper.name_layer_Signalement
+                };
+                List<string> listID = this.SelectAssociatedID(Constantes.LIEN_REPORT);
+                this.SelectAssociatedObjectsFromList(layersName, Constantes.N_REPORT_IN_GDB, listID);
             }
-            else if (result == strSketch)
-            {
-                this.SelectAssociatedReports();
-            }
+            // Sélectionne les croquis associés aux signalements sélectionnés
             else if (result == strReport)
             {
-                this.SelectAssociatedSketchs();
+                List<string> layersName = new List<string>
+                {
+                    Helper.name_layer_Croquis_Ligne,
+                    Helper.name_layer_Croquis_Point,
+                    Helper.name_layer_Croquis_Polygone
+                };
+                List<string> listID = this.SelectAssociatedID(Constantes.N_REPORT_IN_GDB);
+                this.SelectAssociatedObjectsFromList(layersName, Constantes.LIEN_REPORT, listID);
             }
         }
 
@@ -69,66 +81,55 @@ namespace ArcGisProEspaceCollaboratif.Core
         ///     - "report" si des signalements sont sélectionnés
         /// </returns>
         private string CheckSelectedObjects()
-        {
-            try
+        {    
+            bool selectedSketch = false;
+            bool selectedReport = false;
+
+            var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
             {
-                bool selectedSketch = false;
-                bool selectedReport = false;
-
-                var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
-                foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+                if (kvp.Key.Name == Helper.name_layer_Signalement &&
+                    kvp.Value.Count > 0)
                 {
-                    if (kvp.Key.Name == Helper.name_layer_Signalement &&
-                        kvp.Value.Count > 0)
-                    {
-                        selectedReport = true;
-                    }
-                    if (kvp.Key.Name == Helper.name_layer_Croquis_Polygone ||
-                        kvp.Key.Name == Helper.name_layer_Croquis_Ligne ||
-                        kvp.Key.Name == Helper.name_layer_Croquis_Point &&
-                        kvp.Value.Count > 0)
-                    {
-                        selectedSketch = true;
-                    }
+                    selectedReport = true;
                 }
-
-                if (selectedReport && selectedSketch)
+                if (kvp.Key.Name == Helper.name_layer_Croquis_Polygone ||
+                    kvp.Key.Name == Helper.name_layer_Croquis_Ligne ||
+                    kvp.Key.Name == Helper.name_layer_Croquis_Point &&
+                    kvp.Value.Count > 0)
                 {
-                    throw new Exception("Veuillez sélectionner des signalements ou des croquis (mais pas les deux !)");
-                }
-                else if (selectedSketch)
-                {
-                    return strSketch;
-                }
-                else if (selectedReport)
-                {
-                    return strReport;
-                }
-                else
-                {
-                    throw new Exception("Aucun croquis ou signalement sélectionné");
+                    selectedSketch = true;
                 }
             }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(
-                e.Message,
-                Constantes.ERROR,
-                System.Windows.Forms.MessageBoxButtons.OK,
-                System.Windows.Forms.MessageBoxIcon.Error
-                );
-                logger.Error(string.Format("Problème dans la sélection des objets pour voir les objets associés : {0}\n{1}", e.Message, e.StackTrace));
-            }
 
-            return "";
+            if (selectedReport && selectedSketch)
+            {
+                throw new Exception("Veuillez sélectionner des signalements ou des croquis (mais pas les deux !)");
+            }
+            else if (selectedSketch)
+            {
+                return strSketch;
+            }
+            else if (selectedReport)
+            {
+                return strReport;
+            }
+            else
+            {
+                throw new Exception("Aucun croquis ou signalement sélectionné");
+            }
         }
 
         /// <summary>
-        /// Sélectionne les signalements associés aux croquis sélectionnés
+        /// En fonction des objets sélectionnés, retourne une liste d'identifiants correspondant
+        /// au nom de l'attribut donné en entrée
         /// </summary>
-        private void SelectAssociatedReports()
+        /// <param name="fieldName">Le nom du champ contenant les identifiants</param>
+        /// <returns>La liste des identifiants</returns>
+        private List<string> SelectAssociatedID(string fieldName)
         {
-            List<string> listNumberReports = new List<string>();
+            List<string> listObjects = new List<string>();
+
             var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
             {
@@ -141,19 +142,35 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         var inspector = featureLayer.Inspect(oid);
                         Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
-                        listNumberReports.Add(attributes[Constantes.LIEN_REPORT]);
+                        listObjects.Add(attributes[fieldName]);
                     });
                 }
+                featureLayer.ClearSelection();
             }
-            this.Context.SelectReportsByListNumber(listNumberReports);
+            return listObjects;
         }
 
         /// <summary>
-        /// Sélectionne les croquis associés aux signalements sélectionnés
+        /// Sélectionne dans la carte les objets de la liste fournie en entrée
         /// </summary>
-        private void SelectAssociatedSketchs()
+        /// <param name="listObjects"></param>
+        private void SelectAssociatedObjectsFromList(List<string> layersName, string fieldName, List<string> listObjects)
         {
-           
+            try
+            {
+                foreach (string layerName in layersName)
+                {
+                    QueryFilter queryFilter = this.Context.CollaborativeSpaceGeodatabase.GetQueryFilter(layerName, fieldName, "long", listObjects);
+                    var method = SelectionCombinationMethod.New;
+                    FeatureLayer featureLayer = this.Context.GetLayerByName(layerName);
+                    featureLayer.Select(queryFilter, method);
+                }
+            }
+            catch (Exception e)
+            {
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                throw new Exception(message);
+            }    
         }
 
         #endregion

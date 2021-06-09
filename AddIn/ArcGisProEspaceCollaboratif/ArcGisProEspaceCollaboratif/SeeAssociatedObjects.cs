@@ -29,10 +29,8 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
-
                     AssociatedObjects associatedObjects = new AssociatedObjects(context);
                     associatedObjects.SelectObjects();
-
                 }
                 catch (Exception e)
                 {
