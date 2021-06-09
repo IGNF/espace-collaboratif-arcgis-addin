@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ArcGisProEspaceCollaboratif")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("AddIn intégrant les fonctionnalités de signalement et d'écriture de l'Espace collaboratif")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("IGN")]
-[assembly: AssemblyProduct("ArcGisProEspaceCollaboratif")]
+[assembly: AssemblyProduct("COVID-19")]
 [assembly: AssemblyCopyright("Copyright © IGN 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

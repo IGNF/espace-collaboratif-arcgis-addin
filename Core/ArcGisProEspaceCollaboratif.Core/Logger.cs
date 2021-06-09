@@ -7,7 +7,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// <summary>
     /// Classe qui initialise le logger
     /// </summary>
-    public  class Logger 
+    public class Logger 
     {
        //instance unique de Logger
        private static Logger instance;

@@ -209,6 +209,9 @@
     <Compile Include="WebMapTileService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Files\addinEspacecoPourArcGisPro27.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -241,7 +244,9 @@
     <AddInContent Include="Images\connect1.png" />
     <AddInContent Include="Images\create.png" />
     <AddInContent Include="Images\Log.png" />
-    <AddInContent Include="Images\logo_IGN.png" />
+    <EmbeddedResource Include="Images\logo_IGN.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <AddInContent Include="Images\map-black.png" />
     <AddInContent Include="Images\map-blue.png" />
     <AddInContent Include="Images\map-green.png" />

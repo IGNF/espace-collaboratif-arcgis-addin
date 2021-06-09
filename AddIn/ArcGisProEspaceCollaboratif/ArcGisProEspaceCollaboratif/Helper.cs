@@ -28,6 +28,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_file_espaceco_xml = "espaceco.xml";
         public const string name_file_extensions = "formats.txt";
         public const string name_file_about_status = "AboutStatusResponse.txt";
+        public const string name_file_manuel = "addinEspacecoPourArcGisPro27.pdf";
 
         public const string name_layer_Signalement = "Signalement";
         public const string name_layer_Croquis_Polygone = "Croquis_EC_Polygone";
@@ -74,7 +75,8 @@ namespace ArcGisProEspaceCollaboratif
         public const string dateDefault = "01/01/1900";
         public const int lengthMaxField = 5000;
 
-        public static string EspaceCollaboratifAssemblyDir = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        public static string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        public static string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
@@ -140,7 +142,7 @@ namespace ArcGisProEspaceCollaboratif
         public static string GetFileAboutStatusResponse()
         {
             string about = "";
-            string assemblyDir = Helper.EspaceCollaboratifAssemblyDir;
+            string assemblyDir = Helper.EspaceCollaboratifDirectoryFiles;
             string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_about_status);
             using (StreamReader sr = new StreamReader(fileTxt))
             {
@@ -163,7 +165,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>false si l'extension n'existe pas dans le fichier formats.txt</returns>
         public static bool IsFileExtensionAuthorised(string extension)
         {
-            string assemblyDir = Helper.EspaceCollaboratifAssemblyDir;
+            string assemblyDir = Helper.EspaceCollaboratifDirectoryFiles;
             string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_extensions);
             using (StreamReader sr = new StreamReader(fileTxt))
             {

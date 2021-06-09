@@ -30,7 +30,6 @@ namespace ArcGisProEspaceCollaboratif
                 FormSetUp configurateur = new FormSetUp(context);
                 configurateur.SetTreeViewAttributs(context);
                 configurateur.Show();
-
             }
             catch (Exception e)
             {

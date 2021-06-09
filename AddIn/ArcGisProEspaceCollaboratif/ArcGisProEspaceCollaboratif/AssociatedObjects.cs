@@ -17,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
 
         /// <summary>
-        /// 
+        /// Le contexte de travail de la carte en cours
         /// </summary>
         public Context Context { get; set; }
 
@@ -26,7 +26,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         #region Contructors
 
         /// <summary>
-        /// 
+        /// Constructeur de la classe en fonction du contexte
         /// </summary>
         /// <param name="context"></param>
         public AssociatedObjects(Context context)
@@ -39,7 +39,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         #region Methods
 
         /// <summary>
-        /// Sélectionne les croquis associés a une ou plusieurs signalements 
+        /// Sélectionne les croquis associés a un ou plusieurs signalements 
         /// ou les signalements associés à un ou plusieurs croquis
         /// </summary>
         public void SelectObjects()

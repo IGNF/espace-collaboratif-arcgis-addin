@@ -176,7 +176,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 try
                 {
-                    File.Copy(Helper.EspaceCollaboratifAssemblyDir + Helper.name_file_espaceco_xml, fileConfiguration);
+                    File.Copy(Helper.EspaceCollaboratifDirectoryFiles + Helper.name_file_espaceco_xml, fileConfiguration);
                 }
                 catch (Exception e)
                 {
