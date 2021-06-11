@@ -7,9 +7,9 @@ using System.Reflection;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class HelpOpenManual : Button
+    internal class HelpManual : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpManual));
 
         protected override void OnClick()
         {
@@ -25,7 +25,7 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpOpenFileLog : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpOpenFileLog));
 
         protected override void OnClick()
         {
@@ -37,7 +37,7 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpAbout : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpAbout));
 
         protected override void OnClick()
         {

@@ -8,7 +8,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class SeeAssociatedObjects : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(SeeAssociatedObjects));
 
         protected override async void OnClick()
         {

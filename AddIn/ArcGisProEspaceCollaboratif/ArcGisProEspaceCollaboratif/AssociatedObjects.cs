@@ -14,7 +14,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private readonly string strSketch = "sketch";
         private readonly string strReport = "report";
 
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(AssociatedObjects));
 
         /// <summary>
         /// Le contexte de travail de la carte en cours

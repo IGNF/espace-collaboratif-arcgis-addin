@@ -8,7 +8,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DeleteReport : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(DeleteReport));
 
         protected override async void OnClick()
         {

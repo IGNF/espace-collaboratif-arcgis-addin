@@ -11,7 +11,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class ReplyReport : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
         protected override async void OnClick()
         {
             logger.Debug("Click sur le bouton de réponse à un signalement");
@@ -113,7 +113,7 @@ namespace ArcGisProEspaceCollaboratif
                     var replyReportViewModel = new ReplyReportViewModel(context, replyReports, messageReportNoValid);
                     replyReportViewModel.replyReportView.DataContext = replyReportViewModel;
                     bool? dialogResult = replyReportViewModel.replyReportView.ShowDialog();
-                    // L'utilisateur a cliqué sur le bouton "Annuler
+                    // L'utilisateur a cliqué sur la croix pour fermer le dialogue
                     if (dialogResult == false)
                     {
                         return;

@@ -29,9 +29,9 @@ namespace ArcGisProEspaceCollaboratif
 
         private void ConfigEspaceCollaboratif_Load(object sender, EventArgs e)
         {
-           this.textBoxUrl.Text = Helper.Load_Urlhost();
+           this.textBoxUrl.Text = Helper.LoadUrlhost();
 
-            if (Helper.Load_Login().Length == 0)
+            if (Helper.LoadLogin().Length == 0)
             {
                 this.checkBoxLogin.Checked = false;
                 this.textBoxLogin.Enabled = false;
@@ -39,11 +39,11 @@ namespace ArcGisProEspaceCollaboratif
             else
             {
                 this.checkBoxLogin.Checked = true;
-                this.textBoxLogin.Text = Helper.Load_Login();
+                this.textBoxLogin.Text = Helper.LoadLogin();
             }
 
-            this.numericUpDownPagination.Value = Helper.Load_Pagination();
-            if (Helper.Load_Pagination() == 0)
+            this.numericUpDownPagination.Value = Helper.LoadPagination();
+            if (Helper.LoadPagination() == 0)
             {
                 this.checkBoxPagination.Checked = false;
                 this.numericUpDownPagination.Enabled = false;
@@ -98,7 +98,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             this.checkBoxCroquis.Text = "Calques sources et champs à mettre en\nattribut pour les nouveaux croquis de l'espace collaboratif :";
 
-            if (Helper.Load_Group() =="true")
+            if (Helper.LoadExtractionForGroup() =="true")
             {
                 this.checkBoxGroup.Checked = true;
             }
@@ -296,21 +296,21 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         private void ButtonOK_Click(object sender, EventArgs e)
         {
-            Helper.Save_Urlhost(this.textBoxUrl.Text);
+            Helper.SaveUrlhost(this.textBoxUrl.Text);
             
             if (!this.checkBoxLogin.Checked)
             {
                 this.textBoxLogin.Text = "";
             }
-            Helper.Save_Login(this.textBoxLogin.Text);
+            Helper.SaveLogin(this.textBoxLogin.Text);
 
             if (this.checkBoxPagination.Checked)
             {
-                Helper.Save_Pagination((uint)this.numericUpDownPagination.Value);
+                Helper.SavePagination((uint)this.numericUpDownPagination.Value);
             }
             else
             {
-                Helper.Save_Pagination(0);
+                Helper.SavePagination(0);
             }
 
             if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
@@ -333,11 +333,11 @@ namespace ArcGisProEspaceCollaboratif
 
             if (this.checkBoxGroup.Checked)
             {
-                Helper.Save_Group("true");
+                Helper.SaveExtractionForGroup("true");
             }
             else
             {
-                Helper.Save_Group("false");
+                Helper.SaveExtractionForGroup("false");
             }
 
             this.majAttributs = false;
@@ -355,8 +355,8 @@ namespace ArcGisProEspaceCollaboratif
                 Helper.Save_Proxy(this.checkBoxProxy.Text);
             }
 
-            Helper.Save_CleGeoportail(this.textBoxCleGeoportail.Text);
-            Helper.Save_GroupeActif(this.textBoxGroupeActif.Text);
+            Helper.SaveGeoportalKey(this.textBoxCleGeoportail.Text);
+            Helper.SaveActiveGroup(this.textBoxGroupeActif.Text);
 
             this.Close();
         }

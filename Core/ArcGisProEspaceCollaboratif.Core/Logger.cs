@@ -47,7 +47,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Crée le fichier de configuration s'il n'existe pas et configure le chemin du XNLConfigurateur de log4Net
         /// </summary>
         private Logger()
-        {        
+        {
             if (!Directory.Exists(logPath))
             {
                 Directory.CreateDirectory(logPath);

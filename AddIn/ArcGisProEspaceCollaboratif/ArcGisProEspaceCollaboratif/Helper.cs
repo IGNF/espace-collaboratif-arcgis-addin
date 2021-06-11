@@ -1606,7 +1606,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
         /// </summary>
         /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
-        public static string Load_Login()
+        public static string LoadLogin()
         {
             return Helper.XML_FirstElement(Helper.xml_Login);
         }
@@ -1615,7 +1615,7 @@ namespace ArcGisProEspaceCollaboratif
         ///  Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le login à utiliser pour se connecter au service EspaceCollaboratif.
         /// </summary>
         /// <param name="login">Le login par défaut à sauvegarder dans le fichier de paramétrage.</param>
-        public static void Save_Login(string login)
+        public static void SaveLogin(string login)
         {
             if (!Helper.XML_HasElement(Helper.xml_Login))
             {
@@ -1629,7 +1629,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
         /// </summary>
         /// <returns>La taille de pagination contenue dans le fichier de paramétrage. Renvoie 0 si cette valeur est absente.</returns>
-        public static int Load_Pagination()
+        public static uint LoadPagination()
         {
             string pagination = Helper.XML_FirstElement(Helper.xml_Pagination);
 
@@ -1640,7 +1640,7 @@ namespace ArcGisProEspaceCollaboratif
 
             try
             {
-                return int.Parse(pagination);
+                return uint.Parse(pagination);
             }
             catch (Exception ex)
             {
@@ -1653,7 +1653,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
         /// </summary>
         /// <param name="pagination">La taille de pagination à sauvegarder dans le fichier de paramétrage.</param>
-        public static void Save_Pagination(uint pagination)
+        public static void SavePagination(uint pagination)
         {
             if (!Helper.XML_HasElement(Helper.xml_Pagination))
             {
@@ -1678,7 +1678,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit la valeur du tag "Import_pour_groupe" du fichier XML de paramétrage.
         /// </summary>
         /// <returns></returns>
-        public static string Load_Group()
+        public static string LoadExtractionForGroup()
         {
             return Helper.XML_FirstElement(Helper.xml_Group);
         }
@@ -1687,7 +1687,7 @@ namespace ArcGisProEspaceCollaboratif
         ///  Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, "Import_pour_groupe"
         /// </summary>
         /// <param name="group"> true ou false</param>
-        public static void Save_Group(string group)
+        public static void SaveExtractionForGroup(string group)
         {
             if (!Helper.XML_HasElement(Helper.xml_Group))
             {
@@ -1786,7 +1786,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Obtient à partir du XML de paramétrage, l'adresse du service EspaceCollaboratif contenue dans le fichier XML de paramétrage.
         /// </summary>
         /// <returns>L'adresse d'accès au service EspaceCollaboratif stockée dans le fichier de paramétrage EspaceCollaboratif.</returns>
-        public static string Load_Urlhost()
+        public static string LoadUrlhost()
         {
             string Urlhost = Helper.XML_FirstElement(Helper.xml_UrlHost);
 
@@ -1809,7 +1809,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, l'adresse du service EspaceCollaboratif.
         /// </summary>
         /// <param name="UrlHost">L'adresse d'accès au service EspaceCollaboratif à enregistrer dans le fichier de paramétrage.</param>
-        public static void Save_Urlhost(string UrlHost)
+        public static void SaveUrlhost(string UrlHost)
         {
             XML_SetElement(Helper.xml_UrlHost, UrlHost);
         }
@@ -1874,7 +1874,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
         /// </summary>
         /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
-        public static string Load_CleGeoportail()
+        public static string LoadGeoportalKey()
         {
             return Helper.XML_FirstElement(Helper.xml_CleGeoPortail); ;
         }
@@ -1883,7 +1883,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la clé Géoportail de l'utilisateur.
         /// </summary>
         /// <param name="cle">La clé Géoportail à enregistrer dans le fichier de paramétrage.</param>
-        public static void Save_CleGeoportail(string cle)
+        public static void SaveGeoportalKey(string cle)
         {
             if (!XML_HasElement(xml_CleGeoPortail))
             {
@@ -1918,7 +1918,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Retourne le nom du groupe actif de l'utilisateur enregistré dans le fichier XML de paramétrage.
         /// </summary>
-        public static string Load_GroupeActif()
+        public static string LoadActiveGroup()
         {
             return Helper.XML_FirstElement(Helper.xml_GroupeActif);
         }
@@ -1927,7 +1927,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du groupe actif de l'utilisateur du service EspaceCollaboratif.
         /// </summary>
         /// <param name="groupeActif">Le nom du groupe actif de l'utilisateur du service EspaceCollaboratif à enregistrer dans le fichier de paramétrage.</param>
-        public static void Save_GroupeActif(string groupeActif)
+        public static void SaveActiveGroup(string groupeActif)
         {
             if (!XML_HasElement(xml_GroupeActif))
             {

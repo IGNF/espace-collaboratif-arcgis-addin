@@ -12,7 +12,7 @@ namespace ArcGisProEspaceCollaboratif
     internal class LoadGateway : Button
     {
         private readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(LoadGateway));
 
         protected override void OnClick()
         {

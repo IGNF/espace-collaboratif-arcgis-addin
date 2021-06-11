@@ -1,46 +1,67 @@
 ﻿using System;
 using ArcGIS.Desktop.Framework.Contracts;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.Core;
+using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class HelpOpenDialogConfigure : Button
+    internal class HelpConfigure : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpConfigure));
 
-        protected override void OnClick()
+        protected override async void OnClick()
         {
             logger.Debug("Clic sur le bouton de configuration de l'add-in Espace collaboratif");
-            try
+            await QueuedTask.Run(() =>
             {
-                Context context = Context.Instance;
-
-                if (!context.CheckConfigFile())
+                try
                 {
-                    string message = string.Format("Le fichier '{0}{1}' n'existe pas", context.DirectoryWorking, Helper.name_file_espaceco_xml);
-                    System.Windows.Forms.MessageBox.Show(
-                        message,
-                        Constantes.STOP,
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Stop
-                    );
-                }
+                    Context context = Context.Instance;
 
-                FormSetUp configurateur = new FormSetUp(context);
-                configurateur.SetTreeViewAttributs(context);
-                configurateur.Show();
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show(
-                    e.Message,
-                    Constantes.ERROR,
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error
-                );
-                logger.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
-            }
+                    // Il faut s'être connecté au service pour configurer
+                    if (context.Client == null)
+                    {
+                        // Établissement de la connexion avec le service Espace collaboratif.
+                        context.Client = context.GetConnexionEspaceCollaboratif();
+                        if (context.Client == null)
+                        {
+                            return;
+                        }
+                    }
+
+                    if (!context.CheckConfigFile())
+                    {
+                        string message = string.Format("Le fichier '{0}{1}' n'existe pas", context.DirectoryWorking, Helper.name_file_espaceco_xml);
+                        System.Windows.Forms.MessageBox.Show(
+                            message,
+                            Constantes.STOP,
+                            System.Windows.Forms.MessageBoxButtons.OK,
+                            System.Windows.Forms.MessageBoxIcon.Stop
+                        );
+                    }
+
+                    var helpConfigureViewModel = new HelpConfigureViewModel(context);
+                    helpConfigureViewModel.helpConfigureView.DataContext = helpConfigureViewModel;
+                    bool? dialogResult = helpConfigureViewModel.helpConfigureView.ShowDialog();
+                    // L'utilisateur a cliqué sur la croix pour fermer le dialogue
+                    if (dialogResult == false)
+                    {
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR,
+                        System.Windows.Forms.MessageBoxButtons.OK,
+                        System.Windows.Forms.MessageBoxIcon.Error
+                    );
+                    logger.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
+                }
+            });
         }
     }
 }

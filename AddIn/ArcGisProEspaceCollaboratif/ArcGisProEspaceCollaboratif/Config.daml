@@ -64,10 +64,10 @@
         <button id="ArcGisProEspaceCollaboratif_HelpConfigure" keytip="W" caption="Configurer" className="HelpConfigure" loadOnClick="true" smallImage="Images\config.png" largeImage="Images\config.png">
           <tooltip heading="Configuration">Configurer l'add-in<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_HelpOpenManual" keytip="W" caption="Ouvrir manuel" className="HelpOpenManual" loadOnClick="true" smallImage="Images\Book.png" largeImage="Images\Book.png">
+        <button id="ArcGisProEspaceCollaboratif_HelpManual" keytip="W" caption="Ouvrir manuel" className="HelpManual" loadOnClick="true" smallImage="Images\Book.png" largeImage="Images\Book.png">
           <tooltip heading="Ouverture fichier">Ouvrir le manuel utilisateur de l'add-in<disabledText /></tooltip>
         </button>
-        <button id="ArcGisProEspaceCollaboratif_HelpOpenFileLog" keytip="W" caption="Ouvrir log" className="HelpOpenFileLog" loadOnClick="true" smallImage="Images\Log.png" largeImage="Images\Log.png">
+        <button id="ArcGisProEspaceCollaboratif_HelpFileLog" keytip="W" caption="Ouvrir log" className="HelpFileLog" loadOnClick="true" smallImage="Images\Log.png" largeImage="Images\Log.png">
           <tooltip heading="Ouverture fichier">Ouvrir le fichier de log de l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpAbout" keytip="W" caption="A propos" className="HelpAbout" loadOnClick="true" smallImage="Images\About.png" largeImage="Images\About.png">
@@ -77,8 +77,8 @@
       <menus>
         <menu id="ArcGisProEspaceCollaboratif_Help" caption="Aide" smallImage="GenericButtonGreen16.png" largeImage="GenericButtonGreen32.png">
           <button refID="ArcGisProEspaceCollaboratif_HelpConfigure" />
-          <button refID="ArcGisProEspaceCollaboratif_HelpOpenManual" />
-          <button refID="ArcGisProEspaceCollaboratif_HelpOpenFileLog" />
+          <button refID="ArcGisProEspaceCollaboratif_HelpManual" />
+          <button refID="ArcGisProEspaceCollaboratif_HelpFileLog" />
           <button refID="ArcGisProEspaceCollaboratif_HelpAbout" />
         </menu>
       </menus>

@@ -160,6 +160,7 @@
     <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
     <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
     <Compile Include="ViewModels\ReplyReportViewModel.cs" />
+    <Compile Include="ViewModels\HelpConfigureViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\CreateReportView.xaml.cs">
       <DependentUpon>CreateReportView.xaml</DependentUpon>
@@ -205,6 +206,9 @@
     </Compile>
     <Compile Include="SeeAssociatedObjects.cs" />
     <Compile Include="SeeReport.cs" />
+    <Compile Include="Views\HelpConfigureView.xaml.cs">
+      <DependentUpon>HelpConfigureView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WebFeatureService.cs" />
     <Compile Include="WebMapTileService.cs" />
   </ItemGroup>
@@ -315,6 +319,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\HelpConfigureView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Files\AboutStatusResponse.txt">
@@ -324,6 +332,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Files\espaceco.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Files\formats.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

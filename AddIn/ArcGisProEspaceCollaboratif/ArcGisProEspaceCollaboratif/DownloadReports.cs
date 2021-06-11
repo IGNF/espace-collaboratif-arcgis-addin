@@ -13,7 +13,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(DownloadReports));
 
         protected override async void OnClick()
         {
@@ -50,7 +50,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Paramètre groupe
                     int groupeId = -1;
-                    if (Helper.Load_Group() == "true")
+                    if (Helper.LoadExtractionForGroup() == "true")
                     {
                         groupeId = Convert.ToInt32(context.Profil.Group.Id);
                         parameters.Add("group", groupeId.ToString());
@@ -147,7 +147,6 @@ namespace ArcGisProEspaceCollaboratif
                     MessageBox.Show(e.Message, Constantes.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             });
-
         }
 
         /// <summary>

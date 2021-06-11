@@ -995,8 +995,8 @@ namespace ArcGisProEspaceCollaboratif
         public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
             ILog.Debug("GetConnexionEspaceCollaboratif ");
-            this.CleGeoportail = Helper.Load_CleGeoportail();
-            this.URLHost = Helper.Load_Urlhost();
+            this.CleGeoportail = Helper.LoadGeoportalKey();
+            this.URLHost = Helper.LoadUrlhost();
             ILog.Debug("URLHost : " + this.URLHost);
 
             var connectViewModel = new ConnectViewModel()
@@ -1006,7 +1006,7 @@ namespace ArcGisProEspaceCollaboratif
             connectViewModel.connectView.DataContext = connectViewModel;
 
             // Recherche du login par défaut dans le fichier XML de paramétrage
-            connectViewModel.Login = Helper.Load_Login();
+            connectViewModel.Login = Helper.LoadLogin();
 
             // Lancement du formulaire de saisi du login et mot de passe 
             bool? dialogResult = connectViewModel.connectView.ShowDialog();
@@ -1115,9 +1115,9 @@ namespace ArcGisProEspaceCollaboratif
             connectInfoViewModel.MessageFeedback = message;
             connectInfoViewModel.feedbackInformationView.ShowDialog();
 
-            Helper.Save_Login(this.Login);
-            Helper.Save_GroupeActif(Profil.Title);
-            Helper.Save_CleGeoportail(this.CleGeoportail);
+            Helper.SaveLogin(this.Login);
+            Helper.SaveActiveGroup(Profil.Title);
+            Helper.SaveGeoportalKey(this.CleGeoportail);
         }
 
         /// <summary>
@@ -1135,11 +1135,11 @@ namespace ArcGisProEspaceCollaboratif
                 // si l'utilisateur n'a pas de profil, il faut indiquer que le groupe actif est vide
                 if (this.Profil.Title == "défaut")
                 {
-                    Helper.Save_GroupeActif("Aucun");
+                    Helper.SaveActiveGroup("Aucun");
                 }
                 else
                 {
-                    Helper.Save_GroupeActif(this.Profil.Group.Name);
+                    Helper.SaveActiveGroup(this.Profil.Group.Name);
 
                     // On enregistre le groupe comme groupe préféré (par défaut) pour la création de signalement
                     // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
@@ -1151,7 +1151,7 @@ namespace ArcGisProEspaceCollaboratif
                     Helper.Save_PreferredGroup(Profil.Group.Name);
                 }
                 // Par défaut, on enregistre la clé Géoportail de démonstration
-                Helper.Save_CleGeoportail(Constantes.DEMO);
+                Helper.SaveGeoportalKey(Constantes.DEMO);
             }
             else
             {
@@ -1199,9 +1199,9 @@ namespace ArcGisProEspaceCollaboratif
 
                 // Sauvegarde de la clé Géoportail et du groupe actif
                 // dans le xml du projet utilisateur
-                Helper.Save_CleGeoportail(idNomGroupeCleGeoPortail.Item3);
+                Helper.SaveGeoportalKey(idNomGroupeCleGeoPortail.Item3);
                 this.Groupeactif = idNomGroupeCleGeoPortail.Item2;
-                Helper.Save_GroupeActif(this.Groupeactif);
+                Helper.SaveActiveGroup(this.Groupeactif);
 
                 // On enregistre le groupe comme groupe préféré pour la création de signalement
                 // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
