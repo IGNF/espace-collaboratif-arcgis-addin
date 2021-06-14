@@ -1,6 +1,9 @@
-﻿using ArcGisProEspaceCollaboratif.Utils;
+﻿using ArcGIS.Core.CIM;
+using ArcGIS.Desktop.Mapping;
+using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -45,8 +48,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             this.GetUrl();
             this.GetLogin();
-            this.GetPagination();
-            this.GetExtractionForGroup();
+            this.GetSpatialFilter();
+            this.GetProxy();
             this.GetActiveGroup();
             this.GetGeoportalKey();
         }
@@ -65,19 +68,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         public string Login { get; set; } = "";
 
-        public ObservableCollection<uint> PaginationItemsSource { get; set; }
+        public ObservableCollection<string> SpatialFilterItemsSource { get; set; }
 
-        public uint PaginationSelectedItem { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SpatialFilterSelectedItem { get; set; }
 
         /// <summary>
         /// Le proxy pour accéder au site de l'espace collaboratif
         /// </summary>
         public string Proxy { get; set; } = "";
-
-        /// <summary>
-        /// Le nom du groupe pour extraction
-        /// </summary>
-        public string ExtractionForGroupContent { get; set; } = "";
 
         /// <summary>
         /// Le groupe que l'utilisateur à activé
@@ -102,15 +103,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             Helper.SaveUrlhost(this.Url);
             Helper.SaveLogin(this.Login);
-            Helper.SavePagination(Convert.ToUInt32(this.PaginationSelectedItem));
-            if (this.helpConfigureView.ExtractionForGroupCheckBox.IsChecked == true)
-            {
-                Helper.SaveExtractionForGroup("true");
-            }
-            else
-            {
-                Helper.SaveExtractionForGroup("false");
-            }
+            Helper.SaveNameLayerForSpatialFilter(this.SpatialFilterSelectedItem);
+            Helper.SaveProxy(this.Proxy);
             Helper.SaveActiveGroup(this.ActiveGroup);
             Helper.SaveGeoportalKey(this.GeoportalKey);
         }
@@ -121,10 +115,14 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void GetUrl()
         {
             this.Url = Helper.LoadUrlhost();
         }
+
         /// <summary>
         /// En fonction du dernier login de l'utilisateur
         /// Si la chaine est vide
@@ -144,39 +142,69 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
         }
 
-        public void GetPagination()
+        private void GetProxy()
         {
-            // Ajout des noms de groupes trouvés pour l'utilisateur
-            ObservableCollection<uint> pagination = new ObservableCollection<uint>()
-            {
-                0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
-
-            };         
-            this.PaginationItemsSource = pagination;
-            this.PaginationSelectedItem = Helper.LoadPagination();
+            this.Proxy = Helper.LoadProxy();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        private void GetExtractionForGroup()
-        {
-            if (Helper.LoadExtractionForGroup() == "true")
-            {
-                this.helpConfigureView.ExtractionForGroupCheckBox.IsChecked = true;
-                this.ExtractionForGroupContent = this.Context.Profil.Group.Name;
-            }
-            
-        }
-
         private void GetActiveGroup()
         {
             this.ActiveGroup = Helper.LoadActiveGroup();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void GetGeoportalKey()
         {
             this.GeoportalKey = Helper.LoadGeoportalKey();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void GetSpatialFilter()
+        {
+            ObservableCollection<string> layersNameForSpatialFilter = GetLayersNameForSpatialFilterFromMap();
+            this.SpatialFilterItemsSource = layersNameForSpatialFilter;
+
+            string nameLayerForSpatialFilter = Helper.LoadNameLayerForSpatialFilter();
+            if (layersNameForSpatialFilter.IndexOf(nameLayerForSpatialFilter) != -1)
+            {
+                this.SpatialFilterSelectedItem = Helper.LoadNameLayerForSpatialFilter();
+                this.helpConfigureView.SpecialFilterCheckBox.IsChecked = true;
+            }          
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private ObservableCollection<string> GetLayersNameForSpatialFilterFromMap()
+        {
+            ObservableCollection<string> layersName = new ObservableCollection<string>();
+            IReadOnlyList<Layer> layers = this.Context.MapActiveView.Map.GetLayersAsFlattenedList();
+            foreach (var layer in layers)
+            {
+                if (layer.ConnectionStatus == ConnectionStatus.Broken)
+                {
+                    continue;
+                }
+                if (layer.Name == Helper.name_layer_Croquis_Polygone)
+                {
+                    continue;
+                }
+                FeatureLayer featureLayer = layer as FeatureLayer;
+                if (featureLayer == null || featureLayer.ShapeType != esriGeometryType.esriGeometryPolygon)
+                {
+                    continue;
+                }
+                layersName.Add(layer.Name);
+            } 
+            return layersName;
         }
 
         #endregion

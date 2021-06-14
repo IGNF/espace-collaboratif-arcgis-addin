@@ -62,7 +62,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Paramètre filtrage spatial
 
-                    string filterLayerName = Helper.Load_FilterLayer();
+                    string filterLayerName = Helper.LoadNameLayerForSpatialFilter();
                     Tuple<bool, bool, Box, List<Geometry>> filterParameters = GetSpatialFilterParameters(filterLayerName);
 
                     bool hasFilter = filterParameters.Item1;

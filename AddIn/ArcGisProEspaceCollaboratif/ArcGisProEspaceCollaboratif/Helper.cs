@@ -1632,35 +1632,25 @@ namespace ArcGisProEspaceCollaboratif
         public static uint LoadPagination()
         {
             string pagination = Helper.XML_FirstElement(Helper.xml_Pagination);
-
-            if (pagination.Equals(""))
+            if (string.IsNullOrEmpty(pagination))
             {
                 return 0;
             }
-
-            try
-            {
-                return uint.Parse(pagination);
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex.Message);
-                return 0;
-            }
+            return uint.Parse(pagination);
         }
         
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
         /// </summary>
         /// <param name="pagination">La taille de pagination à sauvegarder dans le fichier de paramétrage.</param>
-        public static void SavePagination(uint pagination)
+        public static void SavePagination(string pagination)
         {
             if (!Helper.XML_HasElement(Helper.xml_Pagination))
             {
                 Helper.XML_AddElement(Helper.xml_Pagination);
             }
 
-            Helper.XML_SetElement(Helper.xml_Pagination, pagination.ToString());
+            Helper.XML_SetElement(Helper.xml_Pagination, pagination);
         }
         
         /// <summary>
@@ -1757,7 +1747,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des signalements.
         /// </summary>
         /// <returns>Le nom du calque pour le filtrage spatiale stocké dans le fichier de paramétrage.</returns>
-        public static string Load_FilterLayer()
+        public static string LoadNameLayerForSpatialFilter()
         {
             return Helper.XML_FirstElement(Helper.xml_Zone_extraction);
         }
@@ -1766,10 +1756,9 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des signalements.
         /// </summary>
         /// <param name="layer">Le nom du calque à enregistrer dans le fichier de paramétrage pour le filtrage spatiale.</param>
-        public static void Save_CalqueFiltrage(string layer)
+        public static void SaveNameLayerForSpatialFilter(string layer)
         {
-            XML_SetElement(Helper.xml_Zone_extraction, layer);
-        
+            XML_SetElement(Helper.xml_Zone_extraction, layer);       
         }
 
         /// <summary>
@@ -1857,17 +1846,22 @@ namespace ArcGisProEspaceCollaboratif
             Helper.Save_AfficherCroquis(true);
         }
 
+        public static string LoadProxy()
+        {
+            return Helper.XML_FirstElement(Helper.xml_Proxy);
+        }
+
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le proxy dans le cas d'une connexion partenariale extérieure au service EspaceCollaboratif.
         /// </summary>
         /// <param name="proxy">L e nom du proxy à enregistrer dans le fichier de paramétrage.</param>
-        public static void Save_Proxy(string proxy)
+        public static void SaveProxy(string proxy)
         {
-            if (!XML_HasElement(xml_Proxy))
+            if (!XML_HasElement(Helper.xml_Proxy))
             {
-                XML_AddElement(xml_Proxy);
+                XML_AddElement(Helper.xml_Proxy);
             }
-            XML_SetElement(xml_Proxy, proxy);
+            XML_SetElement(Helper.xml_Proxy, proxy);
         }
 
         /// <summary>

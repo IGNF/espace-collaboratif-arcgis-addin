@@ -64,7 +64,7 @@ namespace ArcGisProEspaceCollaboratif
                 this.dateTimePicker.Text = dateDefaut.ToShortDateString();
             }
 
-            string calqueFiltrageDefaut = Helper.Load_FilterLayer();
+            string calqueFiltrageDefaut = Helper.LoadNameLayerForSpatialFilter();
 
             // Récupération des couches et attributs
             IReadOnlyList<Layer> mapLayers = context.MapActiveView.Map.GetLayersAsFlattenedList();
@@ -306,20 +306,20 @@ namespace ArcGisProEspaceCollaboratif
 
             if (this.checkBoxPagination.Checked)
             {
-                Helper.SavePagination((uint)this.numericUpDownPagination.Value);
+               //Helper.SavePagination(this.numericUpDownPagination.Value);
             }
             else
             {
-                Helper.SavePagination(0);
+                Helper.SavePagination("0");
             }
 
             if (this.checkBoxCalque.Checked && this.comboBoxCalque.SelectedIndex >= 0)
             {
-                Helper.Save_CalqueFiltrage(this.comboBoxCalque.SelectedItem.ToString());
+                Helper.SaveNameLayerForSpatialFilter(this.comboBoxCalque.SelectedItem.ToString());
             }
             else
             {
-                Helper.Save_CalqueFiltrage("");
+                Helper.SaveNameLayerForSpatialFilter("");
             }
 
             if (this.checkBoxDate.Checked)
@@ -352,7 +352,7 @@ namespace ArcGisProEspaceCollaboratif
 
             if (this.checkBoxProxy.Checked)
             {
-                Helper.Save_Proxy(this.checkBoxProxy.Text);
+                Helper.SaveProxy(this.checkBoxProxy.Text);
             }
 
             Helper.SaveGeoportalKey(this.textBoxCleGeoportail.Text);

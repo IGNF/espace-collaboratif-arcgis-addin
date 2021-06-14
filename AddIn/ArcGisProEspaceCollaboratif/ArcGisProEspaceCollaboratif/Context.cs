@@ -1097,7 +1097,7 @@ namespace ArcGisProEspaceCollaboratif
             message += string.Format(" Groupe : {0}\n", Profil.Title);
             if (Profil.Zone == ZoneGeographique.UNDEFINED)
             {
-                string zoneExtraction = Helper.Load_FilterLayer();
+                string zoneExtraction = Helper.LoadNameLayerForSpatialFilter();
                 if (zoneExtraction == "" || zoneExtraction.Length == 0)
                 {
                     message += " Zone : pas de zone définie\n";
