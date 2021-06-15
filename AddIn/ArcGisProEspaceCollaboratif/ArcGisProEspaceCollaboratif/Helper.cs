@@ -1692,7 +1692,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date pour laquelle on extrait que les remaques postérieures à celle-ci.
         /// </summary>
         /// <returns>La date d'extration stockée dans le fichier de paramétrage.</returns>
-        public static System.DateTime Load_DateExtraction()
+        public static System.DateTime LoadDateExtraction()
         {
             string dateExtration = Helper.XML_FirstElement(Helper.xml_DateExtraction);
 
@@ -1724,7 +1724,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
         /// </summary>
         /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
-        public static void Save_DateExtraction(System.DateTime date)
+        public static void SaveDateExtraction(System.DateTime date)
         {
             if (!Helper.XML_HasElement(Helper.xml_DateExtraction))
             {

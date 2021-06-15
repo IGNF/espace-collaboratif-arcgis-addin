@@ -57,7 +57,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Paramtère date d'extraction
-                    string sdate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.Load_DateExtraction());
+                    string sdate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.LoadDateExtraction());
                     parameters.Add("updatingDate", sdate);
 
                     // Paramètre filtrage spatial

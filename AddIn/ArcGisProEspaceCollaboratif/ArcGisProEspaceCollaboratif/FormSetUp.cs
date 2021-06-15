@@ -51,7 +51,7 @@ namespace ArcGisProEspaceCollaboratif
 
             this.dateTimePicker.Value = System.DateTime.Now;
             this.dateTimePicker.MinDate = Convert.ToDateTime(Helper.dateDefault).Date;
-            System.DateTime dateDefaut = Helper.Load_DateExtraction();
+            System.DateTime dateDefaut = Helper.LoadDateExtraction();
             if (dateDefaut.Date == Convert.ToDateTime(Helper.dateDefault).Date)
             {
                 this.dateTimePicker.Enabled = false;
@@ -324,11 +324,11 @@ namespace ArcGisProEspaceCollaboratif
 
             if (this.checkBoxDate.Checked)
             {
-                Helper.Save_DateExtraction(this.dateTimePicker.Value.Date);
+                Helper.SaveDateExtraction(this.dateTimePicker.Value.Date);
             }
             else
             {
-                Helper.Save_DateExtraction(Convert.ToDateTime(Helper.dateDefault));
+                Helper.SaveDateExtraction(Convert.ToDateTime(Helper.dateDefault));
             }
 
             if (this.checkBoxGroup.Checked)

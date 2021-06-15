@@ -42,16 +42,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #region Initialize Dialog
 
         /// <summary>
-        /// Initialisation du contenu du dialogue de configuration de l'AddIn
+        /// Initialisation du contenu des items du dialogue de configuration de l'AddIn
         /// </summary>
         private void InitializeHelpConfigureView()
         {
-            this.GetUrl();
-            this.GetLogin();
-            this.GetSpatialFilter();
-            this.GetProxy();
-            this.GetActiveGroup();
-            this.GetGeoportalKey();
+            this.DisplayUrl();
+            this.DisplayLogin();
+            this.DisplayDateExtraction();
+            this.DisplaySpatialFilter();
+            this.DisplayProxy();
+            this.DisplayActiveGroup();
+            this.DisplayGeoportalKey();
         }
         #endregion
 
@@ -71,9 +72,19 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public ObservableCollection<string> SpatialFilterItemsSource { get; set; }
 
         /// <summary>
-        /// 
+        /// La couche sélectionnée pour le filtrage des signalements à extraire
         /// </summary>
         public string SpatialFilterSelectedItem { get; set; }
+
+        /// <summary>
+        /// La date à afficher sur le calendrier
+        /// </summary>
+        public DateTime ExtractDisplayDate { get; set; }
+
+        /// <summary>
+        /// La date sélectionnée dans le calendrier
+        /// </summary>
+        public DateTime ExtractSelectedDate { get; set; }
 
         /// <summary>
         /// Le proxy pour accéder au site de l'espace collaboratif
@@ -81,7 +92,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public string Proxy { get; set; } = "";
 
         /// <summary>
-        /// Le groupe que l'utilisateur à activé
+        /// Le groupe que l'utilisateur a activé
         /// </summary>
         public string ActiveGroup { get; set; } = "";
 
@@ -103,6 +114,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             Helper.SaveUrlhost(this.Url);
             Helper.SaveLogin(this.Login);
+            Helper.SaveDateExtraction(this.ExtractSelectedDate);
             Helper.SaveNameLayerForSpatialFilter(this.SpatialFilterSelectedItem);
             Helper.SaveProxy(this.Proxy);
             Helper.SaveActiveGroup(this.ActiveGroup);
@@ -116,23 +128,19 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         #region Methods
 
         /// <summary>
-        /// 
+        /// Chargement de l'url à partir du fichier espaceco.xml
         /// </summary>
-        private void GetUrl()
+        private void DisplayUrl()
         {
             this.Url = Helper.LoadUrlhost();
         }
 
         /// <summary>
         /// En fonction du dernier login de l'utilisateur
-        /// Si la chaine est vide
-        ///  - la case à cocher est décochée
-        ///  - la zone de texte est grisée
-        /// sinon
         /// - la case à cocher est cochée
         /// - la zone de texte est remplie
         /// </summary>
-        private void GetLogin()
+        private void DisplayLogin()
         {
             string login = Helper.LoadLogin();
             this.Login = login;
@@ -142,31 +150,58 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
         }
 
-        private void GetProxy()
+        /// <summary>
+        /// Chargement de la dernière date d'extraction à partir du fichier espaceco.xml
+        /// </summary>
+        private void DisplayDateExtraction()
         {
-            this.Proxy = Helper.LoadProxy();
+            DateTime date = Helper.LoadDateExtraction();
+            if(!string.IsNullOrEmpty(date.ToString()))
+            {
+                this.helpConfigureView.ExtractCheckBox.IsChecked = true;
+                this.ExtractSelectedDate = date;
+                this.ExtractDisplayDate = this.ExtractSelectedDate;
+            }
         }
 
         /// <summary>
-        /// 
+        /// Chargement du proxy à partir du fichier espaceco.xml
         /// </summary>
-        private void GetActiveGroup()
+        private void DisplayProxy()
+        {
+            string proxy = Helper.LoadProxy();
+            if (!string.IsNullOrEmpty(proxy))
+            {
+                this.Proxy = proxy;
+                this.helpConfigureView.ProxyCheckBox.IsChecked = true;
+            }
+            
+        }
+
+        /// <summary>
+        /// Chargement du nom du dernier groupe utilisé par l'utilisateur
+        /// à partir du fichier espaceco.xml
+        /// </summary>
+        private void DisplayActiveGroup()
         {
             this.ActiveGroup = Helper.LoadActiveGroup();
         }
 
         /// <summary>
-        /// 
+        /// Chargement de la dernière clé GéoPortail utilisée par l'utilisateur
+        /// à partir du fichier espaceco.xml
         /// </summary>
-        private void GetGeoportalKey()
+        private void DisplayGeoportalKey()
         {
             this.GeoportalKey = Helper.LoadGeoportalKey();
         }
 
         /// <summary>
-        /// 
+        /// Initialisation de la liste des couches en fonction du projet ouvert par l'utilisateur
+        /// Affichage de la dernière couche utilisée par l'utilisateur pour extraire les signalements
+        /// à partir du fichier espaceco.xml si celle-ci se trouve dans la liste des couches
         /// </summary>
-        private void GetSpatialFilter()
+        private void DisplaySpatialFilter()
         {
             ObservableCollection<string> layersNameForSpatialFilter = GetLayersNameForSpatialFilterFromMap();
             this.SpatialFilterItemsSource = layersNameForSpatialFilter;
@@ -180,25 +215,28 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Retourne la liste des noms de couches de type polygone contenues dans la carte
         /// </summary>
-        /// <returns></returns>
+        /// <returns>La liste des couches</returns>
         private ObservableCollection<string> GetLayersNameForSpatialFilterFromMap()
         {
             ObservableCollection<string> layersName = new ObservableCollection<string>();
             IReadOnlyList<Layer> layers = this.Context.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in layers)
             {
+                // Si une couche WFS/WMTS a perdu sa connexion
                 if (layer.ConnectionStatus == ConnectionStatus.Broken)
                 {
                     continue;
                 }
+                // Si c'est la couche des croquis surfaciques
                 if (layer.Name == Helper.name_layer_Croquis_Polygone)
                 {
                     continue;
                 }
-                FeatureLayer featureLayer = layer as FeatureLayer;
-                if (featureLayer == null || featureLayer.ShapeType != esriGeometryType.esriGeometryPolygon)
+                
+                // Si une couche est du type WFS/WMTS ou si une couche est différente de polygone
+                if (!(layer is FeatureLayer featureLayer) || featureLayer.ShapeType != esriGeometryType.esriGeometryPolygon)
                 {
                     continue;
                 }
