@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace ArcGisProEspaceCollaboratif.Core
@@ -43,6 +42,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string ERROR = "IGN Espace collaboratif - ERREUR";
         public const string WARNING = "IGN Espace collaboratif - WARNING";
         public const string STOP = "IGN Espace collaboratif - STOP";
+        public const string QUESTION = "IGN Espace collaboratif - QUESTION";
 
         public const string IMAGEFILE = "Image files (*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG)|*.bmp;*.gif;*.jpg;*.jpeg;*.png";
         public const string TRACKFILE = "Track files (*.GPX)|*.gpx";

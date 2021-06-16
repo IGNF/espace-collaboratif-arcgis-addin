@@ -23,7 +23,10 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public readonly XPathNavigator navigator;
 
-        public ILog logger = LogManager.GetLogger(typeof(XmlResponse));
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
+        private static readonly ILog logger = LogManager.GetLogger(typeof(XmlResponse));
 
         /// <summary>
         /// Constructeur. 
@@ -82,7 +85,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = "/geors/REPONSE/ALEA2";
@@ -125,7 +130,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = "/geors/REPONSE/JETON";
@@ -137,7 +144,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = "/geors/REPONSE/SITE";
@@ -149,7 +158,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
             }
@@ -266,7 +277,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 string xpathprofil = "/geors/PROFIL";
@@ -280,7 +293,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = string.Format("{0}/TITRE", xpathprofil);
@@ -292,7 +307,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 Group gr = new Group();
@@ -306,7 +323,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = string.Format("{0}/GROUPE", xpathprofil);
@@ -318,7 +337,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
                 profile.Group = gr;
 
@@ -331,7 +352,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = string.Format("{0}/FILTRE", xpathprofil);
@@ -343,7 +366,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 xpath = string.Format("{0}/PRIVE", xpathprofil);
@@ -355,7 +380,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 // Les thèmes associés au profil
@@ -420,7 +447,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator == null)
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
                 foreach (XPathNavigator val in iterator)
                 {
@@ -770,7 +799,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathNodeIterator iterator = navigator.Select(expr);
                 if (iterator == null)
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 foreach (XPathNavigator val in iterator)
@@ -969,7 +1000,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         }
                         else
                         {
-                            this.logger.Debug("none sCoord");
+                            logger.Debug("none sCoord");
                         }
                     }
 
@@ -1047,9 +1078,11 @@ namespace ArcGisProEspaceCollaboratif.Core
             try
             {    
                 XPathNodeIterator iterator = valRem.SelectDescendants(XPathNodeType.Element, false);
-                if(iterator == null)
+                if (iterator == null)
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 foreach (XPathNavigator val in iterator)

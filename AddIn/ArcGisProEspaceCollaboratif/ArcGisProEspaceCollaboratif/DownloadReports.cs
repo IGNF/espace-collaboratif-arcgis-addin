@@ -36,11 +36,9 @@ namespace ArcGisProEspaceCollaboratif
                     if (!System.IO.File.Exists(Helper.name_file_espaceco_xml))
                     {
                         string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, context.DirectoryWorking);
-                        System.Windows.Forms.MessageBox.Show(
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             mess,
-                            Constantes.ERROR,
-                            System.Windows.Forms.MessageBoxButtons.OK,
-                            System.Windows.Forms.MessageBoxIcon.Error
+                            Constantes.ERROR
                         );
                         return;
                     }
@@ -135,16 +133,14 @@ namespace ArcGisProEspaceCollaboratif
                     message += "\n _ " + validatedReports + " signalement(s) validé(s).";
                     message += "\n _ " + rejectedReports + " signalement(s) rejeté(s).";
 
-                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-
-                    MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
                 }
 
                 catch (Exception e)
                 {
                     logger.Error(e.Message + "\n" + e.StackTrace);
                     progressDownload.Close();
-                    MessageBox.Show(e.Message, Constantes.ERROR, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
                 }
             });
         }
@@ -174,7 +170,7 @@ namespace ArcGisProEspaceCollaboratif
             // Cas nom de la couche non rempli
             if (filterLayerName.Length == 0)
             {
-                resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif - QUESTION", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", Constantes.QUESTION, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
 
                 if (resultDialog == DialogResult.Yes)
                     return overrideFilterTuple;

@@ -5,14 +5,16 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Collections.Generic;
 using static ArcGisProEspaceCollaboratif.Core.Status;
-using ArcGIS.Desktop.Editing;
 using System;
+using log4net;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
     class ReplyReportViewModel
     {
         #region Parameters
+
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
 
         /// <summary>
         /// L'instance du dialogue "Répondre à un signalement"
@@ -124,16 +126,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             catch(Exception e)
             {
                 this.Message += e.Message.ToString();
-            }
-
-            if (this.Message != "")
-            {
-                System.Windows.Forms.MessageBox.Show(
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                     this.Message,
-                    Constantes.WARNING,
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Warning
-                    );
+                    Constantes.WARNING
+                );
+                logger.Warn(this.Message);
             }
         }
         private bool AlwaysTrue() { return true; }

@@ -1,7 +1,6 @@
 ﻿using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
-using System;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -31,7 +30,27 @@ namespace ArcGisProEspaceCollaboratif
         {
             logger.Debug("Clic sur le bouton d'ouverture du fichier de log de l'add-in Espace collaboratif");
             string name = logger.Logger.Name.ToString();
-           
+
+            /*string accesLog = Ripart.Core.RipartLogger.getLogPath() + "\\";
+
+            var directory = new DirectoryInfo(accesLog);
+
+            //cherche le fichier le plus récent
+            try
+            {
+                var logFile = (from f in directory.GetFiles("*ripart.log")
+                               orderby f.LastWriteTime descending
+                               select f).First();
+
+                System.Diagnostics.Process.Start(logFile.FullName);
+
+            }
+            catch
+            {
+                MessageBox.Show("Fichier log inexistant !", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+
+            }*/
+
         }
     }
 

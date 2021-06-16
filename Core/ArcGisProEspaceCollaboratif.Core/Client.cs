@@ -53,7 +53,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private ILog logger = LogManager.GetLogger(typeof(Client));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(Client));
 
         #endregion
 
@@ -118,6 +118,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     err = e.Message;
                 }
                 client.Dispose();
+                logger.Error(err);
                 throw new Exception(err);
             }
             client.Dispose();
@@ -158,7 +159,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception e)
             {
                 wclient.Dispose();
-                Console.Write(e.Message);
+                logger.Error(e.Message);
             }
 
             wclient.Dispose();
@@ -239,14 +240,16 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception ex)
             {
-                logger.Error("Création d'un nouveau signalement : " + ex.Message, ex);
+                string message = string.Format("Création d'un nouveau signalement : {0}", ex.Message);
+                logger.Error(message);
 
                 if (wresp != null)
                 {
                     wresp.Close();
                     wresp = null;
                 }
-                throw new Exception("le signalement n'a pas pu être ajoutée \n" + ex.Message);
+                message += string.Format("\nLe signalement n'a pas pu être ajouté {0}", ex.Message);
+                throw new Exception(message);
             }
             finally
             {
@@ -296,6 +299,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 profile = xmlResponse.ExtractProfile();
             }
             else {
+                logger.Error(errMessage["code"]);
                 throw new Exception(errMessage["code"]);
             }
             return profile;
@@ -463,14 +467,21 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         reportUpdating = reports[0];
                     }
-                    else throw new Exception("Problème lors de l'ajout d'une réponse");
+                    else
+                    {
+                        string message = "Problème lors de l'ajout d'une réponse";
+                        logger.Error(message);
+                        throw new Exception(message);
+                    }
                 }
                 else
                 {
+                    logger.Error(errMessage["message"]);
                     throw new Exception(errMessage["message"]);
                 }
             }
             catch (Exception e) {
+                logger.Error(e.Message);
                 throw new Exception(e.Message);
             }
 
@@ -551,8 +562,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                         FileStream fs = File.Open(document, FileMode.Open);
                         if (fs.Length > Constantes.MAX_TAILLE_UPLOAD_FILE)
                         {
-                            throw new Exception("Le fichier " + document + " est de taille supérieure à " +
-                                                 Constantes.MAX_TAILLE_UPLOAD_FILE);
+                            string message = string.Format("Le fichier {0} est de taille supérieure à {1}", document, Constantes.MAX_TAILLE_UPLOAD_FILE);
+                            logger.Error(message);
+                            throw new Exception(message);
                         }
 
                         fs.Close();
@@ -575,8 +587,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     else
                     {
-                        logger.Error("Problème lors de l'ajout du signalement");
-                        throw new Exception("Problème lors de l'ajout du signalement");
+                        string message = "Problème lors de l'ajout du signalement";
+                        logger.Error(message);
+                        throw new Exception(message);
                     }
                 }
                 else
@@ -651,7 +664,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
 
             string url = string.Format("https://wxs.ign.fr/{0}/autoconf?gp-access-lib=2.1.2&output=xml", cleGeoportail);
-            this.logger.Debug(string.Format("{0} {1}", "GetLayersFromCleGeoportailUser", url));
+            logger.Debug(string.Format("{0} {1}", "GetLayersFromCleGeoportailUser", url));
             string data = this.MakeGetRequest(url, null);
             XmlResponse xmlResponse = new XmlResponse(data);
             Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
@@ -661,7 +674,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             else
             {
-                throw new Exception(string.Format("{0} : votre clé Géoportail semble erronée. Vous pouvez utiliser la clé de démonstration.", errMessage["code"]));
+                string message = string.Format("{0} : votre clé Géoportail semble erronée. Vous pouvez utiliser la clé de démonstration.", errMessage["code"]);
+                logger.Error(message);
+                throw new Exception(message);
             }
             return layers;
         }

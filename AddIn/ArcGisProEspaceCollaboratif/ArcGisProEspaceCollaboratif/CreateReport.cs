@@ -37,11 +37,9 @@ namespace ArcGisProEspaceCollaboratif
                     if (!bRes)
                     {
                         string message = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et et télécharger les signalements.";
-                        System.Windows.Forms.MessageBox.Show(
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
-                            Constantes.ERROR,
-                            System.Windows.Forms.MessageBoxButtons.OK,
-                            System.Windows.Forms.MessageBoxIcon.Error);
+                            Constantes.ERROR);
                         logger.Debug(message);
                         return;
                     } 
@@ -52,11 +50,9 @@ namespace ArcGisProEspaceCollaboratif
                     if (futursSketch.Count == 0)
                     {
                         string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
-                        System.Windows.Forms.MessageBox.Show(
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
-                            Constantes.WARNING,
-                            System.Windows.Forms.MessageBoxButtons.OK,
-                            System.Windows.Forms.MessageBoxIcon.Warning
+                            Constantes.WARNING
                         );
                         logger.Debug(message);
                         return;
@@ -75,13 +71,12 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show(
-                        e.Message,
-                        Constantes.ERROR,
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Error
+                    string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        message,
+                        Constantes.ERROR
                     );
-                    logger.Error(string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message,e.StackTrace));
+                    logger.Error(message);
                 }
             });
         }

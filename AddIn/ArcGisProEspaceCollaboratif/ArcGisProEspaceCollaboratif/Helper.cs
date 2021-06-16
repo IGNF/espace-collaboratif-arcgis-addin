@@ -11,7 +11,6 @@ using ArcGisProEspaceCollaboratif.Core;
 using System.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using System.Windows.Forms;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Editing;
@@ -79,6 +78,10 @@ namespace ArcGisProEspaceCollaboratif
         public static string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
+        
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
@@ -130,7 +133,7 @@ namespace ArcGisProEspaceCollaboratif
             catch (GeodatabaseException exObj)
             {
                 string message = string.Format("{0}\n{1}", exObj.Message, messageError);
-                Console.WriteLine(message);
+                logger.Error(message);
                 throw new Exception(message);
             }
         }
@@ -285,7 +288,12 @@ namespace ArcGisProEspaceCollaboratif
             
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        message,
+                        Constantes.ERROR
+                    );
+                logger.Error(message);
                 return;
             }
         }
@@ -581,7 +589,9 @@ namespace ArcGisProEspaceCollaboratif
         {
             if (points.Count == 0)
             {
-                throw new Exception("Helper.Barycentre : pas de points, impossible de calculer le barycentre");
+                string message = "Helper.Barycentre : pas de points, impossible de calculer le barycentre";
+                logger.Error(message);
+                throw new Exception(message);
             }
             if (points.Count == 1)
             {
@@ -612,7 +622,9 @@ namespace ArcGisProEspaceCollaboratif
 
             if (pointResult.IsEmpty)
             {
-                throw new Exception("Helper.Barycentre.MapPointBuilder : impossible de déterminer un barycentre avec les coordonnées de la liste de points en entrée");
+                string message = "Helper.Barycentre.MapPointBuilder : impossible de déterminer un barycentre avec les coordonnées de la liste de points en entrée";
+                logger.Error(message);
+                throw new Exception(message);
             }
 
             return pointResult;
@@ -1184,12 +1196,12 @@ namespace ArcGisProEspaceCollaboratif
                     break;
 
                 default:
-                    System.Windows.Forms.MessageBox.Show(
-                        "Géométrie non-prise en charge pour la transformer en croquis.",
-                        Constantes.WARNING,
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Warning
+                    string message = "Géométrie non-prise en charge pour la transformer en croquis.";
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        message,
+                        Constantes.WARNING
                     );
+                    logger.Warn(message);
                     break;
             }
 
@@ -1230,7 +1242,9 @@ namespace ArcGisProEspaceCollaboratif
             switch (listSketchs.Count)
             {
                 case 0:
-                    throw new Exception("Aucun objet sélectionné.\nIl est donc impossible de déterminer la position du nouveau signalement à créer.");
+                    string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer la position du nouveau signalement à créer.";
+                    logger.Error(message);
+                    throw new Exception(message);
 
                 case 1:
                     ArcGisProEspaceCollaboratif.Core.Sketch sketchOne = listSketchs.First();
@@ -1710,12 +1724,11 @@ namespace ArcGisProEspaceCollaboratif
             catch
             {
                 string message = string.Format("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = '{0}'", dateExtration);
-                System.Windows.Forms.MessageBox.Show(
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                     message,
-                    Constantes.ERROR,
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error
+                    Constantes.ERROR
                 );
+                logger.Error(message);
                 return Convert.ToDateTime(Helper.dateDefault);
             }
         }
@@ -1781,12 +1794,12 @@ namespace ArcGisProEspaceCollaboratif
 
             if (Urlhost.Equals(""))
             {
-                System.Windows.Forms.MessageBox.Show(
-                    "Impossible de trouver l'adresse du service de l'Espace collaboratif dans le fichier XML de paramétrage.",
-                    Constantes.ERROR,
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error
+                string message = "Impossible de trouver l'adresse du service de l'Espace collaboratif dans le fichier XML de paramétrage.";
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    message,
+                    Constantes.ERROR
                 );
+                logger.Error(message);
                 return "";
             }
 

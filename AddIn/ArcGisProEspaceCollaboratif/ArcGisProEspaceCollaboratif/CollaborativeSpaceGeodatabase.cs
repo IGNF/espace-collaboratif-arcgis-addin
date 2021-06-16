@@ -2,7 +2,7 @@
 using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
-using ArcGIS.Desktop.Mapping;
+using log4net;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -20,6 +20,11 @@ namespace ArcGisProEspaceCollaboratif
         /// 
         /// </summary>
         public Geodatabase Geodatabase { get; set; }
+
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
+        public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CollaborativeSpaceGeodatabase));
 
         #endregion
 
@@ -56,6 +61,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (GeodatabaseException exObj)
             {
+                logger.Error(exObj.Message);
                 throw new Exception(exObj.Message);
             }
             
@@ -91,7 +97,9 @@ namespace ArcGisProEspaceCollaboratif
                     // Est-ce que le champ existe
                     if (!IsFieldExistInTable(table, fieldName))
                     {
-                        throw new Exception(string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName()));
+                        string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
+                        logger.Error(message);
+                        throw new Exception(message);
                     }
 
                     queryFilter = MakeQueryFilter(fieldType, fieldName, listValue);
@@ -99,6 +107,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch(Exception e)
             {
+                logger.Error(e.Message);
                 throw new Exception(e.Message);
             }
 
@@ -119,6 +128,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch
             {
+                logger.Fatal(string.Format("La table {0} n'existe pas dans la GeoDatabase", tableName));
                 return null;
             }
             return table;

@@ -14,6 +14,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         private readonly string strSketch = "sketch";
         private readonly string strReport = "report";
 
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(AssociatedObjects));
 
         /// <summary>
@@ -104,7 +107,9 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (selectedReport && selectedSketch)
             {
-                throw new Exception("Veuillez sélectionner des signalements ou des croquis (mais pas les deux !)");
+                string message = "Veuillez sélectionner des signalements ou des croquis (mais pas les deux !)";
+                logger.Error(message);
+                throw new Exception(message);
             }
             else if (selectedSketch)
             {
@@ -116,7 +121,9 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             else
             {
-                throw new Exception("Aucun croquis ou signalement sélectionné");
+                string message = "Aucun croquis ou signalement sélectionné";
+                logger.Error(message);
+                throw new Exception(message);
             }
         }
 
@@ -169,6 +176,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception e)
             {
                 string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                logger.Error(message);
                 throw new Exception(message);
             }    
         }

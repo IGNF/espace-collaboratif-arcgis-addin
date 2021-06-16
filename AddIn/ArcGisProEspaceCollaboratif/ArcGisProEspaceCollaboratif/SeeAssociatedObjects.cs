@@ -34,13 +34,12 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show(
-                        e.Message,
-                        Constantes.ERROR,
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Error
+                    string message = string.Format("Problème dans la visualistion des objets associés : {0}\n{1}", e.Message, e.StackTrace);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        message,
+                        Constantes.ERROR
                     );
-                    logger.Error(string.Format("Problème dans la visualistion des objets associés : {0}\n{1}", e.Message, e.StackTrace));
+                    logger.Error(message);
                 }
             });
         }

@@ -7,7 +7,6 @@ using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using System.IO;
-using System.Windows.Forms;
 using System.Threading.Tasks;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
@@ -82,14 +81,9 @@ namespace ArcGisProEspaceCollaboratif
         public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
 
         /// <summary>
-        /// 
+        /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        public Logger Logger { get; set; } = Logger.Instance;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        static ILog ILog { get; set; } = LogManager.GetLogger(typeof(Context));
+        public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Context));
 
         /// <summary>
         /// 
@@ -116,7 +110,7 @@ namespace ArcGisProEspaceCollaboratif
                         if (_instance == null)
                         {
                             _instance = new Context();
-                            ILog.Debug("Instance de contexte créée");
+                            logger.Debug("Instance de contexte créée");
                         }
                     }
                 }
@@ -146,7 +140,9 @@ namespace ArcGisProEspaceCollaboratif
             Project project = Project.Current;
             if (project.Name.Length == 0)
             {
-                throw new ArgumentNullException(@"Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif");
+                string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                logger.Error(message);
+                throw new ArgumentNullException(message);
             }
 
             this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
@@ -159,7 +155,7 @@ namespace ArcGisProEspaceCollaboratif
             //TODO : question Noémie pourquoi cette création ici ?
             //var bLayersLoaded = CreateOrLoadReportLayers();
 
-            ILog.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
         #endregion
@@ -180,7 +176,8 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    ILog.Error(e.Message + "\n" + e.StackTrace);
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(message);
                     return false;
                 }
             }
@@ -333,7 +330,7 @@ namespace ArcGisProEspaceCollaboratif
             catch (Exception e)
             {
                 string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                ILog.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
+                logger.Error(message);
                 throw new Exception(message);
             }
         }
@@ -413,6 +410,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     catch (GeodatabaseException exObj)
                     {
+                        logger.Error(exObj.Message);
                         throw new Exception (exObj.Message);
                     }
 
@@ -425,6 +423,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
+                logger.Error(e.Message);
                 throw new Exception(e.Message);
             }
         }
@@ -490,7 +489,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         catch (GeodatabaseException exObj)
                         {
-                            Console.WriteLine(exObj.Message);
+                            logger.Error(exObj.Message);
                         }
                         finally
                         {
@@ -532,7 +531,8 @@ namespace ArcGisProEspaceCollaboratif
 
             catch (Exception e)
             {
-                ILog.Error(e.Message + "\n" + e.ToString());
+                string message = string.Format("{0}\n{1}", e.Message, e.ToString());
+                logger.Error(message);
                 return false;
             }
         }
@@ -598,7 +598,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 catch (GeodatabaseException exObj)
                 {
-                    Console.WriteLine(exObj);
+                    logger.Error(exObj);
                 }
                 finally
                 {
@@ -994,10 +994,10 @@ namespace ArcGisProEspaceCollaboratif
 
         public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
-            ILog.Debug("GetConnexionEspaceCollaboratif ");
+            logger.Debug("GetConnexionEspaceCollaboratif ");
             this.CleGeoportail = Helper.LoadGeoportalKey();
             this.URLHost = Helper.LoadUrlhost();
-            ILog.Debug("URLHost : " + this.URLHost);
+            logger.Debug("URLHost : " + this.URLHost);
 
             var connectViewModel = new ConnectViewModel()
             {
@@ -1014,7 +1014,9 @@ namespace ArcGisProEspaceCollaboratif
             // il n'y aura pas de connexion
             if (dialogResult == false)
             {
-                throw new Exception ("Opération annulée");
+                string message = "Opération annulée";
+                logger.Error(message);
+                throw new Exception (message);
             }
             // Récupération du login et mot de passe introduits.
             this.Login = connectViewModel.Login;
@@ -1028,13 +1030,15 @@ namespace ArcGisProEspaceCollaboratif
                         this.Password
                     );
                 
-                ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
+                logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
                 
                 // Récupération du profil utilisateur
                 this.Profil = connexionServer.GetProfile();
                 if (this.Profil == null)
                 {
-                    throw new ArgumentNullException("Impossible de récupérer le profil de l'utilisateur");
+                    string message = "Impossible de récupérer le profil de l'utilisateur";
+                    logger.Error(message);
+                    throw new ArgumentNullException(message);
                 }
 
                 // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
@@ -1056,22 +1060,26 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     case "(401) Unauthorized":
                         string message = "Login et/ou mot de passe incorrect(s)";
-                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        logger.Error(message);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "Login inconnu":
                         message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        logger.Error(message);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "no_group":
                         message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        logger.Error(message);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     default:
                         message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.URLHost, erreurConnexion.Message.ToString());
-                        MessageBox.Show(message, "IGN Espace collaboratif", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        logger.Error(message);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
                 }
             }

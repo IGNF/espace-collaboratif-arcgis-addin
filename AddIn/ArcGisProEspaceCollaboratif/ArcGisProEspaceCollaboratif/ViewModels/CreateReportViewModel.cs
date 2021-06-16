@@ -1,6 +1,7 @@
 ﻿using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
+using log4net;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -83,6 +84,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// qui entrent dans la création d'un signalement
         /// </summary>
         private List<ArcGisProEspaceCollaboratif.Core.Sketch> Sketches { get; set; }
+
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
+        private static readonly ILog logger = LogManager.GetLogger(typeof(CreateReportViewModel));
 
         #endregion
 
@@ -775,6 +781,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (!Helper.IsFileExtensionAuthorised(extension))
                     {
                         message = string.Format("Les fichiers de type '.{0}' ne sont pas autorisés comme pièce-jointe", extension);
+                        logger.Error(message);
                         throw new Exception(message);
                     }
 
@@ -783,6 +790,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (fileSize > Constantes.MAX_TAILLE_UPLOAD_FILE)
                     {
                         message = string.Format("Le fichier {0} ne peut être envoyé car sa taille ({1} Ko) dépasse celle maximale autorisée ({2} Ko)", openFileDialog.FileName, fileSize / 1000, Constantes.MAX_TAILLE_UPLOAD_FILE / 1000);
+                        logger.Error(message);
                         throw new Exception(message);
                     }
 
@@ -792,7 +800,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
                 catch
                 {
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, "Espace collaboratif");
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                     this.createReportView.JoinDocumentLabel.Content = Constantes.NOFILE;
                     this.createReportView.JoinDocumentCheckBox.IsChecked = false;
                 }

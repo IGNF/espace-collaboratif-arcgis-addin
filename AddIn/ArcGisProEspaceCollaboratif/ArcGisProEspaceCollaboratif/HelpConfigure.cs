@@ -34,11 +34,9 @@ namespace ArcGisProEspaceCollaboratif
                     if (!context.CheckConfigFile())
                     {
                         string message = string.Format("Le fichier '{0}{1}' n'existe pas", context.DirectoryWorking, Helper.name_file_espaceco_xml);
-                        System.Windows.Forms.MessageBox.Show(
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
-                            Constantes.STOP,
-                            System.Windows.Forms.MessageBoxButtons.OK,
-                            System.Windows.Forms.MessageBoxIcon.Stop
+                            Constantes.STOP
                         );
                     }
 
@@ -53,13 +51,12 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    System.Windows.Forms.MessageBox.Show(
-                        e.Message,
-                        Constantes.ERROR,
-                        System.Windows.Forms.MessageBoxButtons.OK,
-                        System.Windows.Forms.MessageBoxIcon.Error
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        message,
+                        Constantes.ERROR
                     );
-                    logger.Error(string.Format("{0}\n{1}", e.Message, e.StackTrace));
+                    logger.Error(message);
                 }
             });
         }

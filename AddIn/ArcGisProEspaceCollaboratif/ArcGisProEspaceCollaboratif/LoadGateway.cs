@@ -12,11 +12,14 @@ namespace ArcGisProEspaceCollaboratif
     internal class LoadGateway : Button
     {
         private readonly Logger riplogger = Logger.Instance;
+
+        /// <summary>
+        /// Le logger qui permet d'enregistrer des informations sur le processus
+        /// </summary>
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(LoadGateway));
 
         protected override void OnClick()
         {
-            //ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"Charger les couches de mon groupe", "Espace collaboratif");
             logger.Debug("Click sur le bouton de chargement des couches du groupe utilisateur");
             try
             {
@@ -32,20 +35,26 @@ namespace ArcGisProEspaceCollaboratif
                     Client client = context.GetConnexionEspaceCollaboratif();
                     if (client == null)
                     {
-                        throw new Exception("Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-essayer.");
+                        string message = "Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-essayer.";
+                        logger.Error(message);
+                        throw new Exception(message);
                     }
                 }
                 
                 if (string.IsNullOrEmpty(context.Profil.Group.Name))
                 {
-                    throw new Exception("Vous n'êtes pas autorisé à effectuer cette opération. Vous n'avez pas de profil actif.");
+                    string message = "Vous n'êtes pas autorisé à effectuer cette opération. Vous n'avez pas de profil actif.";
+                    logger.Error(message);
+                    throw new Exception(message);
                 }
 
                 if (context.Profil.Geogroupes.Count == 1)
                 {
                     if (context.Profil.Geogroupes[0].Layers.Count == 0)
                     {
-                        throw new Exception("Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.");
+                        string message = "Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.";
+                        logger.Error(message);
+                        throw new Exception();
                     }
                 }
 
@@ -56,13 +65,12 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show(
-                    e.Message,
-                    Constantes.ERROR,
-                    System.Windows.Forms.MessageBoxButtons.OK,
-                    System.Windows.Forms.MessageBoxIcon.Error
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    message,
+                    Constantes.ERROR
                 );
-                logger.Error(e.Message + "\n" + e.StackTrace);
+                logger.Error(message);
             }
         }
     }
