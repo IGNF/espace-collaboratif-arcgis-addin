@@ -114,6 +114,7 @@ namespace ArcGisProEspaceCollaboratif
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue
                     if (dialogResult == false)
                     {
+                        replyReportViewModel.replyReportView.Close();
                         return;
                     }
 

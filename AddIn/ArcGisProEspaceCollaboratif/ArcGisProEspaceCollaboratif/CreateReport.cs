@@ -67,6 +67,7 @@ namespace ArcGisProEspaceCollaboratif
                     // dans son choix du groupe, on sort
                     if (dialogResult == false)
                     {
+                        createReportViewModel.createReportView.Close();
                         return;
                     }
                 }

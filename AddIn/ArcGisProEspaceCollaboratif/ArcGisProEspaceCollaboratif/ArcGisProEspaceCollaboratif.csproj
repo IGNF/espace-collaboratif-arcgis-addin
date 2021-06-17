@@ -161,6 +161,7 @@
     <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
     <Compile Include="ViewModels\ReplyReportViewModel.cs" />
     <Compile Include="ViewModels\HelpConfigureViewModel.cs" />
+    <Compile Include="ViewModels\SeeReportViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\CreateReportView.xaml.cs">
       <DependentUpon>CreateReportView.xaml</DependentUpon>
@@ -202,6 +203,9 @@
     <Compile Include="SeeReport.cs" />
     <Compile Include="Views\HelpConfigureView.xaml.cs">
       <DependentUpon>HelpConfigureView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SeeReportView.xaml.cs">
+      <DependentUpon>SeeReportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="WebFeatureService.cs" />
     <Compile Include="WebMapTileService.cs" />
@@ -311,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\HelpConfigureView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SeeReportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
