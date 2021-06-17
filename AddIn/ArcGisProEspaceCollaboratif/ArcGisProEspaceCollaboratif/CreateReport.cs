@@ -38,10 +38,10 @@ namespace ArcGisProEspaceCollaboratif
                     if (!bRes)
                     {
                         string message = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et et télécharger les signalements.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
-                            Constantes.ERROR);
-                        logger.Debug(message);
+                            Constantes.ERROR);                    
                         return;
                     } 
 
@@ -51,11 +51,11 @@ namespace ArcGisProEspaceCollaboratif
                     if (futursSketch.Count == 0)
                     {
                         string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.MakeSketchFromSelection : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
                             Constantes.WARNING
                         );
-                        logger.Debug(message);
                         return;
                     }
 
@@ -77,7 +77,7 @@ namespace ArcGisProEspaceCollaboratif
                         Constantes.ERROR
                     );
                     string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("CreateReport.OnClick : {0}\n", message));
                 }
             });
         }

@@ -120,12 +120,12 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
+                    string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(string.Format("ReplyReport.OnClick : {0}\n", message));
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                         e.Message,
                         Constantes.ERROR
                     );
-                    string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
                 }
             });
         }

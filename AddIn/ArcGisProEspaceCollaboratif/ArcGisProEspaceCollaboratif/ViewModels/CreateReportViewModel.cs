@@ -869,7 +869,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             // Création du nouveau signalement
             ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-            this.Context.CreerPointSignalement(newReport);
+            this.Context.CreatingPointReport(newReport);
 
             List<ulong> listIdNouveauxSignalements = new List<ulong>
             {
@@ -901,7 +901,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                 // Création du nouveau signalement
                 ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-                this.Context.CreerPointSignalement(newReport);
+                this.Context.CreatingPointReport(newReport);
 
                 listIdNouveauxSignalements.Add(newReport.Id);
             }

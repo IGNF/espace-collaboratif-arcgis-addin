@@ -35,10 +35,12 @@ namespace ArcGisProEspaceCollaboratif
                     if (!context.CheckConfigFile())
                     {
                         string message = string.Format("Le fichier '{0}{1}' n'existe pas", context.DirectoryWorking, Helper.name_file_espaceco_xml);
+                        logger.Error(string.Format("HelpConfigure.OnClick.context.CheckConfigFile : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
                             Constantes.STOP
                         );
+                        return;
                     }
 
                     var helpConfigureViewModel = new HelpConfigureViewModel(context);
@@ -57,7 +59,7 @@ namespace ArcGisProEspaceCollaboratif
                         Constantes.ERROR
                     );
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("HelpConfigure.OnClick : {0}\n", message));
                 }
             });
         }

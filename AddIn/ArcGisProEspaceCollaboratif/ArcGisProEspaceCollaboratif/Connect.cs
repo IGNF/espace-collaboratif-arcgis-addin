@@ -28,7 +28,7 @@ namespace ArcGisProEspaceCollaboratif
                         Constantes.ERROR
                     );
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("Connect.OnClick : {0}\n", message));
                 }
             });
         }

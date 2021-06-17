@@ -42,7 +42,7 @@ namespace ArcGisProEspaceCollaboratif
                         Constantes.ERROR
                     );
                     string message = string.Format("Problème dans la suppression des objets des couches signalements : {0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("DeleteReport.OnClick : {0}\n", message));
                 }
             });
         }

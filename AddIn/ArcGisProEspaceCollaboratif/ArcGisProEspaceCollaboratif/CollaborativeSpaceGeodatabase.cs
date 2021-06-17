@@ -100,7 +100,6 @@ namespace ArcGisProEspaceCollaboratif
                     if (!IsFieldExistInTable(table, fieldName))
                     {
                         string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
-                        logger.Error(string.Format("CollaborativeSpaceGeodatabase.GetQueryFilter : {0}\n", message));
                         throw new Exception(message);
                     }
 
@@ -109,7 +108,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch(Exception e)
             {
-                logger.Error(e.Message);
+                logger.Error(string.Format("CollaborativeSpaceGeodatabase.GetQueryFilter : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
 
@@ -130,7 +129,8 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch
             {
-                logger.Fatal(string.Format("La table {0} n'existe pas dans la GeoDatabase", tableName));
+                string message = string.Format("La table {0} n'existe pas dans la GeoDatabase", tableName);
+                logger.Fatal(string.Format("CollaborativeSpaceGeodatabase.OpenTable : {0}\n", message));              
                 return null;
             }
             return table;

@@ -113,7 +113,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         countReports++;
                         progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
-                        await context.CreerPointSignalement(report);
+                        await context.CreatingPointReport(report);
                     }
 
                     progressDownload.Close();
@@ -141,7 +141,7 @@ namespace ArcGisProEspaceCollaboratif
                     progressDownload.Close();
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
                 }
             });
         }

@@ -178,7 +178,7 @@ namespace ArcGisProEspaceCollaboratif
                 catch (Exception e)
                 {
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(message);
+                    logger.Error(string.Format("Context.CheckConfigFile : {0}\n", message));
                     return false;
                 }
             }
@@ -410,7 +410,6 @@ namespace ArcGisProEspaceCollaboratif
 
                     catch (GeodatabaseException exObj)
                     {
-                        logger.Error(string.Format("Context.UpdateGeodatabase : {0}\n", exObj.Message));
                         throw new Exception (exObj.Message);
                     }
 
@@ -423,7 +422,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                logger.Error(e.Message);
+                logger.Error(string.Format("Context.UpdateGeodatabase : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
         }
@@ -432,7 +431,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
         /// </summary>
         /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
-        public async Task<bool> CreerPointSignalement(ArcGisProEspaceCollaboratif.Core.Report newReport)
+        public async Task<bool> CreatingPointReport(ArcGisProEspaceCollaboratif.Core.Report newReport)
         {
             try
             {
@@ -489,7 +488,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         catch (GeodatabaseException exObj)
                         {
-                            logger.Error(exObj.Message);
+                            logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", exObj.Message));
                         }
                         finally
                         {
@@ -532,7 +531,7 @@ namespace ArcGisProEspaceCollaboratif
             catch (Exception e)
             {
                 string message = string.Format("{0}\n{1}", e.Message, e.ToString());
-                logger.Error(message);
+                logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", message));
                 return false;
             }
         }
@@ -598,7 +597,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 catch (GeodatabaseException exObj)
                 {
-                    logger.Error(exObj);
+                    logger.Error(string.Format("Context.CreateSketchObject : {0}\n", exObj.Message));
                 }
                 finally
                 {
@@ -1060,25 +1059,25 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     case "(401) Unauthorized":
                         string message = "Login et/ou mot de passe incorrect(s)";
-                        logger.Error(message);
+                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "Login inconnu":
                         message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                        logger.Error(message);
+                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "no_group":
                         message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                        logger.Error(message);
+                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     default:
                         message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.URLHost, erreurConnexion.Message.ToString());
-                        logger.Error(message);
+                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
                 }

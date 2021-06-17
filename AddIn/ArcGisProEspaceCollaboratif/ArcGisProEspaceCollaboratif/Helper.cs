@@ -291,7 +291,7 @@ namespace ArcGisProEspaceCollaboratif
                     Constantes.ERROR
                 );
                 string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                logger.Error(message);
+                logger.Error(string.Format("Helper.LoadOrCreateCollaborativeSpaceLayer : {0}\n", message));
                 return;
             }
         }
@@ -1727,11 +1727,11 @@ namespace ArcGisProEspaceCollaboratif
             catch
             {
                 string message = string.Format("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = '{0}'", dateExtration);
+                logger.Error(string.Format("Helper.LoadDateExtraction : {0}\n", message));
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                     message,
                     Constantes.ERROR
                 );
-                logger.Error(message);
                 return Convert.ToDateTime(Helper.dateDefault);
             }
         }
@@ -1798,11 +1798,11 @@ namespace ArcGisProEspaceCollaboratif
             if (Urlhost.Equals(""))
             {
                 string message = "Impossible de trouver l'adresse du service de l'Espace collaboratif dans le fichier XML de paramétrage.";
+                logger.Error(string.Format("Helper.LoadUrlhost : {0}\n", message));
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                     message,
                     Constantes.ERROR
                 );
-                logger.Error(message);
                 return "";
             }
 

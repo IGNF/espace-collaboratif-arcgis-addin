@@ -160,7 +160,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception e)
             {
                 wclient.Dispose();
-                logger.Error(e.Message);
+                logger.Error(string.Format("Client.MakePostRequest : {0}\n", e.Message));
             }
 
             wclient.Dispose();
@@ -564,7 +564,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                         if (fs.Length > Constantes.MAX_TAILLE_UPLOAD_FILE)
                         {
                             string message = string.Format("Le fichier {0} est de taille supérieure à {1}", document, Constantes.MAX_TAILLE_UPLOAD_FILE);
-                            logger.Error(string.Format("Client.CreateReport : {0}\n", message));
                             throw new Exception(message);
                         }
 
@@ -589,19 +588,17 @@ namespace ArcGisProEspaceCollaboratif.Core
                     else
                     {
                         string message = "Problème lors de l'ajout du signalement";
-                        logger.Error(string.Format("Client.CreateReport : {0}\n", message));
                         throw new Exception(message);
                     }
                 }
                 else
                 {
-                    logger.Error(string.Format("Client.CreateReport : {0}\n", errMessage["message"]));
                     throw new Exception(errMessage["message"]);
                 }
             }
             catch (Exception e)
             {
-                logger.Error(e.Message);
+                logger.Error(string.Format("Client.CreateReport : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
 
