@@ -77,11 +77,10 @@ namespace ArcGisProEspaceCollaboratif
         public static string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
         public static string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
-        private readonly ArcGisProEspaceCollaboratif.Core.Logger riplogger = ArcGisProEspaceCollaboratif.Core.Logger.Instance;
-        
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
@@ -132,9 +131,8 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (GeodatabaseException exObj)
             {
-                string message = string.Format("{0}\n{1}", exObj.Message, messageError);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("Helper.ExecuteEditOperation : {0}\n", exObj.Message));
+                throw new Exception(exObj.Message);
             }
         }
 
@@ -286,13 +284,13 @@ namespace ArcGisProEspaceCollaboratif
                 });
             }
             
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        message,
-                        Constantes.ERROR
-                    );
+                    e.Message,
+                    Constantes.ERROR
+                );
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                 logger.Error(message);
                 return;
             }
@@ -589,8 +587,8 @@ namespace ArcGisProEspaceCollaboratif
         {
             if (points.Count == 0)
             {
-                string message = "Helper.Barycentre : pas de points, impossible de calculer le barycentre";
-                logger.Error(message);
+                string message = "Pas de points, impossible de calculer le barycentre";
+                logger.Error(string.Format("Helper.Barycentre : {0}\n", message));
                 throw new Exception(message);
             }
             if (points.Count == 1)
@@ -622,8 +620,8 @@ namespace ArcGisProEspaceCollaboratif
 
             if (pointResult.IsEmpty)
             {
-                string message = "Helper.Barycentre.MapPointBuilder : impossible de déterminer un barycentre avec les coordonnées de la liste de points en entrée";
-                logger.Error(message);
+                string message = "Impossible de déterminer un barycentre avec les coordonnées de la liste de points en entrée";
+                logger.Error(string.Format("Helper.Barycentre.MapPointBuilder : {0}\n", message));
                 throw new Exception(message);
             }
 
@@ -1196,7 +1194,7 @@ namespace ArcGisProEspaceCollaboratif
                     break;
 
                 default:
-                    string message = "Géométrie non-prise en charge pour la transformer en croquis.";
+                    string message = "Géométrie non prise en charge pour la transformer en croquis.";
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                         message,
                         Constantes.WARNING
@@ -1208,6 +1206,11 @@ namespace ArcGisProEspaceCollaboratif
             return newSketch;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
         public static ArcGisProEspaceCollaboratif.Core.Point CalculatePositionReport(List<Point> points)
         {
             Point pointResult = new Point();
@@ -1230,20 +1233,20 @@ namespace ArcGisProEspaceCollaboratif
             return pointResult;
         }
 
-            /// <summary>
-            /// Calcule le point d'application pour un nouveau signalement à partir des croquis associés à ce futur signalement.
-            /// On calcule le centroïde de chaque croquis contenu dans <paramref name="listSketchs"/>, puis le barycentre de l'ensemble de ces centroïdes calculés et enfin on retient celui qui est le plus proche du barycentre calculé.
-            /// </summary>
-            /// <param name="listSketchs">La liste contenant les croquis du futur signalement.</param>        
-            /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
-            public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
+        /// <summary>
+        /// Calcule le point d'application pour un nouveau signalement à partir des croquis associés à ce futur signalement.
+        /// On calcule le centroïde de chaque croquis contenu dans <paramref name="listSketchs"/>, puis le barycentre de l'ensemble de ces centroïdes calculés et enfin on retient celui qui est le plus proche du barycentre calculé.
+        /// </summary>
+        /// <param name="listSketchs">La liste contenant les croquis du futur signalement.</param>        
+        /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
+        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
         {
 
             switch (listSketchs.Count)
             {
                 case 0:
                     string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer la position du nouveau signalement à créer.";
-                    logger.Error(message);
+                    logger.Error(string.Format("Helper.CalculatePointReport : {0}\n", message));
                     throw new Exception(message);
 
                 case 1:

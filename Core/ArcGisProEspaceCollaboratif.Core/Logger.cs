@@ -100,7 +100,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Getteur public pour retourner le chemin d'accès où est situé le fichier log
+        /// Getter public pour retourner le chemin d'accès où est situé le fichier log
         /// </summary>
         public static string GetLogPath()
         {

@@ -1,4 +1,5 @@
 ﻿using ArcGIS.Desktop.Framework.Contracts;
+using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
 using System.Diagnostics;
@@ -8,6 +9,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class HelpManual : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpManual));
 
         protected override void OnClick()
@@ -22,15 +24,16 @@ namespace ArcGisProEspaceCollaboratif
         }
     }
 
-    internal class HelpOpenFileLog : Button
+    internal class HelpFileLog : Button
     {
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpOpenFileLog));
+        private static readonly Logger riplogger = Logger.Instance;
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpFileLog));
 
         protected override void OnClick()
         {
             logger.Debug("Clic sur le bouton d'ouverture du fichier de log de l'add-in Espace collaboratif");
             string name = logger.Logger.Name.ToString();
-
+            int a = 1;
             /*string accesLog = Ripart.Core.RipartLogger.getLogPath() + "\\";
 
             var directory = new DirectoryInfo(accesLog);
@@ -56,6 +59,7 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpAbout : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpAbout));
 
         protected override void OnClick()
@@ -73,6 +77,7 @@ namespace ArcGisProEspaceCollaboratif
             message += string.Format("{0}\n", description);
             message += string.Format("Version : {0}, '{1}'\n", version, product);
             message += copyright;
+            logger.Info(message);
             var connectInfoViewModel = new FeedbackInformationViewModel()
             {
                 MessageFeedback = message,

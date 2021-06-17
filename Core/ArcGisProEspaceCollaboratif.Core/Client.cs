@@ -53,6 +53,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly ILog logger = LogManager.GetLogger(typeof(Client));
 
         #endregion
@@ -118,7 +119,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     err = e.Message;
                 }
                 client.Dispose();
-                logger.Error(err);
+                logger.Error(string.Format("Client.MakeGetRequest : {0}\n", err));
                 throw new Exception(err);
             }
             client.Dispose();
@@ -241,7 +242,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             catch (Exception ex)
             {
                 string message = string.Format("Création d'un nouveau signalement : {0}", ex.Message);
-                logger.Error(message);
+                logger.Error(string.Format("Client.MakeMultiPartPostRequest : {0}\n", message));
 
                 if (wresp != null)
                 {
@@ -299,7 +300,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 profile = xmlResponse.ExtractProfile();
             }
             else {
-                logger.Error(errMessage["code"]);
+                logger.Error(string.Format("Client.GetProfileFromService : {0}\n", errMessage["code"]));
                 throw new Exception(errMessage["code"]);
             }
             return profile;
@@ -470,18 +471,18 @@ namespace ArcGisProEspaceCollaboratif.Core
                     else
                     {
                         string message = "Problème lors de l'ajout d'une réponse";
-                        logger.Error(message);
+                        logger.Error(string.Format("Client.AddReponse : {0}\n", message));
                         throw new Exception(message);
                     }
                 }
                 else
                 {
-                    logger.Error(errMessage["message"]);
+                    logger.Error(string.Format("Client.AddReponse : {0}\n", errMessage["message"]));
                     throw new Exception(errMessage["message"]);
                 }
             }
             catch (Exception e) {
-                logger.Error(e.Message);
+                logger.Error(string.Format("Client.AddReponse : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
 
@@ -563,7 +564,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                         if (fs.Length > Constantes.MAX_TAILLE_UPLOAD_FILE)
                         {
                             string message = string.Format("Le fichier {0} est de taille supérieure à {1}", document, Constantes.MAX_TAILLE_UPLOAD_FILE);
-                            logger.Error(message);
+                            logger.Error(string.Format("Client.CreateReport : {0}\n", message));
                             throw new Exception(message);
                         }
 
@@ -588,13 +589,13 @@ namespace ArcGisProEspaceCollaboratif.Core
                     else
                     {
                         string message = "Problème lors de l'ajout du signalement";
-                        logger.Error(message);
+                        logger.Error(string.Format("Client.CreateReport : {0}\n", message));
                         throw new Exception(message);
                     }
                 }
                 else
                 {
-                    logger.Error(errMessage["message"]);
+                    logger.Error(string.Format("Client.CreateReport : {0}\n", errMessage["message"]));
                     throw new Exception(errMessage["message"]);
                 }
             }
@@ -675,7 +676,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             else
             {
                 string message = string.Format("{0} : votre clé Géoportail semble erronée. Vous pouvez utiliser la clé de démonstration.", errMessage["code"]);
-                logger.Error(message);
+                logger.Error(string.Format("Client.GetLayersFromCleGeoportailUser : {0}\n", message));
                 throw new Exception(message);
             }
             return layers;

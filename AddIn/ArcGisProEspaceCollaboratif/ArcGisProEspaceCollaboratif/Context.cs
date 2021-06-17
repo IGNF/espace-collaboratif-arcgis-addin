@@ -83,6 +83,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Context));
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace ArcGisProEspaceCollaboratif
             if (project.Name.Length == 0)
             {
                 string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
-                logger.Error(message);
+                logger.Error(string.Format("Context.Init : {0}\n", message));
                 throw new ArgumentNullException(message);
             }
 
@@ -329,9 +330,8 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("Context.RemoveAllObjectsFromLayers : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
         }
 
@@ -410,7 +410,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     catch (GeodatabaseException exObj)
                     {
-                        logger.Error(exObj.Message);
+                        logger.Error(string.Format("Context.UpdateGeodatabase : {0}\n", exObj.Message));
                         throw new Exception (exObj.Message);
                     }
 
@@ -1014,8 +1014,8 @@ namespace ArcGisProEspaceCollaboratif
             // il n'y aura pas de connexion
             if (dialogResult == false)
             {
-                string message = "Opération annulée";
-                logger.Error(message);
+                string message = "Opération annulée par l'utilisateur";
+                logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message));
                 throw new Exception (message);
             }
             // Récupération du login et mot de passe introduits.
@@ -1036,8 +1036,8 @@ namespace ArcGisProEspaceCollaboratif
                 this.Profil = connexionServer.GetProfile();
                 if (this.Profil == null)
                 {
-                    string message = "Impossible de récupérer le profil de l'utilisateur";
-                    logger.Error(message);
+                    string message = "Récupération du profil utilisateur impossible";
+                    logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message));
                     throw new ArgumentNullException(message);
                 }
 

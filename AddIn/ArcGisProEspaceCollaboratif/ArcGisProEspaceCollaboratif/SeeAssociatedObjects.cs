@@ -8,6 +8,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class SeeAssociatedObjects : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(SeeAssociatedObjects));
 
         protected override async void OnClick()
@@ -33,12 +34,12 @@ namespace ArcGisProEspaceCollaboratif
                     associatedObjects.SelectObjects();
                 }
                 catch (Exception e)
-                {
-                    string message = string.Format("Problème dans la visualistion des objets associés : {0}\n{1}", e.Message, e.StackTrace);
+                {  
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        message,
+                        e.Message,
                         Constantes.ERROR
                     );
+                    string message = string.Format("Problème dans la visualistion des objets associés : {0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(message);
                 }
             });

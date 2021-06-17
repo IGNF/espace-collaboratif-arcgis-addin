@@ -26,6 +26,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly ILog logger = LogManager.GetLogger(typeof(XmlResponse));
 
         /// <summary>
@@ -57,11 +58,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 errMessage["message"] = EncodeToUTF8(iterator.Current.InnerXml);
                 errMessage["code"] = EncodeToUTF8(iterator.Current.GetAttribute("code", ""));
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.CheckResponseValidity : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return errMessage;
@@ -86,7 +86,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -99,14 +98,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
+                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
+                    throw new ArgumentNullException(message);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetAleas : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return aleas;
@@ -131,7 +130,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -145,7 +143,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -159,16 +156,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetConnectValues : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return connectValues;
@@ -194,11 +189,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetCurrentToken : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return token;
@@ -248,11 +242,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     layers.Add(tmpLayer);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("XmlResponses:ExtractLayersFromCleGeoportailUser\n{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.ExtractLayersFromCleGeoportailUser : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return layers;
@@ -278,7 +271,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -294,7 +286,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -308,7 +299,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -324,7 +314,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -338,7 +327,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
                 profile.Group = gr;
@@ -353,7 +341,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -367,7 +354,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -381,7 +367,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 else
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -395,11 +380,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                 // Les infos sur tous les geogroupes de l'utilisateur
                 profile.Geogroupes = GetGeoGroupes();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.ExtractProfile : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
             return profile;
         }
@@ -448,7 +432,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (iterator == null)
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
                 foreach (XPathNavigator val in iterator)
@@ -533,11 +516,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     listGeoGroupe.Add(tmpGeoGroupe);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetGeoGroupes : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
             return listGeoGroupe;
         }
@@ -688,11 +670,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     themesAttributesDict.AddOrUpdate(themeAttributes.ThemeName, new List<ThemeAttributes> { themeAttributes }, (nomTheme, attTheme) => { attTheme.Add(themeAttributes); return attTheme; });
                 };
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetThemesAttributes : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
             return themesAttributesDict;
         }
@@ -761,11 +742,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     themes.Add(tmpTheme);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetThemes : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
         }
 
@@ -800,7 +780,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (iterator == null)
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -820,10 +799,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         string nomGroupe = v.SelectSingleNode("NOM").Value;
                         string idGroupe = v.SelectSingleNode("ID_GEOGROUPE").Value;
-               
                         nomGroupe = EncodeToUTF8( nomGroupe);
-
-
                         Theme theme = new Theme
                         {
                             Group = new Group()
@@ -869,8 +845,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     catch (Exception e)
                     {
-                        string message = string.Format("Erreur : rem.Statut non valide : {0} pour remId = {1} {2}\n{3}", val.InnerXml, report.Id, e.Message, e.StackTrace);
-                        logger.Error(message);
+                        string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", val.InnerXml, report.Id, e.Message);
                         throw new Exception(message);
                     }
 
@@ -923,8 +898,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             catch (Exception e)
             {
-                string message = string.Format("Une erreur est survenue dans l'import d'un signalement {0}\n{1}\n{2}", report.Id, e.Message, e.StackTrace);
-                logger.Error(message);
+                string message = string.Format("Une erreur est survenue dans l'import d'un signalement {0}\n{1}", report.Id, e.Message);
+                logger.Error(string.Format("XMLResponse.ExtractReports : {0}\n", message));
                 throw new Exception(message);
             }
 
@@ -1009,11 +984,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     rem.AddCroquis(sketch);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetSketchForReport : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
             return it;
         }
@@ -1081,7 +1055,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (iterator == null)
                 {
                     string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    logger.Error(message);
                     throw new ArgumentNullException(message);
                 }
 
@@ -1097,11 +1070,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     themes.Add(theme);    
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetGeomRemThemes : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
             return themes;           
         }
@@ -1127,11 +1099,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetTotalResponse : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return total;
@@ -1158,11 +1129,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetVersion : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return version;
@@ -1189,11 +1159,10 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", ex.Message, ex.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("XMLResponse.GetDate : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
 
             return sdate;

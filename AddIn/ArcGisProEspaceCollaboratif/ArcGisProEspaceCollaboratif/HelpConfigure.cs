@@ -9,6 +9,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class HelpConfigure : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpConfigure));
 
         protected override async void OnClick()
@@ -51,11 +52,11 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        message,
+                        e.Message,
                         Constantes.ERROR
                     );
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(message);
                 }
             });

@@ -17,6 +17,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(AssociatedObjects));
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             if (selectedReport && selectedSketch)
             {
                 string message = "Veuillez sélectionner des signalements ou des croquis (mais pas les deux !)";
-                logger.Error(message);
+                logger.Error(string.Format("AssociatedObjects.CheckSelectedObjects : {0}\n", message));
                 throw new Exception(message);
             }
             else if (selectedSketch)
@@ -122,7 +123,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             else
             {
                 string message = "Aucun croquis ou signalement sélectionné";
-                logger.Error(message);
+                logger.Error(string.Format("AssociatedObjects.CheckSelectedObjects : {0}\n", message));
                 throw new Exception(message);
             }
         }
@@ -175,9 +176,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception e)
             {
-                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                logger.Error(message);
-                throw new Exception(message);
+                logger.Error(string.Format("AssociatedObjects.SelectAssociatedObjectsFromList : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }    
         }
 

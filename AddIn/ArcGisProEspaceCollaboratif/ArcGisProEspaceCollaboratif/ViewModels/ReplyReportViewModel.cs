@@ -13,7 +13,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     class ReplyReportViewModel
     {
         #region Parameters
-
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
 
         /// <summary>

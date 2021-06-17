@@ -11,11 +11,10 @@ namespace ArcGisProEspaceCollaboratif
     /// </summary>
     internal class LoadGateway : Button
     {
-        private readonly Logger riplogger = Logger.Instance;
-
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(LoadGateway));
 
         protected override void OnClick()
@@ -36,7 +35,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (client == null)
                     {
                         string message = "Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-essayer.";
-                        logger.Error(message);
+                        logger.Error(string.Format("LoadGateway.OnClick.GetConnexionEspaceCollaboratif : {0}\n", message));
                         throw new Exception(message);
                     }
                 }
@@ -44,7 +43,7 @@ namespace ArcGisProEspaceCollaboratif
                 if (string.IsNullOrEmpty(context.Profil.Group.Name))
                 {
                     string message = "Vous n'êtes pas autorisé à effectuer cette opération. Vous n'avez pas de profil actif.";
-                    logger.Error(message);
+                    logger.Error(string.Format("LoadGateway.OnClick.context.Profil.Group.Name : {0}\n", message));
                     throw new Exception(message);
                 }
 
@@ -53,7 +52,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (context.Profil.Geogroupes[0].Layers.Count == 0)
                     {
                         string message = "Votre groupe n'a pas paramétré sa carte, il n'y a pas de données à charger.";
-                        logger.Error(message);
+                        logger.Error(string.Format("LoadGateway.OnClick.context.Profil.Geogroupes[0].Layers.Count : {0}\n", message));
                         throw new Exception();
                     }
                 }
@@ -64,12 +63,12 @@ namespace ArcGisProEspaceCollaboratif
                 loadGatewayViewModel.loadGatewayView.ShowDialog();
             }
             catch (Exception e)
-            {
-                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+            {         
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                    message,
+                    e.Message,
                     Constantes.ERROR
                 );
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                 logger.Error(message);
             }
         }

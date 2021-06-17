@@ -3,6 +3,7 @@ using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
 using log4net;
+using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -24,6 +25,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CollaborativeSpaceGeodatabase));
 
         #endregion
@@ -61,7 +63,7 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (GeodatabaseException exObj)
             {
-                logger.Error(exObj.Message);
+                logger.Error(string.Format("CollaborativeSpaceGeodatabase.IsFeatureClassExistInGeodatabase : {0}\n", exObj.Message));
                 throw new Exception(exObj.Message);
             }
             
@@ -98,7 +100,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (!IsFieldExistInTable(table, fieldName))
                     {
                         string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
-                        logger.Error(message);
+                        logger.Error(string.Format("CollaborativeSpaceGeodatabase.GetQueryFilter : {0}\n", message));
                         throw new Exception(message);
                     }
 

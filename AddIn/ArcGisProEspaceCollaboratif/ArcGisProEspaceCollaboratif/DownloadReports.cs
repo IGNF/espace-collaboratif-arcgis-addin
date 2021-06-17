@@ -13,6 +13,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(DownloadReports));
 
         protected override async void OnClick()
@@ -135,12 +136,12 @@ namespace ArcGisProEspaceCollaboratif
 
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
                 }
-
                 catch (Exception e)
                 {
-                    logger.Error(e.Message + "\n" + e.StackTrace);
                     progressDownload.Close();
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(message);
                 }
             });
         }
