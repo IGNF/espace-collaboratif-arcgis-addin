@@ -1,8 +1,12 @@
 ﻿using ArcGIS.Desktop.Framework.Contracts;
+using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace ArcGisProEspaceCollaboratif
@@ -32,28 +36,24 @@ namespace ArcGisProEspaceCollaboratif
         protected override void OnClick()
         {
             logger.Debug("Clic sur le bouton d'ouverture du fichier de log de l'add-in Espace collaboratif");
-            string name = logger.Logger.Name.ToString();
-            int a = 1;
-            /*string accesLog = Ripart.Core.RipartLogger.getLogPath() + "\\";
 
-            var directory = new DirectoryInfo(accesLog);
-
-            //cherche le fichier le plus récent
+            string logPath = Logger.GetLogPath();
+            DirectoryInfo directory = new DirectoryInfo(logPath);
+            string fileLog = string.Format("*{0}", Constantes.NAMELOGFILE);
             try
             {
-                var logFile = (from f in directory.GetFiles("*ripart.log")
+                var logFile = (from f in directory.GetFiles(fileLog)
                                orderby f.LastWriteTime descending
                                select f).First();
 
                 System.Diagnostics.Process.Start(logFile.FullName);
-
             }
             catch
             {
-                MessageBox.Show("Fichier log inexistant !", "IGN Ripart", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
-
-            }*/
-
+                string message = string.Format("Le fichier yyyy.MM.dd{0} n'existe pas le répertoire {1}", Constantes.NAMELOGFILE, logPath);
+                logger.Error(string.Format("HelpFileLog.OnClick : {0}\n", message));
+                MessageBox.Show(message,Constantes.ERROR);
+            }
         }
     }
 

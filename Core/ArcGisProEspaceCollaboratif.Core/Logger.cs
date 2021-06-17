@@ -72,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                                     "<maxSizeRollBackups value=\"2\" />\n" +
                                     "<staticLogFileName value=\"false\" />\n" +
                                     "<rollingStyle value=\"Composite\"/>\n" +
-                                    "<datePattern value=\"yyyy.MM.dd&quot;_EspaceCollaboratif.log&quot;\"/>\n" +
+                                    "<datePattern value=\"yyyy.MM.dd&quot;" + Constantes.NAMELOGFILE + "&quot;\"/>\n" +
                                     "<layout type=\"log4net.Layout.PatternLayout\">\n" +
                                      " <conversionPattern value=\"%date [%thread] %-5level %logger  - %message%newline\" />\n" +
                                     "</layout>\n" +
