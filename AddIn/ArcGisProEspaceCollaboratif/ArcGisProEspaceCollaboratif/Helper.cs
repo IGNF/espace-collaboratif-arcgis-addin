@@ -102,7 +102,7 @@ namespace ArcGisProEspaceCollaboratif
             { name_field_UrlPrive,       new KeyValuePair<string,string> ("TEXT", "")     },
             { name_field_Document,       new KeyValuePair<string,string> ("TEXT", "")     },
             { name_field_Autorisation,   new KeyValuePair<string,string> ("TEXT", "")     }
-
+            // TODO ajouter Source, les attributs des thémes , la localisation
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)

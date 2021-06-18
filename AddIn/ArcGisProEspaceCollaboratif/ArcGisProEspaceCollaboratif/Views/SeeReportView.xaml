@@ -5,14 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Fiche" Height="586.533" Width="566.4">
+        Title="Voir un signalement" Height="586.533" Width="566.4">
     <Grid Height="557" Margin="0,0,0,-0.2" VerticalAlignment="Bottom">
-        <Label Content="{Binding NumberReport}" HorizontalAlignment="Left" Margin="281,19,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue" FontSize="18"/>
-        <Label Content="Informations générales" HorizontalAlignment="Left" Margin="25,40,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Label Content="Thèmes" HorizontalAlignment="Left" Margin="350.8,40,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Grid.ColumnSpan="2" Grid.Column="1"/>
-        <Label Content="Description" HorizontalAlignment="Left" Margin="25,241,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Label Content="Documents joints" HorizontalAlignment="Left" Margin="350,241,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <Label Content="Réponses" HorizontalAlignment="Left" Margin="25,400,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <Label Content="{Binding SeeNumberReport}" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue" FontSize="18" Height="38" Width="315" RenderTransformOrigin="0.483,0.123"/>
+        <Label Content="Informations générales" HorizontalAlignment="Left" Margin="22,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBlock Text="{Binding GeneralInformation}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,77,0,0"  VerticalAlignment="Top" Height="136" Width="243"/>
+        <Label Content="Thèmes" HorizontalAlignment="Left" Margin="351,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="22,215,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,249,0,0" VerticalAlignment="Top" Width="510" Height="70"/>
+        <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="22,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBlock Text="{Binding SeeFilesAttached}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,361,0,0" VerticalAlignment="Top" Width="510" Height="30"/>
+        <Label Content="Réponses" HorizontalAlignment="Left" Margin="22,400,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,435,0,0" VerticalAlignment="Top" Width="510" Height="70"/>
         <Button Content="Fermer" Click="Button_Click" HorizontalAlignment="Left" Margin="244,520,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Window>

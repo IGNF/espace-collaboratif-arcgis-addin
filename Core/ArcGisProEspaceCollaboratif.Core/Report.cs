@@ -92,7 +92,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// les éventuelles réponses du signalement.
         /// </summary>
-        public List<GeoResponse> Reponses = new List<GeoResponse>() ;
+        public List<GeoResponse> Responses = new List<GeoResponse>() ;
 
         /// <summary>
         /// les éventuelles croquis du signalement EspaceCollaboratif.
@@ -218,27 +218,27 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             string concatenate = "";
 
-            if (this.Reponses.Count == 0)
+            if (this.Responses.Count == 0)
             {
                 concatenate = "<font color=\"red\">Pas de réponse actuellement pour le signalement n°" + this.Id + ".</font>";
             }
             else
             {
-                for (int i = 0; i < this.Reponses.Count;  i++)
+                for (int i = 0; i < this.Responses.Count;  i++)
                 {
-                    concatenate += "<li><b><font color=\"green\">Réponse n°" + (this.Reponses.Count - i);
+                    concatenate += "<li><b><font color=\"green\">Réponse n°" + (this.Responses.Count - i);
 
-                    if (this.Reponses[i].Author.Name.Length != 0)
+                    if (this.Responses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.EncodeToUTF8(this.Reponses[i].Author.Name);
+                        concatenate += " par " + this.EncodeToUTF8(this.Responses[i].Author.Name);
                     }
-                    if (!string.IsNullOrEmpty(this.Reponses[i].Date.ToString()))
+                    if (!string.IsNullOrEmpty(this.Responses[i].Date.ToString()))
                     {
-                        concatenate += " le " + this.Reponses[i].Date.ToString();
+                        concatenate += " le " + this.Responses[i].Date.ToString();
                     }
                     concatenate += ".</font></b><br>";
-                    concatenate += "<b>" + HttpUtility.UrlDecode(this.EncodeToUTF8(this.Reponses[i].Titre())) + "</b><br>";
-                    concatenate += "" + HttpUtility.UrlDecode(this.Reponses[i].Reponse) + "</li><br><br>";
+                    concatenate += "<b>" + HttpUtility.UrlDecode(this.EncodeToUTF8(this.Responses[i].Titre())) + "</b><br>";
+                    concatenate += "" + HttpUtility.UrlDecode(this.Responses[i].Response) + "</li><br><br>";
                 }
             }
             return concatenate;
@@ -252,25 +252,25 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             string concatenate = "";
 
-            if (this.Reponses.Count == 0)
+            if (this.Responses.Count == 0)
             {
                 concatenate = "Pas de réponse actuellement pour le signalement n°" + this.Id + ".";
             }
             else
             {
-                for (int i = 0; i < this.Reponses.Count; i++)
+                for (int i = 0; i < this.Responses.Count; i++)
                 {
-                    concatenate += "Réponse n°" + (this.Reponses.Count - i);
+                    concatenate += "Réponse n°" + (this.Responses.Count - i);
 
-                    if (this.Reponses[i].Author.Name.Length != 0)
+                    if (this.Responses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.Reponses[i].Author.Name;
+                        concatenate += " par " + this.Responses[i].Author.Name;
                     }
-                    if (!string.IsNullOrEmpty(this.Reponses[i].Date.ToString()))
+                    if (!string.IsNullOrEmpty(this.Responses[i].Date.ToString()))
                     {
-                        concatenate += " le " + this.Reponses[i].Date.ToString();
+                        concatenate += " le " + this.Responses[i].Date.ToString();
                     }
-                    concatenate += ".\n" + this.Reponses[i].Reponse + "\n";
+                    concatenate += ".\n" + this.Responses[i].Response + "\n";
                 }
             }
             return concatenate;
@@ -284,7 +284,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             System.Xml.Linq.XElement reponsesXML = new System.Xml.Linq.XElement("GEOREM_GEOREP");
           
-            foreach (ArcGisProEspaceCollaboratif.Core.GeoResponse uneGeoReponse in this.Reponses)
+            foreach (ArcGisProEspaceCollaboratif.Core.GeoResponse uneGeoReponse in this.Responses)
             {
                 reponsesXML.Add(uneGeoReponse.EncodeToXML());
             }
@@ -371,7 +371,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="uneReponse"></param>
         public void AddGeoReponse(GeoResponse uneReponse)
         {
-            this.Reponses.Add(uneReponse);
+            this.Responses.Add(uneReponse);
         }
  
         /// <summary>

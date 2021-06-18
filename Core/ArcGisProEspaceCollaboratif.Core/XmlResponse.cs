@@ -1034,7 +1034,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                 georep.Statut =(EnumStatus) Enum.Parse(typeof(EnumStatus),v.SelectSingleNode("STATUT").Value,true);      
                 georep.Date = Convert.ToDateTime(v.SelectSingleNode("DATE").Value);
-                georep.Reponse= EncodeToUTF8(v.SelectSingleNode("REPONSE").Value);
+                georep.Response= EncodeToUTF8(v.SelectSingleNode("REPONSE").Value);
                
                 rem.AddGeoReponse(georep);
             } 

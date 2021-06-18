@@ -50,7 +50,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.Reports = reports;
             this.Message = error;
             this.replyReportView = new ReplyReportView();
-            this.InitializeCreateReportView();
+            this.InitializeReplyReportView();
         }
 
         #endregion
@@ -60,7 +60,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Initialisation du contenu du dialogue "Nouvelle réponse"
         /// </summary>
-        private void InitializeCreateReportView()
+        private void InitializeReplyReportView()
         {
             // Mise à jour de la ComboBox "Statut" avec ses libellés
             this.StatutItemsSourceComboBox = ListWordings;
