@@ -790,6 +790,11 @@ namespace ArcGisProEspaceCollaboratif.Core
                     val.MoveToFollowing("ID_GEOREM", "");
                     report.Id = Convert.ToUInt64(val.InnerXml);
 
+                    if (report.Id == 396396)
+                    {
+                        int a = 1;
+                    }
+
                     val.MoveToFollowing("AUTORISATION", "");
                     report.Authorisation = val.InnerXml;
 
@@ -827,11 +832,14 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     val.MoveToFollowing("DATE_VALID", "");
                     d = val.InnerXml;
-                    if (DateTime.TryParse(d, out dateValue))
+                    if (!string.IsNullOrEmpty(d))
                     {
-                        report.DateValidation = Convert.ToDateTime(d);
+                        if (DateTime.TryParse(d, out dateValue))
+                        {
+                            report.DateValidation = Convert.ToDateTime(d);
+                        }
                     }
-
+                    
                     val.MoveToFollowing("LON", "");
                     double lon = Double.Parse(val.InnerXml, Constantes.invC);
                     val.MoveToFollowing("LAT", "");
@@ -877,6 +885,9 @@ namespace ArcGisProEspaceCollaboratif.Core
                     val.MoveToFollowing("ID_PARTITION", "");
                     report.Id_partition = val.InnerXml;
 
+                    val.MoveToFollowing("SOURCE", "");
+                    report.Source = val.InnerXml;
+
                     //croquis  
                     GetSketchForReport(report, val);
 
@@ -886,13 +897,13 @@ namespace ArcGisProEspaceCollaboratif.Core
                     //réponses (GEOREP)
                      GetGeoRep(report, val);
     
-                     report.Source = val.SelectSingleNode(val.Compile(xpath + "/SOURCE")).Value;
+                     //report.Source = val.SelectSingleNode(val.Compile(xpath + "/SOURCE")).Value;
 
                      if (signalements.ContainsKey(report.Id))
                      {                 
                          return signalements;
                      }
-                     signalements.Add(report.Id,report);
+                     signalements.Add(report.Id, report);
                 }          
             }
 
@@ -1032,7 +1043,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     Name = EncodeToUTF8(v.SelectSingleNode("AUTEUR").Value)
                 };
 
-                georep.Statut =(EnumStatus) Enum.Parse(typeof(EnumStatus),v.SelectSingleNode("STATUT").Value,true);      
+                georep.Status =(EnumStatus) Enum.Parse(typeof(EnumStatus),v.SelectSingleNode("STATUT").Value,true);      
                 georep.Date = Convert.ToDateTime(v.SelectSingleNode("DATE").Value);
                 georep.Response= EncodeToUTF8(v.SelectSingleNode("REPONSE").Value);
                

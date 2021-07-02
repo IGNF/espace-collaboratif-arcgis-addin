@@ -34,16 +34,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Test de la présence du fichier XML de paramétrage
-                    if (!System.IO.File.Exists(Helper.name_file_espaceco_xml))
-                    {
-                        string mess = string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\n\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, context.DirectoryWorking);
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            mess,
-                            Constantes.ERROR
-                        );
-                        return;
-                    }
-
+                    context.CheckConfigFile();
+                    
                     // Préparation des paramètres à envoyer pour la requête de récupération des signalements
                     Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -142,6 +134,7 @@ namespace ArcGisProEspaceCollaboratif
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
+                    return;
                 }
             });
         }

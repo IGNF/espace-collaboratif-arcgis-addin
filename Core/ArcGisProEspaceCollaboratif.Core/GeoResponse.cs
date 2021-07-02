@@ -32,7 +32,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le statut de la GeoReponse
         /// </summary>
-        public EnumStatus Statut;
+        public EnumStatus Status;
         
         /// <summary>
         /// Retourne l'id de la GeoResponse 
@@ -44,11 +44,9 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Retourne le titre de la GeoResponse 
         /// </summary>
         /// <returns></returns>
-        public string Titre() { return 
-            this.Group.Name; 
+        public string Titre() {
+            return this.Group.Name; 
         }
-
-
 
         /// <summary>
         /// Retourne la GeoResponse sous forme de XML.
@@ -57,18 +55,14 @@ namespace ArcGisProEspaceCollaboratif.Core
         public System.Xml.Linq.XElement EncodeToXML()
         {
             return new System.Xml.Linq.XElement(
-                        new System.Xml.Linq.XElement("GEOREP",
-                            new System.Xml.Linq.XElement("ID_GEOREP", this.Id()),
-                            new System.Xml.Linq.XElement("ID_AUTEUR", this.Author.Id),
-                            new System.Xml.Linq.XElement("AUTEUR", this.Author.Name),
-                            new System.Xml.Linq.XElement("TITRE", this.Titre()),
-                            new System.Xml.Linq.XElement("DATE", this.Date),
-                            new System.Xml.Linq.XElement("REPONSE", this.Response),
-                            new System.Xml.Linq.XElement("STATUT", this.Statut)
-
-                        )
-                    );
-            
+                    new System.Xml.Linq.XElement("GEOREP",
+                    new System.Xml.Linq.XElement("ID_GEOREP", this.Id()),
+                    new System.Xml.Linq.XElement("ID_AUTEUR", this.Author.Id),
+                    new System.Xml.Linq.XElement("AUTEUR", this.Author.Name),
+                    new System.Xml.Linq.XElement("TITRE", this.Titre()),
+                    new System.Xml.Linq.XElement("DATE", this.Date),
+                    new System.Xml.Linq.XElement("REPONSE", this.Response),
+                    new System.Xml.Linq.XElement("STATUT", this.Status)));
         }
         
     }

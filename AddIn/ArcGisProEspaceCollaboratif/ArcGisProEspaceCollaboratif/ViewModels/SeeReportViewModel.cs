@@ -1,7 +1,9 @@
 ﻿using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Views;
 using log4net;
+using System;
 using System.Collections.Generic;
+using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -105,9 +107,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             generalInformation += string.Format("Auteur : {0}\n", this.ReportAttributes[Helper.name_field_Auteur]);
             generalInformation += string.Format("Commune : {0}\n", this.ReportAttributes[Helper.name_field_Commune]);
             generalInformation += string.Format("Posté le : {0}\n", this.ReportAttributes[Helper.name_field_DateCreation]);
-            generalInformation += string.Format("Statut : {0}\n", this.ReportAttributes[Helper.name_field_Statut]);
-            //generalInformation += string.Format("Source : {0}\n", this.ReportAttributes[Helper.name_field_]);
-            //generalInformation += string.Format("Localisation : {0}\n", this.ReportAttributes[Helper.]);
+            generalInformation += string.Format("Statut : {0}\n", Status.GetDisplayStatus((EnumStatus)Enum.Parse(typeof(EnumStatus), this.ReportAttributes[Helper.name_field_Statut], true)));
+            generalInformation += string.Format("Source : {0}\n", this.GetDisplaySource(this.ReportAttributes[Helper.name_field_Source]));
+            generalInformation += string.Format("Localisation : {0}°E, {1}°N\n", this.ReportAttributes[Helper.name_field_Longitude], this.ReportAttributes[Helper.name_field_Latitude]);
             this.GeneralInformation = generalInformation;
         }
 
@@ -135,6 +137,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void DisplayResponses()
         {
             string responses = this.ReportAttributes[Helper.name_field_Reponse];
@@ -147,6 +152,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 this.SeeResponses = responses;
             } 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private string GetDisplaySource(string stringToSeach)
+        {
+            Dictionary<string, string> sources = new Dictionary<string, string>
+            {
+                { "UNKNOWN", "Soumise via l\'API" },
+                { "www", "Saisie sur le site web" },
+                { "SIG-GC", "Saisie depuis GeoConcept" },
+                { "SIG-AG", "Saisie depuis ArcGIS" },
+                { "SIG-QGIS", "Saisie depuis QGIS" },
+                { "PHONE", "Saisie depuis un smartphone" },
+                { "SPOTIT", "Saisie sur SPOTIT" }
+            };
+            return sources[stringToSeach];
+        }
+
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using ArcGIS.Desktop.Framework.Contracts;
+﻿using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
@@ -58,6 +59,11 @@ namespace ArcGisProEspaceCollaboratif
                             {
                                 var inspector = featureLayer.Inspect(oid);
                                 attributes = Helper.GetAttributes(inspector, fieldDescription);
+
+                                Geometry geometry = inspector.Shape;
+                                MapPoint point = geometry as MapPoint;
+                                attributes.Add(Helper.name_field_Longitude, Math.Round(point.X, 5).ToString());
+                                attributes.Add(Helper.name_field_Latitude, Math.Round(point.Y, 5).ToString());
                             });
                         }
                     }

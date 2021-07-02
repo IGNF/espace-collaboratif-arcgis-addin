@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
-    public class Wording
+    /*public class Wording
     {
         /// <summary>
         /// Libellé serveur du nouveau statut
@@ -14,7 +14,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Libellé rédigé pour l'utilisateur
         /// </summary>
         public string Full { get; set; }
-    }
+    }*/
 
     public class Status
     {
@@ -62,6 +62,28 @@ namespace ArcGisProEspaceCollaboratif.Core
             { "Rejeté (hors spéc.)", EnumStatus.reject},
             { "Rejeté (hors de propos)", EnumStatus.reject0}
         };
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="statusToSearch"></param>
+        /// <returns></returns>
+        static public string GetDisplayStatus(EnumStatus statusToSearch)
+        {
+            Dictionary<EnumStatus, string> correspondence = new Dictionary<EnumStatus, string>()
+            {
+                { EnumStatus.submit, "Reçu dans nos services" },
+                { EnumStatus.pending, "En cours de traitement"},
+                { EnumStatus.pending0, "Demande de qualification" },
+                { EnumStatus.pending1, "En attente de saisie"},
+                { EnumStatus.valid, "Pris en compte" },
+                { EnumStatus.valid0, "Déjà pris en compte"},
+                { EnumStatus.reject, "Rejeté (hors spéc.)" },
+                { EnumStatus.reject0, "Rejeté (hors de propos)" },
+                { EnumStatus.pending2, "En attente de validation"}
+            };
+            return correspondence[statusToSearch];
+        }
 
     }
 }

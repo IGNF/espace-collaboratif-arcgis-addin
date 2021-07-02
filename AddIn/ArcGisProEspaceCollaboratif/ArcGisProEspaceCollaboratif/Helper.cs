@@ -54,7 +54,9 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
         public const string name_field_LienBDuni = "Lien_object_BDUni";
-
+        public const string name_field_Source = "Source";
+        public const string name_field_Longitude = "Lon";
+        public const string name_field_Latitude = "Lat";
         public const string xml_UrlHost = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/URLHost";
         public const string xml_Login = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Login";
         public const string xml_DateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Date_extraction";
@@ -86,23 +88,24 @@ namespace ArcGisProEspaceCollaboratif
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
         public static readonly Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
         {
-            { name_field_IdReport,     new KeyValuePair<string,string> ("LONG","")      },
-            { name_field_Auteur,         new KeyValuePair<string,string> ("TEXT", "50")   },
-            { name_field_Commune,        new KeyValuePair<string,string> ("TEXT", "")     },
-            { name_field_Departement,    new KeyValuePair<string,string> ("TEXT", "23")   },
-            { name_field_IDDepartement,  new KeyValuePair<string,string> ("TEXT", "3")    },
-            { name_field_DateCreation,   new KeyValuePair<string,string> ("DATE", "")     },
-            { name_field_DateMAJ,        new KeyValuePair<string,string> ("DATE", "")     },
-            { name_field_DateValidation, new KeyValuePair<string,string> ("DATE", "")     },
-            { name_field_Themes,         new KeyValuePair<string,string> ("TEXT", "")     },
-            { name_field_Statut,         new KeyValuePair<string,string> ("LONG", "")     },
-            { name_field_Message,        new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
-            { name_field_Reponse,        new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
-            { name_field_Url,            new KeyValuePair<string,string> ("TEXT", "")     },
-            { name_field_UrlPrive,       new KeyValuePair<string,string> ("TEXT", "")     },
-            { name_field_Document,       new KeyValuePair<string,string> ("TEXT", "")     },
-            { name_field_Autorisation,   new KeyValuePair<string,string> ("TEXT", "")     }
-            // TODO ajouter Source, les attributs des thémes , la localisation
+            { name_field_IdReport, new KeyValuePair<string,string> ("LONG","") },
+            { name_field_Auteur, new KeyValuePair<string,string> ("TEXT", "50") },
+            { name_field_Commune, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Departement, new KeyValuePair<string,string> ("TEXT", "23") },
+            { name_field_IDDepartement, new KeyValuePair<string,string> ("TEXT", "3") },
+            { name_field_DateCreation, new KeyValuePair<string,string> ("DATE", "") },
+            { name_field_DateMAJ, new KeyValuePair<string,string> ("DATE", "") },
+            { name_field_DateValidation, new KeyValuePair<string,string> ("DATE", "") },
+            { name_field_Themes, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Statut, new KeyValuePair<string,string> ("LONG", "") },
+            { name_field_Message, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_Reponse, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_Url, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_UrlPrive, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Document, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Autorisation, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Source, new KeyValuePair<string,string> ("TEXT", "") }
+            // TODO ajouter les attributs des thémes , la localisation
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
@@ -218,10 +221,6 @@ namespace ArcGisProEspaceCollaboratif
                     Context context = Context.Instance;
 
                     // On vérifie si la feature class existe déjà dans la geodatabase du projet
-                    /*string gdbPath = context.GeoDatabasePath;
-                    Uri gdbUri = new Uri(uriString: gdbPath);
-                    Geodatabase gdbCollaborativeSpace = new Geodatabase(new FileGeodatabaseConnectionPath(gdbUri));
-                    bool bFcExists = ExistsFcInGdb(fcName, gdbCollaborativeSpace);*/
                     string gdbPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath;
                     bool bFcExists = context.CollaborativeSpaceGeodatabase.IsFeatureClassExistInGeodatabase(fcName);
 

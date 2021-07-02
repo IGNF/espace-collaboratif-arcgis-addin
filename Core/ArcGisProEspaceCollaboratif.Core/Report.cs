@@ -220,7 +220,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             if (this.Responses.Count == 0)
             {
-                concatenate = "<font color=\"red\">Pas de réponse actuellement pour le signalement n°" + this.Id + ".</font>";
+                //concatenate = "<font color=\"red\">Pas de réponse actuellement pour le signalement n°" + this.Id + ".</font>";
+                concatenate = "<font color=\"red\">Ce signalement n'a pas reçu de réponses.</font>";
             }
             else
             {
@@ -248,13 +249,14 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public string ConcatenateReponse()
+        public string ConcatenateResponse()
         {
             string concatenate = "";
 
             if (this.Responses.Count == 0)
             {
-                concatenate = "Pas de réponse actuellement pour le signalement n°" + this.Id + ".";
+                //concatenate = "Pas de réponse actuellement pour le signalement n°" + this.Id + ".";
+                concatenate = "Ce signalement n'a pas reçu de réponses.";
             }
             else
             {
@@ -357,6 +359,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Sketch.Add(unCroquis);
         }
  
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="listeCroquis"></param>
         public void AddCroquis(List<Sketch> listeCroquis)
         {
             foreach (Sketch croquis in listeCroquis)

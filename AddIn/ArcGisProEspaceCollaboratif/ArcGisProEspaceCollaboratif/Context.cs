@@ -166,7 +166,7 @@ namespace ArcGisProEspaceCollaboratif
         /// du répertoire d'installation 
         /// </summary>
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
-        public bool CheckConfigFile()
+        public void CheckConfigFile()
         {
             string fileConfiguration = string.Format("{0}\\{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
             if (!File.Exists(fileConfiguration))
@@ -179,10 +179,9 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("Context.CheckConfigFile : {0}\n", message));
-                    return false;
+                    throw new Exception(string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, this.DirectoryWorking));
                 }
             }
-            return true;
         }
 
         /// <summary>
@@ -397,7 +396,7 @@ namespace ArcGisProEspaceCollaboratif
                                     context.Invalidate(feature);
                                     feature["Date_MAJ"] = reportUdating.DateUpdate;
                                     feature["Date_de_validation"] = reportUdating.DateValidation;
-                                    feature["Réponses"] = Helper.EncodeToUTF8(reportUdating.ConcatenateReponse());
+                                    feature["Réponses"] = Helper.EncodeToUTF8(reportUdating.ConcatenateResponse());
                                     feature["Statut"] = reportUdating.Status;
 
                                     feature.Store();
@@ -470,8 +469,9 @@ namespace ArcGisProEspaceCollaboratif
                             rowBuffer[Helper.name_field_UrlPrive] = newReport.LienPrive;
                             rowBuffer[Helper.name_field_Document] = newReport.GetFirstDocument();
                             rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentary);
-                            rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateReponse());
+                            rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateResponse());
                             rowBuffer[Helper.name_field_Autorisation] = newReport.Authorisation;
+                            rowBuffer[Helper.name_field_Source] = newReport.Source;
 
                             // Création de l'objet signalement dans la classe des signalements
                             featureReport = reportFeatureClass.CreateRow(rowBuffer);
