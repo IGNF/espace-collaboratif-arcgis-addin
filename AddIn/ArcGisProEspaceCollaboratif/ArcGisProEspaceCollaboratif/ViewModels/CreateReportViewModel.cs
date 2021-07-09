@@ -345,12 +345,20 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// Création d'un control "Label" qui est le nom de l'attribut
+        /// Certains attributs sont de la forme Info@Nom
+        /// Il faut remplacer le @ par un _ sinon la création du nom de label est impossible
         /// </summary>
         /// <param name="content">Le nom de l'attribut</param>
         /// <param name="bold">A true si l'attribut est obligatoire</param>
         /// <returns>Le Label mis à jour</returns>
         private Label SetLabel(string content, bool bold)
         {
+            string[] toReplaces = new string[] { "@" };
+            foreach (string toReplace in toReplaces)
+            {
+                content = content.Replace(toReplace, "___");
+            }
+
             Label label = new Label
             {
                 Content = content,
@@ -864,7 +872,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             // Si option de joindre un croquis au nouveau signalement.
             if (this.JoinSketchIsChecked)
             {
-                this.VirtualReport.AddCroquis(this.Sketches);
+                this.VirtualReport.AddSketches(this.Sketches);
             }
 
             // Création du nouveau signalement
@@ -896,7 +904,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 // Si option de joindre un croquis au nouveau signalement
                 if (this.JoinSketchIsChecked)
                 {
-                    this.VirtualReport.AddCroquis(sketch);
+                    this.VirtualReport.AddSketch(sketch);
                 }
 
                 // Création du nouveau signalement
@@ -987,7 +995,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(TextBox))
                     {
                         TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = Helper.EncodeToUTF8(textBox.Text);
+                        tmpThemeAttributes.UserSelectedValue = textBox.Text;
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -996,7 +1004,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
                         string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
-                        tmpThemeAttributes.UserSelectedValue = Helper.EncodeToUTF8(value);
+                        tmpThemeAttributes.UserSelectedValue = value;
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -1118,6 +1126,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <returns>Le nom de la colonne dans la table</returns>
         private string GetCorrespondenceAttributeColumn(string display, string theme)
         {
+            display = display.Replace("___", "@");
             string tmp = "";
             foreach (GeoGroup geoGroup in this.Context.Profil.Geogroupes)
             {

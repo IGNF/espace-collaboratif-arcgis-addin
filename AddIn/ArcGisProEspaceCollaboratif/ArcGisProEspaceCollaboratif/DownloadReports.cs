@@ -105,6 +105,10 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         countReports++;
                         progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
+                        if (report.Id == 482129)
+                        {
+                            int a = 1;
+                        }
                         await context.CreatingPointReport(report);
                     }
 

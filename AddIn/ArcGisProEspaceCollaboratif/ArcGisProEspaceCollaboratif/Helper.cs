@@ -37,6 +37,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_IdReport = "N°remarque";// anciennement N°signalement
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
+        public const string name_field_Insee = "Insee";
         public const string name_field_Departement = "Département";
         public const string name_field_IDDepartement = "Département_ID";
         public const string name_field_DateCreation = "Date_de_création";
@@ -91,21 +92,20 @@ namespace ArcGisProEspaceCollaboratif
             { name_field_IdReport, new KeyValuePair<string,string> ("LONG","") },
             { name_field_Auteur, new KeyValuePair<string,string> ("TEXT", "50") },
             { name_field_Commune, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Insee, new KeyValuePair<string, string> ("TEXT", "") },
             { name_field_Departement, new KeyValuePair<string,string> ("TEXT", "23") },
             { name_field_IDDepartement, new KeyValuePair<string,string> ("TEXT", "3") },
             { name_field_DateCreation, new KeyValuePair<string,string> ("DATE", "") },
             { name_field_DateMAJ, new KeyValuePair<string,string> ("DATE", "") },
             { name_field_DateValidation, new KeyValuePair<string,string> ("DATE", "") },
-            { name_field_Themes, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Themes, new KeyValuePair<string,string> ("TEXT",  Helper.lengthMaxField.ToString()) },
             { name_field_Statut, new KeyValuePair<string,string> ("LONG", "") },
             { name_field_Message, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
             { name_field_Reponse, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
             { name_field_Url, new KeyValuePair<string,string> ("TEXT", "") },
-            { name_field_UrlPrive, new KeyValuePair<string,string> ("TEXT", "") },
-            { name_field_Document, new KeyValuePair<string,string> ("TEXT", "") },
+            { name_field_Document, new KeyValuePair<string,string> ("TEXT",  Helper.lengthMaxField.ToString()) },
             { name_field_Autorisation, new KeyValuePair<string,string> ("TEXT", "") },
             { name_field_Source, new KeyValuePair<string,string> ("TEXT", "") }
-            // TODO ajouter les attributs des thémes , la localisation
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
@@ -123,19 +123,18 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="editOperation"></param>
         public static void ExecuteEditOperation(EditOperation editOperation)
         {
-            string messageError = "";
             try
             {
                 bool editResult = editOperation.Execute();
                 if (!editResult)
                 {
-                    messageError = editOperation.ErrorMessage;
+                    throw new Exception (editOperation.ErrorMessage);
                 }
             }
-            catch (GeodatabaseException exObj)
+            catch (Exception e)
             {
-                logger.Error(string.Format("Helper.ExecuteEditOperation : {0}\n", exObj.Message));
-                throw new Exception(exObj.Message);
+                logger.Error(string.Format("Helper.ExecuteEditOperation : {0}\n", e.Message));
+                throw new Exception(e.Message);
             }
         }
 
@@ -309,7 +308,7 @@ namespace ArcGisProEspaceCollaboratif
                 string fieldType = kvp.Value.Key;
                 string fieldLength = kvp.Value.Value;
 
-                Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcPath, fieldName, fieldType, fieldLength));
+                Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcPath, fieldName, fieldType, "", "", fieldLength));
             }
         }
 

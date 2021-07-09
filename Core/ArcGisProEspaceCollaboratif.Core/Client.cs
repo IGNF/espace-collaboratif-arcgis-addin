@@ -318,7 +318,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             //on stocke d'abord les objets Signalement dans un dictionnaire, pour éviter d'éventuels doublons.
             SortedDictionary<UInt64, Report> dicoRems = new SortedDictionary<ulong, Report>();
 
-            Dictionary<string, string> totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
+            Dictionary<string, string> totalAndDate = GetAllReports(parameters, dicoRems);
             int total = Int32.Parse(totalAndDate["total"]);
             string sdate = totalAndDate["sdate"];
 
@@ -327,7 +327,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 parameters["updatingDate"] = sdate;
 
-                totalAndDate = GetGeoSignalementsTotal(parameters, dicoRems);
+                totalAndDate = GetAllReports(parameters, dicoRems);
                 total = Int32.Parse(totalAndDate["total"]);
 
                 sdate = totalAndDate["sdate"];
@@ -344,7 +344,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <param name="parameters"></param>
         /// <param name="dicoSignalements"></param>
         /// <returns></returns>
-        private Dictionary<string, string> GetGeoSignalementsTotal(Dictionary<string, string> parameters, SortedDictionary<UInt64, Report> dicoSignalements)
+        private Dictionary<string, string> GetAllReports(Dictionary<string, string> parameters, SortedDictionary<UInt64, Report> dicoSignalements)
         {
             int pagination = 100;
             int total = 0;
@@ -535,7 +535,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 //ajout des croquis
                 if (!tmpReport.IsCroquisEmpty())
                 {
-                    List<Sketch> sketches = tmpReport.Sketch;
+                    List<Sketch> sketches = tmpReport.Sketches;
                     XNamespace gml = "http://www.opengis.net/gml";
 
                     XDocument doc = new XDocument(new XElement("CROQUIS",

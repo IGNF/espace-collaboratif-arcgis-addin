@@ -58,6 +58,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.DisplayGroupDescription();
             this.DisplayFilesAttached();
             this.DisplayResponses();
+            this.DisplayThemes();
         }
 
         #endregion
@@ -72,7 +73,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Les informations générales du signalement
         /// </summary>
-        public string GeneralInformation { get; set; }
+        public string SeeGeneralInformation { get; set; }
 
         /// <summary>
         /// Le nom du groupe actif
@@ -88,6 +89,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// La ou les réponses attachées au signalement
         /// </summary>
         public string SeeResponses { get; set; }
+
+        /// <summary>
+        /// Les thèmes utilisés lors de la création du signalement
+        /// </summary>
+        public string SeeThemes { get; set; }
 
         #endregion
 
@@ -105,12 +111,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             string generalInformation = string.Format("Groupe : {0}\n", this.Context.Groupeactif);
             generalInformation += string.Format("Auteur : {0}\n", this.ReportAttributes[Helper.name_field_Auteur]);
-            generalInformation += string.Format("Commune : {0}\n", this.ReportAttributes[Helper.name_field_Commune]);
+            generalInformation += string.Format("Commune : {0}\n", this.GetTown(this.ReportAttributes[Helper.name_field_Commune], this.ReportAttributes[Helper.name_field_Insee]));
             generalInformation += string.Format("Posté le : {0}\n", this.ReportAttributes[Helper.name_field_DateCreation]);
             generalInformation += string.Format("Statut : {0}\n", Status.GetDisplayStatus((EnumStatus)Enum.Parse(typeof(EnumStatus), this.ReportAttributes[Helper.name_field_Statut], true)));
             generalInformation += string.Format("Source : {0}\n", this.GetDisplaySource(this.ReportAttributes[Helper.name_field_Source]));
-            generalInformation += string.Format("Localisation : {0}°E, {1}°N\n", this.ReportAttributes[Helper.name_field_Longitude], this.ReportAttributes[Helper.name_field_Latitude]);
-            this.GeneralInformation = generalInformation;
+            generalInformation += string.Format("Localisation : {0}\n", this.GetDisplayLocation(this.ReportAttributes[Helper.name_field_Longitude], this.ReportAttributes[Helper.name_field_Latitude]));
+            this.SeeGeneralInformation = generalInformation;
         }
 
         /// <summary>
@@ -156,6 +162,25 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        private void DisplayThemes()
+        {
+            string themes = this.ReportAttributes[Helper.name_field_Themes];
+            char[] separator = new char[] { '|', '(', ',', ')' };
+            foreach (char ch in separator)
+            {
+                themes = themes.Replace(ch, '\n');
+            }
+            this.SeeThemes = themes.Replace("=", " : ");
+        }
+
+        private string GetTown(string town, string number)
+        {
+            return string.Format("{0} ({1})", town, number);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         private string GetDisplaySource(string stringToSeach)
         {
@@ -170,6 +195,29 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 { "SPOTIT", "Saisie sur SPOTIT" }
             };
             return sources[stringToSeach];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="longitude"></param>
+        /// <param name="latitude"></param>
+        /// <returns></returns>
+        private string GetDisplayLocation(string longitude, string latitude)
+        {
+            double lon = Convert.ToDouble(longitude);
+            double lat = Convert.ToDouble(latitude);
+            string dirLon = "E";
+            string dirLat = "N";
+            if (lon < 0)
+            {
+                dirLon = "O";
+            }
+            if (lat < 0)
+            {
+                dirLat = "S";
+            }
+            return string.Format("{0}°{1}, {2}°{3}", longitude.Replace("-", ""), dirLon, latitude.Replace("-", ""), dirLat);
         }
 
 

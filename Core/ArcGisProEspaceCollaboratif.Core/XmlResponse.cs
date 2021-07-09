@@ -765,7 +765,35 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Extraction des remarques de la réponse xml
+        /// Extraction des remarques de la réponse xml.
+        /// Les balises doivent être lues dans l'ordre d'apparition
+        /// ID_GEOREM
+        /// SELECT
+        /// AUTORISATION
+        /// THEME
+        /// LIEN
+        /// DATE
+        /// MAJ
+        /// DATE_VALID
+        /// LON
+        /// LAT
+        /// STATUT
+        /// SOURCE
+        /// VERSION
+        /// ID_DEP
+        /// DEPARTEMENT
+        /// INSEE_COM
+        /// COMMUNE
+        /// COMMENTAIRE
+        /// ID_AUTEUR
+        /// AUTEUR
+        /// LIEN_AUTEUR
+        /// ID_GEOGROUPE
+        /// GROUPE
+        /// LIEN_GROUPE
+        /// DOC
+        /// GEOREP
+        /// CROQUIS
         /// </summary>
         /// <param name="remarques">SortedDictionary key:indentifiant du signalement, value: le signalement</param>
         /// <returns>le dictionnaire de signalements</returns>
@@ -787,123 +815,191 @@ namespace ArcGisProEspaceCollaboratif.Core
                 {
                     List<Theme> themes = new List<Theme>();
                     report = new Report();
-                    val.MoveToFollowing("ID_GEOREM", "");
-                    report.Id = Convert.ToUInt64(val.InnerXml);
-
-                    if (report.Id == 396396)
+                    if (val.MoveToFollowing("ID_GEOREM", ""))
                     {
-                        int a = 1;
+                        report.Id = Convert.ToUInt64(val.InnerXml);
                     }
 
-                    val.MoveToFollowing("AUTORISATION", "");
-                    report.Authorisation = val.InnerXml;
-
+                    if (val.MoveToFollowing("AUTORISATION", ""))
+                    {
+                        report.Authorisation = val.InnerXml;
+                    }
+                    
                     val.MoveToParent();
                     XPathNodeIterator it = val.Select("THEME");
                     foreach (XPathNavigator v in it)
                     {
                         string nomGroupe = v.SelectSingleNode("NOM").Value;
                         string idGroupe = v.SelectSingleNode("ID_GEOGROUPE").Value;
-                        nomGroupe = EncodeToUTF8( nomGroupe);
+                        nomGroupe = EncodeToUTF8(nomGroupe);
                         Theme theme = new Theme
                         {
-                            Group = new Group()
+                            Group = new Group(),
+                            Attributes = new List<ThemeAttributes>()
+                            
                         };
                         theme.Group.Id = idGroupe;
                         theme.Group.Name = nomGroupe;
+
+                        XPathNodeIterator attributIterator = v.Select("ATTRIBUT");
+                        List<ThemeAttributes> listTmp = new List<ThemeAttributes>();
+                        foreach (XPathNavigator valueAttribute in attributIterator)
+                        {    
+                            ThemeAttributes tmp = new ThemeAttributes
+                            {
+                                TagDisplay = EncodeToUTF8(valueAttribute.InnerXml)
+                            };
+                            if (valueAttribute.HasAttributes)
+                            {
+                                tmp.TagName = EncodeToUTF8(valueAttribute.GetAttribute("nom", ""));
+                            }
+                            listTmp.Add(tmp);
+                        }
+                        theme.Attributes = listTmp;
                         themes.Add(theme);
                     }
-
                     report.Themes = themes;
 
-                    val.MoveToFollowing("LIEN", "");
-                    report.Lien =  val.InnerXml.Replace("&amp;" , "&");
-                    val.MoveToFollowing("LIEN_PRIVE", "");
-                    report.LienPrive = val.InnerXml.Replace("&amp;" , "&");
-
-                    DateTime dateValue = new DateTime();
-                    val.MoveToFollowing("DATE", "");
-                    string d = val.InnerXml;
-                    report.DateCreation = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
-
-                    val.MoveToFollowing("MAJ", "");
-                    d = val.InnerXml;
-                    report.DateUpdate = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
-
-                    val.MoveToFollowing("DATE_VALID", "");
-                    d = val.InnerXml;
-                    if (!string.IsNullOrEmpty(d))
+                    if (val.MoveToFollowing("LIEN", ""))
                     {
-                        if (DateTime.TryParse(d, out dateValue))
+                        report.Lien = val.InnerXml.Replace("&amp;", "&");
+                    }
+
+                    if (val.MoveToFollowing("DATE", ""))
+                    {
+                        string d = val.InnerXml;
+                        report.DateCreation = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
+                    }
+
+                    if (val.MoveToFollowing("MAJ", ""))
+                    {
+                        string d = val.InnerXml;
+                        report.DateUpdate = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
+                    }
+
+                    if (val.MoveToFollowing("DATE_VALID", ""))
+                    {
+                        string d = val.InnerXml;
+                        if (!string.IsNullOrEmpty(d))
                         {
-                            report.DateValidation = Convert.ToDateTime(d);
+                            DateTime dateValue = new DateTime();
+                            if (DateTime.TryParse(d, out dateValue))
+                            {
+                                report.DateValidation = Convert.ToDateTime(d);
+                            }
                         }
                     }
-                    
-                    val.MoveToFollowing("LON", "");
-                    double lon = Double.Parse(val.InnerXml, Constantes.invC);
-                    val.MoveToFollowing("LAT", "");
-                    double lat = Double.Parse(val.InnerXml, Constantes.invC);
-                    report.Position = new Point(lon, lat);
 
-                    val.MoveToFollowing("STATUT", "");
-                    try
+                    double lon= 0.0, lat = 0.0;
+                    if (val.MoveToFollowing("LON", ""))
                     {
-                        report.Status = (EnumStatus)Enum.Parse(typeof(EnumStatus), val.InnerXml, true);
+                        lon = Double.Parse(val.InnerXml, Constantes.invC);
                     }
-                    catch (Exception e)
+                    if (val.MoveToFollowing("LAT", ""))
                     {
-                        string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", val.InnerXml, report.Id, e.Message);
-                        throw new Exception(message);
+                        lat = Double.Parse(val.InnerXml, Constantes.invC);
+                    }
+                    if (lon != 0.0 && lat != 0.0)
+                    {
+                        report.Position = new Point(lon, lat);
+                    }
+
+                    if (val.MoveToFollowing("STATUT", ""))
+                    {
+                        try
+                        {
+                            report.Status = (EnumStatus)Enum.Parse(typeof(EnumStatus), val.InnerXml, true);
+                        }
+                        catch (Exception e)
+                        {
+                            string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", val.InnerXml, report.Id, e.Message);
+                            throw new Exception(message);
+                        }
+                    }
+
+                    if (val.MoveToFollowing("SOURCE", ""))
+                    {
+                        report.Source = EncodeToUTF8(val.InnerXml);
                     }
 
                     report.Departement = new Group();
-                    val.MoveToFollowing("ID_DEP", "");
-                    report.Departement.Id = val.InnerXml;
-                    val.MoveToFollowing("DEPARTEMENT", "");
-                    report.Departement.Name = EncodeToUTF8( val.InnerXml);
+                    if (val.MoveToFollowing("ID_DEP", ""))
+                    {
+                        report.Departement.Id = val.InnerXml;
+                    }
+                    if (val.MoveToFollowing("DEPARTEMENT", ""))
+                    {
+                        report.Departement.Name = EncodeToUTF8(val.InnerXml);
+                    }
 
-                    val.MoveToFollowing("COMMUNE", "");
-                    report.Commune = EncodeToUTF8(val.InnerXml);
-                    val.MoveToFollowing("COMMENTAIRE", "");
-                    report.Commentary = EncodeToUTF8(val.InnerXml);
+                    if (val.MoveToFollowing("INSEE_COM", ""))
+                    {
+                        report.Insee = val.InnerXml;
+                    }
+                    if (val.MoveToFollowing("COMMUNE", ""))
+                    {
+                        report.Commune = EncodeToUTF8(val.InnerXml);
+                    }
+
+                    if (val.MoveToFollowing("COMMENTAIRE", ""))
+                    {
+                        report.Commentary = EncodeToUTF8(val.InnerXml);
+                    }
 
                     Author author = new Author();
-                    val.MoveToFollowing("ID_AUTEUR", "");
-                    author.Id = val.InnerXml;
-                    val.MoveToFollowing("AUTEUR", "");
-                    author.Name = val.InnerXml;
+                    if (val.MoveToFollowing("ID_AUTEUR", ""))
+                    {
+                        author.Id = val.InnerXml;
+                    }
+                    if (val.MoveToFollowing("AUTEUR", ""))
+                    {
+                        author.Name = EncodeToUTF8(val.InnerXml);
+                    }
                     report.Author = author;
 
                     Group gr = new Group();
-                    val.MoveToFollowing("ID_GEOGROUPE", "");
-                    gr.Id = val.InnerXml;
-                    val.MoveToFollowing("GROUPE", "");
-                    gr.Name = val.InnerXml;
+                    if (val.MoveToFollowing("ID_GEOGROUPE", ""))
+                    {
+                        gr.Id = val.InnerXml;
+                    }
+                    if (val.MoveToFollowing("GROUPE", ""))
+                    {
+                        gr.Name = EncodeToUTF8(val.InnerXml);
+                    } 
                     report.Group = gr;
 
-                    val.MoveToFollowing("ID_PARTITION", "");
-                    report.Id_partition = val.InnerXml;
-
-                    val.MoveToFollowing("SOURCE", "");
-                    report.Source = val.InnerXml;
-
-                    //croquis  
-                    GetSketchForReport(report, val);
-
-                    //documents  (DOC)
-                     GetDocument(report, val);
+                    //documents (DOC)
+                    val.MoveToParent();
+                    XPathNodeIterator itDoc = val.Select("DOC");
+                    GetDocument(report, itDoc);
 
                     //réponses (GEOREP)
-                     GetGeoRep(report, val);
-    
-                     //report.Source = val.SelectSingleNode(val.Compile(xpath + "/SOURCE")).Value;
+                    //val.MoveToParent();
+                    if (val.MoveToFollowing("GEOREP", ""))
+                    {
+                        val.MoveToParent();
+                        XPathNodeIterator itGeoRep = val.Select("GEOREP");
+                        GetGeoRep(report, itGeoRep);
+                    }
 
-                     if (signalements.ContainsKey(report.Id))
-                     {                 
-                         return signalements;
-                     }
-                     signalements.Add(report.Id, report);
+                    //croquis
+                    if (report.Id == 482129)
+                    {
+                        int a = 1;
+                    }
+                    if (val.MoveToFollowing("CROQUIS", ""))
+                    {
+                        val.MoveToParent();
+                        XPathNodeIterator itSketch = val.Select("CROQUIS/objet");
+                        GetSketchesForReport(report, itSketch);
+                    }
+                    
+
+                    if (signalements.ContainsKey(report.Id))
+                    {                 
+                        return signalements;
+                    }
+                    signalements.Add(report.Id, report);
                 }          
             }
 
@@ -921,16 +1017,14 @@ namespace ArcGisProEspaceCollaboratif.Core
         ///  Extrait les croquis d'un signalement et les ajoute dans l'objet Signalement 
         ///  passé en paramètre
         /// </summary>
-        /// <param name="rem">un objet Signalement</param>
+        /// <param name="report">un objet Signalement</param>
         /// <param name="val">xpathnavigator</param>
         /// <returns>XPathNodeIterator</returns>
-        private XPathNodeIterator GetSketchForReport(Report rem, XPathNavigator val )
+        private void GetSketchesForReport(Report report, XPathNodeIterator itSketch)
         {
-            val.MoveToParent();
-            XPathNodeIterator it = val.Select("CROQUIS/objet");
             try
             {
-                foreach (XPathNavigator v in it)
+                foreach (XPathNavigator v in itSketch)
                 {
                     Sketch sketch = new Sketch();
                     Sketch.SketchType type =
@@ -992,7 +1086,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     sketch.Type = type;
                     sketch.Name = nameSketch;
-                    rem.AddCroquis(sketch);
+                    report.AddSketch(sketch);
                 }
             }
             catch (Exception e)
@@ -1000,19 +1094,16 @@ namespace ArcGisProEspaceCollaboratif.Core
                 logger.Error(string.Format("XMLResponse.GetSketchForReport : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
-            return it;
         }
-
 
         /// <summary>
         /// Extraction des documents attachés à un signalement
         /// </summary>
         /// <param name="rem">le signalement</param>
         /// <param name="val">XPathNavigator (le xml contenant le signalement)</param>
-        private void GetDocument(Report rem, XPathNavigator val)
-        {
-            XPathNodeIterator it = val.Select("DOC");            
-            foreach (XPathNavigator v in it)
+        private void GetDocument(Report rem, XPathNodeIterator xPathNodeIterator)
+        {            
+            foreach (XPathNavigator v in xPathNodeIterator)
             {
                 rem.AddDocument(v.InnerXml);
             }            
@@ -1021,33 +1112,32 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Extraction des réponses d'un signalement
         /// </summary>
-        /// <param name="rem">le signalement</param>
+        /// <param name="report">le signalement</param>
         /// <param name="val">XPathNavigator (le xml contenant le signalement)</param>
-        private void GetGeoRep(Report rem, XPathNavigator val)
+        private void GetGeoRep(Report report, XPathNodeIterator xPathNodeIterator)
         {
-            XPathNodeIterator it = val.Select("GEOREP");
-            foreach (XPathNavigator v in it)
+            foreach (XPathNavigator xPathNavigator in xPathNodeIterator)
             {
                 GeoResponse georep = new GeoResponse();
 
                 Group gr = new Group
                 {
-                    Id = v.SelectSingleNode("ID_GEOREP").Value,
-                    Name = v.SelectSingleNode("TITRE").Value
+                    Id = xPathNavigator.SelectSingleNode("ID_GEOREP").Value,
+                    Name = xPathNavigator.SelectSingleNode("TITRE").Value
                 };
                 georep.Group = gr;
 
                 georep.Author = new Author
                 {
-                    Id = v.SelectSingleNode("ID_AUTEUR").Value,
-                    Name = EncodeToUTF8(v.SelectSingleNode("AUTEUR").Value)
+                    Id = xPathNavigator.SelectSingleNode("ID_AUTEUR").Value,
+                    Name = EncodeToUTF8(xPathNavigator.SelectSingleNode("AUTEUR").Value)
                 };
 
-                georep.Status =(EnumStatus) Enum.Parse(typeof(EnumStatus),v.SelectSingleNode("STATUT").Value,true);      
-                georep.Date = Convert.ToDateTime(v.SelectSingleNode("DATE").Value);
-                georep.Response= EncodeToUTF8(v.SelectSingleNode("REPONSE").Value);
+                georep.Status =(EnumStatus) Enum.Parse(typeof(EnumStatus),xPathNavigator.SelectSingleNode("STATUT").Value,true);      
+                georep.Date = Convert.ToDateTime(xPathNavigator.SelectSingleNode("DATE").Value);
+                georep.Response= EncodeToUTF8(xPathNavigator.SelectSingleNode("REPONSE").Value);
                
-                rem.AddGeoReponse(georep);
+                report.AddGeoReponse(georep);
             } 
         }
 

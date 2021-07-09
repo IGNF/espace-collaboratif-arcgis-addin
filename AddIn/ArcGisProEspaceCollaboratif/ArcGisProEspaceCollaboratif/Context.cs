@@ -286,6 +286,10 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le calque ou null si non trouvé</returns>
         public FeatureLayer GetLayerByName(string layerName)
         {
+            if (this.MapActiveView == null)
+            {
+                this.MapActiveView = MapView.Active;
+            }
             // Enumération des couches et groupes de couches
             IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
@@ -305,6 +309,10 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si la couche existe, false dans le cas contraire.</returns>
         public bool IsLayerInMap(string layerName)
         {
+            if (this.MapActiveView == null)
+            {
+                this.MapActiveView = MapView.Active;
+            }
             IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
@@ -457,6 +465,7 @@ namespace ArcGisProEspaceCollaboratif
 
                             rowBuffer[Helper.name_field_IdReport] = newReport.Id;
                             rowBuffer[Helper.name_field_Auteur] = newReport.Author.Name;
+                            rowBuffer[Helper.name_field_Insee] = newReport.Insee;
                             rowBuffer[Helper.name_field_Commune] = newReport.Commune;
                             rowBuffer[Helper.name_field_Departement] = newReport.Departement.Name;
                             rowBuffer[Helper.name_field_IDDepartement] = newReport.Departement.Id;
@@ -464,10 +473,10 @@ namespace ArcGisProEspaceCollaboratif
                             rowBuffer[Helper.name_field_DateMAJ] = newReport.DateUpdate;
                             rowBuffer[Helper.name_field_DateValidation] = newReport.DateValidation;
                             rowBuffer[Helper.name_field_Statut] = newReport.Status;
-                            rowBuffer[Helper.name_field_Themes] = newReport.ConcatenateThemes();
+                            rowBuffer[Helper.name_field_Themes] = Helper.Limite(newReport.ConcatenateThemes());
                             rowBuffer[Helper.name_field_Url] = newReport.Lien;
                             rowBuffer[Helper.name_field_UrlPrive] = newReport.LienPrive;
-                            rowBuffer[Helper.name_field_Document] = newReport.GetFirstDocument();
+                            rowBuffer[Helper.name_field_Document] = Helper.Limite(newReport.ConcatenateDocuments());
                             rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentary);
                             rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateResponse());
                             rowBuffer[Helper.name_field_Autorisation] = newReport.Authorisation;
@@ -501,10 +510,14 @@ namespace ArcGisProEspaceCollaboratif
                     }, reportFeatureClass);
                     Helper.ExecuteEditOperation(editOperation);
 
+                    if (newReport.Id == 482129)
+                    {
+                        int a = 1;
+                    }
                     //Récupération des croquis associés au signalement   
                     if (!newReport.IsCroquisEmpty())
                     {
-                        foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketch)
+                        foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketches)
                         {
                             if (currSketch.Points.Count == 0)
                             {
@@ -514,7 +527,7 @@ namespace ArcGisProEspaceCollaboratif
                             // on caste le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
                             FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type];
                             FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
-
+                            
                             // Création de l'objet croquis dans la classe correspondant à son type
                             CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
                            
@@ -610,8 +623,6 @@ namespace ArcGisProEspaceCollaboratif
             }, sketchFeatureClass);
             Helper.ExecuteEditOperation(editOperation);
         }
-
-
 
 
         /// <summary>

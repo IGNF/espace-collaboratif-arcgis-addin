@@ -62,7 +62,12 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// La commune où est situé le signalement (nom)
         /// </summary>
-        public string Commune;
+        public string Commune { get; set; }
+
+        /// <summary>
+        /// Le numéro Insee de la commune
+        /// </summary>
+        public string Insee { get; set; }
 
         /// <summary>
         /// Le texte du commentaire lié au signalement.
@@ -97,7 +102,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// les éventuelles croquis du signalement EspaceCollaboratif.
         /// </summary>
-        public List<Sketch> Sketch = new List<Sketch>();
+        public List<Sketch> Sketches = new List<Sketch>();
 
         /// <summary>
         /// Les éventuels documents attachés au signalement
@@ -122,20 +127,36 @@ namespace ArcGisProEspaceCollaboratif.Core
         #endregion
 
         /// <summary>
-        /// brief Getter pour concaténer sur une seule ligne le nom de tous les thèmes contenus dans le signalement.
+        /// brief Getter pour concaténer sur une seule ligne le nom de tous les thèmes et les attributs contenus dans le signalement.
         /// return Un texte qui est la concaténation des noms de tous les thèmes contenus dans le signalement. 
         /// </summary>
         /// <returns></returns>
         public string ConcatenateThemes()
         {
             string result = "";
-
-            for ( int i = 0; i < this.Themes.Count; i++ ){
+            for ( int i = 0; i < this.Themes.Count; i++ )
+            {
                 if (i != 0)
                 {
-                    result += ", ";
+                    result += "|";
                 }
-                result += this.Themes[i].Group.Name;
+                string themeAttributes = "";
+                if (Themes[i].Attributes.Count != 0)
+                {
+                    themeAttributes = string.Format("{0}(", this.Themes[i].Group.Name);
+                    string attributes = "";
+                    foreach (ThemeAttributes tmp in Themes[i].Attributes)
+                    {
+                        attributes += string.Format("{1}={2},", this.Themes[i].Group.Name, tmp.TagName, tmp.TagDisplay);
+                    }
+                    themeAttributes += attributes.Remove(attributes.Length - 1, 1);
+                    themeAttributes += ")";
+                }
+                else
+                {
+                    themeAttributes = string.Format("{0}", this.Themes[i].Group.Name);
+                }
+                result += themeAttributes;
             }
             return result;
         }
@@ -146,7 +167,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         public bool IsCroquisEmpty()
         {
-            return this.Sketch.Count == 0;
+            return this.Sketches.Count == 0;
         }
 
         /// <summary>
@@ -193,12 +214,18 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// 
         /// </summary>
         /// <returns></returns>
-        public string GetFirstDocument()
+        public string ConcatenateDocuments()
         {
             if (this.Documents.Count == 0)
-            { return ""; }
-            else
-            { return this.Documents.First(); }                        
+            {
+                return "";
+            }
+            string relatedDocuments = "";
+            foreach (String document in this.Documents)
+            {
+                relatedDocuments += string.Format("{0}\n", document);
+            }
+            return relatedDocuments.Remove(relatedDocuments.Length - 1, 1);
         }
 
         /// <summary>
@@ -353,21 +380,21 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="unCroquis"></param>
-        public void AddCroquis(Sketch unCroquis)
+        /// <param name="oneSketch"></param>
+        public void AddSketch(Sketch oneSketch)
         {
-            this.Sketch.Add(unCroquis);
+            this.Sketches.Add(oneSketch);
         }
  
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="listeCroquis"></param>
-        public void AddCroquis(List<Sketch> listeCroquis)
+        /// <param name="listSketches"></param>
+        public void AddSketches(List<Sketch> listSketches)
         {
-            foreach (Sketch croquis in listeCroquis)
+            foreach (Sketch sketch in listSketches)
             {
-                this.AddCroquis(croquis);
+                this.AddSketch(sketch);
             }
         }
  
@@ -385,7 +412,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public void ClearCroquis()
         {
-            this.Sketch.Clear();
+            this.Sketches.Clear();
         }
 
         /// <summary>
