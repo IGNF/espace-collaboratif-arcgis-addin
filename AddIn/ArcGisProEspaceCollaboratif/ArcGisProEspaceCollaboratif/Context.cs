@@ -200,8 +200,7 @@ namespace ArcGisProEspaceCollaboratif
                 reportLayer,
                 "POINT",
                 Helper.reportAttributes,
-                0,
-                "Tear pin 2"
+                0
                 );
 
             // Croquis ponctuels

@@ -212,7 +212,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static async Task LoadOrCreateCollaborativeSpaceLayer(string fcName, string fcType, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition, string symbolName = "")
+        public static async Task LoadOrCreateCollaborativeSpaceLayer(string fcName, string fcType, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition)
         {
             try
             {
@@ -279,10 +279,47 @@ namespace ArcGisProEspaceCollaboratif
                     List<object> argumentsSpatialIndex = new List<object> { collabSpaceLayer };
                     Geoprocessing.ExecuteToolAsync("RemoveSpatialIndex_management", Geoprocessing.MakeValueArray(argumentsSpatialIndex.ToArray()));
 
-                    // Application d'une symbologie - Ne traite actuellement que les signalements
-                    if (symbolName != "")
+                    // Pour la couche de signalement :
+                    // Application d'une symbologie
+                    // Application d'un domaine (clés-valeurs) pour le champ statut
+                    if (fcName == Helper.name_layer_Signalement)
                     {
-                        SetLayerStyle(collabSpaceLayer, symbolName);
+                        SetReportLayerStyle(collabSpaceLayer);
+
+
+                        // Définition du domaine pour le champ Statut
+                        string statusDomainName = "Status_domain";
+
+                        List<object> argumentsDomain = new List<object> {
+                            gdbPath,
+                            statusDomainName,
+                            "",
+                            "LONG",
+                            "CODED"                        
+                        };
+                        Geoprocessing.ExecuteToolAsync("CreateDomain_management", Geoprocessing.MakeValueArray(argumentsDomain.ToArray()));
+
+                        // Ajout des codes au domaine
+                        foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
+                        {
+                            List<object> argumentsCodedValue = new List<object> {
+                                gdbPath,
+                                statusDomainName,
+                                (long)currStatus,
+                                Status.GetDisplayStatus(currStatus)
+                            };
+                            Geoprocessing.ExecuteToolAsync("AddCodedValueToDomain_management", Geoprocessing.MakeValueArray(argumentsCodedValue.ToArray()));
+                        }
+
+                        // Application du domaine au champ statut
+                        string fcPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
+                        List<object> argumentsAssignDomain = new List<object> {
+                                fcPath,
+                                Helper.name_field_Statut,
+                                statusDomainName
+                            };
+                        Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
+
                     }
             
                 });
@@ -319,50 +356,25 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Applique un symbole à une couche ponctuelle.
+        /// Applique une symbolisation à la couche des signalements.
         /// </summary>
         /// <param name="fcLayer">FeatureLayer à laquelle le symbole doit être appliqué.</param>
-        /// <param name="symbolName">Nom du symbole à appliquer.</param>
         /// <returns></returns>
-        public static async void SetLayerStyle(FeatureLayer fcLayer, string symbolName)
+        public static async void SetReportLayerStyle(FeatureLayer fcLayer)
         {
-            // Get all styles in the project
-            /*            var styles = Project.Current.GetItems<StyleProjectItem>();
-
-                        // Get a specific style in the project
-                        StyleProjectItem style = styles.First(s => s.Name == "ArcGIS 2D");
-
-                        // Get the Push Pin 1 symbol
-                        var pt_ssi = style.SearchSymbols(StyleItemType.PointSymbol, symbolName).FirstOrDefault();
-
-                        // Create a new renderer definition and reference the symbol
-                        SimpleRendererDefinition srDef = new SimpleRendererDefinition
-                        {
-                            SymbolTemplate = pt_ssi.Symbol.MakeSymbolReference()
-                        };
-
-                        // Create the renderer and apply the definition
-                        CIMSimpleRenderer ssRenderer = (CIMSimpleRenderer)fcLayer.CreateRenderer(srDef);
-
-                        // Update the feature layer renderer
-                        fcLayer.SetRenderer(ssRenderer);
-            */
-
             await QueuedTask.Run(() =>
             {
-
                 CIMRenderer uniqueValueRenderer = CreateUniqueValueRendererForReportStatuses();
-
 
                 //setting the renderer to the feature layer
                 fcLayer.SetRenderer(uniqueValueRenderer);
-            });
-
-
+            });     
         }
 
-
-
+        /// <summary>
+        /// Définition de la symbologie en fonction des valeurs du champ Statut.
+        /// </summary>
+        /// <returns></returns>
         public static CIMRenderer CreateUniqueValueRendererForReportStatuses()
         {
             //Create the Unique Value Renderer
@@ -415,31 +427,6 @@ namespace ArcGisProEspaceCollaboratif
             return uniqueValueRenderer as CIMRenderer;
         }
 
-
-
-        /// <summary>
-        /// Crée un nouveau champ aux caractéristiques souhaitées.
-        /// A utiliser pour lors de la créations des calques dédiés à contenir les objects EspaceCollaboratif.
-        /// </summary>
-        /// <param name="nomChamp">Le nom à attribuer au nouveau champ.</param>
-        /// <param name="typeChamp">Le type de donnée contenue dans le nouveau champ.</param>
-        /// <param name="tailleLimite">La longueur maximale du nouveau champ.</param>
-        /// <returns>Field à utliser lors de la définition d'un nouvel calque.</returns>
-        /*        public static Field DefinirChamp(string nomChamp, FieldType typeChamp, int tailleLimite = 0)
-                {
-                    IField fieldSupp = new IField();
-                    IFieldEdit fieldEdit = (IFieldEdit)fieldSupp;
-                    fieldEdit.Name_2 = nomChamp;
-                    fieldEdit.Type_2 = typeChamp;
-
-                    if (tailleLimite != 0)
-                    {
-                        fieldEdit.Length_2 = tailleLimite;
-                    }
-
-                    return fieldSupp;
-                }
-        */
 
         /// <summary>
         /// Limite la longueur d'une string pour ne pas dépasser la taille maximale que ne peut contenir les attributs d'un calque.
@@ -575,41 +562,8 @@ namespace ArcGisProEspaceCollaboratif
                    return maxLength;
                }
        */
-        /*
-                /// <summary>
-                /// Teste si la géometrie d'une Feature est utilisable ou non pour le filtrage spatial lors de l'importation des signalements EspaceCollaboratif.
-                /// </summary>
-                /// <param name="featureTest">La Feature dont veut tester sa géométrie.</param>
-                /// <returns>True si <paramref name="featureTest"/> est de type Polygon, Envelope ou est une ligne fermée.</returns>
-                public static bool TestGeometrieFiltrageSpatial(Feature featureTest)
-                {
-                    Geometry contourFiltrageSpatial = featureTest.GetShape();
-                    ICurve contour = featureTest as Curve;
 
-                    if (contourFiltrageSpatial.GeometryType == GeometryType.Polygon
-                          || contourFiltrageSpatial.GeometryType == GeometryType.Envelope
-                           )
-                    {
-                        return true;
-                    }
-                    else
-                    {
 
-                        if (contourFiltrageSpatial.GeometryType == GeometryType.Polygon
-                          || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryCircularArc
-                          || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryEllipticArc
-                          || contourFiltrageSpatial.GeometryType == esriGeometryType.esriGeometryRing
-                           )
-                        {
-                            if (contour.IsClosed)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-        */
         /// <summary>
         /// Convertit un point ArcGisProEspaceCollaboratif.Core.Point en son équivalent ArcGIS.Core.Geometry.MapPoint. 
         /// </summary>
@@ -747,78 +701,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             return Math.Sqrt(Math.Pow(point2.Longitude - point1.Longitude, 2) + Math.Pow(point2.Latitude - point1.Latitude, 2));
         }
-       
 
-        /// <summary>
-        /// Convertit une polyligne (object IPolyline) en son équivalent polygone (object IPolygon), délimité par le contour formé par la polyligne.
-        /// </summary>
-        /// <param name="polyligneEntree">La polyligne à convertir en polygone</param>
-        /// <returns>Le Polygon délimitée par <paramref name="polyligneEntree"/>.</returns>
-        /*       public static Polygon PolylineToPolygon(Polyline polyligneEntree)
-               {
-                   Polygon polygonSortie = new Polygon() as Polygon;
-
-                   IPointCollection vertexPolyligne = polyligneEntree as IPointCollection;
-                   IPointCollection vertexPolygon = polygonSortie as IPointCollection;
-
-                   for (int index = 0; index < vertexPolyligne.PointCount; index++)
-                   {
-                       vertexPolygon.AddPoint(vertexPolyligne.Point[index]);
-                   }
-
-                   if (!polyligneEntree.IsClosed)
-                   {
-                       vertexPolygon.AddPoint(vertexPolyligne.Point[0]);
-                   }
-
-                   return polygonSortie;
-               }
-       */
-
-        /// <summary>
-        /// Convertit un polygone (object IPolygon) en son équivalent surface (object IArea), délimité par le contour du polygone.
-        /// </summary>
-        /// <param name="polygonEntree">Le polygone à convertir en surface.</param>
-        /// <returns>L'Area délimitée par <paramref name="polygonEntree"/>.</returns>
-        /*     public static IArea PolygonToArea(Polygon polygonEntree)
-               {
-                   IArea aire = polygonEntree as IArea;
-                   return aire;
-               }
-        */
-
-
-        /// <summary>
-        /// Convertit une polyligne (object IPolyline) en son équivalent surface (object IArea).
-        /// </summary>
-        /// <param name="polyligneEntree">La polyligne à convertir en surface.</param>
-        /// <returns>L'Area délimitée par <paramref name="polygonEntree"/>.</returns>
-        /*public static IArea PolylineToArea(Polyline polyligneEntree)
-        {
-            return EspaceCollaboratifHelper.PolygonToArea(EspaceCollaboratifHelper.PolylineToPolygon(polyligneEntree));
-        }*/
-
-
-        /// <summary>
-        /// Convertit un chemin (object IPath) en son équivalent polyligne (object IPolyline).
-        /// </summary>
-        /// <param name="pathEntree">Le chemin à convertir en polyligne.</param>
-        /// <returns>La Polyline issue depuis <paramref name="pathEntree"/>.</returns>
-        /*       public static Polyline PathToPolyline(IPath pathEntree)
-               {
-                   Polyline polyligne = new Polyline() as Polyline;
-
-                   IPointCollection vertexPolyligne = polyligne as IPointCollection;
-                   IPointCollection vertexPath = pathEntree as IPointCollection;
-
-                   for (int i = 0; i < vertexPath.PointCount; i++)
-                   {
-                       vertexPolyligne.AddPoint(vertexPath.Point[i]);
-                   }
-
-                   return polyligne;
-               }
-       */
 
         /// <summary>
         /// Calcule le centroïde d'un point.
@@ -835,108 +718,6 @@ namespace ArcGisProEspaceCollaboratif
             return pointIn;
         }
        
-        /// <summary>
-        /// Calcule le centroïde d'un polygone.
-        /// </summary>
-        /// <param name="polygonEntree">Le polygone dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="polygonEntree"/>.</returns>
-        /*       public static MapPoint Centroid(Polygon polygonEntree)
-               {
-
-                   return null;
-
-                   /*IEnumerator<MapPoint> enumPts = polygonEntree.Points.GetEnumerator();
-
-                   ICollection<Segment> collection = new List<Segment>();
-                   polygonEntree.GetAllSegments(ref collection);
-                   Envelope envelope = EnvelopeBuilder.();
-                   Coordinate2D envelopeCenter = envelope.CenterCoordinate;
-                   return envelopeCenter.ToMapPoint();
-
-                   polygonEntree.GetAllSegments
-                   if (polygonEntree.IsEmpty)
-                   {
-                       return null;
-                   }
-                   return EspaceCollaboratifHelper.PolygonToArea(polygonEntree).Centroid;
-                }
-
-*/
-        /// <summary>
-        /// Calcule le centroïde d'une polyligne.
-        /// Si la polyligne est fermée, le centroïde calculé correspond au centroïde de la surface délimitée par cette polyligne.
-        /// Sinon il s'agit du milieu de la polyligne.
-        /// </summary>
-        /// <param name="polylineEntree">La polyligne dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="polylineEntree"/>.</returns>
-/*        public static MapPoint Centroid(Polyline polylineEntree)
-        {
-            if (polylineEntree.IsEmpty) { return null; }
-            if (polylineEntree.IsClosed)
-            {   // Si la polyligne est fermée, on prend le centröide de la surface délimitée par la polyligne.
-                return EspaceCollaboratifHelper.PolylineToArea(polylineEntree).Centroid;
-            }
-            else
-            {   // Si la polyligne est ouverte, on prend le milieu de l'abscisse curviligne de la polyligne.
-                return EspaceCollaboratifHelper.Milieu(polylineEntree);
-            }
-        }
-*/
-        /// <summary>
-        /// Calcule le centroïde d'arc elliptique.
-        /// Si l'arc est fermé, le centroïde calculé correspond au centroïde de la surface délimitée par cet arc.
-        /// Sinon il s'agit du milieu de l'arc.
-        /// </summary>
-        /// <param name="arcEntree">L'arc elliptique dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="arcEntree"/>.</returns>        
-        /*public static MapPoint Centroid(EllipticArcSegment arcEntree)
-        {
-            if (arcEntree.IsEmpty) { return null; }
-            if (arcEntree.IsClosed)
-            {
-                return arcEntree.CenterPoint;
-            }
-            else
-            {
-                return EspaceCollaboratifHelper.Milieu(arcEntree);
-            }
-        }*/
-
-
-        /// <summary>
-        /// Calcule le centroïde d'arc circulaire.
-        /// Si l'arc est fermé, le centroïde calculé correspond au centroïde de la surface délimitée par cet arc.
-        /// Sinon il s'agit du milieu de l'arc.
-        /// </summary>
-        /// <param name="arcEntree">L'arc circulaire dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="arcEntree"/>.</returns>        
-        /*public static MapPoint Centroid(ICircularArc arcEntree)
-        {
-            if (arcEntree.IsEmpty) { return null; }
-            IEllipticArc arc = arcEntree as IEllipticArc;
-            return Centroid(arc);
-        }*/
-
-
-
-        /// <summary>
-        /// Calcule le centroïde d'une ligne.       
-        /// Il s'agit du milieu de cette ligne.
-        /// </summary>
-        /// <param name="ligneEntree">La ligne dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="ligneEntree"/>.</returns>   
-  /*      public static MapPoint Centroid(Segment ligneEntree)
-        {
-            if (ligneEntree.Length == 0)
-            {
-                return null;
-            }
-
-            MapPoint milieu = new MapPointBuilder();
-            ligneEntree.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, milieu);
-            return milieu;
-        }
-*/
         /// <summary>
         /// Calcule le centroïde d'un object croquis EspaceCollaboratif.       
         /// C'est le centroïde de l'équivalent ArcGIS Pro du croquis initial.
@@ -988,125 +769,7 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-        /// <summary>
-        /// Calcule le milieu d'un segment droit (object LineSegment).
-        /// Les coordonnées du milieu d'un segment sont les demi-sommes de chacune des coordonnées des extrémités du segment
-        /// </summary>
-        /// <param name="lineSegment">Le segment dont il faut calculer le milieu</param>
-        /// <returns>Le milieu de <paramref name="lineSegment"/>.</returns>  
-        /*public static MapPoint Milieu(Segment segment)
-        {
-            MapPoint startPoint = segment.StartPoint;
-            MapPoint endPoint = segment.EndPoint;
-            double XcenterPoint = (startPoint.X + endPoint.X) / 2;
-            double YcenterPoint = (startPoint.X + endPoint.X) / 2;
-            return MapPointBuilder.CreateMapPoint(XcenterPoint, YcenterPoint);
-        }*/
 
-        /// <summary>
-        /// Calcule le milieu d'une polyligne (object IPolyline).
-        /// Il s'agit du point situé sur la polyligne ayant comme abscisse curviligne la moitié de la longueur de la polyligne.
-        /// </summary>
-        /// <param name="polylineEntree">La polyligne dont il faut calculer son milieu</param>
-        /// <returns>Le milieu de <paramref name="polylineEntree"/>.</returns>  
-        /*public static MapPoint Milieu(Polyline polylineEntree)
-        {
-            MapPoint milieu = new MapPoint();
-            polylineEntree.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, milieu);
-            return milieu;
-        }*/
-
-        /// <summary>
-        /// Calcule le milieu d'un arc elliptique (object EllipticArcSegment).
-        /// Il s'agit du point situé sur l'arc elliptique ayant comme abscisse curviligne la moitié de la longueur de l'arc.
-        /// </summary>
-        /// <param name="ellipticArcEntree">L'arc elliptique dont il faut calculer son milieu</param>
-        /// <returns>Le milieu de <paramref name="arcEntree"/>.</returns>  
-       /* public static MapPoint Milieu(EllipticArcSegment ellipticArcEntree)
-        {
-            Coordinate2D centerCoordinate = ellipticArcEntree.CenterPoint;
-            return centerCoordinate.ToMapPoint();
-        }*/
-
-        /// <summary>
-        /// Calcule le milieu d'un arc circulaire (object ICircularArc).
-        /// Il s'agit du point situé sur l'arc circulaire ayant comme abscisse curviligne la moitié de la longueur de l'arc.
-        /// </summary>
-        /// <param name="arcEntree">L'arc circulaire dont il faut calculer son milieu</param>
-        /// <returns>Le milieu de <paramref name="arcEntree"/>.</returns>  
-        /*public static MapPoint Milieu(ICircularArc arcEntree)
-        {
-            IEllipticArc arc = arcEntree as IEllipticArc;
-            return EspaceCollaboratifHelper.Milieu(arc);
-        }*/
-
-        /// <summary>
-        /// Calcule le milieu d'une courbe (object EllipticArcSegment).
-        /// Il s'agit du point situé sur la courbe ayant comme abscisse curviligne la moitié de la longueur de la courbe.
-        /// </summary>
-        /// <param name="curveEntree">L'arc circulaire dont il faut calculer son milieu</param>
-        /// <returns>Le milieu de <paramref name="curveEntree"/>.</returns>  
-        /*public static MapPoint Milieu(ICurve curveEntree)
-        {
-            IPoint milieu = new Point();
-            curveEntree.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, milieu);
-            return milieu;
-        }*/
-
-        /// <summary>
-        /// Calcule le milieu d'un chemin(object IPath).
-        /// Il s'agit du point situé sur le chemin ayant comme abscisse curviligne la moitié de la longueur du chemin.
-        /// </summary>
-        /// <param name="pathEntree">Le chemin dont il faut calculer son milieu</param>
-        /// <returns>Le milieu de <paramref name="pathEntree"/>.</returns>
-        /*public static MapPoint Milieu(IPath pathEntree)
-        {
-            Point milieu = new Point();
-            pathEntree.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, milieu);
-            return milieu;
-        }*/
-
-
-        /// <summary>
-        /// Convertit un croquis EspaceCollaboratif en son équivalent polyligne (object IPolyline). 
-        /// </summary>
-        /// <param name="croquisEntree">Le croquis dont on veut convertir en polyligne.</param>
-        /// <returns>La polyligne générée à partir de <paramref name="croquisEntree"/>.</returns>
- /*       public static Polyline CroquisToPolyline(ArcGisProEspaceCollaboratif.Core.Croquis croquisEntree)
-        {
-            if (croquisEntree.Points.Count == 0) { return null; }
-
-            Polyline polyligne = new Polyline() as Polyline;
-            IPointCollection vertexPolyligne = polyligne as IPointCollection;
-
-            foreach (ArcGisProEspaceCollaboratif.Core.Point vertex in croquisEntree.Points)
-            {
-                vertexPolyligne.AddPoint(EspaceCollaboratifHelper.TransformPoint(vertex));
-            }
-
-            return polyligne;
-        }
-*/
-
-        /// <summary>
-        /// Créer un croquis EspaceCollaboratif à partir d'une collection de points composant sa future géométrie.
-        /// </summary>
-        /// <param name="pointCollectionEntree">La collection de points du croquis à générer.</param>
-        /// <param name="typeCroquis">Le type géométrique du croquis à générer.</param>
-        /// <returns>Le croquis généré.</returns>
-/*        public static ArcGisProEspaceCollaboratif.Core.Croquis PointCollectionToCroquis(IPointCollection pointCollectionEntree, ArcGisProEspaceCollaboratif.Core.Croquis.CroquisType typeCroquis)
-        {
-            ArcGisProEspaceCollaboratif.Core.Croquis newCroquis = new ArcGisProEspaceCollaboratif.Core.Croquis();
-            if (pointCollectionEntree.PointCount == 0) { return newCroquis; }
-            newCroquis.SetType(typeCroquis);
-
-            for (int i = 0; i < pointCollectionEntree.PointCount; i++)
-            {
-                newCroquis.AddPoint(EspaceCollaboratifHelper.TransformPoint(pointCollectionEntree.Point[i]));
-            }
-            return newCroquis;
-        }
-*/
 
         /// <summary>
         /// Teste si le champ donné d'un calque donné doit être mis ou non en attribut pour un futur croquis.

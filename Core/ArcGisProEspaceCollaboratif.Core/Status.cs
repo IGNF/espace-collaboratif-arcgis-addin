@@ -23,16 +23,16 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public enum EnumStatus
         {
-            undefined,
             submit,
             pending,
             pending0,
             pending1,
+            pending2,
             valid,
             valid0,
             reject,
             reject0,
-            pending2
+            undefined
         }
 
         static public readonly EnumStatus[] OpenStatut = new EnumStatus[]{
