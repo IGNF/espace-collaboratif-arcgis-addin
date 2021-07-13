@@ -7,6 +7,7 @@ using log4net;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using static ArcGisProEspaceCollaboratif.Core.Status;
+using System.Xml;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -811,22 +812,23 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(message);
                 }
 
-                foreach (XPathNavigator val in iterator)
+
+                foreach (XPathNavigator georemNav in iterator)
                 {
                     List<Theme> themes = new List<Theme>();
                     report = new Report();
-                    if (val.MoveToFollowing("ID_GEOREM", ""))
-                    {
-                        report.Id = Convert.ToUInt64(val.InnerXml);
-                    }
 
-                    if (val.MoveToFollowing("AUTORISATION", ""))
-                    {
-                        report.Authorisation = val.InnerXml;
-                    }
-                    
-                    val.MoveToParent();
-                    XPathNodeIterator it = val.Select("THEME");
+                    //ID
+                    XPathNavigator nav = georemNav.SelectSingleNode("ID_GEOREM");
+                    string idString = nav == null ? string.Empty : nav.Value;
+                    report.Id = Convert.ToUInt64(idString);
+
+                    //AUTORISATION
+                    nav = georemNav.SelectSingleNode("AUTORISATION");
+                    report.Authorisation = nav == null ? string.Empty : nav.Value;     
+
+                    // THEMES
+                    XPathNodeIterator it = georemNav.Select("THEME");
                     foreach (XPathNavigator v in it)
                     {
                         string nomGroupe = v.SelectSingleNode("NOM").Value;
@@ -860,141 +862,114 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     report.Themes = themes;
 
-                    if (val.MoveToFollowing("LIEN", ""))
-                    {
-                        report.Lien = val.InnerXml.Replace("&amp;", "&");
-                    }
+                    // LIEN
+                    nav = georemNav.SelectSingleNode("LIEN");
+                    report.Lien = nav == null ? string.Empty : nav.Value.Replace("&amp;", "&");
 
-                    if (val.MoveToFollowing("DATE", ""))
-                    {
-                        string d = val.InnerXml;
-                        report.DateCreation = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
-                    }
+                    // Dates de création, modification et validation
+                    nav = georemNav.SelectSingleNode("DATE");
+                    report.DateCreation = nav == null ? Convert.ToDateTime("") : Convert.ToDateTime(nav.InnerXml);
 
-                    if (val.MoveToFollowing("MAJ", ""))
-                    {
-                        string d = val.InnerXml;
-                        report.DateUpdate = (d != null) ? Convert.ToDateTime(d) : Convert.ToDateTime("");
-                    }
+                    nav = georemNav.SelectSingleNode("MAJ");
+                    report.DateUpdate = nav == null ? Convert.ToDateTime("") : Convert.ToDateTime(nav.InnerXml);
 
-                    if (val.MoveToFollowing("DATE_VALID", ""))
+                    nav = georemNav.SelectSingleNode("DATE_VALID");
+                    string d = nav.InnerXml;
+                    if (!string.IsNullOrEmpty(d))
                     {
-                        string d = val.InnerXml;
-                        if (!string.IsNullOrEmpty(d))
+                        DateTime dateValue = new DateTime();
+                        if (DateTime.TryParse(d, out dateValue))
                         {
-                            DateTime dateValue = new DateTime();
-                            if (DateTime.TryParse(d, out dateValue))
-                            {
-                                report.DateValidation = Convert.ToDateTime(d);
-                            }
+                            report.DateValidation = Convert.ToDateTime(d);
                         }
                     }
 
+                    // Longitude, latitude, position
                     double lon= 0.0, lat = 0.0;
-                    if (val.MoveToFollowing("LON", ""))
-                    {
-                        lon = Double.Parse(val.InnerXml, Constantes.invC);
-                    }
-                    if (val.MoveToFollowing("LAT", ""))
-                    {
-                        lat = Double.Parse(val.InnerXml, Constantes.invC);
-                    }
+
+                    nav = georemNav.SelectSingleNode("LON");
+                    if (nav != null) lon = Double.Parse(nav.InnerXml, Constantes.invC);
+
+                    nav = georemNav.SelectSingleNode("LAT");
+                    if (nav != null) lat = Double.Parse(nav.InnerXml, Constantes.invC);
+
                     if (lon != 0.0 && lat != 0.0)
                     {
                         report.Position = new Point(lon, lat);
                     }
 
-                    if (val.MoveToFollowing("STATUT", ""))
+                    // STATUT
+                    nav = georemNav.SelectSingleNode("STATUT");
+                    try
                     {
-                        try
-                        {
-                            report.Status = (EnumStatus)Enum.Parse(typeof(EnumStatus), val.InnerXml, true);
-                        }
-                        catch (Exception e)
-                        {
-                            string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", val.InnerXml, report.Id, e.Message);
-                            throw new Exception(message);
-                        }
+                        report.Status = (EnumStatus)Enum.Parse(typeof(EnumStatus), nav.InnerXml, true);
+                    }
+                    catch (Exception e)
+                    {
+                        string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", nav.InnerXml, report.Id, e.Message);
+                        throw new Exception(message);
                     }
 
-                    if (val.MoveToFollowing("SOURCE", ""))
-                    {
-                        report.Source = EncodeToUTF8(val.InnerXml);
-                    }
+                    //SOURCE
+                    nav = georemNav.SelectSingleNode("SOURCE");
+                    report.Source = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
 
+                    // Informations administratives
                     report.Departement = new Group();
-                    if (val.MoveToFollowing("ID_DEP", ""))
-                    {
-                        report.Departement.Id = val.InnerXml;
-                    }
-                    if (val.MoveToFollowing("DEPARTEMENT", ""))
-                    {
-                        report.Departement.Name = EncodeToUTF8(val.InnerXml);
-                    }
 
-                    if (val.MoveToFollowing("INSEE_COM", ""))
-                    {
-                        report.Insee = val.InnerXml;
-                    }
-                    if (val.MoveToFollowing("COMMUNE", ""))
-                    {
-                        report.Commune = EncodeToUTF8(val.InnerXml);
-                    }
+                    nav = georemNav.SelectSingleNode("ID_DEP");
+                    report.Departement.Id = nav == null ? string.Empty : nav.InnerXml;
 
-                    if (val.MoveToFollowing("COMMENTAIRE", ""))
-                    {
-                        report.Commentary = EncodeToUTF8(val.InnerXml);
-                    }
+                    nav = georemNav.SelectSingleNode("DEPARTEMENT");
+                    report.Departement.Name = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
 
+                    nav = georemNav.SelectSingleNode("INSEE_COM");
+                    report.Insee = nav == null ? string.Empty : nav.InnerXml;
+
+                    nav = georemNav.SelectSingleNode("COMMUNE");
+                    report.Commune = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
+
+                    // COMMENTAIRE
+                    nav = georemNav.SelectSingleNode("COMMENTAIRE");
+                    report.Commentary = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
+
+                    //Informations auteur
                     Author author = new Author();
-                    if (val.MoveToFollowing("ID_AUTEUR", ""))
-                    {
-                        author.Id = val.InnerXml;
-                    }
-                    if (val.MoveToFollowing("AUTEUR", ""))
-                    {
-                        author.Name = EncodeToUTF8(val.InnerXml);
-                    }
+
+                    nav = georemNav.SelectSingleNode("ID_AUTEUR");
+                    author.Id = nav == null ? string.Empty : nav.InnerXml;
+
+                    nav = georemNav.SelectSingleNode("AUTEUR");
+                    author.Name = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
+
                     report.Author = author;
 
+                    // Informations groupe
                     Group gr = new Group();
-                    if (val.MoveToFollowing("ID_GEOGROUPE", ""))
-                    {
-                        gr.Id = val.InnerXml;
-                    }
-                    if (val.MoveToFollowing("GROUPE", ""))
-                    {
-                        gr.Name = EncodeToUTF8(val.InnerXml);
-                    } 
+
+                    nav = georemNav.SelectSingleNode("ID_GEOGROUPE");
+                    gr.Id = nav == null ? string.Empty : nav.InnerXml;
+
+                    nav = georemNav.SelectSingleNode("GROUPE");
+                    gr.Name = nav == null ? string.Empty : EncodeToUTF8(nav.InnerXml);
                     report.Group = gr;
 
-                    //documents (DOC)
-                    val.MoveToParent();
-                    XPathNodeIterator itDoc = val.Select("DOC");
-                    GetDocument(report, itDoc);
+                    // Documents
+                    XPathNodeIterator itDoc = georemNav.Select("DOC");
+                    if (itDoc.Count > 0)
+                        GetDocument(report, itDoc);
 
-                    //réponses (GEOREP)
-                    //val.MoveToParent();
-                    if (val.MoveToFollowing("GEOREP", ""))
-                    {
-                        val.MoveToParent();
-                        XPathNodeIterator itGeoRep = val.Select("GEOREP");
+                    // Réponses (GEOREP)
+                    XPathNodeIterator itGeoRep = georemNav.Select("GEOREP");
+                    if (itGeoRep.Count > 0)
                         GetGeoRep(report, itGeoRep);
-                    }
 
-                    //croquis
-                    if (report.Id == 482129)
-                    {
-                        int a = 1;
-                    }
-                    if (val.MoveToFollowing("CROQUIS", ""))
-                    {
-                        val.MoveToParent();
-                        XPathNodeIterator itSketch = val.Select("CROQUIS/objet");
+                    // Croquis
+                    XPathNodeIterator itSketch = georemNav.Select("CROQUIS/objet");
+                    if (itSketch.Count > 0)
                         GetSketchesForReport(report, itSketch);
-                    }
-                    
 
+                    // Ajout du nouveau signalement
                     if (signalements.ContainsKey(report.Id))
                     {                 
                         return signalements;
@@ -1012,6 +987,15 @@ namespace ArcGisProEspaceCollaboratif.Core
 
             return signalements;
         }
+
+
+        public static string GetChildNodeValue(XPathNavigator navigator, string nodePath)
+        {
+            XPathNavigator nav = navigator.SelectSingleNode(nodePath);
+            return nav == null ? string.Empty : nav.Value;
+        }
+
+
 
         /// <summary>
         ///  Extrait les croquis d'un signalement et les ajoute dans l'objet Signalement 

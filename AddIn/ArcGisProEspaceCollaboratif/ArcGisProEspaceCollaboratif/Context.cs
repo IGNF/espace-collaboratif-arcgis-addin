@@ -236,54 +236,13 @@ namespace ArcGisProEspaceCollaboratif
             this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer));
         }
 
-        /// <summary>
-        /// Essaie de charger une couche de la geodatabase
-        /// </summary>
-        /// <param name="layerName">nom de la couche</param> Change en layerPath
-        /// <returns>bool true si la couche a pu être charchée, false sinon (la couche n'existe pas dans la gdb)</returns>
-        /*        private FeatureLayer LoadLayer(string layerName, string symbolName = "")
-                {
-
-                    FeatureLayer result = null;
-
-                    // Chemin complet de la couche
-                    string layerPath = this.gdbPath + "\\" + layerName ;
-
-                    try
-                    {
-                        int indexNumber = 0;
-                        System.Uri layerUri = new System.Uri(layerPath);
-
-                        // Création de la nouvelle couche (objet layer à partir d'une feature class existante)
-                        FeatureLayer layer = LayerFactory.Instance.CreateFeatureLayer(
-                            layerUri,
-                            this.mapActiveView.Map,
-                            indexNumber,
-                            layerName
-                        );
-
-                        if (symbolName != "")
-                            setReportLayerStyle(result, symbolName);
-
-                        result = layer;
-                    }
-                    catch (Exception e)
-                    {
-                        logger.Info(layerName + " n'existe pas dans la gdb\n" + e.Message);
-                        result = null;
-                    }
-
-                    return result;
-                }
-        */
-
 
 
         /// <summary>
-        /// Récupère un calque par son nom.
+        /// Récupère une couche par son nom.
         /// </summary>
-        /// <param name="name">Le nom du calque qu'il faut récupérer.</param>
-        /// <returns>Le calque ou null si non trouvé</returns>
+        /// <param name="layerName">Le nom de la couche qu'il faut récupérer.</param>
+        /// <returns>La couche ou null si non trouvée</returns>
         public FeatureLayer GetLayerByName(string layerName)
         {
             if (this.MapActiveView == null)
@@ -342,34 +301,7 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-        /// <summary>
-        // Efface de la carte en cours le signalement (et ses croquis associés s'ils existent) donnée par son identifiant.
-        /// </summary>
-        /// <param name="idRemarque">Le numéro du signalement qu'on souhaite effacer de la carte en cours.</param>
-        /*        public void EffacerPointRemarqueEspaceCollaboratif(uint idRemarque)
-                {
-                    int indexCalque = 0;
-
-                    foreach (FeatureLayer calqueEspaceCollaboratif in this.calquesEspaceCollaboratif)
-                    {
-                        IQueryFilter queryFilter = new QueryFilter();
-
-                        if (indexCalque == 0)
-                        {
-                            queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_IdRemarque + "=" + idRemarque;
-                        }
-                        else
-                        {
-                            queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_LienRemarque + "=" + idRemarque;
-                        }
-
-                        ITable table = (ITable)calqueEspaceCollaboratif;
-                        table.DeleteSearchedRows(queryFilter);
-
-                        indexCalque++;
-                    }
-                }
-        */
+ 
  
         /// <summary>
         /// 
@@ -434,195 +366,242 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
+
         /// <summary>
-        /// Dessine sur la carte en cours un signalement donné (avec ses éventuels croquis associés).
+        /// Insère sur la carte en cours une liste de signalements (avec leurs éventuels croquis associés).
         /// </summary>
         /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
-        public async Task<bool> CreatingPointReport(ArcGisProEspaceCollaboratif.Core.Report newReport)
+        public async Task<bool> InsertReports(List<Report> reports)
         {
             try
             {
                 return await QueuedTask.Run(() =>
                 {
+                    ArcGIS.Desktop.Editing.EditOperation createOperation = new ArcGIS.Desktop.Editing.EditOperation();
+                    createOperation.Name = "Generate reports";
+                    createOperation.SelectNewFeatures = false;
 
                     FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
-                    EditOperation editOperation = new EditOperation();
-                    editOperation.Callback(context =>
+                    // Barre de progression - A CHANGER
+                    FormProgressDownload progressDownload = new FormProgressDownload();
+                    int countReports = 0;
+                    progressDownload.GetProgressBar().Maximum = reports.Count;
+                    progressDownload.GetProgressBar().Step = 1;
+                    progressDownload.SetMaxProgressor(reports.Count);
+                    progressDownload.SetBar(1);
+                    progressDownload.Show();
+
+                    this.Client.SetProgressBar(progressDownload.GetProgressBar());
+
+                    // Placement des signalements importés et filtrés sur la carte.
+                    foreach (Report newReport in reports)
                     {
-                        RowBuffer rowBuffer = null;
-                        Feature featureReport = null;
+                        countReports++;
+                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
 
-                        try
+                        // Signalement
+                        var reportFields = new Dictionary<string, object>();
+                        reportFields = GetFieldValuesForReport(newReport);
+
+                        createOperation.Create(reportLayer, reportFields);
+
+                        // Croquis
+                        if (!newReport.IsCroquisEmpty())
                         {
-                            // Création de l'objet signalement dans la couche des signalements avec tous ses attributs
-                            // On récupère le schéma de la classe
-                            FeatureClassDefinition reportFcDefinition = reportFeatureClass.GetDefinition();
-
-                            // Préparation des attributs de l'objet signalement à créer
-                            rowBuffer = reportFeatureClass.CreateRowBuffer();
-
-                            rowBuffer[Helper.name_field_IdReport] = newReport.Id;
-                            rowBuffer[Helper.name_field_Auteur] = newReport.Author.Name;
-                            rowBuffer[Helper.name_field_Insee] = newReport.Insee;
-                            rowBuffer[Helper.name_field_Commune] = newReport.Commune;
-                            rowBuffer[Helper.name_field_Departement] = newReport.Departement.Name;
-                            rowBuffer[Helper.name_field_IDDepartement] = newReport.Departement.Id;
-                            rowBuffer[Helper.name_field_DateCreation] = newReport.DateCreation;
-                            rowBuffer[Helper.name_field_DateMAJ] = newReport.DateUpdate;
-                            rowBuffer[Helper.name_field_DateValidation] = newReport.DateValidation;
-                            rowBuffer[Helper.name_field_Statut] = newReport.Status;
-                            rowBuffer[Helper.name_field_Themes] = Helper.Limite(newReport.ConcatenateThemes());
-                            rowBuffer[Helper.name_field_Url] = newReport.Lien;
-                            rowBuffer[Helper.name_field_UrlPrive] = newReport.LienPrive;
-                            rowBuffer[Helper.name_field_Document] = Helper.Limite(newReport.ConcatenateDocuments());
-                            rowBuffer[Helper.name_field_Message] = Helper.Limite(newReport.Commentary);
-                            rowBuffer[Helper.name_field_Reponse] = Helper.Limite(newReport.ConcatenateResponse());
-                            rowBuffer[Helper.name_field_Autorisation] = newReport.Authorisation;
-                            rowBuffer[Helper.name_field_Source] = newReport.Source;
-
-                            // Création de l'objet signalement dans la classe des signalements
-                            featureReport = reportFeatureClass.CreateRow(rowBuffer);
-
-                            // Remplissage de sa géométrie
-                            featureReport.SetShape(Helper.TransformPoint(newReport.Position));
-
-                            // Enregristrement
-                            featureReport.Store();
-
-                            //To Indicate that the attribute table has to be updated
-                            context.Invalidate(featureReport);
-                        }
-
-                        catch (GeodatabaseException exObj)
-                        {
-                            logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", exObj.Message));
-                        }
-                        finally
-                        {
-                            if (rowBuffer != null)
-                                rowBuffer.Dispose();
-
-                            if (featureReport != null)
-                                featureReport.Dispose();
-                        }
-                    }, reportFeatureClass);
-                    Helper.ExecuteEditOperation(editOperation);
-
-                    if (newReport.Id == 482129)
-                    {
-                        int a = 1;
-                    }
-                    //Récupération des croquis associés au signalement   
-                    if (!newReport.IsCroquisEmpty())
-                    {
-                        foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketches)
-                        {
-                            if (currSketch.Points.Count == 0)
+                            foreach (ArcGisProEspaceCollaboratif.Core.Sketch currSketch in newReport.Sketches)
                             {
-                                continue;
+                                if (currSketch.Points.Count == 0) continue;
+
+                                // on caste le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
+                                int layerIndex = this.GetIndexLayerFromSketchType(currSketch.Type);
+                                if (layerIndex == -1)
+                                {
+                                    logger.Error(string.Format("Context.CreerPointSignalement : {0} {1}\n", "Type non reconnu : ", currSketch.Type.ToString()));
+                                    continue;
+                                }
+                                FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[layerIndex];
+
+                                // Création de l'objet croquis dans la classe correspondant à son type
+                                var sketchFields = new Dictionary<string, object>();
+                                sketchFields = GetFieldValuesForSketch(currSketch, newReport.Id);
+
+                                if (sketchFields.Count > 0)
+                                {
+                                    createOperation.Create(sketchFeatureLayer, sketchFields);
+                                }
                             }
-                           
-                            // on caste le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
-                            FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[(int)currSketch.Type];
-                            FeatureClass sketchFeatureClass = sketchFeatureLayer.GetFeatureClass();
-                            
-                            // Création de l'objet croquis dans la classe correspondant à son type
-                            CreateSketchObject(currSketch, sketchFeatureClass, newReport.Id);
-                           
-                        }
+                        }                       
+                    }
+                    progressDownload.Close();
+
+                    bool result = createOperation.Execute();
+
+                    if (!result)
+                    {
+                        string error = createOperation.ErrorMessage;
+                        logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", error));
+                    }
+                    else
+                    {
+                        Project.Current.SaveEditsAsync();
                     }
 
-                    // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
-                    Project.Current.SaveEditsAsync();
+                    return result;
 
-                    return true;
                 });
             }
 
             catch (Exception e)
             {
                 string message = string.Format("{0}\n{1}", e.Message, e.ToString());
-                logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", message));
+                logger.Error(string.Format("Context.InsertReports : {0}\n", message));
                 return false;
             }
         }
 
 
-        public void CreateSketchObject(ArcGisProEspaceCollaboratif.Core.Sketch currSketch, FeatureClass sketchFeatureClass, ulong idNewReport)
+        /// <summary>
+        /// Retourne l'index de la couche de croquis à utiliser dans la liste des couches (this.CollaborativeSpaceLayers)
+        /// en fonction du type du croquis.
+        /// Ordre des couches : [reportLayer, pointSketchLayer, lineSketchLayer, polygonSketchLayer]
+        /// </summary>
+        /// <param name="sketchType">Type du croquis à traiter</param>
+        public int GetIndexLayerFromSketchType(SketchType sketchType)
         {
-            EditOperation editOperation = new EditOperation();
-            editOperation.Callback(context =>
+            // [reportLayer, pointSketchLayer, lineSketchLayer, polygonSketchLayer]
+
+            int indexLayer = -1;
+            switch (sketchType)
             {
-                RowBuffer rowBuffer = null;
-                Feature sketchFeature = null;
+                case SketchType.Point:
+                    indexLayer = 1;
+                    break;
 
-                try
-                {
-                    // Récupération des attributs du croquis transmis par l'API (champ attributes)
-                    string attributes = "";
-                    foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
-                        attributes += string.Format("{0} = '{1}' | ", attribut.Name, attribut.Value);
+                case SketchType.Texte:
+                    indexLayer = 1;
+                    break;
 
-                    if (currSketch.Attributes.Count != 0)
-                        attributes = attributes.Substring(0, attributes.Length - 3);
+                case SketchType.Ligne:
+                    indexLayer = 2;
+                    break;
 
-                    // Préparation des attributs de l'objet croquis à créer
-                    rowBuffer = sketchFeatureClass.CreateRowBuffer();
+                case SketchType.Fleche:
+                    indexLayer = 2;
+                    break;
 
-                    rowBuffer[Helper.name_field_LienReport] = idNewReport;
-                    rowBuffer[Helper.name_field_NomCroquis] = currSketch.Name;
-                    rowBuffer[Helper.name_field_Attributs] = Helper.Limite(attributes);
+                case SketchType.Polygone:
+                    indexLayer = 3;
+                    break;
 
-                    // Création de l'objet signalement dans la classe des signalements
-                    sketchFeature = sketchFeatureClass.CreateRow(rowBuffer);
+                default:
+                    break;
+            }
 
-                    // Remplissage de sa géométrie
-                    ArcGIS.Core.Geometry.MapPoint sketchPoint = Helper.TransformPoint(currSketch.Points.First());
-                    switch (currSketch.Type)
-                    {
-                        default:
-                            break;
-
-                        case SketchType.Point:
-                            sketchFeature.SetShape(sketchPoint);
-                            break;
-
-                        case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Ligne:
-                            Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
-                            sketchFeature.SetShape(sketchLine);
-                            break;
-
-                        case ArcGisProEspaceCollaboratif.Core.Sketch.SketchType.Polygone:
-                            Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
-                            sketchFeature.SetShape(sketchPolygon);
-                            break;
-
-                    }
-
-                    // Enregistrement
-                    sketchFeature.Store();
-
-                    //To Indicate that the attribute table has to be updated
-                    context.Invalidate(sketchFeature);
-                }
-
-                catch (GeodatabaseException exObj)
-                {
-                    logger.Error(string.Format("Context.CreateSketchObject : {0}\n", exObj.Message));
-                }
-                finally
-                {
-                    if (rowBuffer != null)
-                        rowBuffer.Dispose();
-
-                    if (sketchFeature != null)
-                        sketchFeature.Dispose();
-                }
-            }, sketchFeatureClass);
-            Helper.ExecuteEditOperation(editOperation);
+            return indexLayer;
         }
+
+
+
+        /// <summary>
+        /// Récupère les valeurs des champs de la table de signalements pour le nouveau signalement à insérer.
+        /// </summary>
+        /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
+        public Dictionary<string, object> GetFieldValuesForReport(Report newReport)
+        {
+            // Signalement
+            var reportFields = new Dictionary<string, object>();
+
+            reportFields.Add(Helper.name_field_IdReport, newReport.Id);
+            reportFields.Add(Helper.name_field_Auteur, newReport.Author.Name);
+            reportFields.Add(Helper.name_field_Insee, newReport.Insee);
+            reportFields.Add(Helper.name_field_Commune, newReport.Commune);
+            reportFields.Add(Helper.name_field_Departement, newReport.Departement.Name);
+            reportFields.Add(Helper.name_field_IDDepartement, newReport.Departement.Id);
+            reportFields.Add(Helper.name_field_DateCreation, newReport.DateCreation);
+            reportFields.Add(Helper.name_field_DateMAJ, newReport.DateUpdate);
+            reportFields.Add(Helper.name_field_DateValidation, newReport.DateValidation);
+            reportFields.Add(Helper.name_field_Statut, newReport.Status);
+            reportFields.Add(Helper.name_field_Themes, Helper.Limite(newReport.ConcatenateThemes()));
+            reportFields.Add(Helper.name_field_Url, newReport.Lien);
+            reportFields.Add(Helper.name_field_Document, Helper.Limite(newReport.ConcatenateDocuments()));
+            reportFields.Add(Helper.name_field_Message, Helper.Limite(newReport.Commentary));
+            reportFields.Add(Helper.name_field_Reponse, Helper.Limite(newReport.ConcatenateResponse()));
+            reportFields.Add(Helper.name_field_Autorisation, newReport.Authorisation);
+            reportFields.Add(Helper.name_field_Source, newReport.Source);
+
+            reportFields.Add(Helper.name_field_Shape, Helper.TransformPoint(newReport.Position));
+
+            return reportFields;
+        }
+
+
+        /// <summary>
+        /// Récupère les valeurs des champs de la table croquis concernée pour le croquis à insérer.
+        /// </summary>
+        /// <param name="currSketch">Croquis à ajouter.</param>
+        /// <param name="idNewReport">Identifiant du signalement en cours d'ajout.</param>
+        public Dictionary<string, object> GetFieldValuesForSketch(Sketch currSketch, ulong idNewReport)
+        {
+            var sketchFields = new Dictionary<string, object>();
+
+            try
+            {
+                // Récupération des attributs du croquis transmis par l'API (champ attributes)
+                string attributes = "";
+                foreach (ArcGisProEspaceCollaboratif.Core.SketchAttributes attribut in currSketch.Attributes)
+                    attributes += string.Format("{0} = '{1}' | ", attribut.Name, attribut.Value);
+
+                if (currSketch.Attributes.Count != 0)
+                    attributes = attributes.Substring(0, attributes.Length - 3);
+
+                // Préparation des attributs de l'objet croquis à créer
+                sketchFields.Add(Helper.name_field_LienReport, idNewReport);
+                sketchFields.Add(Helper.name_field_NomCroquis, currSketch.Name);
+                sketchFields.Add(Helper.name_field_Attributs, Helper.Limite(attributes));
+
+                // Remplissage de sa géométrie
+                ArcGIS.Core.Geometry.MapPoint sketchPoint = Helper.TransformPoint(currSketch.Points.First());
+                switch (currSketch.Type)
+                {
+                    default:
+                        break;
+
+                    case SketchType.Point:
+                        sketchFields.Add(Helper.name_field_Shape, sketchPoint);
+                        break;
+
+                    case SketchType.Texte:
+                        sketchFields.Add(Helper.name_field_Shape, sketchPoint);
+                        break;
+
+                    case SketchType.Ligne :
+                        Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchLine);
+                        break;
+
+                    case SketchType.Fleche:
+                        Polyline sketchArrow = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchArrow);
+                        break;
+
+                    case SketchType.Polygone:
+                        Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchPolygon);
+                        break;
+                }
+            }
+
+            catch (GeodatabaseException exObj)
+            {
+                logger.Error(string.Format("Context.CreateSketchObject : {0}\n", exObj.Message));
+            }
+
+            return sketchFields;
+
+        }
+
 
 
         /// <summary>
@@ -647,125 +626,11 @@ namespace ArcGisProEspaceCollaboratif
             return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
         }
 
-        /// <summary>
-        /// Calcule la BBox Ripart qui enveloppe un unique object géométrique.
-        /// </summary>
-        /// <param name="geometrieFiltre">La Geometry dont on veut obtenir l'enveloppe globale.</param>
-        /// <returns>Ripart.Core.Box qui enveloppe la Geometry de <paramref name="geometrieFiltre"/>.</returns>
-        /*        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(Geometry geometrieFiltre)
-                {
-                    List<Geometry> tempGeometriesFiltres = new List<Geometry>
-                    {
-                        geometrieFiltre
-                    };
-                    return this.GetBBox(tempGeometriesFiltres);
-                }
-        */
-
-        
-        // INUTILE ?
-        /// <summary>
-        /// Zoom à l'écran sur une emprise donnée.
-        /// </summary>
-        /// <param name="emprise">L'object Ripart.Core.Box sur laquelle il faut faire le zoom à l'écran.</param>
-/*
-        public void Zoom(ArcGisProEspaceCollaboratif.Core.Box emprise)
-        {
-            Envelope bbox = new Envelope(emprise);
-            bbox.SpatialReference = this.spatialReference;
-            bbox.PutCoords(emprise.XMin, emprise.YMin, emprise.XMax, emprise.YMax);
-
-            Camera extentCamera = new Camera()
-
-            this.mapActiveView.ZoomTo = bbox;
-            this.ActiveView.Refresh();
-            return;
-        }
-*/
-        /// <summary>
-        /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste d'objects Geometry.
-        /// </summary>
-        /// <param name="geometries">La liste des objects IGeometry sur lesquels il faut faire le zoom à l'écran.</param>
-        /*       public void Zoom(List<Geometry> geometries)
-               {
-                   ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometries);
-                   this.Zoom(bbox);
-                   return;
-               }
-       */
-        /// <summary>
-        /// Zoom à l'écran sur l'étendue un object Geometry.
-        /// </summary>
-        /// <param name="geometrie">L'object IGeometry sur lequel il faut faire le zoom à l'écran.</param>
-        /*        public void Zoom(Geometry geometrie)
-                {
-                    ArcGisProEspaceCollaboratif.Core.Box bbox = this.GetBBox(geometrie);
-                    this.Zoom(bbox);
-                    return;
-                }
-        */
-        /// <summary>
-        /// Zoom à l'écran sur l'étendue de l'ensemble d'une liste de signalements Ripart.
-        /// </summary>
-        /// <param name="remarques">La liste des signalements Ripart sur lesquels il faut faire le zoom à l'écran.</param>
-        /*       public void Zoom(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
-               {
-                   if (remarques.Count == 0) { return; }
-
-                   List<double> coordX = new List<double>();
-                   List<double> coordY = new List<double>();
-
-                   foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
-                   {
-                       coordX.Add(remarque.Position.Longitude);
-                       coordY.Add(remarque.Position.Latitude);
-                   }
-
-                   double supplementZoom = 5 / 100;
-                   double supplementX = (coordX.Max() - coordX.Min()) * supplementZoom;
-                   double supplementY = (coordY.Max() - coordY.Min()) * supplementZoom;
-
-                   ArcGisProEspaceCollaboratif.Core.Box bbox = new ArcGisProEspaceCollaboratif.Core.Box(coordX.Min() - supplementX, coordY.Min() - supplementY, coordX.Max() + supplementX, coordY.Max() + supplementY);
-
-                   this.Zoom(bbox);
-                   return;
-               }
-       */
-
-
-
-        // INUTILE ?
-        /// <summary>
-        /// Retourne la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements.
-        /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
-/*        public List<Geometry> GetSpatialFilterGeometry()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            // Récupération de la liste des géométries servant pour le filtrage spatial à partir des objects sélectionnés dans la carte en cours.
-//TO-DO            geometryFiltreSpatial = this.GetSpatialFilterGeometry_from_selection();
-
-            // Si la récupération par sélection est vide (car aucun object séléectionné ou aucun ayant la géométrie adéquate), alors on récupère les géométries contenues dans le calque définit par le fichier de paramètre.
-            if (geometryFiltreSpatial.Count == 0)
-            {
-                geometryFiltreSpatial = this.GetSpatialFilterGeometry_from_XML();
-            }
-
-            // Si la récupération n'est pas vide, on zoom à l'écran sur celle-ci.
-            if (geometryFiltreSpatial.Count != 0)
-            {
-                this.Zoom(geometryFiltreSpatial);
-            }
-
-            return geometryFiltreSpatial;
-        }
-*/
 
         /// <summary>
-        /// Récupère à partir d'un calque donné par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
+        /// Récupère à partir d'une couche donnée par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
         /// </summary>
-        /// <param name="calqueFiltrage">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
+        /// <param name="filterLayerName">Nom du calque devant contenir les objects utiles pour le filtrage spatial.</param>
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
         public List<Geometry> GetSpatialFilterGeometry(string filterLayerName)
         {
@@ -796,211 +661,6 @@ namespace ArcGisProEspaceCollaboratif
             return spatialFilterGeometry;
         }
 
-
-        // INUTILE ?
-        /// <summary>
-        /// Récupère à partir du calque indiqué dans le fichier XML de configuration, la liste des géométries destinées à servir au filtrage spatial lors de l'import des signalements.
-        /// </summary>
-        /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'import des signalements.</returns>
-/*        public List<Geometry> GetSpatialFilterGeometry_from_XML()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            string nom_FichierParametre = Helper.XML_NameFile();
-
-            XmlDocument doc = new XmlDocument();
-            doc.Load(nom_FichierParametre);
-
-            // XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName("Zone_extraction");
-            XmlNodeList elemCalqueExtraction = doc.GetElementsByTagName(Helper.XML_Suffixe(Helper.xml_Zone_extraction));
-            IEnumerator<XmlNode> ienum;
-
-            // Parcour des calques contenant les objects de filtrage spatial d'après de le XML de paramétrage
-            for (int i = 0; i < elemCalqueExtraction.Count; i++)
-            {
-                string nomCalqueExtraction = elemCalqueExtraction[i].Attributes["calque"].Value;
-
-                if (nomCalqueExtraction.Length == 0)
-                { continue; }
-
-                Layer calqueExtraction = this.GetLayerByName(nomCalqueExtraction);
-                if (calqueExtraction == null)
-                { continue; }
-
-                ienum = elemCalqueExtraction[i].GetEnumerator() as IEnumerator<XmlNode>;
-
-                // Parcour objects de filtrage spatial au sein du même calque
-                while (ienum.MoveNext())
-                {
-                    XmlNode noeud = (XmlNode)ienum.Current;
-
-                    string idObjectExtraction = noeud.Attributes["ID"].Value;
-                    string valObjectExtraction = noeud.InnerText;
-
-                    FeatureLayer featureLayerFiltrageSpatial = calqueExtraction as FeatureLayer;
-                    FeatureClass featureClassFiltrageSpatial = featureLayerFiltrageSpatial.GetFeatureClass();
-
-                    QueryFilter filtreSpatial = new QueryFilter
-                    {
-
-                        // Recherche de l'object filtrant spatial d'après le nom et la valeur de son identifiant
-                        WhereClause = idObjectExtraction + "=" + valObjectExtraction
-                    };
-
-                    RowCursor rowCursor = featureClassFiltrageSpatial.Search(
-                        filtreSpatial,
-                        false // important : sinon, on a un seul objet
-                    );
-
-                    while (rowCursor.MoveNext())
-                    {
-                        Feature featureFiltrageSpatial = rowCursor.Current as Feature;
-                        Geometry contourFiltrageSpatial = GeometryEngine.Instance.Project(featureFiltrageSpatial.GetShape(), this.spatialReference);
-                        geometryFiltreSpatial.Add(contourFiltrageSpatial);
-
-                    }
-                }
-                ienum.Reset();
-            }
-            return geometryFiltreSpatial;
-        }
-*/
-
-        // INUTILE ?
-        /// <summary>
-        /// Récupère à partir des objects sélectionnés dans la carte en cours, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
-        /// </summary>
-        /// <returns>Liste Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
-
-/*        TO-DO
- *        public List<Geometry> GetGeometryFiltreSpatial_from_selection()
-        {
-            List<Geometry> geometryFiltreSpatial = new List<Geometry>();
-
-            // Récupération des objects sélectionnés
-            IEnumerator<Feature> enumFeature = this.mapActiveView..FeatureSelection as IEnumFeature;
-            Feature feature = enumFeature.Next();
-
-            while (feature != null)
-            {
-                if (Helper.TestGeometrieFiltrageSpatial(feature))
-                {
-                    Geometry contourFiltrageSpatial = GeometryEngine.Instance.Project(feature.GetShape(), this.spatialReference);
-                    geometryFiltreSpatial.Add(contourFiltrageSpatial);
-                }
-
-                feature = enumFeature.Next();
-            }
-
-            return geometryFiltreSpatial;
-        }
-*/        
-
-
-        /// <summary>
-        /// Établit la connexion avec le service Ripart.
-        /// </summary>
-        /*public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
-        {
-            ILog.Debug("GetConnexionEspaceCollaboratif ");
-            this.CleGeoportail = Helper.Load_CleGeoportail();
-            this.URLHost = Helper.Load_Urlhost();
-            ILog.Debug("URLHost : " + this.URLHost);
-
-            var connectViewModel = new ConnectViewModel(this.URLHost);
-            connectViewModel.connectView.DataContext = connectViewModel;
-
-            // Recherche du login par défaut dans le fichier XML de paramétrage
-            this.Login = Helper.Load_Login();
-            this.Password = "";
-            bool firstConnection = false;
-            for (int tentativeConnexion = 0; tentativeConnexion < 3; tentativeConnexion++)          
-            {
-                ILog.Debug("Tentative de connexion ");
-                // S'il n'y a pas de login enregistré, on lance le formulaire de connexion
-                if (this.Login.Length == 0 || this.Password.Length == 0)
-                {
-                    // Lancement du formulaire de saisi du login et mot de passe                
-                    connectViewModel.Login = this.Login;
-
-                    // Si l'utilisateur a cliqué sur le bouton "Connecter"
-                    // il faut récupérer le login et password pour établir
-                    // la connexion au service de l'Espace collaboratif
-                    Nullable<bool> dialogResult = connectViewModel.connectView.ShowDialog();
-                    if(dialogResult == false)
-                    {
-                        return null;
-                    }
-                    // Récupération du login et mot de passe introduits.
-                    this.Login = connectViewModel.Login;
-                    this.Password = connectViewModel.Password;
-                }
-                else
-                {
-                    firstConnection = true;
-                }
-
-                try
-                {
-                    if (!firstConnection)
-                    {
-                        continue;
-                    }
-
-                    // Création de la connexion au serveur.
-                    ArcGisProEspaceCollaboratif.Core.Client connexionServer = new Client(
-                        this.URLHost,
-                        this.Login,
-                        this.Password
-                    );
-                    ILog.Info("Création de la connexion au serveur " + connexionServer.ToString());
-                    //connectViewModel.connectView.Close();
-
-                    // Récupération du profil utilisateur
-                    this.Profil = connexionServer.GetProfil();
-
-                    // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
-                    if (!this.DisplayFormChoiceGroup(ref connexionServer))
-                    {
-                        return null;
-                    }
-
-                    // Affichage des infos suite à la connexion à l'Espace collaboratif
-                    this.DisplayInformationsAfterConnection();
-
-                    return connexionServer;
-                }
-                catch (Exception erreurConnexion)
-                {
-                    this.Password = "";
-                    connectViewModel.connectView.Visibility = System.Windows.Visibility.Visible;
-
-                    switch (erreurConnexion.Message.ToString())
-                    {
-                        case "(401) Unauthorized":
-                            connectViewModel.Error = "Login et/ou mot de passe incorrect(s)";
-                            
-                            break;
-
-                        case "Login inconnu":
-                            connectViewModel.Error = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                            break;
-
-                        case "no_group":
-                            connectViewModel.Error = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                            break;
-
-                        default:
-                            MessageBox.Show("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante: " + this.URLHost +
-                                            "\n\nVeuillez contacter le support de l'Espace collaboratif: \n" + erreurConnexion.Message.ToString() + ".", "IGN Espace collaboratif",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
-                    }
-                }
-            }
-            connectViewModel.connectView.Close();
-            return null;
-        }*/
 
         public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
@@ -1284,36 +944,7 @@ namespace ArcGisProEspaceCollaboratif
             return sketches;
         }
 
-        /// <summary>
-        /// Renvoie la date de mise-à-jour la plus récente contenue dans les signalements présents sur la carte.
-        /// </summary>
-        /// <returns>La date de mise-à-jour la plus récente contenue dans les signalements présents sur la carte.</returns>
-/*        public System.DateTime Get_LastUpdate()
-        {
-            FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
-            FeatureClass featureClass = calqueEspaceCollaboratif.GetFeatureClass();
-            FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition();
-            int index = featureClassDefinition.FindField(EspaceCollaboratifHelper.nom_Champ_DateMAJ);
-            QueryFilter queryFilter = new QueryFilter();
-            List<System.DateTime> listDate = new List<DateTime>();
-            using (RowCursor rowCursor = featureClass.Search(queryFilter, false))
-            {
-                while (rowCursor.MoveNext())
-                {
-                    /*using (Row row = rowCursor.Current)
-                    {
-                        string location = Convert.ToString(row[EspaceCollaboratifHelper.nom_Champ_DateMAJ]);
-                        listDate.Add(DateTime.Parse(location));
-                    }*/
-      /*              using (Feature feature = (Feature)rowCursor.Current)
-                    {
-                        listDate.Add(DateTime.Parse(feature.GetOriginalValue(index).ToString()));
-                    }
-                }
-            }
-            return listDate.Max();
-        }
-*/
+ 
         /// <summary>
         /// Donne le décompte de signalements Ripart présentes sur la carte en cours ayant le statut indiqué.
         /// </summary>
@@ -1342,155 +973,5 @@ namespace ArcGisProEspaceCollaboratif
         }
 
 
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
-        /// </summary>
-        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>
-        /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-/*        public void Select_Remarque_by_Statut(List<int> statut, bool zoom_to_selected_Remarque)
-        {
-            //if (statut.Count == 0) { return; }
-
-            this.Map.ClearSelection(); // Vide la sélection en cours
-
-            FeatureLayer calqueEspaceCollaboratif = this.calquesEspaceCollaboratif.First();
-            IFeatureClass featureClass = calqueEspaceCollaboratif.FeatureClass;
-
-            int champStatut = featureClass.FindField(EspaceCollaboratifHelper.nom_Champ_Statut);
-            IQueryFilter queryFilter = new QueryFilter();
-
-            if (statut.Count == 0)
-            {
-                IFeatureCursor pFeatureCursor = featureClass.Search(queryFilter, false);
-                IFeature pFeature = pFeatureCursor.NextFeature();
-                IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des signalements     
-
-                remarqueSelect.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultNew, false);
-            }
-            else
-            {
-                foreach (int statutTemp in statut)
-                {
-                    queryFilter.WhereClause = EspaceCollaboratifHelper.nom_Champ_Statut + " = " + statutTemp; // Requête pour trouver les signalements au statut voulu.
-
-                    IFeatureCursor pFeatureCursor = featureClass.Search(queryFilter, false);
-                    IFeature pFeature = pFeatureCursor.NextFeature();
-                    IFeatureSelection remarqueSelect = calqueEspaceCollaboratif as IFeatureSelection;   // Sélection des signalements     
-
-                    remarqueSelect.SelectFeatures(queryFilter, esriSelectionResultEnum.esriSelectionResultAdd, false);
-                }
-            }
-
-            List<double> coordX = new List<double>();
-            List<double> coordY = new List<double>();
-
-            // Obtention des objects sélectionnés
-            IEnumFeature enumFeature = this.Map.FeatureSelection as IEnumFeature;
-            Feature feature = enumFeature.Next();
-
-            while (feature != null)
-            {
-                Geometry geometry = feature.GetShape();
-                ArcGIS.Core.Geometry.MapPoint point = geometry as ArcGIS.Core.Geometry.MapPoint;
-                point.Project(this.spatialReferenceEspaceCollaboratif);
-
-                coordX.Add(point.X);
-                coordY.Add(point.Y);
-
-                feature = enumFeature.Next();
-            }
-
-            // Option pour zoomer sur les signalements sélectionnés
-            if (zoom_to_selected_Remarque && coordX.Count != 0)
-            {
-                ArcGisProEspaceCollaboratif.Core.Box emprise = new ArcGisProEspaceCollaboratif.Core.Box(coordX.Min(), coordY.Min(), coordX.Max(), coordY.Max());
-                this.Zoom(emprise);
-            }
-
-            this.ActiveView.Refresh();
-
-            EspaceCollaboratifHelper.MessageBar(" " + coordX.Count + " signalement(s) sélectionnée(s).");
-        }
-*/
-
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présentes sur la carte et ayants un des statuts indiqués.
-        /// </summary>
-        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>       
-/*        public void Select_Remarque_by_Statut(List<int> statut)
-        {
-            this.Select_Remarque_by_Statut(statut, false);
-        }
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
-        /// </summary>
-        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>
-        /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-        public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut, bool zoom_to_selected_Remarque)
-        {
-            List<int> statutInt = new List<int>();
-
-            for (int i = 0; i < statut.Count; i++)
-            {
-                statutInt.Add((int)statut[i]);
-            }
-
-            this.Select_Remarque_by_Statut(statutInt, zoom_to_selected_Remarque);
-        }
-*/
-
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants un des statuts indiqués. 
-        /// </summary>
-        /// <param name="statut">La liste des statuts des signalements Ripart qu'on veut mettre en sélection.</param>     
-/*        public void Select_Remarque_by_Statut(List<ArcGisProEspaceCollaboratif.Core.Statut> statut)
-        {
-            this.Select_Remarque_by_Statut(statut);
-        }
-*/
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
-        /// </summary>
-        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>
-        /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-/*        public void Select_Remarque_by_Statut(int statut, bool zoom_to_selected_Remarque)
-        {
-            List<int> statutList = new List<int>
-            {
-                statut
-            };
-
-            this.Select_Remarque_by_Statut(statutList, zoom_to_selected_Remarque);
-        }
-*/
-
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
-        /// </summary>
-        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>        
-/*        public void Select_Remarque_by_Statut(int statut)
-        {
-            this.Select_Remarque_by_Statut(statut, false);
-        }
-*/
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
-        /// </summary>
-        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>
-        /// <param name="zoom_to_selected_Remarque">Option pour zoomer sur la nouvelle sélection.</param> 
-/*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut, bool zoom_to_selected_Remarque)
-        {
-            this.Select_Remarque_by_Statut((int)statut, zoom_to_selected_Remarque);
-        }
-*/
-        /// <summary>
-        /// Met dans la sélection courante, les signalements Ripart présents sur la carte et ayants le statut indiqué. 
-        /// </summary>
-        /// <param name="statut">Le statut des signalements Ripart qu'on veut mettre en sélection.</param>       
-/*        public void Select_Remarque_by_Statut(ArcGisProEspaceCollaboratif.Core.Statut statut)
-        {
-            this.Select_Remarque_by_Statut((int)statut, false);
-        }
-*/
     }
 }

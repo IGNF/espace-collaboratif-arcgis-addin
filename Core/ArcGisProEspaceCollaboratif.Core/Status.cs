@@ -70,7 +70,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         static public string GetDisplayStatus(EnumStatus statusToSearch)
         {
-            Dictionary<EnumStatus, string> correspondence = new Dictionary<EnumStatus, string>()
+            Dictionary<EnumStatus, string> correspondance = new Dictionary<EnumStatus, string>()
             {
                 { EnumStatus.submit, "Reçu dans nos services" },
                 { EnumStatus.pending, "En cours de traitement"},
@@ -82,7 +82,49 @@ namespace ArcGisProEspaceCollaboratif.Core
                 { EnumStatus.reject0, "Rejeté (hors de propos)" },
                 { EnumStatus.pending2, "En attente de validation"}
             };
-            return correspondence[statusToSearch];
+
+            if (correspondance.ContainsKey(statusToSearch))
+            {
+                return correspondance[statusToSearch];
+            }
+            else
+            {
+                // Couleur par défaut
+                return "Indéfini";
+            }
+
+        }
+
+        static public List<double> GetStatusColor(EnumStatus statusToSearch)
+        {
+            List<double> submitColor = new List<double> { 19, 115, 235 };
+            List<double> pendingColor = new List<double> { 235, 136, 0 };
+            List<double> validColor = new List<double> { 56, 168, 0 };
+            List<double> rejectColor = new List<double> { 255, 0, 0 };
+            List<double> defaultColor = new List<double> { 211, 211, 311 };
+
+            Dictionary<EnumStatus, List<double>> colorDictionary = new Dictionary<EnumStatus, List<double>>()
+            {
+                { EnumStatus.submit, submitColor },
+                { EnumStatus.pending, pendingColor},
+                { EnumStatus.pending0, pendingColor },
+                { EnumStatus.pending1, pendingColor},
+                { EnumStatus.valid, validColor },
+                { EnumStatus.valid0, validColor},
+                { EnumStatus.reject, rejectColor },
+                { EnumStatus.reject0, rejectColor },
+                { EnumStatus.pending2, pendingColor}
+            };
+
+            if (colorDictionary.ContainsKey(statusToSearch))
+            {
+                return colorDictionary[statusToSearch];
+            }
+            else
+            {
+                // Couleur par défaut
+                return defaultColor;
+            }
         }
 
     }

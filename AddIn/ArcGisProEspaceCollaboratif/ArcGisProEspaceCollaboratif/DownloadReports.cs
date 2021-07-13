@@ -94,25 +94,33 @@ namespace ArcGisProEspaceCollaboratif
                     context.RemoveAllObjectsFromLayers();
 
                     // Barre de progression
-                    int countReports = 0;
-                    progressDownload.GetProgressBar().Maximum = reports.Count;
-                    progressDownload.GetProgressBar().Step = 1;
-                    progressDownload.SetMaxProgressor(reports.Count);
-                    progressDownload.SetBar(1);
+                    /*                    int countReports = 0;
+                                        progressDownload.GetProgressBar().Maximum = reports.Count;
+                                        progressDownload.GetProgressBar().Step = 1;
+                                        progressDownload.SetMaxProgressor(reports.Count);
+                                        progressDownload.SetBar(1);
 
-                    // Placement des signalements importés et filtrés sur la carte.
-                    foreach (Report report in reports)
-                    {
-                        countReports++;
-                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
-                        if (report.Id == 482129)
-                        {
-                            int a = 1;
-                        }
-                        await context.CreatingPointReport(report);
-                    }
+                                        // Placement des signalements importés et filtrés sur la carte.
+                                        foreach (Report report in reports)
+                                        {
+                                            countReports++;
+                                            progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
+                                            if (report.Id == 482129)
+                                            {
+                                                int a = 1;
+                                            }
+                                            if (report.Id == 482129)
+                                            {
+                                                int a = 1;
+                                            }
+                                            await context.CreatingPointReport(report);
+                                        }
 
+                                        progressDownload.Close();
+                    */
                     progressDownload.Close();
+                    int countReports = reports.Count;
+                    await context.InsertReports(reports);
 
                     //Zoom sur la couche des signalements
                     FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);

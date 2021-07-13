@@ -58,6 +58,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_Source = "Source";
         public const string name_field_Longitude = "Lon";
         public const string name_field_Latitude = "Lat";
+        public const string name_field_Shape = "Shape";
         public const string xml_UrlHost = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/URLHost";
         public const string xml_Login = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Login";
         public const string xml_DateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Date_extraction";
@@ -256,6 +257,8 @@ namespace ArcGisProEspaceCollaboratif
                         // La nouvelle feature class est chargée automatiquement dans la carte.
                         // On récupère le FeatureLayer correspondant.
                         collabSpaceLayer = context.GetLayerByName(fcName);
+
+                        
                     }
 
                     // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
@@ -272,6 +275,9 @@ namespace ArcGisProEspaceCollaboratif
                             fcName
                         );
                     }
+
+                    List<object> argumentsSpatialIndex = new List<object> { collabSpaceLayer };
+                    Geoprocessing.ExecuteToolAsync("RemoveSpatialIndex_management", Geoprocessing.MakeValueArray(argumentsSpatialIndex.ToArray()));
 
                     // Application d'une symbologie - Ne traite actuellement que les signalements
                     if (symbolName != "")
@@ -318,29 +324,98 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="fcLayer">FeatureLayer à laquelle le symbole doit être appliqué.</param>
         /// <param name="symbolName">Nom du symbole à appliquer.</param>
         /// <returns></returns>
-        public static void SetLayerStyle(FeatureLayer fcLayer, string symbolName)
+        public static async void SetLayerStyle(FeatureLayer fcLayer, string symbolName)
         {
             // Get all styles in the project
-            var styles = Project.Current.GetItems<StyleProjectItem>();
+            /*            var styles = Project.Current.GetItems<StyleProjectItem>();
 
-            // Get a specific style in the project
-            StyleProjectItem style = styles.First(s => s.Name == "ArcGIS 2D");
+                        // Get a specific style in the project
+                        StyleProjectItem style = styles.First(s => s.Name == "ArcGIS 2D");
 
-            // Get the Push Pin 1 symbol
-            var pt_ssi = style.SearchSymbols(StyleItemType.PointSymbol, symbolName).FirstOrDefault();
+                        // Get the Push Pin 1 symbol
+                        var pt_ssi = style.SearchSymbols(StyleItemType.PointSymbol, symbolName).FirstOrDefault();
 
-            // Create a new renderer definition and reference the symbol
-            SimpleRendererDefinition srDef = new SimpleRendererDefinition
+                        // Create a new renderer definition and reference the symbol
+                        SimpleRendererDefinition srDef = new SimpleRendererDefinition
+                        {
+                            SymbolTemplate = pt_ssi.Symbol.MakeSymbolReference()
+                        };
+
+                        // Create the renderer and apply the definition
+                        CIMSimpleRenderer ssRenderer = (CIMSimpleRenderer)fcLayer.CreateRenderer(srDef);
+
+                        // Update the feature layer renderer
+                        fcLayer.SetRenderer(ssRenderer);
+            */
+
+            await QueuedTask.Run(() =>
             {
-                SymbolTemplate = pt_ssi.Symbol.MakeSymbolReference()
+
+                CIMRenderer uniqueValueRenderer = CreateUniqueValueRendererForReportStatuses();
+
+
+                //setting the renderer to the feature layer
+                fcLayer.SetRenderer(uniqueValueRenderer);
+            });
+
+
+        }
+
+
+
+        public static CIMRenderer CreateUniqueValueRendererForReportStatuses()
+        {
+            //Create the Unique Value Renderer
+            CIMUniqueValueRenderer uniqueValueRenderer = new CIMUniqueValueRenderer()
+            {
+                // set the value field
+                Fields = new string[] { Helper.name_field_Statut }
             };
 
-            // Create the renderer and apply the definition
-            CIMSimpleRenderer ssRenderer = (CIMSimpleRenderer)fcLayer.CreateRenderer(srDef);
+            //Construct the list of UniqueValueClasses
+            List<CIMUniqueValueClass> classes = new List<CIMUniqueValueClass>();
 
-            // Update the feature layer renderer
-            fcLayer.SetRenderer(ssRenderer);
+            // Définition des couleurs
+            var pendingColor = CIMColor.CreateRGBColor(255, 170, 0);
+            var validColor = CIMColor.CreateRGBColor(0, 255, 0);
+            var rejectColor = CIMColor.CreateRGBColor(255, 0, 0);
+
+            int index = 0;
+
+            foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
+            {
+                List<CIMUniqueValue> statusValues = new List<CIMUniqueValue>();
+                CIMUniqueValue statusValue = new CIMUniqueValue() { FieldValues = new string[] { index.ToString() } };
+                statusValues.Add(statusValue);
+
+                List<double> statusRGBCodes = Status.GetStatusColor(currStatus);
+                var statusColor = CIMColor.CreateRGBColor(statusRGBCodes[0], statusRGBCodes[1], statusRGBCodes[2]);
+
+                var status = new CIMUniqueValueClass()
+                {
+                    Values = statusValues.ToArray(),
+                    Label = Status.GetDisplayStatus(currStatus),
+                    Visible = true,
+                    Editable = true,
+                    Symbol = new CIMSymbolReference() { Symbol = SymbolFactory.Instance.ConstructPointSymbol(statusColor, 15, SimpleMarkerStyle.Pushpin) }
+                };
+                classes.Add(status);
+                index++;
+            }
+       
+            //Add the classes to a group (by default there is only one group or "symbol level")
+            // Unique value groups
+            CIMUniqueValueGroup groupOne = new CIMUniqueValueGroup()
+            {
+                Heading = "Statuts",
+                Classes = classes.ToArray()
+            };
+            uniqueValueRenderer.Groups = new CIMUniqueValueGroup[] { groupOne };
+
+            return uniqueValueRenderer as CIMRenderer;
         }
+
+
 
         /// <summary>
         /// Crée un nouveau champ aux caractéristiques souhaitées.

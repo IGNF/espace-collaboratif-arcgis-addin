@@ -406,6 +406,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.progressbar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
         }
 
+
         /// <summary>
         /// Retourne un simple signalement, donné par son identifiant
         /// </summary>

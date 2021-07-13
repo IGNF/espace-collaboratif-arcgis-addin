@@ -1,4 +1,5 @@
-﻿using ArcGisProEspaceCollaboratif.Core;
+﻿using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
 using log4net;
@@ -856,65 +857,72 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un signalement unique
         /// </summary>
-        private void CreateReport()
+        private async void CreateReport()
         {
-            // Calcul du positionnement du signalement par rapport à l'ensemble des croquis.
-            List<Core.Point> points = new List<Core.Point>();
-            foreach (Sketch sketch in this.Sketches)
+            await QueuedTask.Run(async () =>
             {
-                foreach (Core.Point point in sketch.Points)
+                // Calcul du positionnement du signalement par rapport à l'ensemble des croquis.
+                List<Core.Point> points = new List<Core.Point>();
+                foreach (Sketch sketch in this.Sketches)
                 {
-                    points.Add(point);
+                    foreach (Core.Point point in sketch.Points)
+                    {
+                        points.Add(point);
+                    }
                 }
-            }
-            this.VirtualReport.SetPosition(Helper.CalculatePositionReport(points));
+                this.VirtualReport.SetPosition(Helper.CalculatePositionReport(points));
 
-            // Si option de joindre un croquis au nouveau signalement.
-            if (this.JoinSketchIsChecked)
-            {
-                this.VirtualReport.AddSketches(this.Sketches);
-            }
+                // Si option de joindre un croquis au nouveau signalement.
+                if (this.JoinSketchIsChecked)
+                {
+                    this.VirtualReport.AddSketches(this.Sketches);
+                }
 
-            // Création du nouveau signalement
-            ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-            this.Context.CreatingPointReport(newReport);
+                // Création du nouveau signalement
+                Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
+                bool result = await this.Context.InsertReports(new List<Report> { newReport });
 
-            List<ulong> listIdNouveauxSignalements = new List<ulong>
-            {
-                newReport.Id
-            };
-
-            ShowFeedbackInformation(listIdNouveauxSignalements);
+                List<ulong> listIdNouveauxSignalements = new List<ulong>
+                {
+                    newReport.Id
+                };
+                ShowFeedbackInformation(listIdNouveauxSignalements);
+            });
         }
 
         /// <summary>
         /// Création de plusieurs signalements
         /// </summary>
-        private void CreateReports()
+        private async void CreateReports()
         {
-            // Parcours des croquis un par un
-            List<ulong> listIdNouveauxSignalements = new List<ulong>();
-
-            foreach (ArcGisProEspaceCollaboratif.Core.Sketch sketch in this.Sketches)
+            await QueuedTask.Run(async () =>
             {
-                // Positionnement du signalement par rapport au croquis un par un.
-                this.VirtualReport.SetPosition(Helper.CalculatePositionReport(sketch.Points));
-                this.VirtualReport.ClearCroquis();
+                // Parcours des croquis un par un
+                List<ulong> listIdNouveauxSignalements = new List<ulong>();
+                List<Report> listNewReports = new List<Report>();
 
-                // Si option de joindre un croquis au nouveau signalement
-                if (this.JoinSketchIsChecked)
+                foreach (ArcGisProEspaceCollaboratif.Core.Sketch sketch in this.Sketches)
                 {
-                    this.VirtualReport.AddSketch(sketch);
+                    // Positionnement du signalement par rapport au croquis un par un.
+                    this.VirtualReport.SetPosition(Helper.CalculatePositionReport(sketch.Points));
+                    this.VirtualReport.ClearCroquis();
+
+                    // Si option de joindre un croquis au nouveau signalement
+                    if (this.JoinSketchIsChecked)
+                    {
+                        this.VirtualReport.AddSketch(sketch);
+                    }
+
+                    // Création du nouveau signalement
+                    ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
+                    listNewReports.Add(newReport);
+
+                    listIdNouveauxSignalements.Add(newReport.Id);
                 }
 
-                // Création du nouveau signalement
-                ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-                this.Context.CreatingPointReport(newReport);
-
-                listIdNouveauxSignalements.Add(newReport.Id);
-            }
-
-            ShowFeedbackInformation(listIdNouveauxSignalements);
+                bool result = await this.Context.InsertReports(listNewReports);
+                ShowFeedbackInformation(listIdNouveauxSignalements);
+            });
         }
 
         /// <summary>
