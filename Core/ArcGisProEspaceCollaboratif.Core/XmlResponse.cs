@@ -56,8 +56,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 XPathExpression expr = navigator.Compile(xpath);
                 XPathNodeIterator iterator = navigator.Select(expr);
                 iterator.MoveNext();
-                errMessage["message"] = EncodeToUTF8(iterator.Current.InnerXml);
-                errMessage["code"] = EncodeToUTF8(iterator.Current.GetAttribute("code", ""));
+                errMessage["message"] = iterator.Current.InnerXml;
+                errMessage["code"] = iterator.Current.GetAttribute("code", "");
             }
             catch (Exception e)
             {
@@ -1273,7 +1273,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="str">la chaîne de caractère</param>
         /// <returns>la chaîne de caractère en UTF8</returns>
-        protected static string EncodeToUTF8(string str)
+        public static string EncodeToUTF8(string str)
         {            
             byte[] bytes = Encoding.Default.GetBytes(str);
             str = Encoding.UTF8.GetString(bytes);

@@ -327,7 +327,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     StackPanel stackPanelExpander = SetStackPanel(thName);
                     this.OnRegisterName(stackPanelExpander.Name, stackPanelExpander);
 
-                    CheckBox checkBox = SetCheckBox(thName, check);
+                    CheckBox checkBox = SetCheckBox(thName, check, false);
                     stackPanelExpander.Children.Add(checkBox);
                     this.OnRegisterName(checkBox.Name, checkBox);
 
@@ -347,7 +347,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un control "Label" qui est le nom de l'attribut
         /// Certains attributs sont de la forme Info@Nom
-        /// Il faut remplacer le @ par un _ sinon la création du nom de label est impossible
+        /// Il faut remplacer le @ par un ___ sinon la création du nom de label est impossible
         /// </summary>
         /// <param name="content">Le nom de l'attribut</param>
         /// <param name="bold">A true si l'attribut est obligatoire</param>
@@ -395,7 +395,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="content">Le nom de l'attribut</param>
         /// <param name="check">Valeur par défaut de la coche</param>
         /// <returns>La CheckBox mise à jour</returns>
-        private CheckBox SetCheckBox(string content, string check)
+        private CheckBox SetCheckBox(string content, string check, bool bold)
         {
             CheckBox checkBox = new CheckBox()
             {
@@ -412,6 +412,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 check == "vrai")
             {
                 checkBox.IsChecked = true;
+            }
+            if (bold)
+            {
+                checkBox.FontWeight = FontWeights.Bold;
             }
             return checkBox;
         }
@@ -596,7 +600,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 // Types d'attributs
                 if (att.Type == "checkbox")
                 {
-                    CheckBox checkBox = SetCheckBox(att.TagDisplay, value);
+                    CheckBox checkBox = SetCheckBox(att.TagDisplay, value, bold);
                     stackPanel.Children.Add(checkBox);
                     this.OnRegisterName(checkBox.Name, checkBox);
                     controls.Add(checkBox.Name);
@@ -730,36 +734,49 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void OnSend()
         {
-            string groupName = this.GroupSelectedItemComboBox;
-            Helper.Save_PreferredGroup(groupName);
-            
-            List<Theme> themesSelected = GetSelectedThemes();
-            Helper.Save_PreferredThemes(themesSelected);
-
-            // Création d'un nouveau signalement temporaire.
-            this.VirtualReport = new ArcGisProEspaceCollaboratif.Core.Report()
+            try
             {
-                Commentary = CommentaryTextBox,
-                Author = this.Context.Profil.Author,
-                Group = this.GetGroupSelectedItemComboBox(),
-                DateCreation = DateTime.Today,
-                DateValidation = DateTime.Today,
-                Status = EnumStatus.undefined
-            };
+                string groupName = this.GroupSelectedItemComboBox;
+                Helper.Save_PreferredGroup(groupName);
 
-            this.VirtualReport.AddTheme(themesSelected);
-            this.VirtualReport.AddDocument(this.NameFileJoinToReport);
+                List<Theme> themesSelected = GetSelectedThemes();
+                Helper.Save_PreferredThemes(themesSelected);
 
-            // Option création d'un signalement unique
-            if (this.CreateReportIsChecked)
-            {
-                CreateReport();
+                // Création d'un nouveau signalement temporaire.
+                this.VirtualReport = new ArcGisProEspaceCollaboratif.Core.Report()
+                {
+                    Commentary = CommentaryTextBox,
+                    Author = this.Context.Profil.Author,
+                    Group = this.GetGroupSelectedItemComboBox(),
+                    DateCreation = DateTime.Today,
+                    DateValidation = DateTime.Today,
+                    Status = EnumStatus.undefined
+                };
+
+                this.VirtualReport.AddTheme(themesSelected);
+                this.VirtualReport.AddDocument(this.NameFileJoinToReport);
+
+                // Option création d'un signalement unique
+                if (this.CreateReportIsChecked)
+                {
+                    CreateReport();
+                }
+
+                // Option création de plusieurs signalements
+                if (this.CreateReportsIsChecked)
+                {
+                    CreateReports();                    
+                }
             }
-
-            // Option création de plusieurs signalements
-            if (this.CreateReportsIsChecked)
+            catch (Exception e)
             {
-                CreateReports();
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR
+                    );
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                logger.Error(string.Format("CreateReportViewModel.OnSend : {0}\n", message));
+                return;
             }
         }
 
@@ -857,37 +874,53 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un signalement unique
         /// </summary>
+
+        /// <summary>
+        /// Création d'un signalement unique
+        /// </summary>
         private async void CreateReport()
         {
-            await QueuedTask.Run(async () =>
+            try
             {
-                // Calcul du positionnement du signalement par rapport à l'ensemble des croquis.
-                List<Core.Point> points = new List<Core.Point>();
-                foreach (Sketch sketch in this.Sketches)
+                await QueuedTask.Run(async () =>
                 {
-                    foreach (Core.Point point in sketch.Points)
+                    // Calcul du positionnement du signalement par rapport à l'ensemble des croquis.
+                    List<Core.Point> points = new List<Core.Point>();
+                    foreach (Sketch sketch in this.Sketches)
                     {
-                        points.Add(point);
+                        foreach (Core.Point point in sketch.Points)
+                        {
+                            points.Add(point);
+                        }
                     }
-                }
-                this.VirtualReport.SetPosition(Helper.CalculatePositionReport(points));
+                    this.VirtualReport.SetPosition(Helper.CalculatePositionReport(points));
 
-                // Si option de joindre un croquis au nouveau signalement.
-                if (this.JoinSketchIsChecked)
-                {
-                    this.VirtualReport.AddSketches(this.Sketches);
-                }
+                    // Si option de joindre un croquis au nouveau signalement.
+                    if (this.JoinSketchIsChecked)
+                    {
+                        this.VirtualReport.AddSketches(this.Sketches);
+                    }
 
-                // Création du nouveau signalement
-                Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-                bool result = await this.Context.InsertReports(new List<Report> { newReport });
+                    // Création du nouveau signalement
+                    Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
+                    bool result = await this.Context.InsertReports(new List<Report> { newReport });
 
-                List<ulong> listIdNouveauxSignalements = new List<ulong>
-                {
-                    newReport.Id
-                };
-                ShowFeedbackInformation(listIdNouveauxSignalements);
-            });
+                    List<ulong> listIdNouveauxSignalements = new List<ulong>
+                    {
+                        newReport.Id
+                    };
+                    ShowFeedbackInformation(listIdNouveauxSignalements);
+                });
+            }
+            catch (Exception e)
+            {
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    e.Message,
+                    Constantes.ERROR
+                );
+                logger.Error(string.Format("CreateReportViewModel.CreateReport : {0}\n", e.Message));
+                return;
+            }
         }
 
         /// <summary>
@@ -895,34 +928,46 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private async void CreateReports()
         {
-            await QueuedTask.Run(async () =>
+            try
             {
-                // Parcours des croquis un par un
-                List<ulong> listIdNouveauxSignalements = new List<ulong>();
-                List<Report> listNewReports = new List<Report>();
-
-                foreach (ArcGisProEspaceCollaboratif.Core.Sketch sketch in this.Sketches)
+                await QueuedTask.Run(async () =>
                 {
-                    // Positionnement du signalement par rapport au croquis un par un.
-                    this.VirtualReport.SetPosition(Helper.CalculatePositionReport(sketch.Points));
-                    this.VirtualReport.ClearCroquis();
+                    // Parcours des croquis un par un
+                    List<ulong> listIdNouveauxSignalements = new List<ulong>();
+                    List<Report> listNewReports = new List<Report>();
 
-                    // Si option de joindre un croquis au nouveau signalement
-                    if (this.JoinSketchIsChecked)
+                    foreach (ArcGisProEspaceCollaboratif.Core.Sketch sketch in this.Sketches)
                     {
-                        this.VirtualReport.AddSketch(sketch);
+                        // Positionnement du signalement par rapport au croquis un par un.
+                        this.VirtualReport.SetPosition(Helper.CalculatePositionReport(sketch.Points));
+                        this.VirtualReport.ClearCroquis();
+
+                        // Si option de joindre un croquis au nouveau signalement
+                        if (this.JoinSketchIsChecked)
+                        {
+                            this.VirtualReport.AddSketch(sketch);
+                        }
+
+                        // Création du nouveau signalement
+                        ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
+                        listNewReports.Add(newReport);
+
+                        listIdNouveauxSignalements.Add(newReport.Id);
                     }
 
-                    // Création du nouveau signalement
-                    ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-                    listNewReports.Add(newReport);
-
-                    listIdNouveauxSignalements.Add(newReport.Id);
-                }
-
-                bool result = await this.Context.InsertReports(listNewReports);
-                ShowFeedbackInformation(listIdNouveauxSignalements);
-            });
+                    bool result = await this.Context.InsertReports(listNewReports);
+                    ShowFeedbackInformation(listIdNouveauxSignalements);
+                });
+            }
+            catch (Exception e)
+            {
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    e.Message,
+                    Constantes.ERROR
+                );
+                logger.Error(string.Format("CreateReportViewModel.CreateReports : {0}\n", e.Message));
+                return;
+            }
         }
 
         /// <summary>

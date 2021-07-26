@@ -269,7 +269,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             if (this.MapActiveView == null)
             {
-                this.MapActiveView = MapView.Active;
+                return false;
             }
             IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
@@ -376,9 +376,11 @@ namespace ArcGisProEspaceCollaboratif
             {
                 return await QueuedTask.Run(() =>
                 {
-                    ArcGIS.Desktop.Editing.EditOperation createOperation = new ArcGIS.Desktop.Editing.EditOperation();
-                    createOperation.Name = "Generate reports";
-                    createOperation.SelectNewFeatures = false;
+                    ArcGIS.Desktop.Editing.EditOperation createOperation = new ArcGIS.Desktop.Editing.EditOperation
+                    {
+                        Name = "Generate reports",
+                        SelectNewFeatures = false
+                    };
 
                     FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
@@ -510,27 +512,28 @@ namespace ArcGisProEspaceCollaboratif
         public Dictionary<string, object> GetFieldValuesForReport(Report newReport)
         {
             // Signalement
-            var reportFields = new Dictionary<string, object>();
+            var reportFields = new Dictionary<string, object>
+            {
+                { Helper.name_field_IdReport, newReport.Id },
+                { Helper.name_field_Auteur, newReport.Author.Name },
+                { Helper.name_field_Insee, newReport.Insee },
+                { Helper.name_field_Commune, newReport.Commune },
+                { Helper.name_field_Departement, newReport.Departement.Name },
+                { Helper.name_field_IDDepartement, newReport.Departement.Id },
+                { Helper.name_field_DateCreation, newReport.DateCreation },
+                { Helper.name_field_DateMAJ, newReport.DateUpdate },
+                { Helper.name_field_DateValidation, newReport.DateValidation },
+                { Helper.name_field_Statut, newReport.Status },
+                { Helper.name_field_Themes, Helper.Limite(newReport.ConcatenateThemes()) },
+                { Helper.name_field_Url, newReport.Lien },
+                { Helper.name_field_Document, Helper.Limite(newReport.ConcatenateDocuments()) },
+                { Helper.name_field_Message, Helper.Limite(newReport.Commentary) },
+                { Helper.name_field_Reponse, Helper.Limite(newReport.ConcatenateResponse()) },
+                { Helper.name_field_Autorisation, newReport.Authorisation },
+                { Helper.name_field_Source, newReport.Source },
 
-            reportFields.Add(Helper.name_field_IdReport, newReport.Id);
-            reportFields.Add(Helper.name_field_Auteur, newReport.Author.Name);
-            reportFields.Add(Helper.name_field_Insee, newReport.Insee);
-            reportFields.Add(Helper.name_field_Commune, newReport.Commune);
-            reportFields.Add(Helper.name_field_Departement, newReport.Departement.Name);
-            reportFields.Add(Helper.name_field_IDDepartement, newReport.Departement.Id);
-            reportFields.Add(Helper.name_field_DateCreation, newReport.DateCreation);
-            reportFields.Add(Helper.name_field_DateMAJ, newReport.DateUpdate);
-            reportFields.Add(Helper.name_field_DateValidation, newReport.DateValidation);
-            reportFields.Add(Helper.name_field_Statut, newReport.Status);
-            reportFields.Add(Helper.name_field_Themes, Helper.Limite(newReport.ConcatenateThemes()));
-            reportFields.Add(Helper.name_field_Url, newReport.Lien);
-            reportFields.Add(Helper.name_field_Document, Helper.Limite(newReport.ConcatenateDocuments()));
-            reportFields.Add(Helper.name_field_Message, Helper.Limite(newReport.Commentary));
-            reportFields.Add(Helper.name_field_Reponse, Helper.Limite(newReport.ConcatenateResponse()));
-            reportFields.Add(Helper.name_field_Autorisation, newReport.Authorisation);
-            reportFields.Add(Helper.name_field_Source, newReport.Source);
-
-            reportFields.Add(Helper.name_field_Shape, Helper.TransformPoint(newReport.Position));
+                { Helper.name_field_Shape, Helper.TransformPoint(newReport.Position) }
+            };
 
             return reportFields;
         }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using ArcGIS.Desktop.Mapping;
 using System.Threading.Tasks;
+using System;
+using log4net;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -13,6 +15,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     /// </summary>
     class LoadGatewayViewModel : ViewModelBase
     {
+        private static readonly Logger riplogger = Logger.Instance;
+        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+
         #region Parameters
         /// <summary>
         /// L'instance du dialogue "Charger les couches de mon groupe"
@@ -148,33 +153,46 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Import des couches sélectionnées par l'utilisateur dans ArcGIS
         /// </summary>
         private void OnRegister()
-        {            
-            //Liste des couches à afficher après la sélection de l'utilisateur
-            List<LayerGateway> layersToAppend = new List<LayerGateway>();
-            foreach (string layerCheck in this.GetLayersSelected())
-            {        
-                // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
-                string name;
-                if (layerCheck.Contains("("))
+        {
+            try
+            {
+                //Liste des couches à afficher après la sélection de l'utilisateur
+                List<LayerGateway> layersToAppend = new List<LayerGateway>();
+                foreach (string layerCheck in this.GetLayersSelected())
                 {
-                    string[] layerCheckName = layerCheck.Split('(');
-                    name = layerCheckName[1].Replace(")", "");
-                }
-                else
-                {
-                    name = layerCheck;
+                    // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
+                    string name;
+                    if (layerCheck.Contains("("))
+                    {
+                        string[] layerCheckName = layerCheck.Split('(');
+                        name = layerCheckName[1].Replace(")", "");
+                    }
+                    else
+                    {
+                        name = layerCheck;
+                    }
+
+                    int index = this.ListLayers.FindIndex(x => x.Name.Equals(name));
+                    if (index == -1)
+                    {
+                        continue;
+                    }
+                    layersToAppend.Add(this.ListLayers[index]);
                 }
 
-                int index = this.ListLayers.FindIndex(x => x.Name.Equals(name));
-                if (index == -1)
-                {
-                    continue;
-                }
-                layersToAppend.Add(this.ListLayers[index]);
+                // Import des couches WFS et WMTS dans ArcGIS
+                LoadLayersAsync(layersToAppend);
             }
-
-            // Import des couches WFS et WMTS dans ArcGIS
-            LoadLayersAsync(layersToAppend);
+            catch (Exception e)
+            {
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR
+                    );
+                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                logger.Error(string.Format("LoadGatewayViewModel.OnRegister : {0}\n", message));
+            }
+            
         }
 
         private bool AlwaysTrue() { return true; }

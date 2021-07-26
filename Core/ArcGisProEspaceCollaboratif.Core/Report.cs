@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web;
 using static ArcGisProEspaceCollaboratif.Core.Status;
 
@@ -258,14 +256,14 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (this.Responses[i].Author.Name.Length != 0)
                     {
-                        concatenate += " par " + this.EncodeToUTF8(this.Responses[i].Author.Name);
+                        concatenate += " par " + XmlResponse.EncodeToUTF8(this.Responses[i].Author.Name);
                     }
                     if (!string.IsNullOrEmpty(this.Responses[i].Date.ToString()))
                     {
                         concatenate += " le " + this.Responses[i].Date.ToString();
                     }
                     concatenate += ".</font></b><br>";
-                    concatenate += "<b>" + HttpUtility.UrlDecode(this.EncodeToUTF8(this.Responses[i].Titre())) + "</b><br>";
+                    concatenate += "<b>" + HttpUtility.UrlDecode(XmlResponse.EncodeToUTF8(this.Responses[i].Titre())) + "</b><br>";
                     concatenate += "" + HttpUtility.UrlDecode(this.Responses[i].Response) + "</li><br><br>";
                 }
             }
@@ -449,11 +447,11 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         /// <param name="str">la chaîne de caractère</param>
         /// <returns>la chaîne de caractère en UTF8</returns>
-        public string EncodeToUTF8(string str)
+        /*public string EncodeToUTF8(string str)
         {
             byte[] bytes = Encoding.Default.GetBytes(str);
             str = Encoding.UTF8.GetString(bytes);
             return str;
-        }
+        }*/
     }
 }

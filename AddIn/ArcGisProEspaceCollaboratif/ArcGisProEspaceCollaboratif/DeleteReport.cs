@@ -36,7 +36,7 @@ namespace ArcGisProEspaceCollaboratif
                     context.RemoveAllObjectsFromLayers();
                 }
                 catch (Exception e)
-                {   
+                {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                         e.Message,
                         Constantes.ERROR
