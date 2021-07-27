@@ -385,23 +385,9 @@ namespace ArcGisProEspaceCollaboratif
                     FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
-                    // Barre de progression - A CHANGER
-                    FormProgressDownload progressDownload = new FormProgressDownload();
-                    int countReports = 0;
-                    progressDownload.GetProgressBar().Maximum = reports.Count;
-                    progressDownload.GetProgressBar().Step = 1;
-                    progressDownload.SetMaxProgressor(reports.Count);
-                    progressDownload.SetBar(1);
-                    progressDownload.Show();
-
-                    this.Client.SetProgressBar(progressDownload.GetProgressBar());
-
                     // Placement des signalements importés et filtrés sur la carte.
                     foreach (Report newReport in reports)
                     {
-                        countReports++;
-                        progressDownload.NextProgressor("Placement sur la carte du signalement " + countReports + "/" + reports.Count);
-
                         // Signalement
                         var reportFields = new Dictionary<string, object>();
                         reportFields = GetFieldValuesForReport(newReport);
@@ -435,7 +421,6 @@ namespace ArcGisProEspaceCollaboratif
                             }
                         }                       
                     }
-                    progressDownload.Close();
 
                     bool result = createOperation.Execute();
 

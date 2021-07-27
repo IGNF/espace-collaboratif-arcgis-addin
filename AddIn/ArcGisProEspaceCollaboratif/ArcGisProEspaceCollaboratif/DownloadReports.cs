@@ -18,7 +18,6 @@ namespace ArcGisProEspaceCollaboratif
 
         protected override async void OnClick()
         {
-            FormProgressDownload progressDownload = new FormProgressDownload();
 
             await QueuedTask.Run(async() =>
             {
@@ -65,13 +64,6 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
-                    // Envoi de la requête au serveur et création de la liste des signalements
-                    progressDownload.Show();
-                    progressDownload.SetText("Import des signalements depuis le serveur: \n" + context.URLHost);
-
-                    context.Client.SetProgressBar(progressDownload.GetProgressBar());
-                    progressDownload.Refresh();
-
                     List<Report> reports = context.Client.GetGeoRems(parameters);
 
                     // Filtrage spatial des signalements
@@ -92,7 +84,6 @@ namespace ArcGisProEspaceCollaboratif
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
                     context.RemoveAllObjectsFromLayers();
-                    progressDownload.Close();
 
                     int countReports = reports.Count;
                     await context.InsertReports(reports);
@@ -117,7 +108,6 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    progressDownload.Close();
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
