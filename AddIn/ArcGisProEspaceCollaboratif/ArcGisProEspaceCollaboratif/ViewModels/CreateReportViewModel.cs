@@ -1150,50 +1150,61 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
                 themesSelected.Add(tmpTheme);
             }
-            // Il faut vérifier que les attributs dits obligatoires est une valeur différentes de vide
-            string message = CheckThemesSelected(themesSelected);
-            if (!string.IsNullOrEmpty(message))
-            {
-                logger.Error(string.Format("CreateReportViewModel.GetSelectedThemes : {0}\n", message));
-                throw new Exception(message);
-            }
-            
+
+            // Il faut vérifier que les valeurs des attributs dits obligatoires sont remplies
+            CheckThemesSelected(themesSelected);
+
             return themesSelected;
         }
 
         /// <summary>
-        /// Vérifie pour tous les thèmes sélectionnés si les valeurs des attributs obligatoires sont remplis
+        /// Vérifie pour tous les thèmes sélectionnés
+        ///  - s'il y a au moins un thème
+        ///  - si les valeurs des attributs obligatoires sont remplis
         /// </summary>
         /// <param name="themesSelected">La liste des thèmes sélectionnés par l'utilisateur avec le dialogue Créer un nouveau signalement"</param>
-        /// <returns>Une chaine vide ou remplie avec la liste des attributs obligatoires avec des valeurs non remplies</returns>
-        private string CheckThemesSelected(List<Theme> themesSelected)
-        { 
+        private void CheckThemesSelected(List<Theme> themesSelected)
+        {
+            // Il faut au moins un thème sélectionné dans la création d'un signalement
+            if (themesSelected.Count == 0)
+            {
+                string error = "Il faut sélectionner au moins un thème avant d'envoyer le signalement sur le serveur";
+                logger.Error(string.Format("CreateReportViewModel.GetSelectedThemes : {0}\n", error));
+                throw new Exception(error);
+            }
+
             List<string> fieldsRequired = new List<string>();
             foreach (Theme theme in themesSelected)
             {
                 foreach (ThemeAttributes themeAttributes in theme.Attributes)
                 {
+                    // Il faut vérifier que les valeurs des champs obligatoires soient remplies
                     if (themeAttributes.Required && themeAttributes.UserSelectedValue == "")
                     {
                         fieldsRequired.Add(themeAttributes.TagDisplay);
                     }
                 }
             }
-            if (fieldsRequired.Count == 0)
-            {
-                return "";
-            }
 
-            string message = "Certains attributs obligatoires n'ont pas de valeur. Il faut les remplir avant d'envoyer le signalement au serveur.\n\nVoici la liste :\n";
+            string message = "";
             if (fieldsRequired.Count == 1)
             {
                 message = "Un attribut obligatoire n'a pas de valeur. Il faut le remplir avant d'envoyer le signalement au serveur.\n\nVoici son nom :\n";
+            }
+            else if (fieldsRequired.Count > 1)
+            {
+                message = "Certains attributs obligatoires n'ont pas de valeur. Il faut les remplir avant d'envoyer le signalement au serveur.\n\nVoici la liste :\n";
             }
             foreach(string nameField in fieldsRequired)
             {
                 message += string.Format(" - {0}\n", nameField);
             }
-            return message;
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                logger.Error(string.Format("CreateReportViewModel.GetSelectedThemes : {0}\n", message));
+                throw new Exception(message);
+            }
         }
 
         /// <summary>

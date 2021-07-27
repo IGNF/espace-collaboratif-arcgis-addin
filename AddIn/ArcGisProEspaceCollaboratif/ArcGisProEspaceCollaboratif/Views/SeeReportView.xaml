@@ -5,22 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
-        Title="Voir un signalement" Height="586.533" Width="566.4">
-    <Grid Height="557" Margin="0,0,0,-0.2" VerticalAlignment="Bottom">
+        Title="Voir un signalement" Height="587" Width="580">
+    <Grid Height="557" Margin="0,0,-1.4,-0.2" VerticalAlignment="Bottom">
         <Label Content="{Binding SeeNumberReport}" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue" FontSize="18" Height="38" Width="315" RenderTransformOrigin="0.483,0.123"/>
         <Label Content="Informations générales" HorizontalAlignment="Left" Margin="20,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,77,0,0" TextWrapping="Wrap" Text="{Binding SeeGeneralInformation}" VerticalAlignment="Top" Height="136" Width="240"/>
-        <Label Content="Thèmes" HorizontalAlignment="Left" Margin="280,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Width="253" Height="240"  Margin="287,79,20,238">
+        <Label Content="Thèmes" HorizontalAlignment="Left" Margin="289,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto"  Margin="296,79,26,339">
             <TextBlock Text="{Binding SeeThemes}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="253"/>
         </ScrollViewer>
         <Label Content="Description" HorizontalAlignment="Left" Margin="20,215,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,249,0,0" VerticalAlignment="Top" Width="240" Height="70"/>
+        <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,246,0,0" VerticalAlignment="Top" Width="523" Height="70"/>
         <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="20,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBlock Text="{Binding SeeFilesAttached}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,355,0,0" VerticalAlignment="Top" Width="510" Height="56"/>
+        <TextBlock Text="{Binding SeeFilesAttached}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56"/>
         <Label Content="Réponses" HorizontalAlignment="Left" Margin="20,408,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Width="510" Height="70" Margin="25,441,20,49">
-            <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="510"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="70" Margin="26,441,26,46">
+            <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="523"/>
         </ScrollViewer>
         <Button Content="Fermer" Click="Button_Click" HorizontalAlignment="Left" Margin="244,520,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
