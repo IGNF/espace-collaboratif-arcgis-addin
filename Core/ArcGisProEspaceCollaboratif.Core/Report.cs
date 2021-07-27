@@ -442,16 +442,5 @@ namespace ArcGisProEspaceCollaboratif.Core
             this.Themes.Clear();
         }
 
-        /// <summary>
-        /// Encode une chaîne de caractères en UTF8
-        /// </summary>
-        /// <param name="str">la chaîne de caractère</param>
-        /// <returns>la chaîne de caractère en UTF8</returns>
-        /*public string EncodeToUTF8(string str)
-        {
-            byte[] bytes = Encoding.Default.GetBytes(str);
-            str = Encoding.UTF8.GetString(bytes);
-            return str;
-        }*/
     }
 }

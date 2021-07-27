@@ -979,6 +979,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private List<Theme> GetSelectedThemes()
         {
             List<Theme> themesSelected = new List<Theme>();
+
             foreach (KeyValuePair<string, List<string>> kvp in this.ControlsCreate)
             {
                 CheckBox cb = (CheckBox)this.createReportView.FindName(kvp.Key);
@@ -1016,14 +1017,16 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                         // Il faut chercher la correspondance entre le nom de l'attribut affiché
                         // et le nom de la colonne dans la table
-                        string tagName = GetCorrespondenceAttributeColumn(checkBox.Content.ToString(), themeName);
+                        bool bRequired = false;
+                        string tagName = GetCorrespondenceAttributeColumn(checkBox.Content.ToString(), themeName, ref bRequired);
 
                         tmpThemeAttributes = new ThemeAttributes
                         {
                             UserSelectedValue = val,
                             TagDisplay = checkBox.Content.ToString(),
                             TagName = tagName,
-                            ThemeName = cb.Content.ToString()
+                            ThemeName = cb.Content.ToString(),
+                            Required = bRequired
                         };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
@@ -1035,13 +1038,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                         // Il faut chercher la correspondance entre le nom de l'attribut affiché
                         // et le nom de la colonne dans la table
-                        string tagName = GetCorrespondenceAttributeColumn(label.Content.ToString(), themeName);
+                        bool bRequired = false;
+                        string tagName = GetCorrespondenceAttributeColumn(label.Content.ToString(), themeName, ref bRequired);
 
                         tmpThemeAttributes = new ThemeAttributes
                         {
                             TagDisplay = label.Content.ToString(),
                             TagName = tagName,
-                            ThemeName = themeName
+                            ThemeName = themeName,
+                            Required = bRequired
                         };
                     }
 
@@ -1145,7 +1150,50 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
                 themesSelected.Add(tmpTheme);
             }
+            // Il faut vérifier que les attributs dits obligatoires est une valeur différentes de vide
+            string message = CheckThemesSelected(themesSelected);
+            if (!string.IsNullOrEmpty(message))
+            {
+                logger.Error(string.Format("CreateReportViewModel.GetSelectedThemes : {0}\n", message));
+                throw new Exception(message);
+            }
+            
             return themesSelected;
+        }
+
+        /// <summary>
+        /// Vérifie pour tous les thèmes sélectionnés si les valeurs des attributs obligatoires sont remplis
+        /// </summary>
+        /// <param name="themesSelected">La liste des thèmes sélectionnés par l'utilisateur avec le dialogue Créer un nouveau signalement"</param>
+        /// <returns>Une chaine vide ou remplie avec la liste des attributs obligatoires avec des valeurs non remplies</returns>
+        private string CheckThemesSelected(List<Theme> themesSelected)
+        { 
+            List<string> fieldsRequired = new List<string>();
+            foreach (Theme theme in themesSelected)
+            {
+                foreach (ThemeAttributes themeAttributes in theme.Attributes)
+                {
+                    if (themeAttributes.Required && themeAttributes.UserSelectedValue == "")
+                    {
+                        fieldsRequired.Add(themeAttributes.TagDisplay);
+                    }
+                }
+            }
+            if (fieldsRequired.Count == 0)
+            {
+                return "";
+            }
+
+            string message = "Certains attributs obligatoires n'ont pas de valeur. Il faut les remplir avant d'envoyer le signalement au serveur.\n\nVoici la liste :\n";
+            if (fieldsRequired.Count == 1)
+            {
+                message = "Un attribut obligatoire n'a pas de valeur. Il faut le remplir avant d'envoyer le signalement au serveur.\n\nVoici son nom :\n";
+            }
+            foreach(string nameField in fieldsRequired)
+            {
+                message += string.Format(" - {0}\n", nameField);
+            }
+            return message;
         }
 
         /// <summary>
@@ -1177,7 +1225,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="display">le nom affiché à l'utilisateur</param>
         /// <param name="theme">le thème de l'attribut</param>
         /// <returns>Le nom de la colonne dans la table</returns>
-        private string GetCorrespondenceAttributeColumn(string display, string theme)
+        private string GetCorrespondenceAttributeColumn(string display, string theme, ref bool bRequired)
         {
             display = display.Replace("___", "@");
             string tmp = "";
@@ -1199,6 +1247,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         if (thAtt.TagDisplay == display)
                         {
+                            // Indique si le champ est obligatoire
+                            bRequired = thAtt.Required;
                             return thAtt.TagName;
                         }
                     }
