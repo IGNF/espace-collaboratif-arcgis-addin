@@ -335,7 +335,7 @@ namespace ArcGisProEspaceCollaboratif
                                     context.Invalidate(feature);
                                     feature["Date_MAJ"] = reportUdating.DateUpdate;
                                     feature["Date_de_validation"] = reportUdating.DateValidation;
-                                    feature["Réponses"] = XmlResponse.EncodeToUTF8(reportUdating.ConcatenateResponse());
+                                    feature["Réponses"] = reportUdating.ConcatenateResponse();
                                     feature["Statut"] = reportUdating.Status;
 
                                     feature.Store();

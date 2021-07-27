@@ -452,8 +452,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 Dictionary<string, string> parameters = new Dictionary<string, string>
                 {
                     { "id", report.Id.ToString() },
-                    { "content", response },
-                    { "status", (report.Status).ToString().ToLower() },
+                    { "content",response },
+                    { "status", report.Status.ToString().ToLower() },
                     { "title", "" }
                 };
 
