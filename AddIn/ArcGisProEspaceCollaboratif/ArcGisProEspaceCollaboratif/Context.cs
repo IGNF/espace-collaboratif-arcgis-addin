@@ -227,7 +227,7 @@ namespace ArcGisProEspaceCollaboratif
                 3
                 );
 
-            // Ajout des couches à la liste collaboratifSpaceLayers
+            // Ajout des couches à la liste CollaborativeSpaceLayers
             this.CollaborativeSpaceLayers.Clear();
             this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer));
             this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer));
