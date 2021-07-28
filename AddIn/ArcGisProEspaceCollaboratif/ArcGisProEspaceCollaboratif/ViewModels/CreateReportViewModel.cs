@@ -301,47 +301,75 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             // Il faut afficher uniquement les thèmes filtrés   
             foreach (string thName in filteredThemes)
             {
-                foreach (Theme thGroup in listThemesGroup)
-                {
-                    if (thName != thGroup.Group.Name)
-                    {
-                        continue;
-                    }
-                    // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
-                    if (!thGroup.Filtered)
-                    {
-                        continue;
-                    }
-                    // Un thème peut ne pas avoir d'attributs
-                    if (thGroup.Attributes == null)
-                    {
-                        this.StackPanelGlobal.Children.Add(SetLabel("Pas d'attributs", true));
-                        continue;
-                    }
-                    // Un expander par theme qui contient tous les attributs initialisés par type
-                    string check = "0";
-                    if (this.ListPreferredThemes.Contains(thName))
-                    {
-                        check = "1";
-                    }
-                    StackPanel stackPanelExpander = SetStackPanel(thName);
-                    this.OnRegisterName(stackPanelExpander.Name, stackPanelExpander);
-
-                    CheckBox checkBox = SetCheckBox(thName, check, false);
-                    stackPanelExpander.Children.Add(checkBox);
-                    this.OnRegisterName(checkBox.Name, checkBox);
-
-                    Expander expander = SetExpander();
-                    List<string> controls = new List<string>();
-                    expander.Content = DisplayTypeAttributes(thGroup, ref controls);
-                    stackPanelExpander.Children.Add(expander);
-                    this.StackPanelGlobal.Children.Add(stackPanelExpander);
-                    this.ControlsCreate.Add(checkBox.Name, controls);
-                }
+                CheckTheme(thName, listThemesGroup);
             }
+
+            if (listThemesGroup.Count == 0)
+            {
+                this.StackPanelGlobal.Children.Add(SetLabel("Pas de thèmes, pas d'attributs", true));
+                //this.createReportView.GridGeneral.Children.Add(this.StackPanelGlobal);
+            }
+
             ScrollViewer scrollViewer = SetScrollViewer();
             scrollViewer.Content = this.StackPanelGlobal;
             this.createReportView.GridGeneral.Children.Add(scrollViewer);
+        }
+
+        /// <summary>
+        /// Vérification et création des controls pour affichage
+        /// dans le dialogue "Créer un signalement"
+        /// </summary>
+        /// <param name="name">Le nom du thème à afficher</param>
+        /// <param name="listThemesGroup">La liste des thèmes du groupe</param>
+        private void CheckTheme(string name, List<Theme> listThemesGroup)
+        {
+            foreach (Theme thGroup in listThemesGroup)
+            {
+                if (name != thGroup.Group.Name)
+                {
+                    continue;
+                }
+                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
+                if (!thGroup.Filtered)
+                {
+                    continue;
+                }
+                // Un thème peut ne pas avoir d'attributs dans ce cas là,
+                // il faut afficher le thème avec une case à cocher
+                if (thGroup.Attributes == null)
+                {
+                    string check_ = "0";
+                    if (this.ListPreferredThemes.Contains(name))
+                    {
+                        check_ = "1";
+                    }
+                    CheckBox checkBox_ = SetCheckBox(name, check_, false);
+                    this.StackPanelGlobal.Children.Add(checkBox_);
+                    List<string> controls_ = new List<string>();
+                    this.ControlsCreate.Add(checkBox_.Name, controls_);
+                    this.OnRegisterName(checkBox_.Name, checkBox_);
+                    continue;
+                }
+                // Un expander par theme qui contient tous les attributs initialisés par type
+                string check = "0";
+                if (this.ListPreferredThemes.Contains(name))
+                {
+                    check = "1";
+                }
+                StackPanel stackPanelExpander = SetStackPanel(name);
+                this.OnRegisterName(stackPanelExpander.Name, stackPanelExpander);
+
+                CheckBox checkBox = SetCheckBox(name, check, false);
+                stackPanelExpander.Children.Add(checkBox);
+                this.OnRegisterName(checkBox.Name, checkBox);
+
+                Expander expander = SetExpander();
+                List<string> controls = new List<string>();
+                expander.Content = DisplayTypeAttributes(thGroup, ref controls);
+                stackPanelExpander.Children.Add(expander);
+                this.StackPanelGlobal.Children.Add(stackPanelExpander);
+                this.ControlsCreate.Add(checkBox.Name, controls);
+            }
         }
 
         /// <summary>
@@ -1268,6 +1296,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             return tmp;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="display"></param>
+        /// <param name="attributeName"></param>
+        /// <param name="theme"></param>
+        /// <returns></returns>
         private string GetCorrespondenceValueAttributeColumn(string display, string attributeName, string theme)
         {
             string tmp = "";
