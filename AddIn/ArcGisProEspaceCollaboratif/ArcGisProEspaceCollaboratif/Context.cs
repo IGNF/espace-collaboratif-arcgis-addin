@@ -73,8 +73,14 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// La liste des calques dédiés pour l'espace collaboratif dans la carte en cours
         /// </summary>
-        public List<FeatureLayer> CollaborativeSpaceLayers { get; set; } = new List<FeatureLayer>();
-
+/*        public List<string> CollaborativeSpaceLayers { get; set; } = new List<string>()
+        {
+            Helper.name_layer_Croquis_Polygone,
+            Helper.name_layer_Croquis_Ligne,
+            Helper.name_layer_Croquis_Point,
+            Helper.name_layer_Signalement
+        };
+*/
         /// <summary>
         /// Le système géodésique employé par le service de l'espace collaboratif
         /// </summary>
@@ -228,11 +234,12 @@ namespace ArcGisProEspaceCollaboratif
                 );
 
             // Ajout des couches à la liste CollaborativeSpaceLayers
-            this.CollaborativeSpaceLayers.Clear();
+/*            this.CollaborativeSpaceLayers.Clear();
             this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer));
             this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer));
             this.CollaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer));
             this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer));
+*/
         }
 
 
@@ -287,8 +294,9 @@ namespace ArcGisProEspaceCollaboratif
         {
             try
             {
-                foreach (FeatureLayer layer in this.CollaborativeSpaceLayers)
+                foreach (string layerName in Helper.CollaborativeSpaceLayers)
                 {
+                    FeatureLayer layer = GetLayerByName(layerName);
                     FeatureClass fcCollabSpace = layer.GetFeatureClass();
                     Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
                 }
@@ -408,7 +416,7 @@ namespace ArcGisProEspaceCollaboratif
                                     logger.Error(string.Format("Context.CreerPointSignalement : {0} {1}\n", "Type non reconnu : ", currSketch.Type.ToString()));
                                     continue;
                                 }
-                                FeatureLayer sketchFeatureLayer = this.CollaborativeSpaceLayers[layerIndex];
+                                FeatureLayer sketchFeatureLayer = GetLayerByName(Helper.CollaborativeSpaceLayers[layerIndex]);
 
                                 // Création de l'objet croquis dans la classe correspondant à son type
                                 var sketchFields = new Dictionary<string, object>();

@@ -34,6 +34,14 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
 
+        public static List<string> CollaborativeSpaceLayers = new List<string>()
+        {
+            name_layer_Signalement,
+            name_layer_Croquis_Point,
+            name_layer_Croquis_Ligne,
+            name_layer_Croquis_Polygone,           
+        };
+
         public const string name_field_IdReport = "N°remarque";// anciennement N°signalement
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
