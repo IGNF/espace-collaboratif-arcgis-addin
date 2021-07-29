@@ -296,6 +296,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     filteredThemes = geoGroupe.FilteredThemes;
                     break;
                 }
+                else if (newGroupActive.Name == this.Context.Groupeactif)
+                {
+                    listThemesGroup = this.Context.Profil.Themes;
+                    filteredThemes = this.Context.Profil.FilteredThemes;
+                    break;
+                }
             }
 
             // Il faut afficher uniquement les thèmes filtrés   
