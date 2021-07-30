@@ -288,19 +288,22 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             // Il faut récupérer les thèmes du nouveau groupe
             List<Theme> listThemesGroup = new List<Theme>();
             List<string> filteredThemes = new List<string>();
-            foreach (GeoGroup geoGroupe in this.Context.Profil.Geogroupes)
+
+            if (newGroupActive.Name == this.Context.Groupeactif)
             {
-                if (newGroupActive.Name == geoGroupe.Name)
+                listThemesGroup = this.Context.Profil.Themes;
+                filteredThemes = this.Context.Profil.FilteredThemes;
+            }
+            else
+            {
+                foreach (GeoGroup geoGroupe in this.Context.Profil.Geogroupes)
                 {
-                    listThemesGroup = geoGroupe.Themes;
-                    filteredThemes = geoGroupe.FilteredThemes;
-                    break;
-                }
-                else if (newGroupActive.Name == this.Context.Groupeactif)
-                {
-                    listThemesGroup = this.Context.Profil.Themes;
-                    filteredThemes = this.Context.Profil.FilteredThemes;
-                    break;
+                    if (newGroupActive.Name == geoGroupe.Name)
+                    {
+                        listThemesGroup = geoGroupe.Themes;
+                        filteredThemes = geoGroupe.FilteredThemes;
+                        break;
+                    }
                 }
             }
 

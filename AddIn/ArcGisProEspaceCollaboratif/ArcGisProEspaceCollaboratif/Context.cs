@@ -71,17 +71,6 @@ namespace ArcGisProEspaceCollaboratif
         public string Groupeactif { get; set; } = "";
 
         /// <summary>
-        /// La liste des calques dédiés pour l'espace collaboratif dans la carte en cours
-        /// </summary>
-/*        public List<string> CollaborativeSpaceLayers { get; set; } = new List<string>()
-        {
-            Helper.name_layer_Croquis_Polygone,
-            Helper.name_layer_Croquis_Ligne,
-            Helper.name_layer_Croquis_Point,
-            Helper.name_layer_Signalement
-        };
-*/
-        /// <summary>
         /// Le système géodésique employé par le service de l'espace collaboratif
         /// </summary>
         public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
@@ -158,10 +147,6 @@ namespace ArcGisProEspaceCollaboratif
             this.CheckConfigFile();
             this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
 
-            //création ou chargement des couches ripart
-            //TODO : question Noémie pourquoi cette création ici ?
-            //var bLayersLoaded = CreateOrLoadReportLayers();
-
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
@@ -233,13 +218,6 @@ namespace ArcGisProEspaceCollaboratif
                 3
                 );
 
-            // Ajout des couches à la liste CollaborativeSpaceLayers
-/*            this.CollaborativeSpaceLayers.Clear();
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(reportLayer));
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(pointSketchLayer));
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(lineSketchLayer));
-            this.CollaborativeSpaceLayers.Add(GetLayerByName(polygonSketchLayer));
-*/
         }
 
 
