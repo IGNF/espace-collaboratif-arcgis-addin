@@ -18,8 +18,9 @@
         <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,246,0,0" VerticalAlignment="Top" Width="523" Height="70"/>
         <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="20,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock Text="{Binding SeeFilesAttached}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56">
-            <Span xml:space="preserve"><Hyperlink NavigateUri="{Binding SeeFilesAttached}"></Hyperlink></Span>
-        </TextBlock> 
+        <!--TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56">
+            <Span xml:space="preserve"><Hyperlink NavigateUri="{Binding SeeFilesAttached}"><lien>toto</Run></Hyperlink></>
+        </TextBlock--> 
         <Label Content="Réponses" HorizontalAlignment="Left" Margin="20,408,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Height="70" Margin="26,441,26,46">
             <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="523"/>
