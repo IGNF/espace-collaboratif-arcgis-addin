@@ -120,8 +120,23 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     report.Status = Status.CorrespondenceStatusWording[this.StatutSelectedItemComboBox];
                     Report reportUpdating = this.Context.Client.AddReponse(report, this.NewResponseTextBox);
-                    this.Context.UpdateGeodatabase(reportUpdating);
+                    this.Context.UpdateGeodatabase(reportUpdating);   
                 }
+
+                // Message de confirmation après l'envoi d'une réponse
+                string information = "Votre réponse ";
+                if (this.Reports.Count == 1)
+                {
+                    information += string.Format("au signalement {0} a bien été envoyée.", this.Reports[0].Id);
+                }
+                else
+                {
+                    information += string.Format("aux {0} signalements a bien été envoyée.", this.Reports.Count);
+                }               
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    information,
+                    Constantes.INFORMATION
+                );
             }
             catch(Exception e)
             {

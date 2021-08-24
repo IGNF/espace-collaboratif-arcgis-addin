@@ -44,6 +44,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string WARNING = "IGN Espace collaboratif - WARNING";
         public const string STOP = "IGN Espace collaboratif - STOP";
         public const string QUESTION = "IGN Espace collaboratif - QUESTION";
+        public const string INFORMATION = "IGN Espace collaboratif - INFORMATION";
 
         public const string IMAGEFILE = "Image files (*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG)|*.bmp;*.gif;*.jpg;*.jpeg;*.png";
         public const string TRACKFILE = "Track files (*.GPX)|*.gpx";

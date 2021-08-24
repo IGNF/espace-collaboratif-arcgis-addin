@@ -139,6 +139,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
             else
             {
+                // TODO Eric : faire afficher un lien hypertexte dans la fiche du signalement dans le fichier SeeReportView.xaml ou par du code C#
+                // <!--TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56">
+                // < Span xml: space = "preserve" >< Hyperlink NavigateUri = "{Binding SeeFilesAttached}" >< lien > toto </ Run ></ Hyperlink ></>
+                // </ TextBlock-- >
                 this.SeeFilesAttached = document;
             }
         }
@@ -165,11 +169,18 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void DisplayThemes()
         {
             string themes = this.ReportAttributes[Helper.name_field_Themes];
-            char[] separator = new char[] { '|', '(', ',', ')' };
-            foreach (char ch in separator)
+            string[] firstSeparator = new string[] { "|", ")" };
+            foreach (string ch in firstSeparator)
             {
-                themes = themes.Replace(ch, '\n');
+                themes = themes.Replace(ch, "\n");
             }
+
+            string[] secondSeparator = new string[] {"(", "," };
+            foreach (string ch in secondSeparator)
+            {
+                themes = themes.Replace(ch, "\n    ");
+            }
+
             this.SeeThemes = themes.Replace("=", " : ");
         }
 
@@ -219,7 +230,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
             return string.Format("{0}°{1}, {2}°{3}", longitude.Replace("-", ""), dirLon, latitude.Replace("-", ""), dirLat);
         }
-
 
         #endregion
     }

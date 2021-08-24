@@ -25,6 +25,5 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Height="70" Margin="26,441,26,46">
             <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="523"/>
         </ScrollViewer>
-        <Button Content="Fermer" Click="Button_Click" HorizontalAlignment="Left" Margin="244,520,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Window>

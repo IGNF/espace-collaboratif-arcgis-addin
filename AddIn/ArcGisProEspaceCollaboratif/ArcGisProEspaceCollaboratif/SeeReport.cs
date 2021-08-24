@@ -22,6 +22,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 try
                 {
+                    string error = "Il faut sélectionner un et un seul signalement";
                     Context context = Context.Instance;
 
                     // Il faut s'être connecté au service pour répondre à un signalement
@@ -36,11 +37,15 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // L'utilisateur a t'il sélectionné un et un seul signalement ?
-                    // TODO voir avec Noémie : attention quand on ajoute des objets à la sélection celle-ci ne se rafraichit, il garde en mémoire la 1ère
+                    // TODO Noémie : à voir s'il y a lieu de faire une correction, c'est peut-être un fonctionnement normal d'arcgis
+                    // http://sd-redmine.ign.fr/issues/15041
+                    // Attention quand on ajoute des objets à la sélection
+                    // la méthode GetSelection ne retourne pas le bon nombre d'objets,
+                    // et l'outil affiche les attributs du dernier objet sélectionné
                     var selectedFeatures = context.MapActiveView.Map.GetSelection();
                     if (selectedFeatures.Count != 1)
                     {
-                        throw new Exception("Il faut sélectionner un et un seul signalement");
+                        throw new Exception(error);
                     }
                     Dictionary<string, string> attributes = new Dictionary<string, string>();
                     foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
@@ -68,7 +73,15 @@ namespace ArcGisProEspaceCollaboratif
                         }
                     }
                     
+                    // Si le dictionnaire attributes est vide, c'est qu'il n'y a pas de signalement sélectionné
+                    if (attributes.Count == 0)
+                    {
+                        throw new Exception(error);
+                    }
+
                     // Ouverture de la boite "SeeReport" s'il y a un et un seul signalement sélectionné
+                    // TODO Eric : faire défiler les fiches de tous les signalements sélectionnés
+                    // http://sd-redmine.ign.fr/issues/15041 
                     var seeReportViewModel = new SeeReportViewModel(context, attributes);
                     seeReportViewModel.seeReportView.DataContext = seeReportViewModel;
                     bool? dialogResult = seeReportViewModel.seeReportView.ShowDialog();
