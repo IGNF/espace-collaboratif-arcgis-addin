@@ -140,9 +140,6 @@ namespace ArcGisProEspaceCollaboratif
             Tuple< bool, bool, Box, List<Geometry>> noFilterTuple = Tuple.Create(false, false, bboxFiltrageSpatial, spatialFilterGeometry);
             Tuple< bool, bool, Box, List<Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
 
-            // Initialisation boîte de dialogue
-            //DialogResult resultDialog;
-
             // Cas nom de la couche non rempli
             if (filterLayerName.Length == 0)
             {
@@ -157,12 +154,6 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     return noFilterTuple;
                 }
-                /*resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", Constantes.QUESTION, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
-
-                if (resultDialog == DialogResult.Yes)
-                    return overrideFilterTuple;
-                else
-                    return noFilterTuple;*/
             }
 
             Context contexte = Context.Instance;
@@ -181,12 +172,6 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     return noFilterTuple;
                 }
-                /*resultDialog = MessageBox.Show("La carte en cours ne contient pas la couche '" + filterLayerName + "' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (resultDialog == DialogResult.Yes)
-                    return overrideFilterTuple;
-                else
-                    return noFilterTuple;*/
             }
 
             spatialFilterGeometry = contexte.GetSpatialFilterGeometry(filterLayerName);
@@ -199,10 +184,6 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     return noFilterTuple;
                 }
-                /*resultDialog = MessageBox.Show("La couche '" + filterLayerName + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (resultDialog != DialogResult.Yes)
-                    return noFilterTuple;*/
             }
 
             // On ajoute la BBOX comme paramètre de la requête
