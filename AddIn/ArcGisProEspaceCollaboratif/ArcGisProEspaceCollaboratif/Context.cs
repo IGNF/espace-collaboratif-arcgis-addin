@@ -651,7 +651,7 @@ namespace ArcGisProEspaceCollaboratif
             // Recherche du login par défaut dans le fichier XML de paramétrage
             connectViewModel.Login = Helper.LoadLogin();
 
-            // Lancement du formulaire de saisi du login et mot de passe 
+            // Lancement du formulaire de saisi du login et mot de passe
             bool? dialogResult = connectViewModel.connectView.ShowDialog();
             // Si l'utilisateur a cliqué sur le bouton "Annuler"
             // il n'y aura pas de connexion

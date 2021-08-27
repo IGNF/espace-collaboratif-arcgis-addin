@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -143,17 +141,28 @@ namespace ArcGisProEspaceCollaboratif
             Tuple< bool, bool, Box, List<Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
 
             // Initialisation boîte de dialogue
-            DialogResult resultDialog;
+            //DialogResult resultDialog;
 
             // Cas nom de la couche non rempli
             if (filterLayerName.Length == 0)
             {
-                resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", Constantes.QUESTION, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                string message = "Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)";
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
+                if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes )
+                {
+                    return overrideFilterTuple;
+                }
+                else
+                {
+                    return noFilterTuple;
+                }
+                /*resultDialog = MessageBox.Show("Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", Constantes.QUESTION, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
 
                 if (resultDialog == DialogResult.Yes)
                     return overrideFilterTuple;
                 else
-                    return noFilterTuple;
+                    return noFilterTuple;*/
             }
 
             Context contexte = Context.Instance;
@@ -161,22 +170,39 @@ namespace ArcGisProEspaceCollaboratif
 
             if (filterLayer == null)
             {
-                resultDialog = MessageBox.Show("La carte en cours ne contient pas la couche '" + filterLayerName + "' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                string message = string.Format("La carte en cours ne contient pas la couche '{0}' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
+                if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes)
+                {
+                    return overrideFilterTuple;
+                }
+                else
+                {
+                    return noFilterTuple;
+                }
+                /*resultDialog = MessageBox.Show("La carte en cours ne contient pas la couche '" + filterLayerName + "' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (resultDialog == DialogResult.Yes)
                     return overrideFilterTuple;
                 else
-                    return noFilterTuple;
+                    return noFilterTuple;*/
             }
 
             spatialFilterGeometry = contexte.GetSpatialFilterGeometry(filterLayerName);
-
             if (spatialFilterGeometry.Count == 0)
             {
-                resultDialog = MessageBox.Show("La couche '" + filterLayerName + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                string message = string.Format("La couche '{0}' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
+                if (messageBoxResult != System.Windows.MessageBoxResult.OK ||
+                    messageBoxResult != System.Windows.MessageBoxResult.Yes)
+                {
+                    return noFilterTuple;
+                }
+                /*resultDialog = MessageBox.Show("La couche '" + filterLayerName + "' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", "IGN Espace collaboratif", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (resultDialog != DialogResult.Yes)
-                    return noFilterTuple;
+                    return noFilterTuple;*/
             }
 
             // On ajoute la BBOX comme paramètre de la requête

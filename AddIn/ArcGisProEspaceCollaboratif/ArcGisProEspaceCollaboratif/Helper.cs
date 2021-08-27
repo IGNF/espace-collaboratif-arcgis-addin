@@ -11,10 +11,8 @@ using ArcGisProEspaceCollaboratif.Core;
 using System.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Core;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Editing;
-using System.Text;
 
 namespace ArcGisProEspaceCollaboratif
 {
