@@ -140,12 +140,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// Création du lien vers le document
+        /// Le lien complet est de type : https://espacecollaboratif.ign.fr/document/download/62644
+        /// Le numéro du document contient le lien complet
         /// </summary>
         /// <param name="document">La chaine de caractères à transformer en hyperlink</param>
         private void GetHyperLink(string document)
-        {           
-            // TODO Noémie : pourquoi le lien hypertexte dans la fiche du signalement ne fonctionne pas ?
-            // Le lien est de type : https://espacecollaboratif.ign.fr/document/download/62644
+        { 
             int loc = document.LastIndexOf("/", document.Length - 1);
             if (loc == -1)
             {
@@ -172,6 +172,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     FontWeight = System.Windows.FontWeights.Bold,
                     Foreground = SetArcGisColor()
                 };
+                // Ouvrir le navigateur qui est bloqué par défaut
                 hyperlink.RequestNavigate += LinkOnRequestNavigate;
                 // Ajout du lien au dialogue
                 this.seeReportView.TextBlockHyperlink.Inlines.Add(run1);

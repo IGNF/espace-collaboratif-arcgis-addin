@@ -397,17 +397,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Définition de la processBar
-        /// </summary>
-        /// <param name="progressbar"></param>
-        /*public void SetProgressBar(System.Windows.Forms.ProgressBar progressbar)
-        {
-            this.progressbar = progressbar;
-            this.progressbar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-        }*/
-
-
-        /// <summary>
         /// Retourne un simple signalement, donné par son identifiant
         /// </summary>
         /// <param name="idReport">identifiant du signalement</param>

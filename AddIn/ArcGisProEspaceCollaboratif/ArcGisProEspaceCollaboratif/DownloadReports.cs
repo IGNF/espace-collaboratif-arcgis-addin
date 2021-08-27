@@ -87,6 +87,7 @@ namespace ArcGisProEspaceCollaboratif
                     progDialog.Show();
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
+                    progDialog.Hide();
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
                     context.RemoveAllObjectsFromLayers();
@@ -94,7 +95,6 @@ namespace ArcGisProEspaceCollaboratif
                     int countReports = reports.Count;
                     await context.InsertReports(reports);
                     
-
                     //Zoom sur la couche des signalements
                     FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
                     context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
