@@ -11,11 +11,13 @@
         <Label Content="Informations générales" HorizontalAlignment="Left" Margin="20,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,77,0,0" TextWrapping="Wrap" Text="{Binding SeeGeneralInformation}" VerticalAlignment="Top" Height="136" Width="240"/>
         <Label Content="Thèmes" HorizontalAlignment="Left" Margin="289,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <ScrollViewer x:Name="ScrollViewerThemes" VerticalScrollBarVisibility="Auto"  Margin="296,79,26,339">
-            <TextBlock x:Name="TextBlockThemes" Text="{Binding SeeThemes}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="253"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="296,79,26,339">
+            <TextBlock Text="{Binding SeeThemes}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="253"/>
         </ScrollViewer>
         <Label Content="Description" HorizontalAlignment="Left" Margin="20,215,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,246,0,0" VerticalAlignment="Top" Width="523" Height="70"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="25,246,0,0">
+            <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top"  Width="523"/>
+        </ScrollViewer>
         <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="20,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock x:Name="TextBlockHyperlink" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56"/>
         <Label Content="Réponses" HorizontalAlignment="Left" Margin="20,408,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
