@@ -16,7 +16,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             Polygone,   /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
             Texte,      /*!< Pour un un champ texte du croquis. */
             Fleche,     /*!< Pour une flêche du croquis. */
-            MultiLigne
+            MultiLigne,
+            Multipolygone //TODO Noémie à valider
         };
 
         /// <summary>

@@ -10,11 +10,9 @@ using log4net;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
-    class ReplyReportViewModel
+    class ReplyReportViewModel : ViewModelBase
     {
         #region Parameters
-        private static readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
 
         /// <summary>
         /// L'instance du dialogue "Répondre à un signalement"

@@ -1014,6 +1014,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                     Sketch.SketchType type =
                         (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
 
+                    if (type == Sketch.SketchType.Multipolygone)
+                    {
+                        // TODO Noémie : est-ce la bonne solution ?
+                        // J'ai ajouté le type Multipolygone dans SketchType car l'outil renvoie une exception
+                        // et un continue dans la boucle si le cas se présente (par exemple 354478)
+                        continue;
+                    }
+
                     string nameSketch = EncodeToUTF8(v.SelectSingleNode("nom").Value);
 
                     //attributs

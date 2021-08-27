@@ -41,9 +41,9 @@ namespace ArcGisProEspaceCollaboratif
                         logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
-                            Constantes.ERROR);                    
+                            Constantes.ERROR);
                         return;
-                    } 
+                    }
 
                     // Transformation des objets sélectionnés en croquis.
                     List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeSketchFromSelection();

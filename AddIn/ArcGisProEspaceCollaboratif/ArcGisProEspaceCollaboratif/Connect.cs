@@ -14,7 +14,7 @@ namespace ArcGisProEspaceCollaboratif
         protected override async void OnClick()
         {
             logger.Debug("Click sur le bouton de connexion au service de l'Espace collaboratif");
-            await QueuedTask.Run(async () =>
+            await QueuedTask.Run(() =>
             {
                 try
                 {

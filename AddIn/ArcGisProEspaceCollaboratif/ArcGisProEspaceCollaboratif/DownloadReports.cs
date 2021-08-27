@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
@@ -18,11 +19,10 @@ namespace ArcGisProEspaceCollaboratif
 
         protected override async void OnClick()
         {
-
-            await QueuedTask.Run(async() =>
+            await QueuedTask.Run(async () =>
             {
                 try
-                {
+                {                    
                     Context context = Context.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
@@ -34,7 +34,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Test de la présence du fichier XML de paramétrage
                     context.CheckConfigFile();
-                    
+
                     // Préparation des paramètres à envoyer pour la requête de récupération des signalements
                     Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -51,7 +51,6 @@ namespace ArcGisProEspaceCollaboratif
                     parameters.Add("updatingDate", sdate);
 
                     // Paramètre filtrage spatial
-
                     string filterLayerName = Helper.LoadNameLayerForSpatialFilter();
                     Tuple<bool, bool, Box, List<Geometry>> filterParameters = GetSpatialFilterParameters(filterLayerName);
 
@@ -64,7 +63,11 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
+                    // TODO Noémie : à valider
+                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Récupération des signalements sur le serveur...");
+                    progDialog.Show();
                     List<Report> reports = context.Client.GetGeoRems(parameters);
+                    progDialog.Hide();
 
                     // Filtrage spatial des signalements
                     if (hasFilter)
@@ -79,6 +82,9 @@ namespace ArcGisProEspaceCollaboratif
                         reports = reportToKeep;
                     }
 
+                    // TODO Noémie : à valider
+                    progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Import des signalements dans la carte...");
+                    progDialog.Show();
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
 
@@ -87,6 +93,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     int countReports = reports.Count;
                     await context.InsertReports(reports);
+                    
 
                     //Zoom sur la couche des signalements
                     FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);

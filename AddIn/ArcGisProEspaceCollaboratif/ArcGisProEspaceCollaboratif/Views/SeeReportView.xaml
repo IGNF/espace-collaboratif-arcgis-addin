@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Voir un signalement" Height="587" Width="580">
     <Grid Height="557" Margin="0,0,-1.4,-0.2" VerticalAlignment="Bottom">
-        <Label Content="{Binding SeeNumberReport}" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" FontWeight="Bold" Foreground="Blue" FontSize="18" Height="38" Width="315" RenderTransformOrigin="0.483,0.123"/>
+        <Label x:Name="ContentNumberReport" Content="{Binding SeeNumberReport}" HorizontalAlignment="Left" Margin="133,10,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="18" Height="38" Width="315" RenderTransformOrigin="0.483,0.123"/>
         <Label Content="Informations générales" HorizontalAlignment="Left" Margin="20,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock HorizontalAlignment="Left" Margin="25,77,0,0" TextWrapping="Wrap" Text="{Binding SeeGeneralInformation}" VerticalAlignment="Top" Height="136" Width="240"/>
         <Label Content="Thèmes" HorizontalAlignment="Left" Margin="289,48,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
@@ -17,10 +17,7 @@
         <Label Content="Description" HorizontalAlignment="Left" Margin="20,215,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,246,0,0" VerticalAlignment="Top" Width="523" Height="70"/>
         <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="20,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <TextBlock Text="{Binding SeeFilesAttached}" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56"/>
-        <!--TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56">
-            <Span xml:space="preserve"><Hyperlink NavigateUri="{Binding SeeFilesAttached}"><lien>toto</Run></Hyperlink></>
-        </TextBlock--> 
+        <TextBlock x:Name="TextBlockHyperlink" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56"/>
         <Label Content="Réponses" HorizontalAlignment="Left" Margin="20,408,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Height="70" Margin="26,441,26,46">
             <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="523"/>

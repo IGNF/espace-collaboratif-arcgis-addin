@@ -1,18 +1,17 @@
 ﻿using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Views;
-using log4net;
 using System;
 using System.Collections.Generic;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Navigation;
 using static ArcGisProEspaceCollaboratif.Core.Status;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
-    class SeeReportViewModel
+    class SeeReportViewModel : ViewModelBase
     {
         #region Parameters
-
-        private static readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
 
         /// <summary>
         /// L'instance du dialogue "Voir un signalement"
@@ -81,11 +80,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public string SeeGroupDescription { get; set; }
 
         /// <summary>
-        /// Le lien vers le(s) document(s) attaché(s) au signalement
-        /// </summary>
-        public string SeeFilesAttached { get; set; }
-
-        /// <summary>
         /// La ou les réponses attachées au signalement
         /// </summary>
         public string SeeResponses { get; set; }
@@ -105,6 +99,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void DisplayNumberReport()
         {
             this.SeeNumberReport = string.Format("Signalement n°{0}", this.ReportAttributes[Constantes.N_REPORT_IN_GDB]);
+            this.seeReportView.ContentNumberReport.Foreground = this.SetArcGisColor();
         }
 
         private void DisplayGeneralInformation()
@@ -135,17 +130,74 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             string document = this.ReportAttributes[Helper.name_field_Document];
             if (string.IsNullOrEmpty(document))
             {
-                this.SeeFilesAttached = "Pas de document(s) attaché(s) au signalement";
+                this.seeReportView.TextBlockHyperlink.Text = "Pas de document(s) attaché(s) au signalement";
             }
             else
             {
-                // TODO Eric : faire afficher un lien hypertexte dans la fiche du signalement dans le fichier SeeReportView.xaml ou par du code C#
-                // <!--TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56">
-                // < Span xml: space = "preserve" >< Hyperlink NavigateUri = "{Binding SeeFilesAttached}" >< lien > toto </ Run ></ Hyperlink ></>
-                // </ TextBlock-- >
-                this.SeeFilesAttached = document;
+                GetHyperLink(document);
             }
         }
+
+        /// <summary>
+        /// Création du lien vers le document
+        /// </summary>
+        /// <param name="document">La chaine de caractères à transformer en hyperlink</param>
+        private void GetHyperLink(string document)
+        {           
+            // TODO Noémie : pourquoi le lien hypertexte dans la fiche du signalement ne fonctionne pas ?
+            // Le lien est de type : https://espacecollaboratif.ign.fr/document/download/62644
+            int loc = document.LastIndexOf("/", document.Length - 1);
+            if (loc == -1)
+            {
+                Run run = new Run(document);
+                
+                Hyperlink hyperlink = new Hyperlink(run)
+                {
+                    NavigateUri = new Uri(document),
+                    FontWeight = System.Windows.FontWeights.Bold,
+                    Foreground = SetArcGisColor()
+                };
+                // Ajout du lien au dialogue
+                this.seeReportView.TextBlockHyperlink.Inlines.Add(hyperlink);
+            }
+            else
+            {
+                string link = document.Substring(loc + 1);
+                string TextPrecedingTheHyperlink = document.Substring(0, loc + 1);
+                Run run1 = new Run(TextPrecedingTheHyperlink);
+                Run run2 = new Run(link);
+                Hyperlink hyperlink = new Hyperlink(run2)
+                {
+                    NavigateUri = new Uri(document),
+                    FontWeight = System.Windows.FontWeights.Bold,
+                    Foreground = SetArcGisColor()
+                };
+                hyperlink.RequestNavigate += LinkOnRequestNavigate;
+                // Ajout du lien au dialogue
+                this.seeReportView.TextBlockHyperlink.Inlines.Add(run1);
+                this.seeReportView.TextBlockHyperlink.Inlines.Add(hyperlink);
+            }
+        }
+
+        /// <summary>
+        /// Pour indiquer à Windows d'ouvrir le navigateur
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void LinkOnRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
+        }
+
+        /// <summary>
+        /// Définition de la couleur bleu ArcGIS pro
+        /// </summary>
+        /// <returns></returns>
+        private SolidColorBrush SetArcGisColor()
+        {
+            return new System.Windows.Media.SolidColorBrush((Color)ColorConverter.ConvertFromString("#007AC2"));
+        }
+       
 
         /// <summary>
         /// 

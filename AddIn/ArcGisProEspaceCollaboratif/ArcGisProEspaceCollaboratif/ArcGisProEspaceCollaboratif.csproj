@@ -153,6 +153,7 @@
     <Compile Include="AssociatedObjects.cs" />
     <Compile Include="CollaborativeSpaceGeodatabase.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Utils\RelayCommand.cs" />
     <Compile Include="ViewModels\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\FeedbackInformationViewModel.cs" />
@@ -178,12 +179,6 @@
     <Compile Include="Context.cs" />
     <Compile Include="CreateReport.cs" />
     <Compile Include="DownloadReports.cs" />
-    <Compile Include="FormProgressDownload.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormProgressDownload.Designer.cs">
-      <DependentUpon>FormProgressDownload.cs</DependentUpon>
-    </Compile>
     <Compile Include="HelpConfigure.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -225,10 +220,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormProgressDownload.resx">
-      <DependentUpon>FormProgressDownload.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -340,6 +331,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\nogroup_logo.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\test.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--

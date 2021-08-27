@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
-    class HelpConfigureViewModel
+    class HelpConfigureViewModel : ViewModelBase
     {
         #region Parameters
 

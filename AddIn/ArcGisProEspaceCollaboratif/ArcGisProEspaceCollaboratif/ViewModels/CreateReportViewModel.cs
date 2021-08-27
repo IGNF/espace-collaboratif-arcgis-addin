@@ -86,12 +86,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private List<ArcGisProEspaceCollaboratif.Core.Sketch> Sketches { get; set; }
 
-        /// <summary>
-        /// Le logger qui permet d'enregistrer des informations sur le processus
-        /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
-        private static readonly ILog logger = LogManager.GetLogger(typeof(CreateReportViewModel));
-
         #endregion
 
         #region Constructors

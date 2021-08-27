@@ -15,8 +15,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     /// </summary>
     class LoadGatewayViewModel : ViewModelBase
     {
-        private static readonly Logger riplogger = Logger.Instance;
-        private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
+        //private static readonly Logger riplogger = Logger.Instance;
+        //private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Connect));
 
         #region Parameters
         /// <summary>
