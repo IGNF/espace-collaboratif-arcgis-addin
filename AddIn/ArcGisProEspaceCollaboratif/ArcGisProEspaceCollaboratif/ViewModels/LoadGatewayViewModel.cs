@@ -6,7 +6,6 @@ using System.Windows.Input;
 using ArcGIS.Desktop.Mapping;
 using System.Threading.Tasks;
 using System;
-using log4net;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {

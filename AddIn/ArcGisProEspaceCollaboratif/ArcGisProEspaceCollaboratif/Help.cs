@@ -3,7 +3,6 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;

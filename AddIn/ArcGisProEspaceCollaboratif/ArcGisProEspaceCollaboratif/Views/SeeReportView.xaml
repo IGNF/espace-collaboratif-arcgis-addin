@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ArcGisProEspaceCollaboratif.Views"
         mc:Ignorable="d"
         Title="Voir un signalement" Height="587" Width="580">
     <Grid Height="557" Margin="0,0,-1.4,-0.2" VerticalAlignment="Bottom">
@@ -15,13 +14,13 @@
             <TextBlock Text="{Binding SeeThemes}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="253"/>
         </ScrollViewer>
         <Label Content="Description" HorizontalAlignment="Left" Margin="20,215,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="25,246,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="26,248,26,242">
             <TextBlock Text="{Binding SeeGroupDescription}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top"  Width="523"/>
         </ScrollViewer>
         <Label Content="Document(s) joint(s)" HorizontalAlignment="Left" Margin="20,326,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
         <TextBlock x:Name="TextBlockHyperlink" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="25,356,0,0" VerticalAlignment="Top" Width="523" Height="56"/>
         <Label Content="Réponses" HorizontalAlignment="Left" Margin="20,408,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="14"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="70" Margin="26,441,26,46">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="26,441,26,24">
             <TextBlock Text="{Binding SeeResponses}" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" Width="523"/>
         </ScrollViewer>
     </Grid>

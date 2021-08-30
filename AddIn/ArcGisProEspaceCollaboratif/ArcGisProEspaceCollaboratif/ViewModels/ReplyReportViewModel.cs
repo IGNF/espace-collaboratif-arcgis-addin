@@ -6,7 +6,6 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using static ArcGisProEspaceCollaboratif.Core.Status;
 using System;
-using log4net;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -69,6 +68,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
             else
             {
+                // TODO Noémie : j'aurais remplacé le message par "Réponse aux xx signalements"
                 this.NumberReportLabel = string.Format("Attention, {0} signalements sélectionnés", numberReports);
             }
             this.NewStatusToolTip = Helper.GetFileAboutStatusResponse();
@@ -84,20 +84,30 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public string NumberReportLabel { get; set; }
 
         /// <summary>
-        /// 
+        /// La liste des statuts proposés à l'utilisateur
+        /// "En cours de traitement"
+        /// "En attente de saisie"
+        /// "Pris en compte"
+        /// "Déjà pris en compte"
+        /// "Rejeté (hors spéc.)"
+        /// "Rejeté (hors de propos)"
         /// </summary>
         public ObservableCollection<string> StatutItemsSourceComboBox { get; set; }
 
         /// <summary>
-        /// 
+        /// Le statut sélectionné par l'utilisateur dans la liste déroulante
         /// </summary>
         public string StatutSelectedItemComboBox { get; set; } = Status.ListWordings[0];
 
         /// <summary>
-        /// 
+        /// Le texte de la réponse écrite par l'utilisateur
         /// </summary>
         public string NewResponseTextBox { get; set; } = "";
 
+        /// <summary>
+        /// Description du statut fourni
+        /// à l'utilisateur au moyen d'une info bulle
+        /// </summary>
         public string NewStatusToolTip { get; set; } = "";
 
         #endregion
@@ -108,7 +118,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Envoyer"
-        /// Le ou les signalements sont envoyés sur l'espace collaboratif
+        /// Le ou les signalements avec la réponse sont envoyés sur l'espace collaboratif
+        /// Un message de confirmation est envoyé en retour à l'utilisateur
         /// </summary>
         private void OnSend()
         {
@@ -146,12 +157,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 logger.Warn(this.Message);
             }
         }
+
         private bool AlwaysTrue() { return true; }
 
-        #endregion
-
-        #region Methods
-        
         #endregion
     }
 }

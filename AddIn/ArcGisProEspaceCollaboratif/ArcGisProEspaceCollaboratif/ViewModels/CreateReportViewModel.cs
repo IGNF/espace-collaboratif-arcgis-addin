@@ -2,7 +2,6 @@
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
-using log4net;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
