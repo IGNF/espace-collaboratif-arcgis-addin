@@ -38,12 +38,22 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        e.Message,
-                        Constantes.ERROR
-                    );
-                    string message = string.Format("Problème dans la suppression des objets des couches signalements : {0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(string.Format("DeleteReport.OnClick : {0}\n", message));
+                    if (e.Message == Constantes.OPERATIONANNULEE)
+                    {
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            e.Message,
+                            Constantes.INFORMATION
+                        );
+                    }
+                    else
+                    {
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            e.Message,
+                            Constantes.ERROR
+                        );
+                        string message = string.Format("Problème dans la suppression des objets des couches signalements : {0}\n{1}", e.Message, e.StackTrace);
+                        logger.Error(string.Format("DeleteReport.OnClick : {0}\n", message));
+                    }
                 }
             });
         }

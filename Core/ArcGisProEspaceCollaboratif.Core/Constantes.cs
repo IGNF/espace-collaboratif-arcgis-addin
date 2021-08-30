@@ -63,5 +63,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public const string N_REPORT_IN_GDB = "N_remarque";
         public const string LIEN_REPORT = "Lien_remarque";
+
+        public const string OPERATIONANNULEE = "Opération annulée par l'utilisateur";
     }
 }

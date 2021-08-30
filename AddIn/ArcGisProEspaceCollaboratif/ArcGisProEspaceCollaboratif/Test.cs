@@ -1,20 +1,17 @@
 ﻿using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
-using System.Threading;
-using System.Threading.Tasks;
+using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
     internal class Test : Button
     {
 
-        protected override async void OnClick()
+        protected override void OnClick()
         {
-            /*ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                   "Page de test",
-                   Constantes.INFORMATION
-               );*/
+            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                "Page de test",
+                Constantes.INFORMATION
+            );
 
             //Creat a Progress Bar user control
             /*var progressBarControl = new System.Windows.Controls.ProgressBar
@@ -41,7 +38,7 @@ namespace ArcGisProEspaceCollaboratif
             progDialog.Show();
             await DoSomeWork(progDialog);*/
 
-            uint maxSteps = 10;
+            /*uint maxSteps = 10;
             var pd = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Running SPU", maxSteps, false);
             ProgressorSource cps = new ProgressorSource(pd);
             cps.Progressor.Max = (uint)maxSteps;
@@ -66,19 +63,19 @@ namespace ArcGisProEspaceCollaboratif
                 }
 
 
-            }, cps.Progressor);
+            }, cps.Progressor);*/
         }
 
-        /*private static Task DoSomeWork(ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog)
-        {
-            return QueuedTask.Run(async () =>
+            /*private static Task DoSomeWork(ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog)
             {
-                for (uint iSeconds = 0; iSeconds < 10; iSeconds++)
+                return QueuedTask.Run(async () =>
                 {
-                    await Task.Delay(1000);
-                }
-                progDialog.Hide();
-            });
-        }*/
+                    for (uint iSeconds = 0; iSeconds < 10; iSeconds++)
+                    {
+                        await Task.Delay(1000);
+                    }
+                    progDialog.Hide();
+                });
+            }*/
     }
 }

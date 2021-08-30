@@ -60,16 +60,31 @@ namespace ArcGisProEspaceCollaboratif
                 // Chargement du dialogue "Charger les couches de mon groupe"
                 var loadGatewayViewModel = new LoadGatewayViewModel(context);
                 loadGatewayViewModel.loadGatewayView.DataContext = loadGatewayViewModel;
-                loadGatewayViewModel.loadGatewayView.ShowDialog();
+                bool? dialogResult = loadGatewayViewModel.loadGatewayView.ShowDialog();
+                if (dialogResult == false)
+                {
+                    loadGatewayViewModel.loadGatewayView.Close();
+                    return;
+                }
             }
             catch (Exception e)
             {
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                    e.Message,
-                    Constantes.ERROR
-                );
-                string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                logger.Error(message);
+                if (e.Message == Constantes.OPERATIONANNULEE)
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.INFORMATION
+                    );
+                }
+                else
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR
+                    );
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(message);
+                }
             }
         }
     }

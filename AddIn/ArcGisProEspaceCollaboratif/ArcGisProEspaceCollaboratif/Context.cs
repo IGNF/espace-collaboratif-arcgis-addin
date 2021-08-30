@@ -657,9 +657,9 @@ namespace ArcGisProEspaceCollaboratif
             // il n'y aura pas de connexion
             if (dialogResult == false)
             {
-                string message = "Opération annulée par l'utilisateur";
-                logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message));
-                throw new Exception (message);
+                connectViewModel.connectView.Close();
+                logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", Constantes.OPERATIONANNULEE));
+                throw new Exception (Constantes.OPERATIONANNULEE);
             }
             // Récupération du login et mot de passe introduits.
             this.Login = connectViewModel.Login;
@@ -824,6 +824,7 @@ namespace ArcGisProEspaceCollaboratif
                 // dans son choix du groupe, on sort
                 if (dialogResult == false)
                 {
+                    groupChoiceViewModel.groupChoiceView.Close();
                     return false;
                 }
                

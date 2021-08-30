@@ -113,10 +113,20 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
-                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                    logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
-                    return;
+                    if (e.Message == Constantes.OPERATIONANNULEE)
+                    {
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            e.Message,
+                            Constantes.INFORMATION
+                        );
+                    }
+                    else
+                    {
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(e.Message, Constantes.ERROR);
+                        string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                        logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
+                        return;
+                    }
                 }
             });
         }
@@ -156,8 +166,8 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
-            Context contexte = Context.Instance;
-            Layer filterLayer = contexte.GetLayerByName(filterLayerName);
+            Context context = Context.Instance;
+            Layer filterLayer = context.GetLayerByName(filterLayerName);
 
             if (filterLayer == null)
             {
@@ -174,7 +184,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
-            spatialFilterGeometry = contexte.GetSpatialFilterGeometry(filterLayerName);
+            spatialFilterGeometry = context.GetSpatialFilterGeometry(filterLayerName);
             if (spatialFilterGeometry.Count == 0)
             {
                 string message = string.Format("La couche '{0}' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
@@ -187,7 +197,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             // On ajoute la BBOX comme paramètre de la requête
-            bboxFiltrageSpatial = contexte.GetBBox(spatialFilterGeometry);
+            bboxFiltrageSpatial = context.GetBBox(spatialFilterGeometry);
             
             return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
         }

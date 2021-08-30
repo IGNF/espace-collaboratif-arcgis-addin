@@ -1,4 +1,5 @@
-﻿using ArcGIS.Desktop.Framework.Threading.Tasks;
+﻿using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
@@ -904,10 +905,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un signalement unique
         /// </summary>
-
-        /// <summary>
-        /// Création d'un signalement unique
-        /// </summary>
         private async void CreateReport()
         {
             try
@@ -931,10 +928,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         this.VirtualReport.AddSketches(this.Sketches);
                     }
 
-                    // Création du nouveau signalement
+                    // Création et zoom sur le nouveau signalement
                     Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
-                    bool result = await this.Context.InsertReports(new List<Report> { newReport });
-
+                    List<Report> listNewReport = new List<Report>
+                    {
+                        newReport
+                    };
+                    bool result = await this.Context.InsertReports(listNewReport);
+                    // TODO Noémie : j'ai ajouté un zoom sur l'objet créé, tu valides ?
+                    ZoomWithExtent(listNewReport);
                     List<ulong> listIdNouveauxSignalements = new List<ulong>
                     {
                         newReport.Id
@@ -981,11 +983,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         // Création du nouveau signalement
                         ArcGisProEspaceCollaboratif.Core.Report newReport = this.Context.Client.CreateReport(this.VirtualReport);
                         listNewReports.Add(newReport);
-
                         listIdNouveauxSignalements.Add(newReport.Id);
                     }
 
+                    // Insertion et zoom sur les signalements créés dans la carte
                     bool result = await this.Context.InsertReports(listNewReports);
+                    // TODO Noémie : j'ai ajouté un zoom sur l'ensemble des objets créés, tu valides ?
+                    ZoomWithExtent(listNewReports);
                     ShowFeedbackInformation(listIdNouveauxSignalements);
                 });
             }
@@ -998,6 +1002,22 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 logger.Error(string.Format("CreateReportViewModel.CreateReports : {0}\n", e.Message));
                 return;
             }
+        }
+
+        /// <summary>
+        /// Zoom et centre la carte sur le (ou les) signalement(s) créé(s)
+        /// </summary>
+        /// <param name="list">La liste du ou des nouveaux signalements</param>
+        private void ZoomWithExtent(List<Report> list)
+        {
+            ArcGIS.Core.Geometry.MapPoint mapPoint = Helper.TransformPoint(list[0].Position);
+            EnvelopeBuilderEx builderEx = new EnvelopeBuilderEx(mapPoint.Extent);
+            foreach (Report report in list)
+            {
+                ArcGIS.Core.Geometry.MapPoint mppt = Helper.TransformPoint(report.Position);
+                builderEx.Union(mppt.Extent);
+            }
+            this.Context.MapActiveView.ZoomTo(builderEx.ToGeometry().Extent);
         }
 
         /// <summary>
