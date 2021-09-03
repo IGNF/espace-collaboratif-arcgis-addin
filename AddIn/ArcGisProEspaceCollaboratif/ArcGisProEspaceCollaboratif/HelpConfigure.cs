@@ -44,6 +44,7 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     helpConfigureViewModel.helpConfigureView.Close();
                     return;
+                
                 }
 
             }

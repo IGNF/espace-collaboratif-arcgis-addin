@@ -1016,7 +1016,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (type == Sketch.SketchType.Multipolygone)
                     {
-                        // TODO Noémie : est-ce la bonne solution ?
+                        // TODO Noémie : vérifier ce qui est fait pour Multiligne
                         // J'ai ajouté le type Multipolygone dans SketchType car l'outil renvoie une exception
                         // et un continue dans la boucle si le cas se présente (par exemple 354478)
                         continue;

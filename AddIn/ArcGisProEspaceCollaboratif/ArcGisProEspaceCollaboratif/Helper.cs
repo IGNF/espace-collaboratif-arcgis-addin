@@ -744,7 +744,6 @@ namespace ArcGisProEspaceCollaboratif
                 return Helper.TransformPoint(sketchIn.FirstCoord());
             }
 
-            //TODO return EspaceCollaboratifHelper.Centroid(EspaceCollaboratifHelper.CroquisToPolyline(sketchIn));
             return null;
         }
 
