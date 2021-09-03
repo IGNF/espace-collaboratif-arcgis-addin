@@ -146,6 +146,7 @@ namespace ArcGisProEspaceCollaboratif
 
             this.CheckConfigFile();
             this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
+            this.CollaborativeSpaceGeodatabase.InitAsync();
 
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
@@ -219,8 +220,6 @@ namespace ArcGisProEspaceCollaboratif
                 );
 
         }
-
-
 
         /// <summary>
         /// Récupère une couche par son nom.
@@ -642,7 +641,7 @@ namespace ArcGisProEspaceCollaboratif
             this.URLHost = Helper.LoadUrlhost();
             logger.Debug("URLHost : " + this.URLHost);
 
-            var connectViewModel = new ConnectViewModel()
+            ConnectViewModel connectViewModel = new ConnectViewModel()
             {
                 Uri = this.URLHost
             };
@@ -734,21 +733,18 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public void DisplayInformationsAfterConnection()
         {
-            var connectInfoViewModel = new FeedbackInformationViewModel();
-            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
+            FeedbackInformationViewModel feedbackInformationViewModel = new FeedbackInformationViewModel();
+            feedbackInformationViewModel.feedbackInformationView.DataContext = feedbackInformationViewModel;
 
             // Le logo du groupe auquel l'utilisateur appartient
             if (!string.IsNullOrEmpty(Profil.Logo))
             {
-                connectInfoViewModel.Logo = string.Format("{0}{1}", this.URLHost, Profil.Logo);
+                feedbackInformationViewModel.Logo = string.Format("{0}{1}", this.URLHost, Profil.Logo);
             }
-            // TODO Noémie : à valider car le logo IGN est aussi appliqué à des groupes comme BDUNI par exemple
-            // http://sd-redmine.ign.fr/issues/15056
-            // J'ai remplacé le logo IGN par un logo "NO GROUP"
-            // L'utilisateur sans groupe à un profil par défaut, on affiche un logo "NO GROUP"
+            // L'utilisateur sans groupe à un profil par défaut, on affiche le logo IGN
             else if (Profil.Title == "Profil par défaut")
             {
-                connectInfoViewModel.Logo = "/ArcGisProEspaceCollaboratif;component/Resources/nogroup_logo.gif";
+                feedbackInformationViewModel.Logo = "/ArcGisProEspaceCollaboratif;component/Resources/LogoIGN.gif";
             }
             string message = "Connexion réussie à l'Espace collaboratif\n\n";
             message += string.Format(" Serveur : {0}\n", this.URLHost);
@@ -771,8 +767,12 @@ namespace ArcGisProEspaceCollaboratif
                 message += string.Format(" Zone : {0}\n", Profil.Zone);
             }
             message += string.Format(" Clé Géoportail : {0}", this.CleGeoportail);
-            connectInfoViewModel.MessageFeedback = message;
-            connectInfoViewModel.feedbackInformationView.ShowDialog();
+            feedbackInformationViewModel.MessageFeedback = message;
+            bool? dialogResult = feedbackInformationViewModel.feedbackInformationView.ShowDialog();
+            if (dialogResult == false)
+            {
+                feedbackInformationViewModel.feedbackInformationView.Close();
+            }
 
             Helper.SaveLogin(this.Login);
             Helper.SaveActiveGroup(Profil.Title);
@@ -817,7 +817,7 @@ namespace ArcGisProEspaceCollaboratif
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
                 // afin qu'il puisse remplir sa clé Géoportail
-                var groupChoiceViewModel = new GroupChoiceViewModel(this.CleGeoportail, Profil.Group.Name, Profil);
+                GroupChoiceViewModel groupChoiceViewModel = new GroupChoiceViewModel(this.CleGeoportail, Profil.Group.Name, Profil);
                 groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
                 bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
                 // Si l'utilisateur a cliqué sur le bouton "Annuler"

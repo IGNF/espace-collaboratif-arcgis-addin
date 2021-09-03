@@ -16,5 +16,6 @@ namespace ArcGisProEspaceCollaboratif.Views
         {
             this.DialogResult = true;
         }
+
     }
 }

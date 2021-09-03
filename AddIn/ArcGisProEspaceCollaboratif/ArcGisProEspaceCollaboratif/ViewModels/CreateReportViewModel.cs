@@ -892,14 +892,19 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 message += string.Format("Succès de la création de {0} nouveaux signalements pour l'espace collaboratif.\n", reports.Count);
                 message += string.Format("Les identifiants vont de {0} à {1}.", reports.FirstOrDefault(), reports.LastOrDefault());
             }
-            var connectInfoViewModel = new FeedbackInformationViewModel();
-            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
+            FeedbackInformationViewModel feedbackInformationViewModel = new FeedbackInformationViewModel();
+            feedbackInformationViewModel.feedbackInformationView.DataContext = feedbackInformationViewModel;
             if (!string.IsNullOrEmpty(this.Context.Client.GetProfile().Logo))
             {
-                connectInfoViewModel.Logo = string.Format("{0}{1}", this.Context.URLHost, this.Context.Client.GetProfile().Logo);
+                feedbackInformationViewModel.Logo = string.Format("{0}{1}", this.Context.URLHost, this.Context.Client.GetProfile().Logo);
             }
-            connectInfoViewModel.MessageFeedback = message;
-            connectInfoViewModel.feedbackInformationView.ShowDialog();
+            feedbackInformationViewModel.MessageFeedback = message;
+            bool? dialogResult = feedbackInformationViewModel.feedbackInformationView.ShowDialog();
+            if (dialogResult == false)
+            {
+                feedbackInformationViewModel.feedbackInformationView.Close();
+                return;
+            }
         }
 
         /// <summary>

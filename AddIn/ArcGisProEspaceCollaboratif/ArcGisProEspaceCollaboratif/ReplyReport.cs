@@ -108,7 +108,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Ouverture de la boite "ReplyReport" s'il y a au moins un signalement valide
-                    var replyReportViewModel = new ReplyReportViewModel(context, replyReports, messageReportNoValid);
+                    ReplyReportViewModel replyReportViewModel = new ReplyReportViewModel(context, replyReports, messageReportNoValid);
                     replyReportViewModel.replyReportView.DataContext = replyReportViewModel;
                     bool? dialogResult = replyReportViewModel.replyReportView.ShowDialog();
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue

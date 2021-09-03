@@ -82,7 +82,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Ouverture de la boite "SeeReport" s'il y a un et un seul signalement sélectionné
                     // TODO Eric : faire défiler les fiches de tous les signalements sélectionnés
                     // http://sd-redmine.ign.fr/issues/15041 
-                    var seeReportViewModel = new SeeReportViewModel(context, attributes);
+                    SeeReportViewModel seeReportViewModel = new SeeReportViewModel(context, attributes);
                     seeReportViewModel.seeReportView.DataContext = seeReportViewModel;
                     bool? dialogResult = seeReportViewModel.seeReportView.ShowDialog();
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue

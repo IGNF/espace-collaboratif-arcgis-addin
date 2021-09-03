@@ -330,9 +330,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\nogroup_logo.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <AddInContent Include="Images\test.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

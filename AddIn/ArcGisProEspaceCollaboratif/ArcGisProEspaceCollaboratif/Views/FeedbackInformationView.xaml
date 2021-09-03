@@ -8,6 +8,6 @@
     <Grid Margin="0,0,4,0.6">
         <Image x:Name="LogoGroup" HorizontalAlignment="Left" Margin="21,21,0,0" VerticalAlignment="Top" Height="120" Width="120" Source="{Binding Logo}"/>
         <TextBlock x:Name="MessageTextBlock" HorizontalAlignment="Left" Margin="162,21,0,0" TextWrapping="Wrap" Text="{Binding MessageFeedback}" VerticalAlignment="Top" Height="120" Width="298" IsEnabled="True"/>
-        <Button x:Name="OkButton" IsDefault="True" Click="OkButton_Click" Content="OK" HorizontalAlignment="Left" Margin="306,161,0,0" VerticalAlignment="Top" Width="100" Height="30"/>
+        <Button x:Name="OkButton" IsDefault="True" Click="OkButton_Click" Command="{Binding OkButtonCmd}" Content="OK" HorizontalAlignment="Left" Margin="306,161,0,0" VerticalAlignment="Top" Width="100" Height="30"/>
     </Grid>
 </Window>

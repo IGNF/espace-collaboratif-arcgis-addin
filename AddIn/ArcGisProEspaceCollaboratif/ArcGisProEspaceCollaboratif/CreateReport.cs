@@ -60,7 +60,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Lancement du formulaire pour créer un nouveau signalement
-                    var createReportViewModel = new CreateReportViewModel(context, futursSketch);
+                    CreateReportViewModel createReportViewModel = new CreateReportViewModel(context, futursSketch);
                     createReportViewModel.createReportView.DataContext = createReportViewModel;
                     bool? dialogResult = createReportViewModel.createReportView.ShowDialog();
                     // Si l'utilisateur a cliqué sur le bouton "Annuler"

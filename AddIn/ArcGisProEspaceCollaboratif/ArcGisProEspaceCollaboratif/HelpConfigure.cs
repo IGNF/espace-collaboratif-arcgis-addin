@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.Core;
@@ -12,60 +15,58 @@ namespace ArcGisProEspaceCollaboratif
         private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpConfigure));
 
-        protected override async void OnClick()
+        protected override void OnClick()
         {
             logger.Debug("Clic sur le bouton de configuration de l'add-in Espace collaboratif");
-            await QueuedTask.Run(() =>
+            try
             {
-                try
-                {
-                    Context context = Context.Instance;
+                Context context = Context.Instance;
 
-                    // Il faut s'être connecté au service pour configurer
+                // Il faut s'être connecté au service pour configurer
+                if (context.Client == null)
+                { 
+                    // Établissement de la connexion avec le service Espace collaboratif.
+                    context.Client = context.GetConnexionEspaceCollaboratif();
                     if (context.Client == null)
                     {
-                        // Établissement de la connexion avec le service Espace collaboratif.
-                        context.Client = context.GetConnexionEspaceCollaboratif();
-                        if (context.Client == null)
-                        {
-                            return;
-                        }
-                    }
-
-                    // Test de la présence du fichier XML de paramétrage
-                    context.CheckConfigFile();
-
-                    var helpConfigureViewModel = new HelpConfigureViewModel(context);
-                    helpConfigureViewModel.helpConfigureView.DataContext = helpConfigureViewModel;
-                    bool? dialogResult = helpConfigureViewModel.helpConfigureView.ShowDialog();
-                    // L'utilisateur a cliqué sur la croix pour fermer le dialogue
-                    if (dialogResult == false)
-                    {
-                        helpConfigureViewModel.helpConfigureView.Close();
                         return;
                     }
                 }
-                catch (Exception e)
+
+                // Test de la présence du fichier XML de paramétrage
+                context.CheckConfigFile();
+
+                HelpConfigureViewModel helpConfigureViewModel = new HelpConfigureViewModel(context);
+                helpConfigureViewModel.helpConfigureView.DataContext = helpConfigureViewModel;
+                bool? dialogResult = helpConfigureViewModel.helpConfigureView.ShowDialog();
+                // L'utilisateur a cliqué sur la croix pour fermer le dialogue
+                if (dialogResult == false)
                 {
-                    if (e.Message == Constantes.OPERATIONANNULEE)
-                    {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            e.Message,
-                            Constantes.INFORMATION
-                        );
-                    }
-                    else
-                    {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            e.Message,
-                            Constantes.ERROR
-                        );
-                        string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
-                        logger.Error(string.Format("HelpConfigure.OnClick : {0}\n", message));
-                        return;
-                    }
+                    helpConfigureViewModel.helpConfigureView.Close();
+                    return;
                 }
-            });
+
+            }
+            catch (Exception e)
+            {
+                if (e.Message == Constantes.OPERATIONANNULEE)
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.INFORMATION
+                    );
+                }
+                else
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR
+                    );
+                    string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(string.Format("HelpConfigure.OnClick : {0}\n", message));
+                    return;
+                }
+            }
         }
     }
 }

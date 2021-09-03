@@ -77,13 +77,17 @@ namespace ArcGisProEspaceCollaboratif
             message += string.Format("Version : {0}, '{1}'\n", version, product);
             message += copyright;
             logger.Info(message);
-            var connectInfoViewModel = new FeedbackInformationViewModel()
+            FeedbackInformationViewModel feedbackInformationViewModel = new FeedbackInformationViewModel()
             {
                 MessageFeedback = message,
                 Logo = string.Format("{0}logo_IGN.png", Helper.EspaceCollaboratifDirectoryImages)
             };
-            connectInfoViewModel.feedbackInformationView.DataContext = connectInfoViewModel;
-            connectInfoViewModel.feedbackInformationView.ShowDialog();
+            feedbackInformationViewModel.feedbackInformationView.DataContext = feedbackInformationViewModel;
+            bool? dialogResult = feedbackInformationViewModel.feedbackInformationView.ShowDialog();
+            if (dialogResult == false)
+            {
+                feedbackInformationViewModel.feedbackInformationView.Close();
+            }
         }
     }
 

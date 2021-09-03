@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -22,6 +23,8 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public Geodatabase Geodatabase { get; set; }
 
+        public FileGeodatabaseConnectionPath FileGeodatabaseConnectionPath { get; set; }
+
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
@@ -33,15 +36,22 @@ namespace ArcGisProEspaceCollaboratif
         #region Constructors
 
         public CollaborativeSpaceGeodatabase()
-        {
+        {     
             Uri gdbUri = new Uri(uriString: GeoDatabasePath);
-            FileGeodatabaseConnectionPath fileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(gdbUri);
-            this.Geodatabase = new Geodatabase(fileGeodatabaseConnectionPath);
+            this.FileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(gdbUri);
+            //this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
         }
 
         #endregion
 
         #region Other methods
+
+        public async System.Threading.Tasks.Task InitAsync()
+        {
+            await QueuedTask.Run(() => {
+                this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
+            });
+        }
 
         /// <summary>
         /// Vérifie si une feature class existe dans une Geodatabase.
