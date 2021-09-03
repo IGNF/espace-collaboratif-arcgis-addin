@@ -37,42 +37,31 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // L'utilisateur a t'il sélectionné un et un seul signalement ?
-                    // TODO Noémie : à voir s'il y a lieu de faire une correction, c'est peut-être un fonctionnement normal d'arcgis
-                    // http://sd-redmine.ign.fr/issues/15041
-                    // Attention quand on ajoute des objets à la sélection
-                    // la méthode GetSelection ne retourne pas le bon nombre d'objets,
-                    // et l'outil affiche les attributs du dernier objet sélectionné
-                    var selectedFeatures = context.MapActiveView.Map.GetSelection();
-                    if (selectedFeatures.Count != 1)
+                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
+                    var selectedFeatures = reportLayer.GetSelection();
+                    if (selectedFeatures.GetCount() != 1)
                     {
                         throw new Exception(error);
                     }
+
                     Dictionary<string, string> attributes = new Dictionary<string, string>();
-                    foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+
+                    List<FieldDescription> fieldDescription = reportLayer.GetFieldDescriptions();
+                    IReadOnlyList<long> lOid = selectedFeatures.GetObjectIDs();
+                    foreach (long oid in lOid)
                     {
-                        if (kvp.Key.Name != Helper.name_layer_Signalement)
                         {
-                            continue;
-                        }
+                            var inspector = reportLayer.Inspect(oid);
+                            attributes = Helper.GetAttributes(inspector, fieldDescription);
 
-                        var featureLayer = kvp.Key as FeatureLayer;
-                        List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();
-                        List<long> lOid = kvp.Value;
-                        foreach (long oid in lOid)
-                        {
-                            QueuedTask.Run(() =>
-                            {
-                                var inspector = featureLayer.Inspect(oid);
-                                attributes = Helper.GetAttributes(inspector, fieldDescription);
-
-                                Geometry geometry = inspector.Shape;
-                                MapPoint point = geometry as MapPoint;
-                                attributes.Add(Helper.name_field_Longitude, Math.Round(point.X, 5).ToString());
-                                attributes.Add(Helper.name_field_Latitude, Math.Round(point.Y, 5).ToString());
-                            });
+                            Geometry geometry = inspector.Shape;
+                            MapPoint point = geometry as MapPoint;
+                            attributes.Add(Helper.name_field_Longitude, Math.Round(point.X, 5).ToString());
+                            attributes.Add(Helper.name_field_Latitude, Math.Round(point.Y, 5).ToString());
                         }
                     }
                     
+                   
                     // Si le dictionnaire attributes est vide, c'est qu'il n'y a pas de signalement sélectionné
                     if (attributes.Count == 0)
                     {

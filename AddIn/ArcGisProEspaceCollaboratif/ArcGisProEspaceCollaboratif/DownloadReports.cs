@@ -61,7 +61,6 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
-                    // TODO Noémie : à valider
                     ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Récupération des signalements sur le serveur...");
                     progDialog.Show();
                     List<Report> reports = context.Client.GetGeoRems(parameters);
@@ -80,7 +79,6 @@ namespace ArcGisProEspaceCollaboratif
                         reports = reportToKeep;
                     }
 
-                    // TODO Noémie : à valider
                     progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Import des signalements dans la carte...");
                     progDialog.Show();
                     // Chargement ou création des couches liées aux signalements

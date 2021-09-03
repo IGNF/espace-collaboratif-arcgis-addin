@@ -17,7 +17,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             Texte,      /*!< Pour un un champ texte du croquis. */
             Fleche,     /*!< Pour une flêche du croquis. */
             MultiLigne,
-            Multipolygone //TODO Noémie à valider
+            Multipolygone //TODO Noémie : vérifier ce qui est fait pour MultiLigne + ajouter Multipoint ?
         };
 
         /// <summary>

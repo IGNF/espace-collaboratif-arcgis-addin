@@ -39,11 +39,12 @@ namespace ArcGisProEspaceCollaboratif
                     helpConfigureViewModel.helpConfigureView.DataContext = helpConfigureViewModel;
                     bool? dialogResult = helpConfigureViewModel.helpConfigureView.ShowDialog();
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue
-                    if (dialogResult == false)
+                   if (dialogResult == false)
                     {
                         helpConfigureViewModel.helpConfigureView.Close();
                         return;
                     }
+                
                 }
                 catch (Exception e)
                 {

@@ -67,8 +67,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 this.NumberReportLabel = string.Format("Réponse au signalement n°{0}", this.Reports[0].Id);
             }
             else
-            {
-                // TODO Noémie : j'aurais remplacé le message par "Réponse aux xx signalements"
+            {           
                 this.NumberReportLabel = string.Format("Attention, {0} signalements sélectionnés", numberReports);
             }
             this.NewStatusToolTip = Helper.GetFileAboutStatusResponse();

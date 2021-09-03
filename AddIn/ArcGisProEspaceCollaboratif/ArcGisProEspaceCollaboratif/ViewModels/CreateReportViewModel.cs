@@ -934,8 +934,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         newReport
                     };
-                    bool result = await this.Context.InsertReports(listNewReport);
-                    // TODO Noémie : j'ai ajouté un zoom sur l'objet créé, tu valides ?
+                    bool result = await this.Context.InsertReports(listNewReport);                  
                     ZoomWithExtent(listNewReport);
                     List<ulong> listIdNouveauxSignalements = new List<ulong>
                     {
@@ -988,7 +987,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                     // Insertion et zoom sur les signalements créés dans la carte
                     bool result = await this.Context.InsertReports(listNewReports);
-                    // TODO Noémie : j'ai ajouté un zoom sur l'ensemble des objets créés, tu valides ?
                     ZoomWithExtent(listNewReports);
                     ShowFeedbackInformation(listIdNouveauxSignalements);
                 });

@@ -742,10 +742,10 @@ namespace ArcGisProEspaceCollaboratif
             {
                 connectInfoViewModel.Logo = string.Format("{0}{1}", this.URLHost, Profil.Logo);
             }
-            // TODO Noémie : à valider car le logo IGN est aussi appliqué à des groupes comme BDUNI par exemple
+            // TODO Eric : afficher le logo IGN pour les utilisateurs sans groupe (laisser NO LOGO si l'utilisatuer appartient à un groupe sans logo)
             // http://sd-redmine.ign.fr/issues/15056
             // J'ai remplacé le logo IGN par un logo "NO GROUP"
-            // L'utilisateur sans groupe à un profil par défaut, on affiche un logo "NO GROUP"
+            // L'utilisateur sans groupe a un profil par défaut, on affiche un logo "NO GROUP"
             else if (Profil.Title == "Profil par défaut")
             {
                 connectInfoViewModel.Logo = "/ArcGisProEspaceCollaboratif;component/Resources/nogroup_logo.gif";
