@@ -40,7 +40,7 @@ namespace ArcGisProEspaceCollaboratif
             name_layer_Croquis_Polygone,           
         };
 
-        public const string name_field_IdReport = "N°remarque";// anciennement N°signalement
+        public const string name_field_IdReport = "NoSignalement";
         public const string name_field_Auteur = "Auteur";
         public const string name_field_Commune = "Commune";
         public const string name_field_Insee = "Insee";
@@ -57,10 +57,10 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_UrlPrive = "URL_privé";
         public const string name_field_Document = "Document";
         public const string name_field_Autorisation = "Autorisation";
-        public const string name_field_LienReport = "Lien_remarque";// anciennement Lien_signalement
+        public const string name_field_LienReport = "Lien_signalement";
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
-        public const string name_field_LienBDuni = "Lien_object_BDUni";
+//        public const string name_field_LienBDuni = "Lien_objet_BDUni";
         public const string name_field_Source = "Source";
         public const string name_field_Longitude = "Lon";
         public const string name_field_Latitude = "Lat";
@@ -121,7 +121,7 @@ namespace ArcGisProEspaceCollaboratif
             { name_field_LienReport, new KeyValuePair<string,string> ("LONG", "") },
             { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
             { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Helper.lengthMaxField.ToString()) },
-            { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
+//            { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
         };
 
         /// <summary>

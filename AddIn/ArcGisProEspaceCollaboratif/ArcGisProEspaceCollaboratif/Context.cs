@@ -305,7 +305,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         QueryFilter queryFilter = new QueryFilter
                         {
-                            WhereClause = string.Format("N_Remarque = {0}", reportUdating.Id)
+                            WhereClause = string.Format("{0} = {1}", Helper.name_field_IdReport, reportUdating.Id)
                         };
 
                         using (RowCursor rowCursor = reportFeatureClass.Search(queryFilter, false))
@@ -318,10 +318,10 @@ namespace ArcGisProEspaceCollaboratif
                                     // In order to update the Map and/or the attribute table.
                                     // Has to be called before any changes are made to the row
                                     context.Invalidate(feature);
-                                    feature["Date_MAJ"] = reportUdating.DateUpdate;
-                                    feature["Date_de_validation"] = reportUdating.DateValidation;
-                                    feature["Réponses"] = reportUdating.ConcatenateResponse();
-                                    feature["Statut"] = reportUdating.Status;
+                                    feature[Helper.name_field_DateMAJ] = reportUdating.DateUpdate;
+                                    feature[Helper.name_field_DateValidation] = reportUdating.DateValidation;
+                                    feature[Helper.name_field_Reponse] = reportUdating.ConcatenateResponse();
+                                    feature[Helper.name_field_Statut] = reportUdating.Status;
 
                                     feature.Store();
                                     // Has to be called after the store too
