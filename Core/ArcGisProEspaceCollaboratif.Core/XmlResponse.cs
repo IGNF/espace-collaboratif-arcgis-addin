@@ -898,15 +898,33 @@ namespace ArcGisProEspaceCollaboratif.Core
                     // La géométrie conditionne le nombre de croquis à créer
                     // (Par exemple multiligne ou multipolygone)
                     v.MoveToFollowing("geometrie", "");
-                    XPathNodeIterator itCoordinates = navigator.SelectDescendants("coordinates", "http://www.opengis.net/context", false);
-                    foreach (XPathNavigator coord in itCoordinates)
+                    while (v.MoveToChild(XPathNodeType.Element))
                     {
-                        List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(coord.InnerXml);
-
+                        if (v.LocalName.Equals("outerBoundaryIs"))
+                        {
+                            while (v.MoveToChild(XPathNodeType.Element))
+                            {
+                                if (v.LocalName.Equals("coordinates"))
+                                {
+                                    int a = 1;
+                                }
+                                v.MoveToParent();//TODO Noémie je pense qu'il faut remonter aux parents car le movetochild perd l'ensemble de la chaine de caractères
+                            }
+                        }
+                        if (v.LocalName.Equals("innerBoundaryIs"))
+                        {
+                            while (v.MoveToChild(XPathNodeType.Element))
+                            {
+                                if (v.LocalName.Equals("coordinates"))
+                                {
+                                    int a = 1;
+                                }
+                            }
+                        }
                         /*if (v.LocalName.Equals("coordinates"))
                         {
                             // Géométrie du croquis
-                            List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(v.InnerXml);*/
+                            List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(v.InnerXml);
                             Sketch sketch = new Sketch
                             {
                                 Type = type,
@@ -924,7 +942,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                             // Ajout du croquis au signalement
                             report.AddSketch(sketch);
-                        //}
+                        }*/
                     }
                 }
             }

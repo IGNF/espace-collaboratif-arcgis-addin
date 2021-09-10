@@ -368,10 +368,6 @@ namespace ArcGisProEspaceCollaboratif
                     // Placement des signalements importés et filtrés sur la carte.
                     foreach (Report newReport in reports)
                     {
-                        if (newReport.Id == 354478)
-                        {
-                            int a = 1;
-                        }
                         // Signalement
                         var reportFields = new Dictionary<string, object>();
                         reportFields = GetFieldValuesForReport(newReport);
