@@ -113,10 +113,40 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void OnSend()
         {
             Helper.SaveUrlhost(this.Url);
-            Helper.SaveLogin(this.Login);
-            Helper.SaveDateExtraction(this.ExtractSelectedDate);
-            Helper.SaveNameLayerForSpatialFilter(this.SpatialFilterSelectedItem);
-            Helper.SaveProxy(this.Proxy);
+
+            // Par défaut, on enregistre un login à vide
+            Helper.SaveLogin("");
+            // Sauf si l'utilisateur à cocher la case "Login par défaut"
+            if (this.helpConfigureView.LoginCheckBox.IsChecked == true)
+            {
+                Helper.SaveLogin(this.Login);
+            }
+
+            // Par défaut, on enregistre une date d'extraction au 01/01/2000
+            DateTime defaultDate = new DateTime(2000, 1, 1);
+            Helper.SaveDateExtraction(defaultDate);
+            // Sauf si l'utilisateur à cocher "Date d'extraction"
+            if (this.helpConfigureView.ExtractCheckBox.IsChecked == true)
+            {
+                Helper.SaveDateExtraction(this.ExtractSelectedDate);
+            }
+
+            // Par défaut, on enregistre un filtre spatial à vide
+            Helper.SaveNameLayerForSpatialFilter("");
+            // Sauf si l'utilisateur à cocher la case "Couche pour filtrage spatial"
+            if (this.helpConfigureView.SpecialFilterCheckBox.IsChecked == true)
+            {
+                Helper.SaveNameLayerForSpatialFilter(this.SpatialFilterSelectedItem);
+            }
+
+            // Par défaut, on enregistre un proxy à vide
+            Helper.SaveProxy("");
+            // Sauf si l'utilisateur à cocher "Proxy"
+            if (this.helpConfigureView.ProxyCheckBox.IsChecked == true)
+            {
+                Helper.SaveProxy(this.Proxy);
+            }
+
             Helper.SaveActiveGroup(this.ActiveGroup);
             Helper.SaveGeoportalKey(this.GeoportalKey);
         }

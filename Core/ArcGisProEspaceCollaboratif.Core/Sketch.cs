@@ -16,6 +16,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             Polygone,   /*!< Pour un polygone simple (sans trous et non multiple) du croquis. */ // Ne pas traduire car vient de l'API écrit en Français
             Texte,      /*!< Pour un un champ texte du croquis. */
             Fleche,     /*!< Pour une flêche du croquis. */
+            MultiPoint,
             MultiLigne,
             Multipolygone //TODO Noémie : vérifier ce qui est fait pour MultiLigne + ajouter Multipoint ?
         };
@@ -52,46 +53,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Constructeur initialisant le nom et le type du croquis
-        /// </summary>
-        /// <param name="nom">nom du croquis</param>
-        /// <param name="type">type du croquis</param>
-        public Sketch(string name, SketchType type)
-        {
-            this.Name = name;
-            this.Type = type;
-        }
-
-        /// <summary>
-        /// Constructeur initialisant le nom, le type du croquis et la liste de Points définissant
-        /// la géométrie
-        /// </summary>
-        /// <param name="name">nom du croquis</param>
-        /// <param name="type">type du croquis</param>
-        /// <param name="points">liste de Point </param>
-        public Sketch(string name, SketchType type, List<Point> points)
-        {
-            this.Name = name;
-            this.Type = type;
-            this.Points = points;
-        }
-
-        /// <summary>
-        /// Constructeur initialisant le nom, le type du croquis, la liste de Points définissant
-        /// la géométrie et les attributs
-        /// </summary>
-        /// <param name="name">nom du croquis</param>
-        /// <param name="type">type du croquis</param>
-        /// <param name="attributs">liste d'Attributs lié au croquis</param>
-        public Sketch(string name, SketchType type, List<Point> points, List<SketchAttributes> attributes)
-        {
-            this.Name = name;
-            this.Type = type;
-            this.Points = points;
-            this.Attributes = attributes;
-        }
-
-        /// <summary>
         /// set le type
         /// </summary>
         /// <param name="type">type du croquis</param>
@@ -108,16 +69,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         public void AddPoint(Point point)
         {
             this.Points.Add(point);
-        }
-
-        /// <summary>
-        /// Ajoute un point à la liste des points du croquis
-        /// </summary>
-        /// <param name="longitude">longitude</param>
-        /// <param name="latitude">latitude</param>
-        public void AddPoint(double longitude, double latitude)
-        {
-            this.Points.Add(new Point(longitude, latitude));
         }
 
         /// <summary>
@@ -145,62 +96,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// vide la liste de Points
-        /// </summary>
-        void ClearPoint()
-        {
-            this.Points.Clear();
-        }
-
-        /// <summary>
-        /// vide la liste des Attributs
-        /// </summary>
-        public void ClearAttributs()
-        {
-            this.Attributes.Clear();
-        }
-
-        /// <summary>
-        /// recherche un point dans la liste de Points par sa position dans la liste
-        /// </summary>
-        /// <param name="i">la position du point à trouver</param>
-        /// <returns>le Point</returns>
-        public Point GetPoint(int i)
-        {
-            return this.Points[i];
-        }
-
-        /// <summary>
-        /// Retourne la longitude pour le point i
-        /// </summary>
-        /// <param name="i">l'index du point dans la liste</param>
-        /// <returns>la longitude</returns>
-        public double Longitude(int i)
-        {
-            return this.GetPoint(i).Longitude;
-        }
-
-        /// <summary>
-        /// Retourne la latitude pour le point i
-        /// </summary>
-        /// <param name="i">l'index du point dans la liste</param>
-        /// <returns>la latitude</returns>
-        public double Latitude(int i)
-        {
-            return this.GetPoint(i).Latitude;
-        }
-
-        /// <summary>
-        /// Retourne l'attribut de position i dans la liste des attributs
-        /// </summary>
-        /// <param name="i">l'index du de l'attribut </param>
-        /// <returns>l'objet Attribut</returns>
-        public SketchAttributes GetAttribute(int i)
-        {
-            return this.Attributes[i];
-        }
-
-        /// <summary>
         /// Retourne le premier point de la liste
         /// </summary>
         /// <returns>le premier point</returns>
@@ -208,7 +103,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             return this.Points.First(); ;
         }
-
+ 
         /// <summary>
         /// Retourne le dernier point de la liste
         /// </summary>
@@ -216,59 +111,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         public Point LastCoord()
         {           
             return this.Points.Last();
-        }
-
-        /// <summary>
-        /// Contrôle si la liste de points est vide
-        /// </summary>
-        /// <returns>true si la liste est vide, false sinon</returns>
-        public bool Empty()
-        {
-            return this.Points.Count == 0;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool IsClosed()
-        {
-            return this.FirstCoord() == this.LastCoord();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool IsOpenLine()
-        {
-            return ((this.Type == SketchType.Fleche || this.Type == SketchType.Ligne) && !(this.IsClosed()));
-        }
-
-        /// <summary>
-        /// Contrôle la validité du croquis en vérifiant le nombre de points
-        /// </summary>
-        /// <returns>True si le nombre de points est valide</returns>
-        public bool IsValid()
-        {
-            int nPoints = this.Points.Count;
-
-            if (nPoints == 0)
-            {
-                return false;
-            }
-
-            if ((this.Type == SketchType.Point || this.Type == SketchType.Texte) && nPoints != 1)
-            {
-                return false;
-            }
-
-            if (this.Type == SketchType.Polygone && this.FirstCoord() != this.LastCoord())
-            {
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>

@@ -61,10 +61,10 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
-                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Récupération des signalements sur le serveur...");
-                    progDialog.Show();
+                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Récupération des signalements sur le serveur...");
+                    progressDialog.Show();
                     List<Report> reports = context.Client.GetGeoRems(parameters);
-                    progDialog.Hide();
+                    progressDialog.Hide();
 
                     // Filtrage spatial des signalements
                     if (hasFilter)
@@ -79,18 +79,18 @@ namespace ArcGisProEspaceCollaboratif
                         reports = reportToKeep;
                     }
 
-                    progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Import des signalements dans la carte...");
-                    progDialog.Show();
+                    progressDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Import des signalements dans la carte...");
+                    progressDialog.Show();
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
-                    progDialog.Hide();
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
                     context.RemoveAllObjectsFromLayers();
 
                     int countReports = reports.Count;
                     await context.InsertReports(reports);
-                    
+                    progressDialog.Hide();
+
                     //Zoom sur la couche des signalements
                     FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
                     context.MapActiveView.ZoomTo(reportLayer.QueryExtent());

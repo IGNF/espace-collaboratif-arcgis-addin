@@ -7,7 +7,6 @@ using log4net;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using static ArcGisProEspaceCollaboratif.Core.Status;
-using System.Xml;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -17,7 +16,7 @@ namespace ArcGisProEspaceCollaboratif.Core
     /// 
     public class XmlResponse
     {
-        //la réponse du serveur (au format xml)
+        // La réponse du serveur (au format xml)
         public readonly string response;
 
         public readonly XPathDocument docxpath;
@@ -66,137 +65,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
 
             return errMessage;
-        }
-
-        /// <summary>
-        /// Extraction des Aleas
-        /// </summary>
-        /// <returns>Une liste contenant les 2 aleas</returns>
-        public List<string> GetAleas()
-        {
-            List<string> aleas = new List<string>();           
-            try
-            {
-                string xpath = "/geors/REPONSE/ALEA1";
-                XPathExpression expr = navigator.Compile(xpath);
-                XPathNodeIterator iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    aleas.Add(iterator.Current.InnerXml);
-                }
-                else
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-
-                xpath = "/geors/REPONSE/ALEA2";
-                expr = navigator.Compile(xpath);
-                iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    aleas.Add(iterator.Current.InnerXml);
-                }
-                else
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.GetAleas : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-
-            return aleas;
-        }
-
-        /// <summary>
-        /// Extraction des paramètres de connexion
-        /// </summary>
-        /// <returns>Un dictionnaire contenant les paramètres de connexion (ID_AUTEUR, JETON, SITE)</returns>
-        public Dictionary<string, string> GetConnectValues() {
-
-            Dictionary<string, string> connectValues = new Dictionary<string, string>();
-            try
-            {
-                string xpath = "/geors/REPONSE/ID_AUTEUR";
-                XPathExpression expr = navigator.Compile(xpath);
-                XPathNodeIterator iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    connectValues.Add("ID_AUTEUR", iterator.Current.InnerXml);
-                }
-                else
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-
-                xpath = "/geors/REPONSE/JETON";
-                expr = navigator.Compile(xpath);
-                iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    connectValues.Add("JETON", iterator.Current.InnerXml);
-                }
-                else
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-
-                xpath = "/geors/REPONSE/SITE";
-                expr = navigator.Compile(xpath);
-                iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    connectValues.Add("SITE", iterator.Current.InnerXml);
-                }
-                else
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.GetConnectValues : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-
-            return connectValues;
-        }
-
-        /// <summary>
-        /// Extraction du nouveau jeton
-        /// </summary>
-        /// <returns>Le jeton</returns>
-        public string GetCurrentToken() {
-            string token = "";
-            try
-            {
-                string xpath = "/geors/REPONSE/JETON";
-                XPathExpression expr = navigator.Compile(xpath);
-                XPathNodeIterator iterator = navigator.Select(expr);
-                if (iterator.MoveNext())
-                {
-                    token = iterator.Current.InnerXml;
-                }
-                else
-                {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.GetCurrentToken : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-
-            return token;
         }
 
         /// <summary>
@@ -276,7 +144,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
 
                 string xpathprofil = "/geors/PROFIL";
-
                 xpath = string.Format("{0}/ID_GEOPROFIL", xpathprofil);
                 expr = navigator.Compile(xpath);
                 iterator = navigator.Select(expr);
@@ -310,7 +177,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 if (iterator.MoveNext())
                 {
                     gr.Id = iterator.Current.InnerXml;
-
                 }
                 else
                 {
@@ -812,7 +678,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(message);
                 }
 
-
                 foreach (XPathNavigator georemNav in iterator)
                 {
                     List<Theme> themes = new List<Theme>();
@@ -957,17 +822,23 @@ namespace ArcGisProEspaceCollaboratif.Core
                     // Documents
                     XPathNodeIterator itDoc = georemNav.Select("DOC");
                     if (itDoc.Count > 0)
+                    {
                         GetDocument(report, itDoc);
-
+                    }
+                        
                     // Réponses (GEOREP)
                     XPathNodeIterator itGeoRep = georemNav.Select("GEOREP");
                     if (itGeoRep.Count > 0)
+                    {
                         GetGeoRep(report, itGeoRep);
+                    }
 
                     // Croquis
                     XPathNodeIterator itSketch = georemNav.Select("CROQUIS/objet");
                     if (itSketch.Count > 0)
+                    {
                         GetSketchesForReport(report, itSketch);
+                    }
 
                     // Ajout du nouveau signalement
                     if (signalements.ContainsKey(report.Id))
@@ -977,7 +848,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                     signalements.Add(report.Id, report);
                 }          
             }
-
             catch (Exception e)
             {
                 string message = string.Format("Une erreur est survenue dans l'import d'un signalement {0}\n{1}", report.Id, e.Message);
@@ -988,15 +858,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             return signalements;
         }
 
-
-        public static string GetChildNodeValue(XPathNavigator navigator, string nodePath)
-        {
-            XPathNavigator nav = navigator.SelectSingleNode(nodePath);
-            return nav == null ? string.Empty : nav.Value;
-        }
-
-
-
         /// <summary>
         ///  Extrait les croquis d'un signalement et les ajoute dans l'objet Signalement 
         ///  passé en paramètre
@@ -1006,26 +867,24 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns>XPathNodeIterator</returns>
         private void GetSketchesForReport(Report report, XPathNodeIterator itSketch)
         {
+            if (report.Id == 354478)
+            {
+                int a = 1;
+            }
             try
             {
                 foreach (XPathNavigator v in itSketch)
                 {
-                    Sketch sketch = new Sketch();
+                    // Type de croquis
                     Sketch.SketchType type =
-                        (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
+                            (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
 
-                    if (type == Sketch.SketchType.Multipolygone)
-                    {
-                        // TODO Noémie : vérifier ce qui est fait pour Multiligne
-                        // J'ai ajouté le type Multipolygone dans SketchType car l'outil renvoie une exception
-                        // et un continue dans la boucle si le cas se présente (par exemple 354478)
-                        continue;
-                    }
-
+                    // Nom du croquis
                     string nameSketch = EncodeToUTF8(v.SelectSingleNode("nom").Value);
 
-                    //attributs
+                    // Attributs du croquis
                     XPathNodeIterator itAttribut = v.Select("attributs/attribut");
+                    List<SketchAttributes> listSketchAttributes = new List<SketchAttributes>();
                     foreach (XPathNavigator att in itAttribut)
                     {
                         SketchAttributes attribut = new SketchAttributes
@@ -1033,52 +892,40 @@ namespace ArcGisProEspaceCollaboratif.Core
                             Name = EncodeToUTF8(att.GetAttribute("name", "")),
                             Value = EncodeToUTF8(att.InnerXml)
                         };
-                        sketch.AddAttribute(attribut);
+                        listSketchAttributes.Add(attribut);
                     }
 
+                    // La géométrie conditionne le nombre de croquis à créer
+                    // (Par exemple multiligne ou multipolygone)
                     v.MoveToFollowing("geometrie", "");
-                    v.MoveToChild(XPathNodeType.Element);
-
-                    while (!v.LocalName.Equals("coordinates"))
+                    XPathNodeIterator itCoordinates = navigator.SelectDescendants("coordinates", "http://www.opengis.net/context", false);
+                    foreach (XPathNavigator coord in itCoordinates)
                     {
-                        v.MoveToChild(XPathNodeType.Element);
-                        if (!v.HasChildren)
+                        List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(coord.InnerXml);
+
+                        /*if (v.LocalName.Equals("coordinates"))
                         {
-                            v.MoveToFollowing(XPathNodeType.Element);
-                        }
+                            // Géométrie du croquis
+                            List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(v.InnerXml);*/
+                            Sketch sketch = new Sketch
+                            {
+                                Type = type,
+                                Name = nameSketch
+                            };
+                            foreach (ArcGisProEspaceCollaboratif.Core.Point pt in listPoints)
+                            {
+                                sketch.AddPoint(pt);
+                            }
+
+                            foreach (SketchAttributes att in listSketchAttributes)
+                            {
+                                sketch.AddAttribute(att);
+                            }
+
+                            // Ajout du croquis au signalement
+                            report.AddSketch(sketch);
+                        //}
                     }
-
-                    string sCoord = v.InnerXml;
-                    string s = " ";
-                    string[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
-
-                    for (int i = 0; i < tCoord.Length; i++)
-                    {
-                        Point pt = new Point();
-                        string[] latlon = tCoord[i].Split(',');
-                        if (latlon.Length == 4)
-                        {
-                            pt.Longitude = double.Parse(latlon[0] + "." + latlon[1], Constantes.invC);
-                            pt.Latitude = double.Parse(latlon[2] + "." + latlon[3], Constantes.invC);
-                        }
-                        else if (latlon.Length == 2)
-                        {
-                            pt.Longitude = double.Parse(latlon[0], Constantes.invC);
-                            pt.Latitude = double.Parse(latlon[1], Constantes.invC);
-                        }
-                        if (!double.IsNaN(pt.Latitude) && !double.IsNaN(pt.Longitude))
-                        {
-                            sketch.AddPoint(pt);
-                        }
-                        else
-                        {
-                            logger.Debug("none sCoord");
-                        }
-                    }
-
-                    sketch.Type = type;
-                    sketch.Name = nameSketch;
-                    report.AddSketch(sketch);
                 }
             }
             catch (Exception e)
@@ -1086,6 +933,39 @@ namespace ArcGisProEspaceCollaboratif.Core
                 logger.Error(string.Format("XMLResponse.GetSketchForReport : {0}\n", e.Message));
                 throw new Exception(e.Message);
             }
+        }
+
+        private List<ArcGisProEspaceCollaboratif.Core.Point> GetGeometry(string coordinates)
+        {
+            List<ArcGisProEspaceCollaboratif.Core.Point> pts = new List<Point>();
+            string s = " ";
+            string[] tCoord = coordinates.Split(s.ToCharArray(0, 1));
+            for (int i = 0; i < tCoord.Length; i++)
+            {
+                Point pt = new Point();
+                string[] latlon = tCoord[i].Split(',');
+                if (latlon.Length == 4)
+                {
+                    pt.Longitude = double.Parse(latlon[0] + "." + latlon[1], Constantes.invC);
+                    pt.Latitude = double.Parse(latlon[2] + "." + latlon[3], Constantes.invC);
+                }
+                else if (latlon.Length == 2 ||
+                         latlon.Length == 3)// cas des multilignes
+                {
+                    pt.Longitude = double.Parse(latlon[0], Constantes.invC);
+                    pt.Latitude = double.Parse(latlon[1], Constantes.invC);
+                }
+
+                if (!double.IsNaN(pt.Latitude) && !double.IsNaN(pt.Longitude))
+                {
+                    pts.Add(pt);
+                }
+                else
+                {
+                    logger.Debug("none sCoord");
+                }
+            }
+            return pts;
         }
 
         /// <summary>
@@ -1134,44 +1014,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Extraction des thèmes liés à un signalement
-        /// </summary>
-        /// <param name="valRem">XPathNavigator (le xml contenant le signalement)</param>
-        /// <returns>la liste de thèmes</returns>
-        private List<Theme> GetGeomRemThemes(XPathNavigator valRem)
-        {
-            List<Theme> themes = new List<Theme>();
-            string xpath ="/geors/GEOREM/THEME";
-            try
-            {    
-                XPathNodeIterator iterator = valRem.SelectDescendants(XPathNodeType.Element, false);
-                if (iterator == null)
-                {
-                    string message = string.Format("Balise '{0}' inexistante dans la réponse xml", xpath);
-                    throw new ArgumentNullException(message);
-                }
-
-                foreach (XPathNavigator val in iterator)
-                {
-                    Theme theme = new Theme
-                    {
-                        Group = new Group()
-                    };
-
-                    theme.Group.Name = val.SelectSingleNode(valRem.Compile(xpath + "/NOM")).Value;
-                    theme.Group.Id = val.SelectSingleNode(valRem.Compile(xpath + "/ID_GEOGROUPE")).Value;
-                    themes.Add(theme);    
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.GetGeomRemThemes : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-            return themes;           
-        }
-
-        /// <summary>
         /// Retourne le nombre total de réponses
         /// </summary>
         /// <returns>nombre total de réponses</returns>
@@ -1199,36 +1041,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
 
             return total;
-        }
-
-        /// <summary>
-        /// retourne la version du service EspaceCollaboratif
-        /// </summary>
-        /// <returns>version du service EspaceCollaboratif</returns>
-        public string GetVersion()
-        {
-            string version = "";
-            string xpath = "/geors";
-            try
-            {
-                XPathExpression expr = navigator.Compile(xpath);
-                XPathNodeIterator iterator = navigator.Select(expr);
-                if(iterator.MoveNext())
-                {
-                    version = iterator.Current.GetAttribute("version", "");
-                }
-                else
-                {
-                    throw new ArgumentNullException(string.Format("Balise '{0}' inexistante dans la réponse xml", xpath));
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.GetVersion : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-
-            return version;
         }
 
         /// <summary>

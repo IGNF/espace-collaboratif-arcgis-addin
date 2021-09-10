@@ -46,11 +46,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         public string Message { get; set; }
 
         /// <summary>
-        /// La barre de progression durant le chargement des signalements
-        /// </summary>
-        private System.Windows.Forms.ProgressBar progressbar = new System.Windows.Forms.ProgressBar();
-
-        /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
         private static readonly Logger riplogger = Logger.Instance;
@@ -369,9 +364,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                 pagination = dicoSignalements.Count;
                 count = pagination;
 
-                this.progressbar.Maximum = pagination > total ? pagination : total;
-                this.progressbar.Step = pagination;
-
                 while (total - count > 0)
                 {
                     parameters["offset"] = count.ToString();
@@ -383,8 +375,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                     {
                         dicoSignalements = xmlResponse.ExtractReports(dicoSignalements);
                     }
-
-                    this.progressbar.Increment(pagination);
 
                     count += pagination;
                 }

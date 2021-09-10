@@ -218,7 +218,6 @@ namespace ArcGisProEspaceCollaboratif
                 Helper.sketchAttributes,
                 3
                 );
-
         }
 
         /// <summary>
@@ -242,7 +241,6 @@ namespace ArcGisProEspaceCollaboratif
 
             return null;
         }
-
 
         /// <summary>
         /// Teste l'existence d'une couche dans la carte en cours.
@@ -285,8 +283,6 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
- 
- 
         /// <summary>
         /// 
         /// </summary>
@@ -350,7 +346,6 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-
         /// <summary>
         /// Insère sur la carte en cours une liste de signalements (avec leurs éventuels croquis associés).
         /// </summary>
@@ -373,6 +368,10 @@ namespace ArcGisProEspaceCollaboratif
                     // Placement des signalements importés et filtrés sur la carte.
                     foreach (Report newReport in reports)
                     {
+                        if (newReport.Id == 354478)
+                        {
+                            int a = 1;
+                        }
                         // Signalement
                         var reportFields = new Dictionary<string, object>();
                         reportFields = GetFieldValuesForReport(newReport);
@@ -432,7 +431,6 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-
         /// <summary>
         /// Retourne l'index de la couche de croquis à utiliser dans la liste des couches (this.CollaborativeSpaceLayers)
         /// en fonction du type du croquis.
@@ -450,11 +448,19 @@ namespace ArcGisProEspaceCollaboratif
                     indexLayer = 1;
                     break;
 
+                case SketchType.MultiPoint:
+                    indexLayer = 1;
+                    break;
+
                 case SketchType.Texte:
                     indexLayer = 1;
                     break;
 
                 case SketchType.Ligne:
+                    indexLayer = 2;
+                    break;
+
+                case SketchType.MultiLigne:
                     indexLayer = 2;
                     break;
 
@@ -466,14 +472,16 @@ namespace ArcGisProEspaceCollaboratif
                     indexLayer = 3;
                     break;
 
+                case SketchType.Multipolygone:
+                    indexLayer = 3;
+                    break;
+
                 default:
                     break;
             }
 
             return indexLayer;
         }
-
-
 
         /// <summary>
         /// Récupère les valeurs des champs de la table de signalements pour le nouveau signalement à insérer.
@@ -507,7 +515,6 @@ namespace ArcGisProEspaceCollaboratif
 
             return reportFields;
         }
-
 
         /// <summary>
         /// Récupère les valeurs des champs de la table croquis concernée pour le croquis à insérer.
@@ -562,6 +569,20 @@ namespace ArcGisProEspaceCollaboratif
                         Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
                         sketchFields.Add(Helper.name_field_Shape, sketchPolygon);
                         break;
+
+                    case SketchType.MultiPoint:
+                        sketchFields.Add(Helper.name_field_Shape, sketchPoint);
+                        break;
+
+                    case SketchType.MultiLigne:
+                        Polyline sketchMultiLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchMultiLine);
+                        break;
+
+                    case SketchType.Multipolygone:
+                        Polygon sketchMultiPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchMultiPolygon);
+                        break;                
                 }
             }
 
@@ -571,10 +592,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             return sketchFields;
-
         }
-
-
 
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe une liste d'objects géométriques.
@@ -598,7 +616,6 @@ namespace ArcGisProEspaceCollaboratif
             return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
         }
 
-
         /// <summary>
         /// Récupère à partir d'une couche donnée par nom, la liste des géométries destinées à servir au filtrage spatial lors de l'importation des signalements .
         /// </summary>
@@ -607,7 +624,6 @@ namespace ArcGisProEspaceCollaboratif
         public List<Geometry> GetSpatialFilterGeometry(string filterLayerName)
         {
             List<Geometry> spatialFilterGeometry = new List<Geometry>();
-
             FeatureLayer filterLayer = this.GetLayerByName(filterLayerName);
 
             if (filterLayer == null)
@@ -627,12 +643,10 @@ namespace ArcGisProEspaceCollaboratif
                 Feature featureSpatialFilter = rowCursor.Current as Feature;
                 Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), this.SpatialReference);
                 spatialFilterGeometry.Add(geomFeature);
-
             }
 
             return spatialFilterGeometry;
         }
-
 
         public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
@@ -925,7 +939,6 @@ namespace ArcGisProEspaceCollaboratif
                        
             return sketches;
         }
-
  
         /// <summary>
         /// Donne le décompte de signalements Ripart présentes sur la carte en cours ayant le statut indiqué.
@@ -953,7 +966,5 @@ namespace ArcGisProEspaceCollaboratif
         {
             return this.CountReportsByStatus((int)status);
         }
-
-
     }
 }

@@ -165,7 +165,6 @@ namespace ArcGisProEspaceCollaboratif
             return about;
         }
 
-
         /// <summary>
         /// Vérifie si l'extension du fichier joint à un nouveau signalement
         /// est inclu dans le fichier
@@ -262,9 +261,7 @@ namespace ArcGisProEspaceCollaboratif
 
                         // La nouvelle feature class est chargée automatiquement dans la carte.
                         // On récupère le FeatureLayer correspondant.
-                        collabSpaceLayer = context.GetLayerByName(fcName);
-
-                        
+                        collabSpaceLayer = context.GetLayerByName(fcName);                        
                     }
 
                     // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
@@ -325,9 +322,7 @@ namespace ArcGisProEspaceCollaboratif
                                 statusDomainName
                             };
                         Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
-
-                    }
-            
+                    }           
                 });
             }
             
@@ -433,7 +428,6 @@ namespace ArcGisProEspaceCollaboratif
             return uniqueValueRenderer as CIMRenderer;
         }
 
-
         /// <summary>
         /// Limite la longueur d'une string pour ne pas dépasser la taille maximale que ne peut contenir les attributs d'un calque.
         /// La taille maximale est défini par la constante EspaceCollaboratifHelper.longueurMaxChamp.
@@ -469,106 +463,6 @@ namespace ArcGisProEspaceCollaboratif
 
             return pointCollection;
         }
-          
-        /// <summary>
-        /// Remplit un attribut d'un objet Espace collaboratif sur la carte en cours.
-        /// </summary>
-        /// <param name="featureClass">La FeatureClass du calque contenant l'objet Espace collaboratif sur lequel on veut compléter un attribut.</param>
-        /// <param name="feature">La Feature de l'objet Espace collaboratif sur lequel on veut compléter un attribut.</param>
-        /// <param name="fieldName">Le nom de l'attribut dans lequel on veut écrire.</param>
-        /// <param name="fieldValue">La valeur à écrire dans l'attribut de l'objet Espace collaboratif. </param>
-        public static void UpdateField(
-            FeatureClass featureClass,
-            Feature feature,
-            string fieldName,
-            object fieldValue)
-        {
-            if (fieldValue == null || fieldName.Equals(""))
-            {
-                return;
-            }
-
-            int indexField = feature.FindField(fieldName);
-            if (indexField == -1)
-            {
-                return;
-            }
-
-            // Mise à jour de la valeur du champ de l'objet
-            //feature.set_Value(iFiedName, fieldValue.ToString());
-        }
-
-        public static RowBuffer UpdateReportFields(Dictionary<string,string> dico)
-        {
-            RowBuffer rowBuffer = null;
-            foreach (KeyValuePair<string, string> kvp in dico)
-            {
-                rowBuffer[kvp.Key] = kvp.Value;
-            }
-            return rowBuffer;
-        }
-
-        /// <summary>
-        /// Renvoie la longueur du plus long message contenu dans une liste de signalement EspaceCollaboratif.
-        /// </summary>
-        /// <param name="signalements">La liste des signalements de l'Espace collaboratif dans laquelle on veut chercher celle qui a le message le plus long.</param>
-        /// <returns>La longueur du plus long message.</returns>
-        /*        public static int Max_Length_Message(List<ArcGisProEspaceCollaboratif.Core.Signalement> signalements)
-                {
-                    int maxLength = 0;
-
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement signalement in signalements)
-                    {
-                        if (signalement.Commentaire.Length > maxLength)
-                        {
-                            maxLength = signalement.Commentaire.Length;
-                        }
-                    }
-
-                    return maxLength;
-                }
-        */
-        /// <summary>
-        /// Renvoie la longueur de la plus longue des concaténations de réponses des signalements EspaceCollaboratif, en tenant compte du formatge HTML.
-        /// </summary>
-        /// <param name="remarques">La liste des signalements EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
-        /// <returns>La longueur de la plus longue concaténation de réponse.</returns>
-        /*        public static int Max_Length_concatenateReponseHTML(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
-                {
-                    int maxLength = 0;
-
-                    foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
-                    {
-                        if (remarque.ConcatenateReponse().Length > maxLength)
-                        {
-                            maxLength = remarque.ConcatenateReponseHTML().Length;
-                        }
-                    }
-
-                    return maxLength;
-               }
-        */
-        /// <summary>
-        /// Renvoie la longueur de la plus longue des concaténations de réponses des signalements EspaceCollaboratif, sans tenir compte du formatge HTML.
-        /// </summary>
-        /// <param name="remarques">La liste des signalements EspaceCollaboratif dans laquelle on veut chercher celle qui a la plus longue concaténation de réponse.</param>
-        /// <returns>La longueur de la plus longue concaténation de réponse.</returns>
-        /*       public static int Max_Length_concatenateReponse(List<ArcGisProEspaceCollaboratif.Core.Signalement> remarques)
-               {
-                   int maxLength = 0;
-
-                   foreach (ArcGisProEspaceCollaboratif.Core.Signalement remarque in remarques)
-                   {
-                       if (remarque.ConcatenateReponse().Length > maxLength)
-                       {
-                           maxLength = remarque.ConcatenateReponse().Length;
-                       }
-                   }
-
-                   return maxLength;
-               }
-       */
-
 
         /// <summary>
         /// Convertit un point ArcGisProEspaceCollaboratif.Core.Point en son équivalent ArcGIS.Core.Geometry.MapPoint. 
@@ -586,11 +480,6 @@ namespace ArcGisProEspaceCollaboratif
                     point = mapPointBuilder.ToGeometry();
                 }
             });
-
-            /*if (point.IsEmpty)
-            {
-                return null;
-            }*/
 
             return point;
         }
@@ -660,31 +549,6 @@ namespace ArcGisProEspaceCollaboratif
 
             return pointResult;
         }
-        
-        /// <summary>
-        /// Calcule le barycentre d'une liste de point.
-        /// </summary>
-        /// <param name="points">La liste des points Point EspaceCollaboratif dont on veut déterminer leur barycentre.</param>
-        /// <returns>Le Point EspaceCollaboratif positionné sur le barycentre calculé.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point Barycentre(List<ArcGisProEspaceCollaboratif.Core.Point> points)
-        {
-            if (points.Count == 0) { return null; }
-            if (points.Count == 1) { return points.First(); }
-
-            double barycentreX = 0;
-            double barycentreY = 0;
-
-            foreach (ArcGisProEspaceCollaboratif.Core.Point pointTemp in points)
-            {
-                barycentreX += pointTemp.Longitude;
-                barycentreY += pointTemp.Latitude;
-            }
-
-            barycentreX /= points.Count;
-            barycentreY /= points.Count;
-
-            return new ArcGisProEspaceCollaboratif.Core.Point(barycentreX, barycentreY);
-        }
 
         /// <summary>
         /// Calcule la distance entre deux points.
@@ -696,34 +560,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
         }
-        
-        /// <summary>
-        /// Calcule la distance entre deux points.
-        /// </summary>
-        /// <param name="point1">Le premier point d'extrémité.</param>
-        /// <param name="point2">Le second point d'extrémité.</param>
-        /// <returns>La distance entre les points <paramref name="point1"/> et <paramref name="point2"/>.</returns>
-        public static double Distance(ArcGisProEspaceCollaboratif.Core.Point point1, ArcGisProEspaceCollaboratif.Core.Point point2)
-        {
-            return Math.Sqrt(Math.Pow(point2.Longitude - point1.Longitude, 2) + Math.Pow(point2.Latitude - point1.Latitude, 2));
-        }
 
-
-        /// <summary>
-        /// Calcule le centroïde d'un point.
-        /// Le centroïde d'un point est trivialement le point lui-même.
-        /// </summary>
-        /// <param name="pointIn">Le point dont il faut calculer son centroïde.</param>
-        /// <returns>Le centroïde calculé depuis <paramref name="pointIn"/>.</returns>
-        public static MapPoint Centroid(MapPoint pointIn)
-        {
-            if (pointIn.IsEmpty)
-            {
-                return null;
-            }
-            return pointIn;
-        }
-       
         /// <summary>
         /// Calcule le centroïde d'un object croquis EspaceCollaboratif.       
         /// C'est le centroïde de l'équivalent ArcGIS Pro du croquis initial.
@@ -773,8 +610,6 @@ namespace ArcGisProEspaceCollaboratif
                     return Helper.Barycentre(listCentroid);
             }
         }
-
-
 
         /// <summary>
         /// Teste si le champ donné d'un calque donné doit être mis ou non en attribut pour un futur croquis.
@@ -832,59 +667,6 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Ajoute des attributs à un croquis en fonction des propriétés de la feature donnée en entrée.
-        /// </summary>
-        /// <param name="sketch">Le croquis auquel on veut ajouter des attributs.</param>
-        /// <param name="feature">L'objet initial contenant les champs qu'on veut mettre en attribut dans le croquis.</param>
-        /// <param name="treeLayerAndField">L'arborescence des calques et de leurs champs devant être mis en attribut pour le nouveau croquis.</param>
-        /// <returns>Le <paramref name="sketch"/> complété d'attributs supplémentaires issus des propriétés de la <paramref name="feature"/>.</returns>
-        public static void AddAttributs(ArcGisProEspaceCollaboratif.Core.Sketch sketch, Feature feature, System.Windows.Forms.TreeNode treeLayerAndField)
-        {
-            // Parcours des champs du feature.
-            IReadOnlyList<Field> fields = feature.GetFields();
-            foreach (Field field in fields)
-            {
-                // Test pour savoir si le champ du feature est à mettre en croquis.
-                if (!Helper.IsFieldGoodForAttribut(feature.GetTable().GetName(), field.Name, treeLayerAndField))
-                {
-                    continue;
-                }
-
-                int assetNameIndex = feature.FindField(field.Name);
-                QueuedTask.Run(() =>
-                {
-                    string originalValue = feature.GetOriginalValue(assetNameIndex) as string;
-                    // Suppression de la partie heure 00:00:00 si le champ est de type date
-                    if (field.FieldType == FieldType.Date && originalValue.Length != 0)
-                    {
-                        if (originalValue.Substring(originalValue.Length - 9).Equals(" 00:00:00"))
-                        {
-                            originalValue = originalValue.Substring(0, originalValue.Length - 9);
-                        }
-                    }
-                    sketch.AddAttribute(field.Name, originalValue);
-                });
-            }
-        }
-
-        /// <summary>
-        /// Ajoute à un croquis l'attribut composé du nom et de la valeur donnés en entrée.
-        /// </summary>
-        /// <param name="croquis">Le croquis auquel on veut ajouter un attribut.</param>
-        /// <param name="nom">Le nom de l'attribut à ajouter au croquis.</param>
-        /// <param name="val">La valeur de l'attribut à ajouter au croquis.</param>
-        /// <returns>Le <paramref name="croquis"/> complété de l'attribut supplémentaire issu de la paire <paramref name="nom"/> et <paramref name="val"/>.</returns>
-        public static void AddAttributs(ref ArcGisProEspaceCollaboratif.Core.Sketch croquis, string nom, string val)
-        {
-            SketchAttributes sketchAttributes = new SketchAttributes()
-            {
-                Name = nom,
-                Value = val
-            };
-            croquis.AddAttribute(sketchAttributes);
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="point"></param>
@@ -895,7 +677,6 @@ namespace ArcGisProEspaceCollaboratif
             MapPoint projectedPt = result as MapPoint;
             return TransformPoint(projectedPt);
         }
-       
 
         /// <summary>
         /// Génère un croquis pour l'Espace collaboratif à partir d'une géométrie ArcGIS pro.
@@ -982,7 +763,6 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le point sur lequel sera centré le nouveau signalement contenant les croquis de <paramref name="listSketchs"/>.</returns>
         public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(List<ArcGisProEspaceCollaboratif.Core.Sketch> listSketchs)
         {
-
             switch (listSketchs.Count)
             {
                 case 0:
@@ -1032,45 +812,6 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Calcule le point d'application pour un nouveau signalement de l'Espace collaboratif à partir d'un unique croquis EspaceCollaboratif associé à cette future signalement.
-        /// Il s'agit du centroïde du croquis<paramref name="croquisEntree"/>.
-        /// </summary>
-        /// <param name="croquisEntree">Le croquis dont son centroïde sera le point d'application du nouveau signalement.</param>        
-        /// <returns>Le point sur lequel sera centrée le nouveau signalement contenant le croquis <paramref name="croquisEntree"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePointReport(ArcGisProEspaceCollaboratif.Core.Sketch croquisEntree)
-        {
-            List<ArcGisProEspaceCollaboratif.Core.Sketch> listCroquis = new List<ArcGisProEspaceCollaboratif.Core.Sketch>
-            {
-                croquisEntree
-            };
-            return Helper.CalculatePointReport(listCroquis);
-        }
-
-
-        /// <summary>
-        /// Affiche un message dans la barre d'état d'ArcMap.
-        /// 25/01/2021 Impossible de changer la status bar dans ArcGIS pro
-        /// https://community.esri.com/t5/arcgis-pro-sdk-questions/status-bar-customization/m-p/771445
-        /// J'ai donc mis une MessageBox...
-        /// </summary>
-        /// <param name="message">Le message à afficher dans la barre d'état d'ArcMap (en bas à gauche de l'écran.).</param>       
-        public static void MessageBar(string message)
-        {
-            ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, "Espace collaboratif");
-
-            /*ArcGIS.Desktop.Framework.FrameworkApplication frameworkApplication;
-            frameworkApplication.
-            ESRI.ArcGIS.Framework.IApplication application = ArcMap.Application;
-
-            IStatusBar mess = application.StatusBar;
-            mess.set_Message(0, message);
-            mess.Visible = true;
-
-            return;*/
-        }
-
-
-        /// <summary>
         /// Renvoie le chemin complet d'accès du fichier XML de paramétrage pour le fonctionnement de l'add-in EspaceCollaboratif pour ArcGis Pro.
         /// Il doit être situé dans le même répertoire que celui où se trouve le fichier de la carte ouverte en cours dans ArcGios Pro, et son nom est "espaceco.xml".
         /// </summary>     
@@ -1080,17 +821,6 @@ namespace ArcGisProEspaceCollaboratif
             string workDir = Context.Instance.DirectoryWorking;
             return string.Format("{0}\\{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
         }
-
-
-        /// <summary>
-        /// Teste la présence ou non du fichier XML de paramétrage nécéssaire au fonctionnement de l'add-on EspaceCollaboratif pour ArcMap.
-        /// </summary>
-        /// <returns>True si le fichier de paramétrage est présent, False dans le cas contraire.</returns>
- /*       public static bool XML_TestFile()
-        {
-            return System.IO.File.Exists(EspaceCollaboratifHelper.XML_NameFile());
-        }
-*/
 
         /// <summary>
         /// Charge en mémoire le fichier XML de paramétrage nécéssaire au fonctionnement de l'add-on EspaceCollaboratif.
@@ -1105,7 +835,6 @@ namespace ArcGisProEspaceCollaboratif
             return paramsXML;
         }
 
-
         /// <summary>
         /// Teste la présence ou non  d'une balise à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
         /// </summary>
@@ -1119,7 +848,6 @@ namespace ArcGisProEspaceCollaboratif
             return (noeudTest != null);
         }
 
-
         /// <summary>
         /// Efface à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap, tous les éléments inclus dans la balise indiquée en entrée.
         /// Dans le fichier de paramétrage, la balise est conservée, mais elle est vidée de ses éléments qui étaient inclus auparavant.
@@ -1132,21 +860,6 @@ namespace ArcGisProEspaceCollaboratif
             noeud.RemoveAll();
             paramsXML.Save(Helper.XML_NameFile());
         }
-
-
-        /// <summary>
-        /// Supprime à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap, la balise indiquée en entrée.
-        /// La balise et ses éléments qui y sont invclus sont totalement supprimés du fichier de paramétrage. 
-        /// </summary>
-        /// <param name="balise">Le chemin complet de la balise à rechercher à l'intérieur du fichier de paramétrage pour la supprimer.</param>  
- /*       public static void XML_RemoveElement(string balise)
-        {
-            XmlDocument paramsXML = EspaceCollaboratifHelper.XML_Load();
-            XmlNode nodeToDelete = paramsXML.SelectSingleNode(balise);
-            nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
-            paramsXML.Save(EspaceCollaboratifHelper.XML_NameFile());
-        }
-*/
 
         /// <summary>
         /// Écrit à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap, la valeur donnée pour la balise indiquée.
@@ -1166,7 +879,6 @@ namespace ArcGisProEspaceCollaboratif
             noeudRoot.InnerText = valeur;
             paramsXML.Save(Helper.XML_NameFile());
         }
-
 
         /// <summary>
         /// Ajoute à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap, un nouveau noeud à l'emplacement indiqué.
@@ -1192,7 +904,6 @@ namespace ArcGisProEspaceCollaboratif
             Helper.XML_AddElement(Helper.XML_Prefixe(noeudNouveau),
                                               Helper.XML_Suffixe(noeudNouveau));
         }
-
 
         /// <summary>
         /// Extrait tout le texte précédant le dernier caractère "/" situé à l'intérieur du texte donné en entrée.      
@@ -1276,30 +987,6 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Renvoie tous les éléments indiqués à l'intérieur du fichier XML de paramétrage de l'add-on EspaceCollaboratif pour ArcMap.
-        /// </summary>
-        /// <param name="elementName">Le nom des éléments à rechercher.</param>
-        /// <returns>La valeur associée de chaque élément ayant comme nom celui de <paramref name="element"/>.</returns>
-        /*       public static List<string> XML_ReadElement(string element)
-               {
-                   List<string> liste = new List<string>();
-
-                   System.Xml.XmlDocument paramsEspaceCollaboratif = new System.Xml.XmlDocument();
-                   StreamReader streamXML = new StreamReader(EspaceCollaboratifHelper.XML_NameFile());
-                   paramsEspaceCollaboratif.Load(streamXML);
-                   System.Xml.XmlNodeList elemlist = paramsEspaceCollaboratif.DocumentElement.SelectNodes(element);
-                   streamXML.Close();
-
-                   for (int i = 0; i < elemlist.Count; i++)
-                   {
-                       liste.Add(elemlist[i].InnerText);
-                   }
-
-                   return liste;
-               }
-       */
-
-        /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage de l'add-on, une liste d'éléments à un emplacement donné.
         /// </summary>
         /// <param name="listeElement">La liste contenant les éléments à stocker dans le fichier de paramétrage.</param>
@@ -1320,9 +1007,7 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (string element in listeElement)
             {
-                Helper.XML_InsertElement(pathElement,
-                                                        Helper.XML_Suffixe(chemin),
-                                                        element);
+                Helper.XML_InsertElement(pathElement, Helper.XML_Suffixe(chemin), element);
             }
         }        
        
@@ -1384,45 +1069,6 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
-        /// </summary>
-        /// <returns>La taille de pagination contenue dans le fichier de paramétrage. Renvoie 0 si cette valeur est absente.</returns>
-        public static uint LoadPagination()
-        {
-            string pagination = Helper.XML_FirstElement(Helper.xml_Pagination);
-            if (string.IsNullOrEmpty(pagination))
-            {
-                return 0;
-            }
-            return uint.Parse(pagination);
-        }
-        
-        /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille de la pagination pour l'importation des signalements.
-        /// </summary>
-        /// <param name="pagination">La taille de pagination à sauvegarder dans le fichier de paramétrage.</param>
-        public static void SavePagination(string pagination)
-        {
-            if (!Helper.XML_HasElement(Helper.xml_Pagination))
-            {
-                Helper.XML_AddElement(Helper.xml_Pagination);
-            }
-
-            Helper.XML_SetElement(Helper.xml_Pagination, pagination);
-        }
-        
-        /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la taille par défaut de la pagination pour l'importation des signalements.
-        /// </summary>
-        /*        public static void Save_Pagination()
-                {
-                    EspaceCollaboratifHelper.Save_Pagination(0);
-                }
-        */
-
-
-
-        /// <summary>
         /// Lit la valeur du tag "Import_pour_groupe" du fichier XML de paramétrage.
         /// </summary>
         /// <returns></returns>
@@ -1431,21 +1077,6 @@ namespace ArcGisProEspaceCollaboratif
             return Helper.XML_FirstElement(Helper.xml_Group);
         }
         
-        /// <summary>
-        ///  Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, "Import_pour_groupe"
-        /// </summary>
-        /// <param name="group"> true ou false</param>
-        public static void SaveExtractionForGroup(string group)
-        {
-            if (!Helper.XML_HasElement(Helper.xml_Group))
-            {
-                Helper.XML_AddElement(Helper.xml_Group);
-            }
-
-            Helper.XML_SetElement(Helper.xml_Group, group);
-        }
-        
-
         /// <summary>
         /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date pour laquelle on extrait que les remaques postérieures à celle-ci.
         /// </summary>
@@ -1492,15 +1123,6 @@ namespace ArcGisProEspaceCollaboratif
         }
         
         /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date du jour comme date d'extraction.
-        /// </summary>
-        /*        public static void Save_DateExtraction()
-                {
-                    EspaceCollaboratifHelper.Save_DateExtraction(System.DateTime.Now);
-                }
-        */
-
-        /// <summary>
         /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des signalements.
         /// </summary>
         /// <returns>Le nom du calque pour le filtrage spatiale stocké dans le fichier de paramétrage.</returns>
@@ -1517,16 +1139,6 @@ namespace ArcGisProEspaceCollaboratif
         {
             XML_SetElement(Helper.xml_Zone_extraction, layer);       
         }
-
-        /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, le nom du calque à utiliser pour le filtrage spatial lors l'importation des signalements.
-        /// </summary>
-        /// <param name="layer">Le calque dont on enregistre son nom dans le fichier de paramétrage pour le filtrage spatiale.</param>
-        public static void Save_CalqueFiltrage(Layer layer)
-        {
-            XML_SetElement(Helper.xml_Zone_extraction, layer.Name);
-        }
-    
 
         /// <summary>
         /// Obtient à partir du XML de paramétrage, l'adresse du service EspaceCollaboratif contenue dans le fichier XML de paramétrage.
@@ -1550,7 +1162,6 @@ namespace ArcGisProEspaceCollaboratif
             return Urlhost;
         }
  
-
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, l'adresse du service EspaceCollaboratif.
         /// </summary>
@@ -1559,24 +1170,6 @@ namespace ArcGisProEspaceCollaboratif
         {
             XML_SetElement(Helper.xml_UrlHost, UrlHost);
         }
-
-
-        /// <summary>
-        /// Lit l'option d'affichage des calques croquis EspaceCollaboratif dans le fichier XML de paramétrage EspaceCollaboratif.
-        /// </summary>
-        /// <returns>True si le fichier de paramétrage contient explicitement qu'il faut afficher les croquis.</returns>
-        public static bool Load_AfficherCroquis()
-        {
-            if (!Helper.XML_HasElement(Helper.xml_AfficherCroquis))
-            {
-                Helper.Save_AfficherCroquis();
-                return true;
-            }
-
-            string option = Helper.XML_FirstElement(Helper.xml_AfficherCroquis);
-            return option.Equals("Oui") || option.Equals("Vrai") || option.Equals("oui") || option.Equals("vrai") || option.Equals("True") || option.Equals("true");
-        }
-
 
         /// <summary>
         ///Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, l'option d'affichage des croquis EspaceCollaboratif.
@@ -1592,15 +1185,6 @@ namespace ArcGisProEspaceCollaboratif
             {
                 XML_SetElement(Helper.xml_AfficherCroquis, "Non");
             }
-        }
-
-
-        /// <summary>
-        ///Force dans le fichier XML de paramétrage EspaceCollaboratif, la valeur True pour afficher les croquis EspaceCollaboratif.
-        /// </summary>
-        public static void Save_AfficherCroquis()
-        {
-            Helper.Save_AfficherCroquis(true);
         }
 
         public static string LoadProxy()
@@ -1686,88 +1270,6 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             XML_SetElement(xml_GroupeActif, groupeActif);
-        }
-
-        /// <summary>
-        /// Renvoie depuis le fichier XML de paramétrage, la liste des calques et de leurs champs qu'il faut mettre en attribut dans la génération des croquis EspaceCollaboratif.
-        /// </summary>
-        /// <returns> Les calques et leurs champs sous forme d'un System.Windows.Forms.TreeView </returns>
-        public static System.Windows.Forms.TreeNode Load_AttributesSketch()
-        {
-            System.Windows.Forms.TreeNode attributs = new System.Windows.Forms.TreeNode();
-            XmlDocument paramsEspaceCollaboratif = Helper.XML_Load();              
-
-            // Recherche des nœuds pour les calques. 
-            System.Xml.XmlNodeList elemlist = paramsEspaceCollaboratif.DocumentElement.SelectNodes(Helper.xml_AttributsCroquis);
-            if (elemlist.Count == 0) { return attributs; }
-
-            for (int numElemList = 0; numElemList < elemlist.Count; numElemList++)
-            {
-                System.Xml.XmlNode nodeCalque = elemlist.Item(numElemList).SelectSingleNode(Helper.xml_BaliseNomCalque);
-
-                // S'il y a bien la balise pour le calque.
-                if (nodeCalque != null)
-                {
-                    System.Xml.XmlNodeList listNodeChamps = elemlist.Item(numElemList).SelectNodes(Helper.xml_BaliseChampCalque);
-                    
-                    // Et s'il y a des balises pour les attributs.
-                    if (listNodeChamps.Count != 0)
-                    {
-                        attributs.Nodes.Add(nodeCalque.InnerText);
-
-                        for (int i = 0; i < listNodeChamps.Count; i++)
-                        {
-                            attributs.Nodes[attributs.Nodes.Count-1].Nodes.Add(listNodeChamps.Item(i).InnerText);
-                        }
-                    }
-                }
-            }   
-            return attributs;
-        }
-                
-        /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage les calques et leurs attributs qu'il faut mettre en attribut dans la génération des croquis EspaceCollaboratif.
-        /// </summary>
-        /// <param name="attributs">Le nom des calques et leurs champs à stocker mis dans la structure d'un System.Windows.Forms.TreeNode.</param>
-        public static void Save_AttributsCroquis(System.Windows.Forms.TreeNode attributs)
-        {
-            XmlDocument paramsXML = Helper.XML_Load();
-            XmlNode nodeToDelete = paramsXML.SelectSingleNode(  Helper.xml_AttributsCroquis );
-
-            // Suppresion préalable des éventuels anciens attributs stockés dans le fichier de paramétrage.
-            while ( nodeToDelete != null )
-            { 
-                nodeToDelete.ParentNode.RemoveChild(nodeToDelete);
-                nodeToDelete = paramsXML.SelectSingleNode(Helper.xml_AttributsCroquis);
-            }
-
-            // Parcours des nœuds de l'object attributs.
-            foreach (System.Windows.Forms.TreeNode attributCalque in attributs.Nodes)
-            {   // Si le nœuds contient des sous-éléments
-                if (attributCalque.Nodes.Count != 0 && attributCalque.Text.Length != 0)
-                {
-                    XmlNode noeudRoot = paramsXML.SelectSingleNode(Helper.XML_Prefixe(Helper.xml_AttributsCroquis));
-                    XmlElement elemCalque = paramsXML.CreateElement(Helper.XML_Suffixe(Helper.xml_AttributsCroquis));
-                    
-                    // Stockage du nom du calque à retenir.
-                    XmlElement nomCalque = paramsXML.CreateElement(Helper.xml_BaliseNomCalque);
-                    nomCalque.InnerText = attributCalque.Text;
-                    elemCalque.AppendChild(nomCalque);
-
-                    // Parcours des sous-éléments qui contiennent les champs à stocker.
-                    foreach (System.Windows.Forms.TreeNode attribut in attributCalque.Nodes)
-                    {
-                        XmlElement elementChamp = paramsXML.CreateElement(Helper.xml_BaliseChampCalque);
-                        elementChamp.InnerText = attribut.Text;
-                        elemCalque.AppendChild(elementChamp);
-                    }
-                    
-                    // Enregistrement dans le fichier de paramétrage du nom et des champs du calque à mettre en attribut.
-                    noeudRoot.AppendChild(elemCalque);
-                }
-            }
-            // Fermeture du fichier XML.
-            paramsXML.Save(Helper.XML_NameFile()); 
         }
     }  
 }
