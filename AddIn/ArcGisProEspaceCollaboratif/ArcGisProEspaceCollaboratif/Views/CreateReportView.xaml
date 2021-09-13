@@ -4,16 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Créer un nouveau signalement" Height="740.8" Width="597" Topmost="True">
-    <Grid Margin="0,0,-6.6,23.4">
+        Title="Créer un nouveau signalement" Height="740.8" Width="607" Topmost="True">
+    <Grid Margin="0,0,-7,14">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="322*"/>
-            <ColumnDefinition Width="61*"/>
-            <ColumnDefinition Width="189*"/>
-            <ColumnDefinition Width="23*"/>
+            <ColumnDefinition Width="337*"/>
+            <ColumnDefinition Width="51*"/>
+            <ColumnDefinition Width="196*"/>
+            <ColumnDefinition Width="19*"/>
         </Grid.ColumnDefinitions>
-        <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="620" Margin="17.5,20,0,0" VerticalAlignment="Top" Width="549" Grid.ColumnSpan="3" Grid.Column="1">
+        <GroupBox x:Name="UserProfileGroupBox" Header="{Binding UserProfileHeaderGroupBox}" HorizontalAlignment="Left" Height="620" Margin="17,20,0,0" VerticalAlignment="Top" Width="550" Grid.ColumnSpan="3" Grid.Column="1">
             <StackPanel Margin="0,0,-3,-74.4">
                 <Label Content="Groupe" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="59" Height="30" FontWeight="Bold" FontSize="14"/>
                 <ComboBox x:Name="GroupComboBox" ItemsSource="{Binding GroupItemsSourceComboBox}" SelectedItem="{Binding GroupSelectedItemComboBox}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" Width="199"/>
@@ -36,6 +36,6 @@
                 <TextBox x:Name="CommentaryTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaryTextBox}" VerticalAlignment="Top" Width="520"/>
             </StackPanel>
         </GroupBox>
-        <Button x:Name="SendButton" Content="Envoyer" Command="{Binding SendNewReportButtonCmd}" Click="Button_Click" HorizontalAlignment="Left" Margin="254.5,654,0,0" VerticalAlignment="Top" Width="75" IsDefault="True" Grid.ColumnSpan="2" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
+        <Button x:Name="SendButton" Content="Envoyer" Command="{Binding SendNewReportButtonCmd}" Click="Button_Click" HorizontalAlignment="Left" Margin="255,654,0,0" VerticalAlignment="Top" Width="74" IsDefault="True" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>
     </Grid>
 </Window>
