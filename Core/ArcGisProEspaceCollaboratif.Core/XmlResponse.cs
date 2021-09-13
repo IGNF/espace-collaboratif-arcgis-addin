@@ -867,24 +867,42 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns>XPathNodeIterator</returns>
         private void GetSketchesForReport(Report report, XPathNodeIterator itSketch)
         {
-            if (report.Id == 354478)
-            {
-                int a = 1;
-            }
             try
             {
-                foreach (XPathNavigator v in itSketch)
+
+                if (report.Id == 354478)
                 {
-                    // Type de croquis
-                    Sketch.SketchType type =
-                            (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), v.GetAttribute("type", ""), true);
+                    int a = 1;
+                }
 
-                    // Nom du croquis
-                    string nameSketch = EncodeToUTF8(v.SelectSingleNode("nom").Value);
+                foreach (XPathNavigator sketchNav in itSketch)
+                {
+                    Sketch sketch = new Sketch();
 
-                    // Attributs du croquis
-                    XPathNodeIterator itAttribut = v.Select("attributs/attribut");
-                    List<SketchAttributes> listSketchAttributes = new List<SketchAttributes>();
+                    string typeString = sketchNav.GetAttribute("type", "");
+
+                    if (typeString.StartsWith("Multi"))
+                    {
+                        switch (typeString.ToLower())
+                        {
+                            case "multipoint":
+                                typeString = "Point";
+                                break;
+
+                            case "multiligne":
+                                typeString = "Ligne";
+                                break;
+
+                            case "multipolygone":
+                                typeString = "Polygone";
+                                break;
+                        }
+                    }
+                    Sketch.SketchType type = (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), typeString, true);
+                    string nameSketch = EncodeToUTF8(sketchNav.SelectSingleNode("nom").Value);
+
+                    //attributs
+                    XPathNodeIterator itAttribut = sketchNav.Select("attributs/attribut");
                     foreach (XPathNavigator att in itAttribut)
                     {
                         SketchAttributes attribut = new SketchAttributes
@@ -892,57 +910,48 @@ namespace ArcGisProEspaceCollaboratif.Core
                             Name = EncodeToUTF8(att.GetAttribute("name", "")),
                             Value = EncodeToUTF8(att.InnerXml)
                         };
-                        listSketchAttributes.Add(attribut);
+                        sketch.AddAttribute(attribut);
                     }
 
-                    // La géométrie conditionne le nombre de croquis à créer
-                    // (Par exemple multiligne ou multipolygone)
-                    v.MoveToFollowing("geometrie", "");
-                    while (v.MoveToChild(XPathNodeType.Element))
+
+                    sketchNav.MoveToFollowing("geometrie", "");
+
+                    XPathNavigator boundary = sketchNav.Clone();
+                    boundary.MoveToFollowing("geometrie", "");
+
+                    while (sketchNav.MoveToFollowing("coordinates", "http://www.opengis.net/gml", boundary))
                     {
-                        if (v.LocalName.Equals("outerBoundaryIs"))
+                        string sCoord = sketchNav.InnerXml;
+                        string s = " ";
+                        string[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
+
+                        for (int i = 0; i < tCoord.Length; i++)
                         {
-                            while (v.MoveToChild(XPathNodeType.Element))
+                            Point pt = new Point();
+                            string[] latlon = tCoord[i].Split(',');
+                            if (latlon.Length == 4)
                             {
-                                if (v.LocalName.Equals("coordinates"))
-                                {
-                                    int a = 1;
-                                }
-                                v.MoveToParent();//TODO Noémie je pense qu'il faut remonter aux parents car le movetochild perd l'ensemble de la chaine de caractères
+                                pt.Longitude = double.Parse(latlon[0] + "." + latlon[1], Constantes.invC);
+                                pt.Latitude = double.Parse(latlon[2] + "." + latlon[3], Constantes.invC);
                             }
-                        }
-                        if (v.LocalName.Equals("innerBoundaryIs"))
-                        {
-                            while (v.MoveToChild(XPathNodeType.Element))
+                            else if (latlon.Length == 2)
                             {
-                                if (v.LocalName.Equals("coordinates"))
-                                {
-                                    int a = 1;
-                                }
+                                pt.Longitude = double.Parse(latlon[0], Constantes.invC);
+                                pt.Latitude = double.Parse(latlon[1], Constantes.invC);
                             }
-                        }
-                        /*if (v.LocalName.Equals("coordinates"))
-                        {
-                            // Géométrie du croquis
-                            List<ArcGisProEspaceCollaboratif.Core.Point> listPoints = GetGeometry(v.InnerXml);
-                            Sketch sketch = new Sketch
-                            {
-                                Type = type,
-                                Name = nameSketch
-                            };
-                            foreach (ArcGisProEspaceCollaboratif.Core.Point pt in listPoints)
+                            if (!double.IsNaN(pt.Latitude) && !double.IsNaN(pt.Longitude))
                             {
                                 sketch.AddPoint(pt);
                             }
-
-                            foreach (SketchAttributes att in listSketchAttributes)
+                            else
                             {
-                                sketch.AddAttribute(att);
+                                logger.Debug("none sCoord");
                             }
+                        }
 
-                            // Ajout du croquis au signalement
-                            report.AddSketch(sketch);
-                        }*/
+                        sketch.Type = type;
+                        sketch.Name = nameSketch;
+                        report.AddSketch(sketch);
                     }
                 }
             }
