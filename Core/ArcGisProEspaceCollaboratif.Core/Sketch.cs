@@ -18,7 +18,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             Fleche,     /*!< Pour une flêche du croquis. */
             MultiPoint,
             MultiLigne,
-            Multipolygone //TODO Noémie : vérifier ce qui est fait pour MultiLigne + ajouter Multipoint ?
+            Multipolygone
         };
 
         /// <summary>

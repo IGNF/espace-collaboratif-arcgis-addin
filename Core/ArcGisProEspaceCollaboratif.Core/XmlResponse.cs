@@ -897,13 +897,13 @@ namespace ArcGisProEspaceCollaboratif.Core
                     // On crée un croquis pour chaque balise "coordinates" trouvée
                     while (sketchNav.MoveToFollowing("coordinates", "http://www.opengis.net/gml", boundary))
                     {
-                        Sketch sketch = new Sketch();
-                        
-                        sketch.Points = GetGeometry(sketchNav.InnerXml);
-
-                        sketch.Attributes = sketchAttributeList;
-                        sketch.Type = type;
-                        sketch.Name = nameSketch;
+                        Sketch sketch = new Sketch
+                        {
+                            Points = GetGeometry(sketchNav.InnerXml),
+                            Attributes = sketchAttributeList,
+                            Type = type,
+                            Name = nameSketch
+                        };
                         report.AddSketch(sketch);
                     }
                 }
