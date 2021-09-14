@@ -869,40 +869,15 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             try
             {
-
-                if (report.Id == 354478)
-                {
-                    int a = 1;
-                }
-
                 foreach (XPathNavigator sketchNav in itSketch)
                 {
-                    Sketch sketch = new Sketch();
-
-                    string typeString = sketchNav.GetAttribute("type", "");
-
-                    if (typeString.StartsWith("Multi"))
-                    {
-                        switch (typeString.ToLower())
-                        {
-                            case "multipoint":
-                                typeString = "Point";
-                                break;
-
-                            case "multiligne":
-                                typeString = "Ligne";
-                                break;
-
-                            case "multipolygone":
-                                typeString = "Polygone";
-                                break;
-                        }
-                    }
-                    Sketch.SketchType type = (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), typeString, true);
+//                    Sketch sketch = new Sketch();
+                    Sketch.SketchType type = (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), sketchNav.GetAttribute("type", ""), true);
                     string nameSketch = EncodeToUTF8(sketchNav.SelectSingleNode("nom").Value);
 
                     //attributs
                     XPathNodeIterator itAttribut = sketchNav.Select("attributs/attribut");
+                    List<SketchAttributes> sketchAttributeList = new List<SketchAttributes>();
                     foreach (XPathNavigator att in itAttribut)
                     {
                         SketchAttributes attribut = new SketchAttributes
@@ -910,45 +885,23 @@ namespace ArcGisProEspaceCollaboratif.Core
                             Name = EncodeToUTF8(att.GetAttribute("name", "")),
                             Value = EncodeToUTF8(att.InnerXml)
                         };
-                        sketch.AddAttribute(attribut);
+                        sketchAttributeList.Add(attribut);
                     }
 
-
+                    // On recherche les balises "coordinates" situées entre deux balises "geometrie" (pour être sûrs de ne pas passer au signalement suivant)
                     sketchNav.MoveToFollowing("geometrie", "");
 
                     XPathNavigator boundary = sketchNav.Clone();
                     boundary.MoveToFollowing("geometrie", "");
 
+                    // On crée un croquis pour chaque balise "coordinates" trouvée
                     while (sketchNav.MoveToFollowing("coordinates", "http://www.opengis.net/gml", boundary))
                     {
-                        string sCoord = sketchNav.InnerXml;
-                        string s = " ";
-                        string[] tCoord = sCoord.Split(s.ToCharArray(0, 1));
+                        Sketch sketch = new Sketch();
+                        
+                        sketch.Points = GetGeometry(sketchNav.InnerXml);
 
-                        for (int i = 0; i < tCoord.Length; i++)
-                        {
-                            Point pt = new Point();
-                            string[] latlon = tCoord[i].Split(',');
-                            if (latlon.Length == 4)
-                            {
-                                pt.Longitude = double.Parse(latlon[0] + "." + latlon[1], Constantes.invC);
-                                pt.Latitude = double.Parse(latlon[2] + "." + latlon[3], Constantes.invC);
-                            }
-                            else if (latlon.Length == 2)
-                            {
-                                pt.Longitude = double.Parse(latlon[0], Constantes.invC);
-                                pt.Latitude = double.Parse(latlon[1], Constantes.invC);
-                            }
-                            if (!double.IsNaN(pt.Latitude) && !double.IsNaN(pt.Longitude))
-                            {
-                                sketch.AddPoint(pt);
-                            }
-                            else
-                            {
-                                logger.Debug("none sCoord");
-                            }
-                        }
-
+                        sketch.Attributes = sketchAttributeList;
                         sketch.Type = type;
                         sketch.Name = nameSketch;
                         report.AddSketch(sketch);
@@ -962,6 +915,12 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
         }
 
+        /// <summary>
+        ///  Extrait les points 2D qui constituent un croquis à partir d'une liste de
+        ///  coordonnées récupérée sur l'Espace co (potentiellement 3D ou 4D).
+        /// </summary>
+        /// <param name="coordinates">coordonnées</param>>
+        /// <returns>List</returns>
         private List<ArcGisProEspaceCollaboratif.Core.Point> GetGeometry(string coordinates)
         {
             List<ArcGisProEspaceCollaboratif.Core.Point> pts = new List<Point>();

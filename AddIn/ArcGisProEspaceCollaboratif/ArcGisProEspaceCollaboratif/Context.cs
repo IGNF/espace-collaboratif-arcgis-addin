@@ -441,33 +441,18 @@ namespace ArcGisProEspaceCollaboratif
             switch (sketchType)
             {
                 case SketchType.Point:
-                    indexLayer = 1;
-                    break;
-
                 case SketchType.MultiPoint:
-                    indexLayer = 1;
-                    break;
-
                 case SketchType.Texte:
                     indexLayer = 1;
                     break;
 
                 case SketchType.Ligne:
-                    indexLayer = 2;
-                    break;
-
                 case SketchType.MultiLigne:
-                    indexLayer = 2;
-                    break;
-
                 case SketchType.Fleche:
                     indexLayer = 2;
                     break;
 
                 case SketchType.Polygone:
-                    indexLayer = 3;
-                    break;
-
                 case SketchType.Multipolygone:
                     indexLayer = 3;
                     break;
@@ -544,41 +529,24 @@ namespace ArcGisProEspaceCollaboratif
                         break;
 
                     case SketchType.Point:
-                        sketchFields.Add(Helper.name_field_Shape, sketchPoint);
-                        break;
-
                     case SketchType.Texte:
-                        sketchFields.Add(Helper.name_field_Shape, sketchPoint);
-                        break;
-
-                    case SketchType.Ligne :
-                        Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
-                        sketchFields.Add(Helper.name_field_Shape, sketchLine);
-                        break;
-
-                    case SketchType.Fleche:
-                        Polyline sketchArrow = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
-                        sketchFields.Add(Helper.name_field_Shape, sketchArrow);
-                        break;
-
-                    case SketchType.Polygone:
-                        Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
-                        sketchFields.Add(Helper.name_field_Shape, sketchPolygon);
-                        break;
-
                     case SketchType.MultiPoint:
                         sketchFields.Add(Helper.name_field_Shape, sketchPoint);
                         break;
 
+                    case SketchType.Ligne :
+                    case SketchType.Fleche:
                     case SketchType.MultiLigne:
-                        Polyline sketchMultiLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
-                        sketchFields.Add(Helper.name_field_Shape, sketchMultiLine);
+                        Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchLine);
                         break;
 
+                    case SketchType.Polygone:
                     case SketchType.Multipolygone:
-                        Polygon sketchMultiPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
-                        sketchFields.Add(Helper.name_field_Shape, sketchMultiPolygon);
-                        break;                
+                        Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
+                        sketchFields.Add(Helper.name_field_Shape, sketchPolygon);
+                        break;
+            
                 }
             }
 
