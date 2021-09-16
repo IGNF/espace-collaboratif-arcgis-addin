@@ -152,7 +152,7 @@ namespace ArcGisProEspaceCollaboratif
             if (filterLayerName.Length == 0)
             {
                 string message = "Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)";
-                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                 if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
                     messageBoxResult == System.Windows.MessageBoxResult.Yes )
                 {
@@ -166,11 +166,10 @@ namespace ArcGisProEspaceCollaboratif
 
             Context context = Context.Instance;
             Layer filterLayer = context.GetLayerByName(filterLayerName);
-
             if (filterLayer == null)
             {
                 string message = string.Format("La carte en cours ne contient pas la couche '{0}' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
-                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                 if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
                     messageBoxResult == System.Windows.MessageBoxResult.Yes)
                 {
@@ -185,10 +184,14 @@ namespace ArcGisProEspaceCollaboratif
             spatialFilterGeometry = context.GetSpatialFilterGeometry(filterLayerName);
             if (spatialFilterGeometry.Count == 0)
             {
-                string message = string.Format("La couche '{0}' ne contient aucun object utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
-                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION);
-                if (messageBoxResult != System.Windows.MessageBoxResult.OK ||
-                    messageBoxResult != System.Windows.MessageBoxResult.Yes)
+                string message = string.Format("La couche '{0}' ne contient aucun objet utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes)
+                {
+                    return overrideFilterTuple;
+                }
+                else
                 {
                     return noFilterTuple;
                 }
