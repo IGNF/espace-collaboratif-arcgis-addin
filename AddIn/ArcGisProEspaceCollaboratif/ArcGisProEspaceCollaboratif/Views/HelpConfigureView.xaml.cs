@@ -17,5 +17,9 @@ namespace ArcGisProEspaceCollaboratif.Views
             this.DialogResult = true;
         }
 
+        private void LoginTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
     }
 }
