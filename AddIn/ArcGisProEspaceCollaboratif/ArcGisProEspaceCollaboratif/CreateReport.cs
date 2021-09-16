@@ -37,7 +37,7 @@ namespace ArcGisProEspaceCollaboratif
                     bool bRes = context.IsLayerInMap(Helper.name_layer_Signalement);
                     if (!bRes)
                     {
-                        string message = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et et télécharger les signalements.";
+                        string message = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
                         logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
@@ -72,23 +72,13 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
                 catch (Exception e)
-                {
-                    if (e.Message == Constantes.OPERATIONANNULEE)
-                    {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            e.Message,
-                            Constantes.INFORMATION
-                        );
-                    }
-                    else
-                    {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            e.Message,
-                            Constantes.ERROR
-                        );
-                        string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
-                        logger.Error(string.Format("CreateReport.OnClick : {0}\n", message));
-                    }
+                {  
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        e.Message,
+                        Constantes.ERROR
+                    );
+                    string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
+                    logger.Error(string.Format("CreateReport.OnClick : {0}\n", message));
                 }
             });
         }

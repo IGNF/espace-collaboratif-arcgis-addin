@@ -635,8 +635,7 @@ namespace ArcGisProEspaceCollaboratif
             if (dialogResult == false)
             {
                 connectViewModel.connectView.Close();
-                logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", Constantes.OPERATIONANNULEE));
-                throw new Exception (Constantes.OPERATIONANNULEE);
+                return null;
             }
             // Récupération du login et mot de passe introduits.
             this.Login = connectViewModel.Login;
