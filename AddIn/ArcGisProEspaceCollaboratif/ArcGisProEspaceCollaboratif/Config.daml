@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ArcGIS defaultAssembly="ArcGisProEspaceCollaboratif.dll" defaultNamespace="ArcGisProEspaceCollaboratif" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Users/epeyrouse/AppData/Local/Programs/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+<ArcGIS defaultAssembly="ArcGisProEspaceCollaboratif.dll" defaultNamespace="ArcGisProEspaceCollaboratif" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{d8a8d0b5-022e-43a7-9d47-003be67525e2}" version="1.0" desktopVersion="2.7.26828">
     <Name>ArcGisProEspaceCollaboratif</Name>
     <Description>ArcGisProEspaceCollaboratif description</Description>
@@ -12,17 +12,17 @@
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
   </AddInInfo>
   <modules>
-    <insertModule id="ArcGisProEspaceCollaboratif_Module" className="Module1" autoLoad="false" caption="Module1">
+    <insertModule id="ArcGisProEspaceCollaboratif_Module" className="ArcGisProEspaceCollaboratifModule" autoLoad="false" caption="Add-in Espace collaboratif">
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
-        <!--<tab id="ArcGisProEspaceCollaboratif_Tab1" caption="New Tab">
+        <tab id="ArcGisProEspaceCollaboratif_Tab1" caption="IGN Espace co" keytip="Add-in Espace collaboratif">
           <group refID="ArcGisProEspaceCollaboratif_Group1"/>
-        </tab>-->
+        </tab>
       </tabs>
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="ArcGisProEspaceCollaboratif_Group1" keytip="W" caption="Espace collaboratif" appearsOnAddInTab="true">
+        <group id="ArcGisProEspaceCollaboratif_Group1" keytip="W" caption="Espace collaboratif">
           <!-- host controls within groups -->
           <button refID="ArcGisProEspaceCollaboratif_Connect" size="large" />
           <button refID="ArcGisProEspaceCollaboratif_DownloadReports" size="large" />
@@ -39,39 +39,32 @@
       <controls>
         <!-- add your controls here -->
         <button id="ArcGisProEspaceCollaboratif_Connect" keytip="W" caption="Connecter" className="Connect" loadOnClick="true" smallImage="Images\connect1.png" largeImage="Images\connect1.png">
-          <tooltip heading="Connexion">
-            Se connecter à l'espace collaboratif<disabledText />
-          </tooltip>
+          <tooltip heading="Connecter">
+            Se connecter à l'Espace collaboratif<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_DownloadReports" keytip="W" caption="Importer" className="DownloadReports" loadOnClick="true" smallImage="Images\update.png" largeImage="Images\update.png">
-          <tooltip heading="Téléchargement">
-            Télécharger les signalements<disabledText />
-          </tooltip>
+          <tooltip heading="Importer">
+            Importer les signalements de son profil actif sur l'Espace collaboratif<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_SeeReport" keytip="W" caption="Visualiser" className="SeeReport" loadOnClick="true" smallImage="Images\visualiser.png" largeImage="Images\visualiser.png">
-          <tooltip heading="Visualisation">
-            Voir le signalement<disabledText />
-          </tooltip>
+          <tooltip heading="Visualer">
+            Ouvrir la fiche du signalement sélectionné<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_ReplyReport" keytip="W" caption="Répondre" className="ReplyReport" loadOnClick="true" smallImage="Images\answer.png" largeImage="Images\answer.png">
-          <tooltip heading="Réponse">
-            Répondre à un signalement<disabledText />
-          </tooltip>
+          <tooltip heading="Répondre">
+            Répondre à un signalement<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_CreateReport" keytip="W" caption="Créer" className="CreateReport" loadOnClick="true" smallImage="Images\create.png" largeImage="Images\create.png">
-          <tooltip heading="Création">
-            Créer un nouveau signalement<disabledText />
-          </tooltip>
+          <tooltip heading="Créer">
+            Créer un nouveau signalement dans un ou plusieurs thèmes de son groupe actif<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_DeleteReport" keytip="W" caption="Supprimer" className="DeleteReport" loadOnClick="true" smallImage="Images\cleaning.png" largeImage="Images\cleaning.png">
-          <tooltip heading="Suppression">
-            Supprimer les signalements de la carte en cours<disabledText />
-          </tooltip>
+          <tooltip heading="Supprimer">
+            Supprimer les signalements et les croquis de la carte (ceux-ci seront en revanche conservés sur l'Espace collaboratif)<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_SeeAssociatedObjects" keytip="W" caption="Voir les objets associés" className="SeeAssociatedObjects" loadOnClick="true" smallImage="Images\baguetteCroquis.png" largeImage="Images\baguetteCroquis.png">
-          <tooltip heading="Visualisation">
-            Voir les objets associés<disabledText />
-          </tooltip>
+          <tooltip heading="Voir les objets associés">
+            Voir les croquis associés au(x) signalement(s) sélectionné(s) et inversement<disabledText /></tooltip>
         </button>
         <!-->button id="ArcGisProEspaceCollaboratif_LoadLayers" keytip="W" caption="Charger" className="LoadGateway" loadOnClick="true" smallImage="Images\charger.png" largeImage="Images\charger.png">
           <tooltip heading="Chargement">
@@ -84,22 +77,19 @@
           </tooltip>
         </button-->
         <button id="ArcGisProEspaceCollaboratif_HelpConfigure" keytip="W" caption="Configurer" className="HelpConfigure" loadOnClick="true" smallImage="Images\config.png" largeImage="Images\config.png">
-          <tooltip heading="Configuration">Configurer l'add-in<disabledText /></tooltip>
+          <tooltip heading="Configurer">Configurer l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpManual" keytip="W" caption="Ouvrir manuel" className="HelpManual" loadOnClick="true" smallImage="Images\Book.png" largeImage="Images\Book.png">
-          <tooltip heading="Ouverture fichier">
-            Ouvrir le manuel utilisateur de l'add-in<disabledText />
-          </tooltip>
+          <tooltip heading="Ouvir manuel">
+            Ouvrir le manuel utilisateur de l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpFileLog" keytip="W" caption="Ouvrir log" className="HelpFileLog" loadOnClick="true" smallImage="Images\Log.png" largeImage="Images\Log.png">
-          <tooltip heading="Ouverture fichier">
-            Ouvrir le fichier de log de l'add-in<disabledText />
-          </tooltip>
+          <tooltip heading="Ouvrir log">
+            Ouvrir le fichier de log de l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpAbout" keytip="W" caption="A propos" className="HelpAbout" loadOnClick="true" smallImage="Images\About.png" largeImage="Images\About.png">
-          <tooltip heading="Informations">
-            A propos de l'add-in<disabledText />
-          </tooltip>
+          <tooltip heading="A propos">
+            A propos de l'add-in<disabledText /></tooltip>
         </button>
       </controls>
       <menus>
