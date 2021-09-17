@@ -1421,7 +1421,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 ":",
                 "(",
                 ")",
-                "%"
+                "%",
+                "°",
+                "&",
+                "="
             };
             foreach (string item in tmp)
             {
