@@ -19,5 +19,10 @@ namespace ArcGisProEspaceCollaboratif.Views
         {
             this.DialogResult = true;
         }
+
+        private void CommentaryTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
     }
 }

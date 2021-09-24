@@ -33,7 +33,7 @@
                     </TabItem>
                 </TabControl>
                 <Label Content="Commentaire" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
-                <TextBox x:Name="CommentaryTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaryTextBox}" VerticalAlignment="Top" Width="520"/>
+                <TextBox x:Name="CommentaryTextBox" HorizontalAlignment="Left" Height="85" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding CommentaryTextBox}" VerticalAlignment="Top" Width="520" AcceptsReturn="True" AcceptsTab="True"/>
             </StackPanel>
         </GroupBox>
         <Button x:Name="SendButton" Content="Envoyer" Command="{Binding SendNewReportButtonCmd}" Click="Button_Click" HorizontalAlignment="Left" Margin="255,654,0,0" VerticalAlignment="Top" Width="74" IsDefault="True" RenderTransformOrigin="0.483,2.109" Height="26" Grid.Column="1"/>

@@ -245,11 +245,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void SetCommentaireTextBox()
         {
             string message = "";
-            if (!string.IsNullOrEmpty(this.PreferredGroup))
+            if (!string.IsNullOrEmpty(this.PreferredGroup) && !this.PreferredGroup.Equals(Constantes.AUCUN))
             {
                 message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(PreferredGroup)).CommentaryGeorem;
             }
-            else
+            else if (!this.Context.Groupeactif.Equals(Constantes.AUCUN) && !string.IsNullOrEmpty(this.Context.Groupeactif))
             {
                 message = this.Context.Profil.Geogroupes.Find(x => x.Name.Equals(this.Context.Groupeactif)).CommentaryGeorem;
             }
@@ -283,11 +283,19 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             List<Theme> listThemesGroup = new List<Theme>();
             List<string> filteredThemes = new List<string>();
 
-            if (newGroupActive.Name == this.Context.Groupeactif)
+            // Cas d'un utilisateur sans profil actif ou ne souhaitant pas lier son signalement à un groupe
+            if (newGroupActive is null)
+            {
+                listThemesGroup = this.Context.Profil.GlobalThemes;
+                filteredThemes = this.Context.Profil.GlobalThemeNames;
+            }
+            // Cas où le groupe choisi est le profil actif
+            else if (newGroupActive.Name == this.Context.Groupeactif)
             {
                 listThemesGroup = this.Context.Profil.Themes;
                 filteredThemes = this.Context.Profil.FilteredThemes;
             }
+            // Cas où l'utilisateur choisit un groupe autre que son profil actif
             else
             {
                 foreach (GeoGroup geoGroupe in this.Context.Profil.Geogroupes)
@@ -332,11 +340,14 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     continue;
                 }
+
+                // Superflu - déjà filtré en entrée
                 // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
-                if (!thGroup.Filtered)
+/*                if (!thGroup.Filtered)
                 {
                     continue;
                 }
+*/
                 // Un thème peut ne pas avoir d'attributs dans ce cas là,
                 // il faut afficher le thème avec une case à cocher
                 if (thGroup.Attributes == null)
@@ -1279,6 +1290,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     return th.Group.Id;
                 }
             }
+
+            // Si on n'a pas trouvé de correspondance, on vérifie les thèmes globaux
+            foreach (Theme th in this.Context.Profil.GlobalThemes)
+            {
+                if (th.Group.Name != theme)
+                {
+                    continue;
+                }
+                return th.Group.Id;
+            }
+
             return id;
         }
 
@@ -1448,8 +1470,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             if (groupName == Constantes.AUCUN)
             {
-                this.StackPanelGlobal.Children.Add(SetLabel("Pas de groupe, pas d'attributs", true));
-                this.createReportView.GridGeneral.Children.Add(this.StackPanelGlobal);
+//                this.StackPanelGlobal.Children.Add(SetLabel("Pas de groupe, pas d'attributs", true));
+//                this.createReportView.GridGeneral.Children.Add(this.StackPanelGlobal);
                 return group;
             }
 

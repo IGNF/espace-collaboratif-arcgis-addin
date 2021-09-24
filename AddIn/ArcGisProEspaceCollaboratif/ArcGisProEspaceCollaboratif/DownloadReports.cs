@@ -91,9 +91,9 @@ namespace ArcGisProEspaceCollaboratif
                     await context.InsertReports(reports);
                     progressDialog.Hide();
 
-                    //Zoom sur la couche des signalements
-                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
-                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
+                    //Zoom sur la couche des signalements (supprimé à la demande du SVRP)
+//                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
+//                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
                     int newReports = context.CountReportsByStatus(EnumStatus.submit);
