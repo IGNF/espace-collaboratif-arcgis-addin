@@ -194,13 +194,14 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Teste si le signalement est compris entre les dates de début et fin d'extraction
         /// </summary>    
-        /// <param name="remarqueTest">le signalement EspaceCollaboratif à tester.</param>
-        /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
-        /// <returns>True si le signalement à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInDates(ArcGisProEspaceCollaboratif.Core.Report report, DateTime startDate, DateTime endDate)
+        /// <param name="reportDateUpdate">La date de mise à jour du signalement.</param>
+        /// <param name="startDate">La date de début d'extraction.</param>
+        /// /// <param name="endDate">La date de fin d'extraction.</param>
+        /// <returns>True si le signalement est compris entre les dates de début et fin</returns>
+        public static bool IsInDates(DateTime reportDateUpdate, DateTime startDate, DateTime endDate)
         {
-            int resultStart = DateTime.Compare(report.DateUpdate, startDate);
-            int resultEnd = DateTime.Compare(report.DateUpdate, endDate);
+            int resultStart = DateTime.Compare(reportDateUpdate, startDate);
+            int resultEnd = DateTime.Compare(reportDateUpdate, endDate);
             if (resultStart < 0 || resultEnd > 0)
             {
                 return false;

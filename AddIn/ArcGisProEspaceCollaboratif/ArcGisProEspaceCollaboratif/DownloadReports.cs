@@ -70,15 +70,17 @@ namespace ArcGisProEspaceCollaboratif
                     // Filtrage par dates
                     if (sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate != Constantes.DEFAULT_DATE_EXTRACTION)
                     {
-                        int iStartDate = int.Parse(sStartDate);
-                        int iEndDate = int.Parse(sEndDate);
-                        if (sStartDate != sEndDate && iEndDate > iStartDate)
+                        DateTime dtStart = Convert.ToDateTime(sStartDate);
+                        DateTime dtEnd = Convert.ToDateTime(sEndDate);
+                        int result = DateTime.Compare(dtStart, dtEnd);
+                        if (sStartDate != sEndDate && result < 0)
                         {
                             List<Report> reportToKeep = new List<Report>();
 
                             foreach (Report report in reports)
                             {
-                                if (Helper.IsInDates(report, Convert.ToDateTime(sStartDate), Convert.ToDateTime(sEndDate)))
+                                DateTime reportDate = report.DateUpdate;
+                                if (Helper.IsInDates(reportDate, dtStart, dtEnd))
                                 {
                                     reportToKeep.Add(report);
                                 }
