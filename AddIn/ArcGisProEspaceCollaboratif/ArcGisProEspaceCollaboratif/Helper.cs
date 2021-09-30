@@ -60,14 +60,14 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_field_LienReport = "Lien_signalement";
         public const string name_field_NomCroquis = "Nom";
         public const string name_field_Attributs = "Attributs_croquis";
-//        public const string name_field_LienBDuni = "Lien_objet_BDUni";
         public const string name_field_Source = "Source";
         public const string name_field_Longitude = "Lon";
         public const string name_field_Latitude = "Lat";
         public const string name_field_Shape = "Shape";
         public const string xml_UrlHost = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/URLHost";
         public const string xml_Login = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Login";
-        public const string xml_DateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Date_extraction";
+        public const string xml_StartDateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Debut_date_extraction";
+        public const string xml_EndDateExtraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Fin_date_extraction";
         public const string xml_Pagination = "/Parametres_connexion_a_EspaceCollaboratif/Map/Pagination";
         public const string xml_Themes = "/Parametres_connexion_a_EspaceCollaboratif/Map/Themes_preferes/Theme";
         public const string xml_Zone_extraction = "/Parametres_connexion_a_EspaceCollaboratif/Map/Zone_extraction";
@@ -191,20 +191,37 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
-        /// Teste si le signalement donnée est contenue à l'intérieur d'une des géométrie fournie en entrée.  
+        /// Teste si le signalement est compris entre les dates de début et fin d'extraction
         /// </summary>    
         /// <param name="remarqueTest">le signalement EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si le signalement à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<Geometry> geometries)
+        public static bool IsInDates(ArcGisProEspaceCollaboratif.Core.Report report, DateTime startDate, DateTime endDate)
+        {
+            int resultStart = DateTime.Compare(report.DateUpdate, startDate);
+            int resultEnd = DateTime.Compare(report.DateUpdate, endDate);
+            if (resultStart < 0 || resultEnd > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Teste si le signalement est contenu à l'intérieur d'une des géométrie fournie en entrée.  
+        /// </summary>    
+        /// <param name="report">le signalement EspaceCollaboratif à tester.</param>
+        /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
+        /// <returns>True si le signalement à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
+        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<Geometry> geometrys)
         {
             MapPoint reportPoint = Helper.TransformPoint(report.Position);
 
-            foreach (Geometry shape in geometries)
+            foreach (Geometry geometry in geometrys)
             {
-                if (!shape.IsEmpty)
+                if (!geometry.IsEmpty)
                 {
-                    if (GeometryEngine.Instance.Intersects(reportPoint, shape))
+                    if (GeometryEngine.Instance.Intersects(reportPoint, geometry))
                         return true;
                 }
             }
@@ -1078,12 +1095,12 @@ namespace ArcGisProEspaceCollaboratif
         }
         
         /// <summary>
-        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date pour laquelle on extrait que les remaques postérieures à celle-ci.
+        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date de début d'extraction des signalements postérieurs à celle-ci.
         /// </summary>
-        /// <returns>La date d'extration stockée dans le fichier de paramétrage.</returns>
-        public static System.DateTime LoadDateExtraction()
+        /// <returns>La date de début d'extraction stockée dans le fichier de paramétrage.</returns>
+        public static System.DateTime LoadStartDateExtraction()
         {
-            string dateExtration = Helper.XML_FirstElement(Helper.xml_DateExtraction);
+            string dateExtration = Helper.XML_FirstElement(Helper.xml_StartDateExtraction);
 
             try
             {
@@ -1107,21 +1124,66 @@ namespace ArcGisProEspaceCollaboratif
                 return Convert.ToDateTime(Helper.dateDefault);
             }
         }
-       
+
+        /// <summary>
+        /// Lit depuis le fichier de paramétrage XML EspaceCollaboratif, la date de fin d'extraction des signalements antérieurs à celle-ci.
+        /// </summary>
+        /// <returns>La date de fin d'extraction stockée dans le fichier de paramétrage.</returns>
+        public static System.DateTime LoadEndDateExtraction()
+        {
+            string dateExtration = Helper.XML_FirstElement(Helper.xml_EndDateExtraction);
+
+            try
+            {
+                if (dateExtration.Length != 0)
+                {
+                    return Convert.ToDateTime(dateExtration);
+                }
+                else
+                {
+                    return Convert.ToDateTime(Helper.dateDefault);
+                }
+            }
+            catch
+            {
+                string message = string.Format("La date limite d'extraction contenue dans fichier XML de paramétrage n'est pas de forme valide.\n\nDate limite d'extraction = '{0}'", dateExtration);
+                logger.Error(string.Format("Helper.LoadDateExtraction : {0}\n", message));
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    message,
+                    Constantes.ERROR
+                );
+                return Convert.ToDateTime(Helper.dateDefault);
+            }
+        }
+
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
         /// </summary>
         /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
-        public static void SaveDateExtraction(System.DateTime date)
+        public static void SaveStartDateExtraction(System.DateTime date)
         {
-            if (!Helper.XML_HasElement(Helper.xml_DateExtraction))
+            if (!Helper.XML_HasElement(Helper.xml_StartDateExtraction))
             {
-                Helper.XML_AddElement(Helper.xml_DateExtraction);
+                Helper.XML_AddElement(Helper.xml_StartDateExtraction);
             }
 
-            Helper.XML_SetElement(Helper.xml_DateExtraction, date.ToString());
+            Helper.XML_SetElement(Helper.xml_StartDateExtraction, date.ToString());
         }
-        
+
+        /// <summary>
+        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
+        /// </summary>
+        /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
+        public static void SaveEndDateExtraction(System.DateTime date)
+        {
+            if (!Helper.XML_HasElement(Helper.xml_EndDateExtraction))
+            {
+                Helper.XML_AddElement(Helper.xml_EndDateExtraction);
+            }
+
+            Helper.XML_SetElement(Helper.xml_EndDateExtraction, date.ToString());
+        }
+
         /// <summary>
         /// Obtient à partir du fichier XML de paramétrage, le nom du calque à utiliser pour le filtrage spatial de l'importation des signalements.
         /// </summary>

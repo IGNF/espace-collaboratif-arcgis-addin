@@ -48,7 +48,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             this.DisplayUrl();
             this.DisplayLogin();
-            this.DisplayDateExtraction();
+            this.DisplayDatesExtraction();
             this.DisplaySpatialFilter();
             this.DisplayProxy();
             this.DisplayActiveGroup();
@@ -77,14 +77,24 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public string SpatialFilterSelectedItem { get; set; }
 
         /// <summary>
-        /// La date à afficher sur le calendrier
+        /// La date de début d'extraction des signalements à afficher sur le calendrier
         /// </summary>
-        public DateTime ExtractDisplayDate { get; set; }
+        public DateTime ExtractDisplayStartDate { get; set; }
 
         /// <summary>
-        /// La date sélectionnée dans le calendrier
+        /// La date de fin d'extraction des signalements à afficher sur le calendrier
         /// </summary>
-        public DateTime ExtractSelectedDate { get; set; }
+        public DateTime ExtractDisplayEndDate { get; set; }
+
+        /// <summary>
+        /// La date de début d'extraction des signalements sélectionnée dans le calendrier
+        /// </summary>
+        public DateTime ExtractSelectedStartDate { get; set; }
+
+        /// <summary>
+        /// La date de fin d'extraction des signalements sélectionnée dans le calendrier
+        /// </summary>
+        public DateTime ExtractSelectedEndDate { get; set; }
 
         /// <summary>
         /// Le proxy pour accéder au site de l'espace collaboratif
@@ -122,13 +132,20 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 Helper.SaveLogin(this.Login);
             }
 
-            // Par défaut, on enregistre une date d'extraction au 01/01/2000
+            // Par défaut, on enregistre une date de début et de fin d'extraction au 01/01/2000
             DateTime defaultDate = new DateTime(2000, 1, 1);
-            Helper.SaveDateExtraction(defaultDate);
-            // Sauf si l'utilisateur à cocher "Date d'extraction"
-            if (this.helpConfigureView.ExtractCheckBox.IsChecked == true)
+            Helper.SaveStartDateExtraction(defaultDate);
+            Helper.SaveEndDateExtraction(defaultDate);
+            // Sauf si l'utilisateur à cocher "Date de début"
+            if (this.helpConfigureView.ExtractCheckBoxStart.IsChecked == true)
             {
-                Helper.SaveDateExtraction(this.ExtractSelectedDate);
+                Helper.SaveStartDateExtraction(this.ExtractSelectedStartDate);
+            }
+            // et/ou si l'utilisateur à cocher "Date de fin"
+            
+            if (this.helpConfigureView.ExtractCheckBoxEnd.IsChecked == true)
+            {
+                Helper.SaveEndDateExtraction(this.ExtractSelectedEndDate);
             }
 
             // Par défaut, on enregistre un filtre spatial à vide
@@ -183,14 +200,22 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Chargement de la dernière date d'extraction à partir du fichier espaceco.xml
         /// </summary>
-        private void DisplayDateExtraction()
+        private void DisplayDatesExtraction()
         {
-            DateTime date = Helper.LoadDateExtraction();
-            if(!string.IsNullOrEmpty(date.ToString()))
+            DateTime startDate = Helper.LoadStartDateExtraction();
+            if(!string.IsNullOrEmpty(startDate.ToString()))
             {
-                this.helpConfigureView.ExtractCheckBox.IsChecked = true;
-                this.ExtractSelectedDate = date;
-                this.ExtractDisplayDate = this.ExtractSelectedDate;
+                this.helpConfigureView.ExtractCheckBoxStart.IsChecked = true;
+                this.ExtractSelectedStartDate = startDate;
+                this.ExtractDisplayStartDate = this.ExtractSelectedStartDate;
+            }
+
+            DateTime endDate = Helper.LoadEndDateExtraction();
+            if (!string.IsNullOrEmpty(endDate.ToString()))
+            {
+                this.helpConfigureView.ExtractCheckBoxEnd.IsChecked = true;
+                this.ExtractSelectedEndDate = endDate;
+                this.ExtractDisplayEndDate = this.ExtractSelectedEndDate;
             }
         }
 

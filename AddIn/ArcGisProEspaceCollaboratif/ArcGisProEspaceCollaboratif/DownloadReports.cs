@@ -44,9 +44,10 @@ namespace ArcGisProEspaceCollaboratif
                         parameters.Add("group", groupeId.ToString());
                     }
 
-                    // Paramtère date d'extraction
-                    string sdate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.LoadDateExtraction());
-                    parameters.Add("updatingDate", sdate);
+                    // Paramètres date d'extraction
+                    string sStartDate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.LoadStartDateExtraction());
+                    parameters.Add("updatingDate", sStartDate);
+                    string sEndDate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.LoadEndDateExtraction());
 
                     // Paramètre filtrage spatial
                     string filterLayerName = Helper.LoadNameLayerForSpatialFilter();
@@ -66,20 +67,42 @@ namespace ArcGisProEspaceCollaboratif
                     List<Report> reports = context.Client.GetGeoRems(parameters);
                     progressDialog.Hide();
 
+                    // Filtrage par dates
+                    if (sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate != Constantes.DEFAULT_DATE_EXTRACTION)
+                    {
+                        int iStartDate = int.Parse(sStartDate);
+                        int iEndDate = int.Parse(sEndDate);
+                        if (sStartDate != sEndDate && iEndDate > iStartDate)
+                        {
+                            List<Report> reportToKeep = new List<Report>();
+
+                            foreach (Report report in reports)
+                            {
+                                if (Helper.IsInDates(report, Convert.ToDateTime(sStartDate), Convert.ToDateTime(sEndDate)))
+                                {
+                                    reportToKeep.Add(report);
+                                }
+                            }
+                            reports = reportToKeep;
+                        }
+                    }
+
                     // Filtrage spatial des signalements
                     if (hasFilter)
                     {
                         List<Report> reportToKeep = new List<Report>();
 
-                        foreach (Report testReport in reports)
+                        foreach (Report report in reports)
                         {
-                            if (Helper.IsInGeometry(testReport, filterParameters.Item4))
-                                reportToKeep.Add(testReport);
+                            if (Helper.IsInGeometry(report, filterParameters.Item4))
+                            {
+                                reportToKeep.Add(report);
+                            }                         
                         }
                         reports = reportToKeep;
                     }
 
-                    progressDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Import des signalements dans la carte...");
+                    progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
