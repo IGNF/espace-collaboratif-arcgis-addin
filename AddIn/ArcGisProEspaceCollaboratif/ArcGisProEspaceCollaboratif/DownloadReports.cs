@@ -68,7 +68,10 @@ namespace ArcGisProEspaceCollaboratif
                     progressDialog.Hide();
 
                     // Filtrage par dates
-                    if (sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate != Constantes.DEFAULT_DATE_EXTRACTION)
+                    // le cas sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate == Constantes.DEFAULT_DATE_EXTRACTION
+                    // est celui des paramètres d'extraction ligne 47 car on extrait les signalements avec la date de début
+                    if (sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate != Constantes.DEFAULT_DATE_EXTRACTION ||
+                        sStartDate == Constantes.DEFAULT_DATE_EXTRACTION && sEndDate != Constantes.DEFAULT_DATE_EXTRACTION)
                     {
                         DateTime dtStart = Convert.ToDateTime(sStartDate);
                         DateTime dtEnd = Convert.ToDateTime(sEndDate);
