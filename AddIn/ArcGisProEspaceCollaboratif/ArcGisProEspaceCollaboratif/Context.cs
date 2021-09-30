@@ -187,12 +187,15 @@ namespace ArcGisProEspaceCollaboratif
             string pointSketchLayer = Helper.name_layer_Croquis_Point;
             string reportLayer = Helper.name_layer_Signalement;
 
+
+
             // Signalements
             await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 reportLayer,
                 "POINT",
                 Helper.reportAttributes,
-                0
+                0/*,
+                groupLayer*/
                 );
 
             // Croquis ponctuels
@@ -200,7 +203,8 @@ namespace ArcGisProEspaceCollaboratif
                 pointSketchLayer,
                 "POINT",
                 Helper.sketchAttributes,
-                1
+                1/*,
+                groupLayer*/
                 );
 
             // Croquis linéaires
@@ -208,7 +212,8 @@ namespace ArcGisProEspaceCollaboratif
                 lineSketchLayer,
                 "POLYLINE",
                 Helper.sketchAttributes,
-                2
+                2/*,
+                groupLayer*/
                 );
 
             // Croquis polygones
@@ -216,8 +221,18 @@ namespace ArcGisProEspaceCollaboratif
                 polygonSketchLayer,
                 "POLYGON",
                 Helper.sketchAttributes,
-                3
+                3/*,
+                groupLayer*/
                 );
+
+            // Création du groupe de couches
+            GroupLayer groupLayer = LayerFactory.Instance.CreateGroupLayer(this.MapActiveView.Map, 0, "Espace collaboratif");
+
+            groupLayer.MoveLayer(this.GetLayerByName(reportLayer), 0);
+            groupLayer.MoveLayer(this.GetLayerByName(pointSketchLayer), 1);
+            groupLayer.MoveLayer(this.GetLayerByName(lineSketchLayer), 2);
+            groupLayer.MoveLayer(this.GetLayerByName(polygonSketchLayer), 3);
+
         }
 
         /// <summary>
@@ -272,9 +287,12 @@ namespace ArcGisProEspaceCollaboratif
                 foreach (string layerName in Helper.CollaborativeSpaceLayers)
                 {
                     FeatureLayer layer = GetLayerByName(layerName);
-                    FeatureClass fcCollabSpace = layer.GetFeatureClass();
-                    Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
-                }
+                    if (!(layer is null))
+                    {
+                        FeatureClass fcCollabSpace = layer.GetFeatureClass();
+                        Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
+                    }
+                }         
             }
             catch (Exception e)
             {

@@ -50,12 +50,18 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Les éventuels thèmes attachés au profil
         /// </summary>
-        public List<Theme> Themes { get; set; }
+        public List<Theme> Themes { get; set; } = new List<Theme>();
 
         /// <summary>
         /// Les thèmes filtrés attachés au profil
         /// </summary>
-        public List<string> FilteredThemes { get; set; }
+        public List<string> FilteredThemes { get; set; } = new List<string>();
+
+        // <summary>
+        /// Les thèmes globaux attachés au profil
+        /// </summary>
+        public List<Theme> GlobalThemes { get; set; } = new List<Theme>();
+        public List<string> GlobalThemeNames { get; set; } = new List<string>();
 
         /// <summary>
         /// Identifiant geoprofil

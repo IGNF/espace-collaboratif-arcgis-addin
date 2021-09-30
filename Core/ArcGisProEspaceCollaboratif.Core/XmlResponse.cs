@@ -237,12 +237,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     throw new ArgumentNullException(message);
                 }
 
-                // Les thèmes associés au profil
-                List<Theme> themes = new List<Theme>();
-                List<string> filteredThemes = new List<string>();
-                GetThemes(ref themes, ref filteredThemes);
-                profile.Themes = themes;
-                profile.FilteredThemes = filteredThemes;
+                // Récupération et stockage des thèmes dans le profil
+                GetThemes(profile);
 
                 // Les infos sur tous les geogroupes de l'utilisateur
                 profile.Geogroupes = GetGeoGroupes();
@@ -566,7 +562,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// Extraction des thèmes associés au profil
         /// </summary>
         /// <returns></returns>
-        public void GetThemes(ref List<Theme> themes, ref List<string> filteredThemes)
+  //      public void GetThemes(ref List<Theme> themes, ref List<string> filteredThemes, ref List<Theme> globalThemes)
+        public void GetThemes(Profile profile)
         {
             try
             {
@@ -579,7 +576,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                 navigator.MoveToRoot();
                 XPathExpression filtreExpr = navigator.Compile("/geors/PROFIL/FILTRE");
                 XPathNodeIterator filtreIterator = navigator.Select(filtreExpr);
-                filteredThemes = GetFilteredThemes(filtreIterator, "");
+                List<string> filteredThemes = GetFilteredThemes(filtreIterator, "");
+                profile.FilteredThemes = filteredThemes;
                 
                 // Récupération des thèmes avec leurs attributs et le filtre
                 navigator.MoveToRoot();
@@ -606,7 +604,14 @@ namespace ArcGisProEspaceCollaboratif.Core
                     }
                     tmpTheme.Group.Id = val.SelectSingleNode("ID_GEOGROUPE").Value;
 
-                    themes.Add(tmpTheme);
+                    profile.Themes.Add(tmpTheme);
+
+                    string global = EncodeToUTF8(val.SelectSingleNode("GLOBAL").Value);
+                    if (global.Equals("1"))
+                    {
+                        profile.GlobalThemes.Add(tmpTheme);
+                        profile.GlobalThemeNames.Add(tmpTheme.Group.Name);                        
+                    }
                 }
             }
             catch (Exception e)
@@ -871,7 +876,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 foreach (XPathNavigator sketchNav in itSketch)
                 {
-//                    Sketch sketch = new Sketch();
                     Sketch.SketchType type = (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), sketchNav.GetAttribute("type", ""), true);
                     string nameSketch = EncodeToUTF8(sketchNav.SelectSingleNode("nom").Value);
 

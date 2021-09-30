@@ -31,6 +31,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_layer_Croquis_Polygone = "Croquis_EC_Polygone";
         public const string name_layer_Croquis_Ligne = "Croquis_EC_Ligne";
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
+        public const string name_group_layer = "Espace collaboratif";
 
         public static List<string> CollaborativeSpaceLayers = new List<string>()
         {
@@ -217,7 +218,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="featureWorkspace">L'espace de travail de la carte en cours sur laquelle on veut créer le calque supplémentaire.</param>
         /// <param name="spatialReferenceCalque">Le système de référence spatial à attribuer au calque nouvellement crée.</param>
         /// <returns>FeatureLayer pouvant être ajouté dans la carte en cours.</returns>
-        public static async Task LoadOrCreateCollaborativeSpaceLayer(string fcName, string fcType, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition)
+        public static async Task LoadOrCreateCollaborativeSpaceLayer(string fcName, string fcType, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition/*, GroupLayer groupLayer*/)
         {
             try
             {
@@ -261,7 +262,8 @@ namespace ArcGisProEspaceCollaboratif
 
                         // La nouvelle feature class est chargée automatiquement dans la carte.
                         // On récupère le FeatureLayer correspondant.
-                        collabSpaceLayer = context.GetLayerByName(fcName);                        
+                        collabSpaceLayer = context.GetLayerByName(fcName);
+//                        context.MapActiveView.Map.RemoveLayer(collabSpaceLayer);
                     }
 
                     // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
@@ -322,7 +324,9 @@ namespace ArcGisProEspaceCollaboratif
                                 statusDomainName
                             };
                         Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
-                    }           
+                    }
+
+//                    groupLayer.MoveLayer(collabSpaceLayer, layerPosition);
                 });
             }
             
