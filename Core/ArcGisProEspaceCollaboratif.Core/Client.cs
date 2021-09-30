@@ -512,6 +512,8 @@ namespace ArcGisProEspaceCollaboratif.Core
                     parameters.Add("attributes", attributes);
                 }
 
+//                parameters.Add("group", "-1");
+
                 //ajout des croquis
                 if (!tmpReport.IsCroquisEmpty())
                 {

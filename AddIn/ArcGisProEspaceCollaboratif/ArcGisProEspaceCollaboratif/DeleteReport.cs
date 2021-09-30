@@ -4,6 +4,9 @@ using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using ArcGIS.Desktop.Mapping;
+using System.Linq;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -31,10 +34,18 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
-                    // Vérification si les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" existent
-                    await context.CreateOrLoadReportLayers();
+
                     // Suppression
                     context.RemoveAllObjectsFromLayers();
+
+                    IEnumerable<GroupLayer> groupLayers = context.MapActiveView.Map.GetLayersAsFlattenedList().OfType<GroupLayer>();
+                    foreach (GroupLayer grLayer in groupLayers)
+                    {
+                        if (grLayer.Name == Helper.name_group_layer)
+                        {
+                            context.MapActiveView.Map.RemoveLayer(grLayer);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
