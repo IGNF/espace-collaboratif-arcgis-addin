@@ -23,7 +23,7 @@ namespace ArcGisProEspaceCollaboratif
                 Context context = Context.Instance;
 
                 // Il faut s'être connecté au service pour configurer
-                if (context.Client == null)
+                /*if (context.Client == null)
                 { 
                     // Établissement de la connexion avec le service Espace collaboratif.
                     context.Client = context.GetConnexionEspaceCollaboratif();
@@ -31,7 +31,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         return;
                     }
-                }
+                }*/
 
                 // Test de la présence du fichier XML de paramétrage
                 context.CheckConfigFile();
