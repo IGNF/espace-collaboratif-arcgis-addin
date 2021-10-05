@@ -187,15 +187,23 @@ namespace ArcGisProEspaceCollaboratif
             string pointSketchLayer = Helper.name_layer_Croquis_Point;
             string reportLayer = Helper.name_layer_Signalement;
 
-
+            //Suppression du groupe de couches s'il existe
+            IEnumerable<GroupLayer> groupLayers = this.MapActiveView.Map.GetLayersAsFlattenedList().OfType<GroupLayer>();
+            foreach (GroupLayer grLayer in groupLayers)
+            {
+                if (grLayer.Name == Helper.name_group_layer)
+                {
+                    this.MapActiveView.Map.RemoveLayer(grLayer);
+                    break;
+                }
+            }
 
             // Signalements
             await Helper.LoadOrCreateCollaborativeSpaceLayer(
                 reportLayer,
                 "POINT",
                 Helper.reportAttributes,
-                0/*,
-                groupLayer*/
+                0
                 );
 
             // Croquis ponctuels
@@ -203,8 +211,7 @@ namespace ArcGisProEspaceCollaboratif
                 pointSketchLayer,
                 "POINT",
                 Helper.sketchAttributes,
-                1/*,
-                groupLayer*/
+                1
                 );
 
             // Croquis linéaires
@@ -212,8 +219,7 @@ namespace ArcGisProEspaceCollaboratif
                 lineSketchLayer,
                 "POLYLINE",
                 Helper.sketchAttributes,
-                2/*,
-                groupLayer*/
+                2
                 );
 
             // Croquis polygones
@@ -221,17 +227,16 @@ namespace ArcGisProEspaceCollaboratif
                 polygonSketchLayer,
                 "POLYGON",
                 Helper.sketchAttributes,
-                3/*,
-                groupLayer*/
+                3
                 );
 
             // Création du groupe de couches
-            GroupLayer groupLayer = LayerFactory.Instance.CreateGroupLayer(this.MapActiveView.Map, 0, "Espace collaboratif");
+            GroupLayer groupLayerCollabSpace = LayerFactory.Instance.CreateGroupLayer(this.MapActiveView.Map, 0, "Espace collaboratif");
 
-            groupLayer.MoveLayer(this.GetLayerByName(reportLayer), 0);
-            groupLayer.MoveLayer(this.GetLayerByName(pointSketchLayer), 1);
-            groupLayer.MoveLayer(this.GetLayerByName(lineSketchLayer), 2);
-            groupLayer.MoveLayer(this.GetLayerByName(polygonSketchLayer), 3);
+            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(reportLayer), 0);
+            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(pointSketchLayer), 1);
+            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(lineSketchLayer), 2);
+            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(polygonSketchLayer), 3);
 
         }
 
