@@ -134,18 +134,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             // Par défaut, on enregistre une date de début et de fin d'extraction au 01/01/2000
             DateTime defaultDate = new DateTime(2000, 1, 1);
-            Helper.SaveStartDateExtraction(defaultDate);
-            Helper.SaveEndDateExtraction(defaultDate);
+            //Helper.SaveStartDateExtraction(defaultDate);
+            //Helper.SaveEndDateExtraction(defaultDate);
             // Sauf si l'utilisateur à cocher "Date de début"
             if (this.helpConfigureView.ExtractCheckBoxStart.IsChecked == true)
             {
-                Helper.SaveStartDateExtraction(this.ExtractSelectedStartDate);
+                Helper.SaveStartDateExtraction(this.ExtractSelectedStartDate.ToString());
+            }
+            else
+            {
+                Helper.SaveStartDateExtraction("");
             }
             // et/ou si l'utilisateur à cocher "Date de fin"
             
             if (this.helpConfigureView.ExtractCheckBoxEnd.IsChecked == true)
             {
-                Helper.SaveEndDateExtraction(this.ExtractSelectedEndDate);
+                Helper.SaveEndDateExtraction(this.ExtractSelectedEndDate.ToString());
+            }
+            else
+            {
+                Helper.SaveEndDateExtraction("");
             }
 
             // Par défaut, on enregistre un filtre spatial à vide
@@ -205,7 +213,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             DateTime startDate = Helper.LoadStartDateExtraction();
             if(!string.IsNullOrEmpty(startDate.ToString()))
             {
-                this.helpConfigureView.ExtractCheckBoxStart.IsChecked = true;
+                if(startDate.Equals(Convert.ToDateTime(Helper.dateDefault))) this.helpConfigureView.ExtractCheckBoxStart.IsChecked = false;
+                else this.helpConfigureView.ExtractCheckBoxStart.IsChecked = true;
+
                 this.ExtractSelectedStartDate = startDate;
                 this.ExtractDisplayStartDate = this.ExtractSelectedStartDate;
             }
@@ -213,7 +223,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             DateTime endDate = Helper.LoadEndDateExtraction();
             if (!string.IsNullOrEmpty(endDate.ToString()))
             {
-                this.helpConfigureView.ExtractCheckBoxEnd.IsChecked = true;
+                if (endDate.Equals(DateTime.Now)) this.helpConfigureView.ExtractCheckBoxEnd.IsChecked = false;
+                else this.helpConfigureView.ExtractCheckBoxEnd.IsChecked = true;
+                
                 this.ExtractSelectedEndDate = endDate;
                 this.ExtractDisplayEndDate = this.ExtractSelectedEndDate;
             }

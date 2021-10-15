@@ -82,7 +82,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string xml_GroupeActif = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_actif";
         public const string xml_GroupePrefere = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_prefere";
 
-        public const string dateDefault = "01/01/1900";
+        public const string dateDefault = "01/01/2000";
         public const int lengthMaxField = 5000;
 
         public static string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
@@ -1146,7 +1146,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 else
                 {
-                    return Convert.ToDateTime(Helper.dateDefault);
+                    return DateTime.Now;
                 }
             }
             catch
@@ -1165,28 +1165,28 @@ namespace ArcGisProEspaceCollaboratif
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
         /// </summary>
         /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
-        public static void SaveStartDateExtraction(System.DateTime date)
+        public static void SaveStartDateExtraction(string date)
         {
             if (!Helper.XML_HasElement(Helper.xml_StartDateExtraction))
             {
                 Helper.XML_AddElement(Helper.xml_StartDateExtraction);
             }
 
-            Helper.XML_SetElement(Helper.xml_StartDateExtraction, date.ToString());
+            Helper.XML_SetElement(Helper.xml_StartDateExtraction, date);
         }
 
         /// <summary>
         /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la date d'extraction pour l'importation des signalements.
         /// </summary>
         /// <param name="date">La date d'extraction à enregistrer dans le fichier de paramétrage.</param>
-        public static void SaveEndDateExtraction(System.DateTime date)
+        public static void SaveEndDateExtraction(string date)
         {
             if (!Helper.XML_HasElement(Helper.xml_EndDateExtraction))
             {
                 Helper.XML_AddElement(Helper.xml_EndDateExtraction);
             }
 
-            Helper.XML_SetElement(Helper.xml_EndDateExtraction, date.ToString());
+            Helper.XML_SetElement(Helper.xml_EndDateExtraction, date);
         }
 
         /// <summary>
