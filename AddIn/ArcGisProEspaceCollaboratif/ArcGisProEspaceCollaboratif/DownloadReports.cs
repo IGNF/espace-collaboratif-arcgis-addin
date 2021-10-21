@@ -110,10 +110,11 @@ namespace ArcGisProEspaceCollaboratif
                     progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
                     // Chargement ou création des couches liées aux signalements
+                    context.EmptyCollabFeatureClasses();
                     await context.CreateOrLoadReportLayers();
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
-                    context.RemoveAllObjectsFromLayers();
+//                    context.RemoveAllObjectsFromLayers();
 
                     int countReports = reports.Count;
                     await context.InsertReports(reports);

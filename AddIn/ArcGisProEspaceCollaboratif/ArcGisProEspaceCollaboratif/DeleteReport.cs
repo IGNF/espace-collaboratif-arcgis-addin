@@ -45,7 +45,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Suppression
-                    context.RemoveAllObjectsFromLayers();
+                    context.EmptyCollabFeatureClasses();
 
                     IEnumerable<GroupLayer> groupLayers = context.MapActiveView.Map.GetLayersAsFlattenedList().OfType<GroupLayer>();
                     foreach (GroupLayer grLayer in groupLayers)

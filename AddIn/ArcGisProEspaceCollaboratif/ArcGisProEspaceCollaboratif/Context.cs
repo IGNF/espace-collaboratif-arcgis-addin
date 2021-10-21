@@ -129,26 +129,29 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        public void Init(MapView activeView)
+        public async Task Init(MapView activeView)
         {
-            this.MapActiveView = activeView;
-
-            Project project = Project.Current;
-            if (project.Name.Length == 0)
+            await QueuedTask.Run(async () =>
             {
-                string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
-                logger.Error(string.Format("Context.Init : {0}\n", message));
-                throw new ArgumentNullException(message);
-            }
+                this.MapActiveView = activeView;
 
-            this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
-            this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
+                Project project = Project.Current;
+                if (project.Name.Length == 0)
+                {
+                    string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                    logger.Error(string.Format("Context.Init : {0}\n", message));
+                    throw new ArgumentNullException(message);
+                }
 
-            this.CheckConfigFile();
-            this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
-            this.CollaborativeSpaceGeodatabase.InitAsync();
+                this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
+                this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
-            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+                this.CheckConfigFile();
+                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
+                await this.CollaborativeSpaceGeodatabase.InitAsync();
+
+                logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+            });
         }
 
         #endregion
@@ -281,23 +284,19 @@ namespace ArcGisProEspaceCollaboratif
             return false;
         }
 
+
         /// <summary>
         /// Vide les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point"
-        /// de tous leurs contenus.
+        /// de leur contenu.
         /// </summary>
-        public void RemoveAllObjectsFromLayers()
+        public void EmptyCollabFeatureClasses()
         {
             try
             {
                 foreach (string layerName in Helper.CollaborativeSpaceLayers)
                 {
-                    FeatureLayer layer = GetLayerByName(layerName);
-                    if (!(layer is null))
-                    {
-                        FeatureClass fcCollabSpace = layer.GetFeatureClass();
-                        Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(fcCollabSpace));
-                    }
-                }         
+                    this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
+                }
             }
             catch (Exception e)
             {

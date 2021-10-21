@@ -246,7 +246,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // On vérifie si la feature class existe déjà dans la geodatabase du projet
                     string gdbPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath;
-                    bool bFcExists = context.CollaborativeSpaceGeodatabase.IsFeatureClassExistInGeodatabase(fcName);
+                    bool bFcExists = context.CollaborativeSpaceGeodatabase.IsFeatureClassInGeodatabase(fcName);
 
                     // Si la feature class existe et est déjà chargée dans la carte, on sort
                     if (bFcExists && Context.Instance.IsLayerInMap(fcName))

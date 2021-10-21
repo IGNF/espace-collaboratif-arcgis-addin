@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using log4net;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Core.Geoprocessing;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -58,7 +59,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="featureClassName"> Nom de la feature class à chercher.
         /// <returns>true si la feature class existe dans la geodatabase, false sinon.</returns>
-        public bool IsFeatureClassExistInGeodatabase(string featureClassName)
+        public bool IsFeatureClassInGeodatabase(string featureClassName)
         {
             try
             {
@@ -73,11 +74,37 @@ namespace ArcGisProEspaceCollaboratif
             }
             catch (GeodatabaseException exObj)
             {
-                logger.Error(string.Format("CollaborativeSpaceGeodatabase.IsFeatureClassExistInGeodatabase : {0}\n", exObj.Message));
+                logger.Error(string.Format("CollaborativeSpaceGeodatabase.IsFeatureClassInGeodatabase : {0}\n", exObj.Message));
                 throw new Exception(exObj.Message);
             }
             
             return false;
+        }
+
+        #endregion
+
+        #region Empty feature class
+        /// <summary>
+        /// Vide une feature class de la Geodatabase si elle existe.
+        /// </summary>
+        /// <param name="featureClassName"> Nom de la feature class à vider.
+        /// <returns>void</returns>
+        public void EmptyFeatureClass (string featureClassName)
+        {
+            try
+            {
+                if (!IsFeatureClassInGeodatabase(featureClassName))
+                {
+                    return;
+                }
+                string featureClassPath = string.Format("{0}\\{1}", this.GeoDatabasePath, featureClassName);
+                Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
+            }
+            catch (GeodatabaseException exObj)
+            {
+                logger.Error(string.Format("CollaborativeSpaceGeodatabase.IsFeatureClassInGeodatabase : {0}\n", exObj.Message));
+                throw new Exception(exObj.Message);
+            }
         }
 
         #endregion
@@ -107,7 +134,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Est-ce que le champ existe
-                    if (!IsFieldExistInTable(table, fieldName))
+                    if (!IsFieldInTable(table, fieldName))
                     {
                         string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
                         throw new Exception(message);
@@ -152,7 +179,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="table">le nom de la table</param>
         /// <param name="fieldName">le nom du champ</param>
         /// <returns>true si le champ existe, false sinon</returns>
-        private bool IsFieldExistInTable(Table table, string fieldName)
+        private bool IsFieldInTable(Table table, string fieldName)
         {
             TableDefinition tableDefinition = table.GetDefinition();
             int res = tableDefinition.FindField(fieldName);
