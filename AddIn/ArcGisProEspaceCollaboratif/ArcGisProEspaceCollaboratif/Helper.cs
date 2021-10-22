@@ -383,7 +383,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="fcLayer">FeatureLayer à laquelle le symbole doit être appliqué.</param>
         /// <returns></returns>
-        public static async void SetReportLayerStyle(FeatureLayer fcLayer)
+        public static async Task SetReportLayerStyle(FeatureLayer fcLayer)
         {
             await QueuedTask.Run(() =>
             {

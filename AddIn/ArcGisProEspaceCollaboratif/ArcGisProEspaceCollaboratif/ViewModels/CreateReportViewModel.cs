@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -921,7 +922,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un signalement unique
         /// </summary>
-        private async void CreateReport()
+        private async Task CreateReport()
         {
             try
             {
@@ -973,7 +974,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création de plusieurs signalements
         /// </summary>
-        private async void CreateReports()
+        private async Task CreateReports()
         {
             try
             {

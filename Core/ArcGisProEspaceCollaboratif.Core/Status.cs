@@ -43,7 +43,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             EnumStatus.pending2
         };
 
-        static public readonly ObservableCollection<string> ListWordings = new ObservableCollection<string>()
+        static public readonly ImmutableArray<string> ListWordings = new ImmutableArray<string>()
         {
             "En cours de traitement",
             "En attente de saisie",

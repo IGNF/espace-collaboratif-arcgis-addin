@@ -701,25 +701,21 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     case "(401) Unauthorized":
                         string message = "Login et/ou mot de passe incorrect(s)";
-                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "Login inconnu":
                         message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     case "no_group":
                         message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
 
                     default:
                         message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.URLHost, erreurConnexion.Message.ToString());
-                        string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
                         break;
                 }
