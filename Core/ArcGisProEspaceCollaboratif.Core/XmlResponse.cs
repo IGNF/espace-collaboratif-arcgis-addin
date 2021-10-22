@@ -862,7 +862,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 }
                 else
                 {
-                    message = string.Format("Une erreur est survenue dans l'import des signalements :\n{1}", report.Id, e.Message);
+                    message = string.Format("Une erreur est survenue dans l'import des signalements :\n{0}", e.Message);
                 }
                 logger.Error(string.Format("XMLResponse.ExtractReports : {0}\n", message));
                 throw new Exception(message);
