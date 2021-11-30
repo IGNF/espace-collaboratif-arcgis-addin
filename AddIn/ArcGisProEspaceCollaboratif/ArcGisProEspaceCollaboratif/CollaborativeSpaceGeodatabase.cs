@@ -99,6 +99,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 string featureClassPath = string.Format("{0}\\{1}", this.GeoDatabasePath, featureClassName);
                 Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
+                // WARNING: this action creates a layer in the active map.
             }
             catch (GeodatabaseException exObj)
             {
