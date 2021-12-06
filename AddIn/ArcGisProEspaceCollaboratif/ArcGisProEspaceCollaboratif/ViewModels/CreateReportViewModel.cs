@@ -1118,7 +1118,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (type == typeof(TextBox))
                     {
                         TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = textBox.Text;
+                        tmpThemeAttributes = new ThemeAttributes
+                        {
+                            UserSelectedValue = textBox.Text
+                        };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -1127,7 +1130,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
                         string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
-                        tmpThemeAttributes.UserSelectedValue = value;
+                        tmpThemeAttributes = new ThemeAttributes
+                        {
+                            UserSelectedValue = value
+                        };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
@@ -1185,12 +1191,18 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                             {
                                 // On prend la date du jour
                                 string nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-                                tmpThemeAttributes.UserSelectedValue = nowDate;
+                                tmpThemeAttributes = new ThemeAttributes
+                                {
+                                    UserSelectedValue = nowDate
+                                };
                             }
                             else
                             {
                                 // Le mois a bien été codé en chiffre
-                                tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[3], mois, tmp[1]);
+                                tmpThemeAttributes = new ThemeAttributes
+                                {
+                                    UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[3], mois, tmp[1])
+                                };
                             }
                         }
                         // sinon la date récupérée est de la forme 29/04/2021
@@ -1198,7 +1210,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         else
                         {
                             string[] tmp = tmpDate.Split('/');
-                            tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0]);
+                            tmpThemeAttributes = new ThemeAttributes
+                            {
+                                UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0])
+                            };
                         }
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
@@ -1208,7 +1223,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         DatePickerTextBox datePickerTextBox = (DatePickerTextBox)this.createReportView.FindName(str);
                         // La date récupérée est de la forme 2020-08-15 12:23:48 et correspond à la forme 'yyyy-MM-dd hh:mm:ss'
-                        tmpThemeAttributes.UserSelectedValue = datePickerTextBox.Text;
+                        tmpThemeAttributes = new ThemeAttributes
+                        {
+                            UserSelectedValue = datePickerTextBox.Text
+                        };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
                         tmpThemeAttributes = null;
                     }
