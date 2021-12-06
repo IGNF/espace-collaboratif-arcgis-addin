@@ -1065,7 +1065,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     Group = group
                 };
 
-                ThemeAttributes tmpThemeAttributes = null;
+                ThemeAttributes tmpThemeAttributes = new ThemeAttributes();
                 foreach (string str in kvp.Value)
                 {
                     object obj = this.createReportView.FindName(str);
