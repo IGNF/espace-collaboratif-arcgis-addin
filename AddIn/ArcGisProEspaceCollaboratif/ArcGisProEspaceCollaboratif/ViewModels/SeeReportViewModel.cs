@@ -75,9 +75,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public string SeeGeneralInformation { get; set; }
 
         /// <summary>
-        /// Le nom du groupe actif
+        /// La description du signalement contenu dans l'item message
         /// </summary>
-        public string SeeGroupDescription { get; set; }
+        public string SeeDescription { get; set; }
 
         /// <summary>
         /// La ou les réponses attachées au signalement
@@ -115,11 +115,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         /// <summary>
-        /// Affichage du nom du groupe actif
+        /// Affichage du contenu du champ message : la description du signalement  
         /// </summary>
         private void DisplayGroupDescription()
         {
-            this.SeeGroupDescription = this.ReportAttributes[Helper.name_field_Message];
+            this.SeeDescription = this.ReportAttributes[Helper.name_field_Message];
         }
 
         /// <summary>
@@ -222,13 +222,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void DisplayThemes()
         {
             string themes = this.ReportAttributes[Helper.name_field_Themes];
-            string[] firstSeparator = new string[] { "|", ")" };
+            string[] firstSeparator = new string[] {"|", ")"};
             foreach (string ch in firstSeparator)
             {
                 themes = themes.Replace(ch, "\n");
             }
 
-            string[] secondSeparator = new string[] {"(", "," };
+            string[] secondSeparator = new string[] {"(", ","};
             foreach (string ch in secondSeparator)
             {
                 themes = themes.Replace(ch, "\n    ");
@@ -246,7 +246,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         /// <returns></returns>
-        private string GetDisplaySource(string stringToSeach)
+        private string GetDisplaySource(string stringToSearch)
         {
             Dictionary<string, string> sources = new Dictionary<string, string>
             {
@@ -258,7 +258,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 { "PHONE", "Saisie depuis un smartphone" },
                 { "SPOTIT", "Saisie sur SPOTIT" }
             };
-            return sources[stringToSeach];
+            return sources[stringToSearch];
         }
 
         /// <summary>

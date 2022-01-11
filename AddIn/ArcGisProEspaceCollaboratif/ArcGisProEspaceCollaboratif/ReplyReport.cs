@@ -36,7 +36,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Est-ce que la couche signalement existe dans la carte ?
                     if (!context.IsLayerInMap(Helper.name_layer_Signalement))
                     {
-                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et et télécharger les signalements.";
+                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de répondre à un signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             mess,
                             Constantes.ERROR
@@ -91,12 +91,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
                     if (replyReports.Count == 0)
                     {
-                        string mess = "";
-                        if (messageReportNoValid == "")
-                        {
-                            mess = string.Format("Pas de signalements sélectionnés. Veuillez sélectionner un ou plusieurs signalements.");
-                        }
-                        else
+                        string mess = "Pas de signalements sélectionnés. Veuillez sélectionner un ou plusieurs signalements.";
+                        if (messageReportNoValid != "")
                         {
                             mess = string.Format("Les signalements sélectionnés ne sont pas valides. Opération terminée.\n{0}", messageReportNoValid);
                         }
@@ -121,7 +117,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 catch (Exception e)
                 {   
-                    string message = string.Format("Problème dans la création des signalements : {0}\n{1}", e.Message, e.StackTrace);
+                    string message = string.Format("Problème dans la réponse faite au(x) signalement(s) : {0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("ReplyReport.OnClick : {0}\n", message));
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                         e.Message,

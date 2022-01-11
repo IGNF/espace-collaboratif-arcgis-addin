@@ -60,8 +60,7 @@ namespace ArcGisProEspaceCollaboratif
                             attributes.Add(Helper.name_field_Latitude, Math.Round(point.Y, 5).ToString());
                         }
                     }
-                    
-                   
+                
                     // Si le dictionnaire attributes est vide, c'est qu'il n'y a pas de signalement sélectionné
                     if (attributes.Count == 0)
                     {
