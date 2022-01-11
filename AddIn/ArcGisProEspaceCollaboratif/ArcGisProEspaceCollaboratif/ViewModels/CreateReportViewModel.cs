@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -921,7 +922,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création d'un signalement unique
         /// </summary>
-        private async void CreateReport()
+        private async Task CreateReport()
         {
             try
             {
@@ -973,7 +974,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Création de plusieurs signalements
         /// </summary>
-        private async void CreateReports()
+        private async Task CreateReports()
         {
             try
             {
@@ -1116,19 +1117,25 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
                     if (type == typeof(TextBox))
                     {
-                        TextBox textBox = (TextBox)this.createReportView.FindName(str);
-                        tmpThemeAttributes.UserSelectedValue = textBox.Text;
-                        tmpTheme.Attributes.Add(tmpThemeAttributes);
-                        tmpThemeAttributes = null;
+                        if (!(tmpThemeAttributes is null))
+                        {
+                            TextBox textBox = (TextBox)this.createReportView.FindName(str);
+                            tmpThemeAttributes.UserSelectedValue = textBox.Text;
+                            tmpTheme.Attributes.Add(tmpThemeAttributes);
+                            tmpThemeAttributes = null;
+                        }
                     }
 
                     if (type == typeof(ComboBox))
                     {
-                        ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
-                        string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
-                        tmpThemeAttributes.UserSelectedValue = value;
-                        tmpTheme.Attributes.Add(tmpThemeAttributes);
-                        tmpThemeAttributes = null;
+                        if (!(tmpThemeAttributes is null))
+                        {
+                            ComboBox comboBox = (ComboBox)this.createReportView.FindName(str);
+                            string value = GetCorrespondenceValueAttributeColumn(comboBox.Text, tmpThemeAttributes.TagName, themeName);
+                            tmpThemeAttributes.UserSelectedValue = value;
+                            tmpTheme.Attributes.Add(tmpThemeAttributes);
+                            tmpThemeAttributes = null;
+                        }
                     }
 
                     if (type == typeof(DatePicker))
@@ -1136,80 +1143,86 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         DatePicker datePicker = (DatePicker)this.createReportView.FindName(str);
                         string tmpDate = datePicker.Text;
                         // Si la date récupérée est de la forme jeudi 29 avril 2021
-                        if (tmpDate.Length > 11)
+                        if (!(tmpThemeAttributes is null))
                         {
-                            string[] tmp = tmpDate.Split(' ');
-                            string mois="";
-                            switch (tmp[1])
+                            if (tmpDate.Length > 11)
                             {
-                                case "janvier":
-                                    mois = "01";
-                                    break;
-                                case "février":
-                                    mois = "02";
-                                    break;
-                                case "mars":
-                                    mois = "03";
-                                    break;
-                                case "avril":
-                                    mois = "04";
-                                    break;
-                                case "mai":
-                                    mois = "05";
-                                    break;
-                                case "juin":
-                                    mois = "06";
-                                    break;
-                                case "juillet":
-                                    mois = "07";
-                                    break;
-                                case "août":
-                                    mois = "08";
-                                    break;
-                                case "septembre":
-                                    mois = "09";
-                                    break;
-                                case "octobre":
-                                    mois = "10";
-                                    break;
-                                case "novembre":
-                                    mois = "11";
-                                    break;
-                                case "décembre":
-                                    mois = "12";
-                                    break;
+                                string[] tmp = tmpDate.Split(' ');
+                                string mois = "";
+                                switch (tmp[1])
+                                {
+                                    case "janvier":
+                                        mois = "01";
+                                        break;
+                                    case "février":
+                                        mois = "02";
+                                        break;
+                                    case "mars":
+                                        mois = "03";
+                                        break;
+                                    case "avril":
+                                        mois = "04";
+                                        break;
+                                    case "mai":
+                                        mois = "05";
+                                        break;
+                                    case "juin":
+                                        mois = "06";
+                                        break;
+                                    case "juillet":
+                                        mois = "07";
+                                        break;
+                                    case "août":
+                                        mois = "08";
+                                        break;
+                                    case "septembre":
+                                        mois = "09";
+                                        break;
+                                    case "octobre":
+                                        mois = "10";
+                                        break;
+                                    case "novembre":
+                                        mois = "11";
+                                        break;
+                                    case "décembre":
+                                        mois = "12";
+                                        break;
+                                }
+                                // Si la transformation du mois a échoué
+                                if (mois == "")
+                                {
+                                    // On prend la date du jour
+                                    string nowDate = DateTime.Now.ToString("yyyy-MM-dd");
+                                    tmpThemeAttributes.UserSelectedValue = nowDate;
+                                }
+                                else
+                                {
+                                    // Le mois a bien été codé en chiffre
+                                    tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[3], mois, tmp[1]);
+                                }
                             }
-                            // Si la transformation du mois a échoué
-                            if (mois == "")
-                            {
-                                // On prend la date du jour
-                                string nowDate = DateTime.Now.ToString("yyyy-MM-dd");
-                                tmpThemeAttributes.UserSelectedValue = nowDate;
-                            }
+                            // sinon la date récupérée est de la forme 29/04/2021
+                            // il faut la transformer en 'yyyy-MM-dd'
                             else
                             {
-                                // Le mois a bien été codé en chiffre
-                                tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[3], mois, tmp[1]);
+                                string[] tmp = tmpDate.Split('/');
+                                tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0]);
                             }
+                            tmpTheme.Attributes.Add(tmpThemeAttributes);
+                            tmpThemeAttributes = null;
                         }
-                        // sinon la date récupérée est de la forme 29/04/2021
-                        // il faut la transformer en 'yyyy-MM-dd'
-                        else
-                        {
-                            string[] tmp = tmpDate.Split('/');
-                            tmpThemeAttributes.UserSelectedValue = string.Format("{0}-{1}-{2}", tmp[2], tmp[1], tmp[0]);
-                        }
-                        tmpTheme.Attributes.Add(tmpThemeAttributes);
-                        tmpThemeAttributes = null;
                     }
 
                     if (type == typeof(DatePickerTextBox))
                     {
-                        DatePickerTextBox datePickerTextBox = (DatePickerTextBox)this.createReportView.FindName(str);
-                        // La date récupérée est de la forme 2020-08-15 12:23:48 et correspond à la forme 'yyyy-MM-dd hh:mm:ss'
-                        tmpThemeAttributes.UserSelectedValue = datePickerTextBox.Text;
-                        tmpTheme.Attributes.Add(tmpThemeAttributes);
-                        tmpThemeAttributes = null;
+                        if (!(tmpThemeAttributes is null))
+                        {
+                            DatePickerTextBox datePickerTextBox = (DatePickerTextBox)this.createReportView.FindName(str);
+                            // La date récupérée est de la forme 2020-08-15 12:23:48 et correspond à la forme 'yyyy-MM-dd hh:mm:ss'
+                            tmpThemeAttributes.UserSelectedValue = datePickerTextBox.Text;
+                            tmpTheme.Attributes.Add(tmpThemeAttributes);
+                            tmpThemeAttributes = null;
+                        }
                     }
                 }
                 themesSelected.Add(tmpTheme);

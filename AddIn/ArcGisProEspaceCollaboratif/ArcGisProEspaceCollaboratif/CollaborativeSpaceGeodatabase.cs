@@ -29,7 +29,6 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CollaborativeSpaceGeodatabase));
 
         #endregion
@@ -40,7 +39,6 @@ namespace ArcGisProEspaceCollaboratif
         {     
             Uri gdbUri = new Uri(uriString: GeoDatabasePath);
             this.FileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(gdbUri);
-            //this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
         }
 
         #endregion
@@ -99,6 +97,7 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 string featureClassPath = string.Format("{0}\\{1}", this.GeoDatabasePath, featureClassName);
                 Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
+                // WARNING: this action creates a layer in the active map.
             }
             catch (GeodatabaseException exObj)
             {

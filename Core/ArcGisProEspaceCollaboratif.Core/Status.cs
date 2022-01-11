@@ -43,7 +43,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             EnumStatus.pending2
         };
 
-        static public readonly ObservableCollection<string> ListWordings = new ObservableCollection<string>()
+        static public ObservableCollection<string> ListWordings = new ObservableCollection<string>()
         {
             "En cours de traitement",
             "En attente de saisie",
@@ -53,7 +53,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             "Rejeté (hors de propos)"
         };
 
-        static public readonly Dictionary<string, EnumStatus> CorrespondenceStatusWording = new Dictionary<string, EnumStatus>()
+        static public Dictionary<string, EnumStatus> CorrespondenceStatusWording = new Dictionary<string, EnumStatus>()
         {
             { "En cours de traitement", EnumStatus.pending},
             { "En attente de saisie", EnumStatus.pending1},
