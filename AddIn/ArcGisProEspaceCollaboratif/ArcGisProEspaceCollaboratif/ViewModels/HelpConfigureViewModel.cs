@@ -52,7 +52,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.DisplaySpatialFilter();
             this.DisplayProxy();
             this.DisplayActiveGroup();
-            this.DisplayGeoportalKey();
         }
         #endregion
 
@@ -106,10 +105,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         public string ActiveGroup { get; set; } = "";
 
-        /// <summary>
-        /// La clé Géoportail de l'utilisateur
-        /// </summary>
-        public string GeoportalKey { get; set; } = "";
         #endregion
 
         #region Commands
@@ -173,7 +168,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
 
             Helper.SaveActiveGroup(this.ActiveGroup);
-            Helper.SaveGeoportalKey(this.GeoportalKey);
         }
 
         private bool AlwaysTrue() { return true; }
@@ -252,15 +246,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void DisplayActiveGroup()
         {
             this.ActiveGroup = Helper.LoadActiveGroup();
-        }
-
-        /// <summary>
-        /// Chargement de la dernière clé GéoPortail utilisée par l'utilisateur
-        /// à partir du fichier espaceco.xml
-        /// </summary>
-        private void DisplayGeoportalKey()
-        {
-            this.GeoportalKey = Helper.LoadGeoportalKey();
         }
 
         /// <summary>

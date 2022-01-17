@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Configuration de l'addin Espace Collaboratif" Height="427.6" Width="439.2">
-    <Grid Margin="0,0,1.8,2.6">
+        Title="Configuration de l'addin Espace Collaboratif" Height="396.4" Width="439.2">
+    <Grid Margin="0,0,1.8,1.6">
         <Label Content="Adresse de connexion" HorizontalAlignment="Left" Margin="5,12,0,0" VerticalAlignment="Top" Width="127" Height="28"/>
         <TextBox Name="UrlTextBox" HorizontalAlignment="Left" Height="23" Margin="185,15,0,0" TextWrapping="Wrap" Text="{Binding Url}" VerticalAlignment="Top" Width="225"/>
         <CheckBox Name="LoginCheckBox" Content="Login par défaut" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" Width="112"/>
@@ -21,8 +21,6 @@
         <TextBox Name="ProxyTextBox" HorizontalAlignment="Left" Height="23" Margin="185,257,0,0" TextWrapping="Wrap" Text="{Binding Proxy}" VerticalAlignment="Top" Width="225"/>
         <Label Content="Groupe actif" HorizontalAlignment="Left" Margin="5,290,0,0" VerticalAlignment="Top" Width="78" Height="28" RenderTransformOrigin="0.493,0.152"/>
         <TextBox Name="ActiveGroupTextBox" HorizontalAlignment="Left" Height="23" Margin="185,293,0,0" TextWrapping="Wrap" Text="{Binding ActiveGroup}" VerticalAlignment="Top" Width="225"/>
-        <Label Content="Clé Géoportail" HorizontalAlignment="Left" Margin="5,325,0,0" VerticalAlignment="Top" Height="28"/>
-        <TextBox Name="KeyGeoportalTextBox" HorizontalAlignment="Left" Height="23" Margin="185,327,0,0" TextWrapping="Wrap" Text="{Binding GeoportalKey}" VerticalAlignment="Top" Width="225"/>
-        <Button Name="SendResponse" Content="Enregistrer" Command="{Binding SendResponseButtonCmd}" Click="SendResponse_Click" HorizontalAlignment="Left" Margin="185,364,0,0" VerticalAlignment="Top" Width="75" Height="22" IsDefault="True"/>
+        <Button Name="SendResponse" Content="Enregistrer" Command="{Binding SendResponseButtonCmd}" Click="SendResponse_Click" HorizontalAlignment="Left" Margin="185,331,0,0" VerticalAlignment="Top" Width="75" Height="22" IsDefault="True"/>
     </Grid>
 </Window>

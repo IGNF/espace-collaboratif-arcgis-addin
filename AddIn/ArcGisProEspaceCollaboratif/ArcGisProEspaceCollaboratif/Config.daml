@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ArcGIS defaultAssembly="ArcGisProEspaceCollaboratif.dll" defaultNamespace="ArcGisProEspaceCollaboratif" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+<ArcGIS defaultAssembly="ArcGisProEspaceCollaboratif.dll" defaultNamespace="ArcGisProEspaceCollaboratif" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Users/epeyrouse/AppData/Local/Programs/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{d8a8d0b5-022e-43a7-9d47-003be67525e2}" version="1.0" desktopVersion="2.7.26828">
     <Name>ArcGisProEspaceCollaboratif</Name>
     <Description>ArcGisProEspaceCollaboratif description</Description>
@@ -31,7 +31,7 @@
           <button refID="ArcGisProEspaceCollaboratif_CreateReport" size="large" />
           <button refID="ArcGisProEspaceCollaboratif_DeleteReport" size="large" />
           <button refID="ArcGisProEspaceCollaboratif_SeeAssociatedObjects" size="large" />
-          <!--button refID="ArcGisProEspaceCollaboratif_LoadLayers" size="large" /-->
+          <button refID="ArcGisProEspaceCollaboratif_LoadLayers" size="large" />
           <button refID="ArcGisProEspaceCollaboratif_Test" size="large" />
           <menu refID="ArcGisProEspaceCollaboratif_Help" size="middle" />
         </group>
@@ -66,11 +66,11 @@
           <tooltip heading="Voir les objets associés">
             Voir les croquis associés au(x) signalement(s) sélectionné(s) et inversement<disabledText /></tooltip>
         </button>
-        <!-->button id="ArcGisProEspaceCollaboratif_LoadLayers" keytip="W" caption="Charger" className="LoadGateway" loadOnClick="true" smallImage="Images\charger.png" largeImage="Images\charger.png">
+        <button id="ArcGisProEspaceCollaboratif_LoadLayers" keytip="W" caption="Charger" className="LoadGateway" loadOnClick="true" smallImage="Images\charger.png" largeImage="Images\charger.png">
           <tooltip heading="Chargement">
             Charger les couches de mon groupe<disabledText />
           </tooltip>
-        </button-->
+        </button>
         <!-->button id="ArcGisProEspaceCollaboratif_Test" keytip="W" caption="Test" className="Test" loadOnClick="true" smallImage="Images\test.png" largeImage="Images\test.png">
           <tooltip heading="Test">
             Pour tester de nouvelles fonctionnalités<disabledText />

@@ -30,10 +30,8 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public const string HELP_FILE_URL = "http://logiciels.ign.fr/IMG/pdf/add-in-EspaceCollaboratif_1-0.pdf";
 
-        public const string DEMO = "Démonstration";
-        public const string CLEGEOPORTAILSTANDARD = "choisirgeoportail";
         public const string WFS = "WFS";
-        public const string GEOPORTAIL = "GeoPortail";
+        public const string WMTS = "WMTS";
         public const string COLLABORATIF = "collaboratif.ign.fr";
         public const string COLLABORATIF_QLF = "qlf-collaboratif.ign.fr/collaboratif-3.0";
         public const string WXSIGN = "wxs.ign.fr";

@@ -55,7 +55,6 @@
     <Compile Include="Constantes.cs" />
     <Compile Include="GeoGroup.cs" />
     <Compile Include="LayerGateway.cs" />
-    <Compile Include="LayerGeoportail.cs" />
     <Compile Include="Sketch.cs" />
     <Compile Include="GeoResponse.cs" />
     <Compile Include="Group.cs" />

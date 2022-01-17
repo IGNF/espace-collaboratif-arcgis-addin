@@ -68,59 +68,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         }
 
         /// <summary>
-        /// Extraction des couches Geoportail en fonction de la clé utilisateur
-        /// </summary>
-        /// <returns>La liste des couches Geoportail</returns>
-        public List<LayerGeoportail> ExtractLayersFromCleGeoportailUser()
-        {
-            List<LayerGeoportail> layers = new List<LayerGeoportail>();
-            try
-            {
-                navigator.MoveToRoot();
-                XPathNodeIterator itLayer = navigator.SelectDescendants("Layer", "http://www.opengis.net/context", false);
-                foreach (XPathNavigator layer in itLayer)
-                {
-                    XPathNodeIterator iteratorElement = layer.SelectDescendants(XPathNodeType.Element, false);
-                    LayerGeoportail tmpLayer = new LayerGeoportail();
-                    foreach (XPathNavigator element in iteratorElement)
-                    {
-                        if(element.Name == "Name")
-                        {
-                            if (string.IsNullOrEmpty(tmpLayer.Name))
-                            {
-                                tmpLayer.Name = EncodeToUTF8(element.InnerXml);
-                            }
-                        }
-
-                        if (element.Name == "Title")
-                        {
-                            if (string.IsNullOrEmpty(tmpLayer.Title))
-                            {
-                                tmpLayer.Title = EncodeToUTF8(element.InnerXml);
-                            }
-                        }
-
-                        if (element.Name == "Abstract")
-                        {
-                            if (string.IsNullOrEmpty(tmpLayer.Abstract))
-                            {
-                                tmpLayer.Abstract = EncodeToUTF8(element.InnerXml);
-                            }
-                        }
-                    }
-                    layers.Add(tmpLayer);
-                }
-            }
-            catch (Exception e)
-            {
-                logger.Error(string.Format("XMLResponse.ExtractLayersFromCleGeoportailUser : {0}\n", e.Message));
-                throw new Exception(e.Message);
-            }
-
-            return layers;
-        }
-
-        /// <summary>
         ///  Extraction du profil à partir de la réponse xml fournie par le service
         /// </summary>
         /// <returns>Le profil de l'utilisateur</returns>
@@ -362,15 +309,28 @@ namespace ArcGisProEspaceCollaboratif.Core
                         layerGateway.Visibility = TransformStringOrInt(lay.SelectSingleNode("VISIBILITY").Value, ref newString, true);
                         layerGateway.Opacity = Double.Parse(lay.SelectSingleNode("OPACITY").Value, Constantes.invC);
 
-                        XPathNavigator tilezoom = lay.SelectSingleNode("TILEZOOM");
-                        if (tilezoom != null)
+                        XPathNavigator xpnTileZoom = lay.SelectSingleNode("TILEZOOM");
+                        if (xpnTileZoom != null)
                         {
-                            layerGateway.Tilezoom = TransformStringOrInt(tilezoom.Value, ref newString, true);
+                            layerGateway.Tilezoom = TransformStringOrInt(xpnTileZoom.Value, ref newString, true);
                         }
-                        XPathNavigator url = lay.SelectSingleNode("URL");
-                        if (url != null)
+
+                        XPathNavigator xpnUrl = lay.SelectSingleNode("URL");
+                        if (xpnUrl != null)
                         {
-                            layerGateway.Url = EncodeToUTF8(url.Value);
+                            layerGateway.Url = EncodeToUTF8(xpnUrl.Value);
+                        }
+
+                        XPathNavigator xpnLayer = lay.SelectSingleNode("LAYER");
+                        if (xpnLayer != null)
+                        {
+                            layerGateway.ServiceName = EncodeToUTF8(xpnLayer.Value);
+                        }
+
+                        XPathNavigator xpnFormat = lay.SelectSingleNode("FORMAT");
+                        if (xpnFormat != null)
+                        {
+                            layerGateway.ImageFormat = EncodeToUTF8(xpnFormat.Value);
                         }
 
                         layersGateway.Add(layerGateway);

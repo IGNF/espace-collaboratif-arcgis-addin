@@ -73,9 +73,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// </summary>
         public List<GeoGroup> Geogroupes { get; set; }
 
-        /// La liste des couches Geoportail visible avec la clé geoportail utilisateur
-        public List<LayerGeoportail> LayersKeyGeoportail { get; set; }
-
-        public (string, string, string) IdNameGroupKeyGeoPortail { get; set; }
+        public (string, string) IdNameGroup { get; set; }
     }
 }

@@ -81,14 +81,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public List<ItemsListViewGateway> ItemsSourceLayersGateway { get; set; }
 
         /// <summary>
-        /// Remplissage de la listView ListViewGeoportail
+        /// Remplissage de la listView ItemsListViewGeoservices
         /// </summary>
-        public List<ItemsListViewGeoportail> ItemsSourceLayersGeoportail { get; set; }
-
-        /// <summary>
-        /// Remplissage de la listview ListViewGeoportailBis
-        /// </summary>
-        public List<ItemsListViewGeoportailBis> ItemsSourceLayersGeoportailBis { get; set; }
+        public List<ItemsListViewGeoservices> ItemsSourceLayersGeoservices { get; set; }
         #endregion
 
         #region Class
@@ -115,32 +110,21 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        public class ItemsListViewGeoportail
+        public class ItemsListViewGeoservices
         {
             /// <summary>
             /// Remplissage du nom d'une couche pour un item
-            /// de la listView "LayersGeoportailListView"
+            /// de la listView "LayersGeoservicesListView"
             /// </summary>
-            public string GeoportailName { get; set; } = "";
+            public string GeoservicesName { get; set; } = "";
 
             /// <summary>
             /// Remplissage du rôle (Visualisation/Edition d'une couche pour un item
-            /// de la listView "LayersGeoportailListView"
+            /// de la listView "LayersGeoservicesListView"
             /// </summary>
-            public string GeoportailRole { get; set; } = "";
+            public string GeoservicesRole { get; set; } = "";
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        public class ItemsListViewGeoportailBis
-        {
-            /// <summary>
-            /// Remplissage du nom d'une couche pour un item
-            /// de la listView "LayersGeoportailBisListView"
-            /// </summary>
-            public string GeoportailBisName { get; set; } = "";
-        }
         #endregion
 
         #region Commands
@@ -162,7 +146,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     if (layerCheck.Contains("("))
                     {
                         string[] layerCheckName = layerCheck.Split('(');
-                        name = layerCheckName[1].Replace(")", "");
+                        name = layerCheckName[0].Remove(layerCheckName[0].Length - 1);
                     }
                     else
                     {
@@ -205,8 +189,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.GetInfosLayers();
             this.SetActiveGroupLabelContent();
             this.SetListViewMyGateway();
-            this.SetListViewFondsGeoportail();
-            this.SetListViewFondsGeoportailBis();
+            this.SetListViewFondsGeoservices();
         }
 
         /// <summary>
@@ -261,53 +244,21 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         }
 
         /// <summary>
-        /// Mise à jour de la ListView "FondsGeoportail" contenant
-        /// les couches visibles avec la clé Géoportail de l'utilisateur
+        /// Mise à jour de la ListView "ItemsListViewGeoservices"
         /// </summary>
-        private void SetListViewFondsGeoportail()
+        private void SetListViewFondsGeoservices()
         {
-            List<ItemsListViewGeoportail> items = new List<ItemsListViewGeoportail>();
+            List<ItemsListViewGeoservices> items = new List<ItemsListViewGeoservices>();
             foreach (LayerGateway layer in this.ListLayers)
             {
-                if (layer.Type != Constantes.GEOPORTAIL)
+                if (layer.Type != Constantes.WMTS)
                 {
                     continue;
                 }
-                int index = this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name));
-                if (index == -1)
-                {
-                    continue;
-                }
-
-                string LayerName = string.Format("{0} ({1})", this.Context.Profil.LayersKeyGeoportail[index].Title, layer.Name);
-                items.Add(new ItemsListViewGeoportail() { GeoportailName = LayerName, GeoportailRole = this.roleKeyValue[layer.Role] });
+                string LayerName = string.Format("{0} ({1})", layer.Name, layer.Description);
+                items.Add(new ItemsListViewGeoservices() { GeoservicesName = LayerName, GeoservicesRole = this.roleKeyValue[layer.Role] });
             }
-            ItemsSourceLayersGeoportail = items;
-        }
-
-        /// <summary>
-        /// Mise à jour de la ListView "FondsGeoportailBis" contenant
-        /// les autres couches visibles avec la clé Géoportail de l'utilisateur
-        /// </summary>
-        private void SetListViewFondsGeoportailBis()
-        {
-            List<ItemsListViewGeoportailBis> items = new List<ItemsListViewGeoportailBis>();
-            foreach (LayerGateway layer in this.ListLayers)
-            {
-                if (layer.Type != Constantes.GEOPORTAIL)
-                {
-                    continue;
-                }
-
-                if (this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Name.Equals(layer.Name)) != -1)
-                {
-                    continue;
-                }
-
-                string LayerName = string.Format("{0} ({1})", layer.Description, layer.Name);
-                items.Add(new ItemsListViewGeoportailBis() { GeoportailBisName = LayerName });
-            }
-            ItemsSourceLayersGeoportailBis = items;
+            ItemsSourceLayersGeoservices = items;
         }
 
         /// <summary>
@@ -321,23 +272,19 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGateway)item).GatewayName);
             }
-            foreach (object item in this.loadGatewayView.LayersGeoportailListView.SelectedItems)
+            foreach (object item in this.loadGatewayView.LayersGeoservicesListView.SelectedItems)
             {
-                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGeoportail)item).GeoportailName);
-            }
-            foreach (object item in this.loadGatewayView.LayersGeoportailBisListView.SelectedItems)
-            {
-                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGeoportailBis)item).GeoportailBisName);
+                checked_list.Add(((ArcGisProEspaceCollaboratif.ViewModels.LoadGatewayViewModel.ItemsListViewGeoservices)item).GeoservicesName);
             }
             return checked_list;
         }
 
         /// <summary>
         /// Récupère dans une liste les noms des couches existantes de la carte active
-        /// et change le nom des couches Geoportail car dans certains cas les valeurs des balises DESCRIPTION et Title sont les mêmes
+        /// et change le nom des couches Geoservices car dans certains cas les valeurs des balises DESCRIPTION et Title sont les mêmes
         /// dans d'autres elles sont différentes, il faut donc récupérer la valeur de la balise Name
         ///
-        /// Espace collaboratif versus Geoportail
+        /// Espace collaboratif versus Geoservice
         /// <NOM>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</NOM> == <Name>CADASTRALPARCELS.PARCELLAIRE_EXPRESS</Name>
         /// <DESCRIPTION>Plan cadastral informatisé vecteur de la DGFIP.</DESCRIPTION> != <Title>PCI vecteur</Title>
         /// autre exemple
@@ -349,18 +296,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             get
             {
                 System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = this.Context.MapActiveView.Map.Layers;
+                
                 List<string> layersInMap = new List<string>();
                 foreach (Layer observableLayer in observableLayers)
                 {
-                    int index = this.Context.Profil.LayersKeyGeoportail.FindIndex(x => x.Title.Equals(observableLayer.Name));
-                    if (index != -1)
-                    {
-                        layersInMap.Add(this.Context.Profil.LayersKeyGeoportail[index].Name);
-                    }
-                    else
-                    {
-                        layersInMap.Add(observableLayer.Name);
-                    }
+                    layersInMap.Add(observableLayer.Name);
                 }
                 return layersInMap;
             }
@@ -386,12 +326,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             };
             await wfs.AddLayersAsync();
 
-            // Les couches WMTS du Géoportail
+            // Les couches WMTS du Geoservices
             WebMapTileService wmts = new WebMapTileService()
             {
                 Layers = layersToLoad,
                 LayersInMap = layersInMap,
-                KeyGeoportail = this.Context.CleGeoportail
             };
             await wmts.AddLayersAsync();
         }

@@ -9,7 +9,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     /// <summary>
     /// Création d'un service de connexion WMTS permettant de télécharger
-    /// des couches du GéoPortail
+    /// des couches du Geoservices
     /// </summary>
     class WebMapTileService
     {
@@ -24,34 +24,9 @@ namespace ArcGisProEspaceCollaboratif
         public List<LayerGateway> Layers { get; set; }
 
         /// <summary>
-        /// La clé Géoportail de l'utilisateur
-        /// </summary>
-        private string _keyGeoportail = "";
-
-        /// <summary>
         /// La liste des noms des couches existantes de la carte active
         /// </summary>
         public List<string> LayersInMap { get; set; }
-
-        /// <summary>
-        /// Les accesseurs à la clé Géoportail avec une condition
-        /// Si la clé est nulle, vide ou de démonstration
-        /// alors sa valeur est changée par une clé standard
-        /// </summary>
-        public string KeyGeoportail
-        {
-            get => _keyGeoportail;
-            set {
-                if (string.IsNullOrEmpty(value) || value == Constantes.DEMO)
-                {
-                    _keyGeoportail = Constantes.CLEGEOPORTAILSTANDARD;
-                }
-                else
-                {
-                    _keyGeoportail = value;
-                }    
-            }
-        }
 
         /// <summary>
         /// Comme son nom l'indique, il s'agit de créer une nouvelle connexion internet
@@ -64,13 +39,14 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <returns></returns>
         public async Task AddLayersAsync()
-        {           
+        {
+            
             // Création des couches sélectionnées par l'utilisateur dans ArcGIS 
             foreach (LayerGateway layer in Layers)
             {
-                if (layer.Type != Constantes.GEOPORTAIL)
+                if (layer.Type != Constantes.WMTS)
                 {
-                    // La couche n'est pas de type "GeoPortail", on passe à la suivante
+                    // La couche n'est pas de type "WMTS", on passe à la suivante
                     continue;
                 }
 
@@ -81,28 +57,31 @@ namespace ArcGisProEspaceCollaboratif
                     continue;
                 }
 
+                // Connexion au service
+                InternetServerConnection = new CIMInternetServerConnection
+                {
+                    URL = string.Format("{0}?SERVICE=WMTS&REQUEST=GetCapabilities", layer.Url)
+                };
+
+                // WMTS service connexion.
+                List<CIMWMTSServiceConnection> serviceConnections = new List<CIMWMTSServiceConnection>();
+                var connection = new CIMWMTSServiceConnection
+                {
+                    Description = layer.Description,
+                    LayerName = layer.ServiceName,
+                    ServerConnection = InternetServerConnection,
+                    Version = "1.0.0"
+                };
+                serviceConnections.Add(connection);
+
                 await QueuedTask.Run(() =>
                 {
-                    if (InternetServerConnection == null)
-                    {
-                        InternetServerConnection = new CIMInternetServerConnection
-                        {
-                            URL = string.Format("https://{0}/{1}/geoportail/wmts?SERVICE=WMTS&REQUEST=GetCapabilities", Constantes.WXSIGN, KeyGeoportail)
-                        };
-                    }
-
-                    // WMTS service connection.
-                    var connection = new CIMWMTSServiceConnection
-                    {
-                        Description = layer.Description,
-                        LayerName = layer.Name,
-                        ServerConnection = InternetServerConnection,
-                        Version = "1.0.0"
-                    };
-
-                    // Ajout de la couche Geoportail dans la carte
                     ILayerFactory lf = LayerFactory.Instance;
-                    lf.CreateLayer(connection, Map);
+                    foreach (CIMWMTSServiceConnection serviceConnection in serviceConnections)
+                    {
+                        // Ajout de la couche Geoservices dans la carte
+                        lf.CreateLayer(serviceConnection, Map);
+                    }                    
                 });
             }
         }

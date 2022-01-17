@@ -78,7 +78,6 @@ namespace ArcGisProEspaceCollaboratif
         public const string xml_BaliseChampCalque = "Calque_Champ";
         public const string xml_Group = "/Parametres_connexion_a_EspaceCollaboratif/Map/Import_pour_groupe";
         public const string xml_Proxy = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/Proxy";
-        public const string xml_CleGeoPortail = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/cle_geoportail";
         public const string xml_GroupeActif = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_actif";
         public const string xml_GroupePrefere = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_prefere";
 
@@ -1276,29 +1275,6 @@ namespace ArcGisProEspaceCollaboratif
                 XML_AddElement(Helper.xml_Proxy);
             }
             XML_SetElement(Helper.xml_Proxy, proxy);
-        }
-
-        /// <summary>
-        /// Lit le login par défaut à utiliser pour se connecter au service EspaceCollaboratif contenu dans le fichier XML de paramétrage.
-        /// </summary>
-        /// <returns>Le login à utiliser par défaut pour se connecter au service EspaceCollaboratif.</returns>
-        public static string LoadGeoportalKey()
-        {
-            return Helper.XML_FirstElement(Helper.xml_CleGeoPortail); ;
-        }
-
-        /// <summary>
-        /// Sauvegarde dans le fichier XML de paramétrage EspaceCollaboratif, la clé Géoportail de l'utilisateur.
-        /// </summary>
-        /// <param name="cle">La clé Géoportail à enregistrer dans le fichier de paramétrage.</param>
-        public static void SaveGeoportalKey(string cle)
-        {
-            if (!XML_HasElement(xml_CleGeoPortail))
-            {
-                XML_AddElement(xml_CleGeoPortail);
-            }
-
-            XML_SetElement(xml_CleGeoPortail, cle);
         }
 
         /// <summary>

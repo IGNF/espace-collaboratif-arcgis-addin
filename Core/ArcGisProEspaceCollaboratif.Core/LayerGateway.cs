@@ -3,11 +3,12 @@
     /// <summary>
     /// Classe représentant les caractéristiques d'une couche appartenant au <GEOGROUPE>
     /// Les commentaires au-dessus des variables sonr des balises données en exemple
+    /// l'url : https://qlf-collaboratif.ign.fr/collaboratif-develop/api/georem/geoaut_get.xml
     /// </summary>
     public class LayerGateway
     {
         /// <summary>
-        /// Balise exemple <TYPE>GeoPortail</TYPE>
+        /// Balise exemple <TYPE>WXSIGN</TYPE>
         /// ou <TYPE>WFS</TYPE>
         /// </summary>
         public string Type { get; set; }
@@ -63,5 +64,15 @@
         /// Balise exemple <URL>https://espacecollaboratif.ign.fr/gcms/wfs?service=wfs&databasename=demo_guichet</URL>
         /// </summary>
         public string Url { get; set; }
+
+        /// <summary>
+        /// WMTS : le nom du service correspondant à la balise LAYER de l'espace collaboratif
+        /// </summary>
+        public string ServiceName { get; set; }
+
+        /// <summary>
+        /// WMTS : le format des images servis par le geoservice
+        /// </summary>
+        public string ImageFormat { get; set; }
     }
 }

@@ -38,6 +38,7 @@ namespace ArcGisProEspaceCollaboratif.Utils
                 return result;
             }
         }
+
         public void Execute(object parameter)
         {
             this.methodToExecute.Invoke();

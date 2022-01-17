@@ -61,11 +61,6 @@ namespace ArcGisProEspaceCollaboratif
         public string Password { get; set; } = "";
 
         /// <summary>
-        /// La clé Geoportail de l'utilisateur
-        /// </summary>
-        public string CleGeoportail { get; set; } = "";
-
-        /// <summary>
         /// Le groupe sélectionné par l'utilisateur sur lequel il veut travailler
         /// </summary>
         public string Groupeactif { get; set; } = "";
@@ -163,6 +158,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
         public void CheckConfigFile()
         {
+            if (this.DirectoryWorking == "")
+            {
+                Project project = Project.Current;
+                this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
+            }
             string fileConfiguration = string.Format("{0}\\{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
             if (!File.Exists(fileConfiguration))
             {
@@ -637,7 +637,6 @@ namespace ArcGisProEspaceCollaboratif
         public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
         {
             logger.Debug("GetConnexionEspaceCollaboratif ");
-            this.CleGeoportail = Helper.LoadGeoportalKey();
             this.URLHost = Helper.LoadUrlhost();
             logger.Debug("URLHost : " + this.URLHost);
 
@@ -682,7 +681,7 @@ namespace ArcGisProEspaceCollaboratif
                     throw new ArgumentNullException(message);
                 }
 
-                // Affichage de la boite du choix du groupe et de la clé Géoportail à l'utilisateur
+                // Affichage de la boite du choix du groupe à l'utilisateur
                 if (!this.DisplayFormChoiceGroup(ref connexionServer))
                 {
                     return null;
@@ -761,7 +760,6 @@ namespace ArcGisProEspaceCollaboratif
             {
                 message += string.Format(" Zone : {0}\n", Profil.Zone);
             }
-            message += string.Format(" Clé Géoportail : {0}", this.CleGeoportail);
             feedbackInformationViewModel.MessageFeedback = message;
             bool? dialogResult = feedbackInformationViewModel.feedbackInformationView.ShowDialog();
             if (dialogResult == false)
@@ -771,7 +769,6 @@ namespace ArcGisProEspaceCollaboratif
 
             Helper.SaveLogin(this.Login);
             Helper.SaveActiveGroup(Profil.Title);
-            Helper.SaveGeoportalKey(this.CleGeoportail);
         }
 
         /// <summary>
@@ -804,15 +801,12 @@ namespace ArcGisProEspaceCollaboratif
                     }
                     Helper.Save_PreferredGroup(Profil.Group.Name);
                 }
-                // Par défaut, on enregistre la clé Géoportail de démonstration
-                Helper.SaveGeoportalKey(Constantes.DEMO);
             }
             else
             {
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
-                // afin qu'il puisse remplir sa clé Géoportail
-                GroupChoiceViewModel groupChoiceViewModel = new GroupChoiceViewModel(this.CleGeoportail, Profil.Group.Name, Profil);
+                GroupChoiceViewModel groupChoiceViewModel = new GroupChoiceViewModel(Profil.Group.Name, Profil);
                 groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
                 bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
                 // Si l'utilisateur a cliqué sur le bouton "Annuler"
@@ -824,9 +818,8 @@ namespace ArcGisProEspaceCollaboratif
                 }
                
                 // le choix du nouveau profil est validé
-                // le nouvel id et nom du groupe, la clé Geoportail sont retournés dans un tuple
-                (string, string, string) idNomGroupeCleGeoPortail = groupChoiceViewModel.Profile.IdNameGroupKeyGeoPortail;
-                this.CleGeoportail = idNomGroupeCleGeoPortail.Item3;
+                // le nouvel id et nom du groupe sont retournés dans un tuple
+                (string, string) idNomGroupe = groupChoiceViewModel.Profile.IdNameGroup;
 
                 // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
                 if (groupChoiceViewModel.Profile.Geogroupes.Count == 1)
@@ -836,7 +829,7 @@ namespace ArcGisProEspaceCollaboratif
                 else
                 {
                     // récupère le profil et un message dans un tuple
-                    (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupeCleGeoPortail.Item1);
+                    (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupe.Item1);
                     string messTmp = profilMessage.Item2;
 
                     // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
@@ -852,10 +845,8 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
 
-                // Sauvegarde de la clé Géoportail et du groupe actif
-                // dans le xml du projet utilisateur
-                Helper.SaveGeoportalKey(idNomGroupeCleGeoPortail.Item3);
-                this.Groupeactif = idNomGroupeCleGeoPortail.Item2;
+                // Sauvegarde du groupe actif dans le xml du projet utilisateur
+                this.Groupeactif = idNomGroupe.Item2;
                 Helper.SaveActiveGroup(this.Groupeactif);
 
                 // On enregistre le groupe comme groupe préféré pour la création de signalement
@@ -867,9 +858,6 @@ namespace ArcGisProEspaceCollaboratif
                 }
                 Helper.Save_PreferredGroup(Profil.Group.Name);
             }
-            // Récupération des layers GéoPortail valides en fonction
-            // de la clé Geoportail utilisateur
-            this.Profil.LayersKeyGeoportail = connexionServer.GetLayersFromCleGeoportailUser(this.CleGeoportail);
             return true;
         }
 

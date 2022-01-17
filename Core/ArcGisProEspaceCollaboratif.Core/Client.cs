@@ -618,47 +618,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             return (profil, message);
         }
-
-        /// <summary>
-        /// Récupération des layers GéoPortail valides en fonction de la clé Geoportail utilisateur
-        /// </summary>
-        /// <param name="cle"></param>
-        /// <returns></returns>
-        public List<LayerGeoportail> GetLayersFromCleGeoportailUser(string cle)
-        {
-            List<LayerGeoportail> layers = new List<LayerGeoportail>();
-            string cleGeoportail = "";
-            if (string.IsNullOrEmpty(cle))
-            {
-                cleGeoportail = "choisirgeoportail";
-            }
-            if (cle == "Démonstration")
-            {
-                cleGeoportail = "choisirgeoportail";
-            }
-            else if (cle != "")
-            {
-                cleGeoportail = cle;
-            }
-
-            string url = string.Format("https://wxs.ign.fr/{0}/autoconf?gp-access-lib=2.1.2&output=xml", cleGeoportail);
-            logger.Debug(string.Format("{0} {1}", "GetLayersFromCleGeoportailUser", url));
-            string data = this.MakeGetRequest(url, null);
-            XmlResponse xmlResponse = new XmlResponse(data);
-            Dictionary<string, string> errMessage = xmlResponse.CheckResponseValidity();
-            if (errMessage["message"].Contains("ViewContext id=\"autoConf\""))
-            {
-                layers = xmlResponse.ExtractLayersFromCleGeoportailUser();
-            }
-            else
-            {
-                string message = string.Format("{0} : votre clé Géoportail semble erronée. Vous pouvez utiliser la clé de démonstration.", errMessage["code"]);
-                logger.Error(string.Format("Client.GetLayersFromCleGeoportailUser : {0}\n", message));
-                throw new Exception(message);
-            }
-            return layers;
-        }
-
         #endregion
     }
 }

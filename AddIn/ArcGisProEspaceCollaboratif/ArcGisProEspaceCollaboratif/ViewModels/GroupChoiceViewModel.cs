@@ -24,14 +24,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Initialisation du dialogue "Choix du groupe"
         /// </summary>
-        /// <param name="keyGeoportail"></param>
         /// <param name="activeGroup"></param>
         /// <param name="profile"></param>
-        public GroupChoiceViewModel(string keyGeoportail, string activeGroup, Profile profil)
+        public GroupChoiceViewModel(string activeGroup, Profile profil)
         {
             this.Profile = profil;
             this.groupChoiceView = new GroupChoiceView();
-            this.InitializeGroupChoiceView(keyGeoportail, activeGroup);  
+            this.InitializeGroupChoiceView(activeGroup);  
         }
         #endregion
 
@@ -45,11 +44,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         public string GroupSelectedItemComboBox { get; set; }
-
-        /// <summary>
-        /// Clé géoportail de l'utilisateur
-        /// </summary>
-        public string KeyGeoportailTextBox { get; set; }
 
         #endregion
 
@@ -69,23 +63,14 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Enregistrer".
-        /// Il faut sauvegarder le choix du profil et de la clé Géoportail
+        /// Il faut sauvegarder le choix du profil
         /// </summary>
         private void OnRegister()
         {
             int index = this.groupChoiceView.GroupComboBox.SelectedIndex;
             string igGroup = this.Profile.Geogroupes[index].Id;
             string nomGroup = this.Profile.Geogroupes[index].Name;
-            string cleGeoportail = "";
-            if (this.groupChoiceView.YesRadioButton.IsChecked == true)
-            {
-                cleGeoportail = KeyGeoportailTextBox;
-            }
-            if (this.groupChoiceView.NoRadioButton.IsChecked == true)
-            {
-                cleGeoportail = Constantes.DEMO;
-            }
-            this.Profile.IdNameGroupKeyGeoPortail = (igGroup, nomGroup, cleGeoportail);
+            this.Profile.IdNameGroup = (igGroup, nomGroup);
         }
 
         private bool AlwaysTrue() { return true; }
@@ -95,10 +80,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        private void InitializeGroupChoiceView(string keyGeoportail, string activeGroup)
+        private void InitializeGroupChoiceView(string activeGroup)
         {
             this.SetItemsSourceGroupComboBox();
-            this.SetKeyGeoportailTextBox(keyGeoportail);
             this.SetGroupSelectedItemComboBox(activeGroup);
         }
         /// <summary>
@@ -124,24 +108,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             if (!string.IsNullOrEmpty(activeGroup))
             {
                 this.GroupSelectedItemComboBox = activeGroup;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="keyGeoportail"></param>
-        public void SetKeyGeoportailTextBox(string keyGeoportail)
-        {
-            // Quelle clé GeoPortail pour l'utilisateur ?
-            if (keyGeoportail == Constantes.DEMO || keyGeoportail == "")
-            {
-                this.groupChoiceView.NoRadioButton.IsChecked = true;
-            }
-            if (keyGeoportail != Constantes.DEMO && keyGeoportail != "")
-            {
-                this.groupChoiceView.YesRadioButton.IsChecked = true;
-                this.KeyGeoportailTextBox = keyGeoportail;
             }
         }
         #endregion
