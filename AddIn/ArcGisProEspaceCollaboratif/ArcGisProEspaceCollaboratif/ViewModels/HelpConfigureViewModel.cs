@@ -50,7 +50,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.DisplayLogin();
             this.DisplayDatesExtraction();
             this.DisplaySpatialFilter();
-            this.DisplayProxy();
+            //this.DisplayProxy();
             this.DisplayActiveGroup();
         }
         #endregion
@@ -162,10 +162,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             // Par défaut, on enregistre un proxy à vide
             Helper.SaveProxy("");
             // Sauf si l'utilisateur à cocher "Proxy"
-            if (this.helpConfigureView.ProxyCheckBox.IsChecked == true)
+            /*if (this.helpConfigureView.ProxyCheckBox.IsChecked == true)
             {
                 Helper.SaveProxy(this.Proxy);
-            }
+            }*/
 
             Helper.SaveActiveGroup(this.ActiveGroup);
         }
@@ -228,7 +228,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Chargement du proxy à partir du fichier espaceco.xml
         /// </summary>
-        private void DisplayProxy()
+        /*private void DisplayProxy()
         {
             string proxy = Helper.LoadProxy();
             if (!string.IsNullOrEmpty(proxy))
@@ -237,7 +237,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 this.helpConfigureView.ProxyCheckBox.IsChecked = true;
             }
             
-        }
+        }*/
 
         /// <summary>
         /// Chargement du nom du dernier groupe utilisé par l'utilisateur

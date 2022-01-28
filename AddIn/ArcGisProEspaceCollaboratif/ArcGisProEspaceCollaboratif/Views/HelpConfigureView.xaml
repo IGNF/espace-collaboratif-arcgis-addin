@@ -17,8 +17,8 @@
         <DatePicker Name="DatePickerEnd" DisplayDate="{Binding ExtractDisplayEndDate}" SelectedDate="{Binding ExtractSelectedEndDate}" HorizontalAlignment="Left" Height="24" Margin="185,165,0,0" VerticalAlignment="Top" Width="160"/>
         <CheckBox Name="SpecialFilterCheckBox" Content="Filtrage spatial" HorizontalAlignment="Left" Margin="10,217,0,0" VerticalAlignment="Top" Width="172"/>
         <ComboBox Name="SpatialFilterComboBox" ItemsSource="{Binding SpatialFilterItemsSource}" SelectedItem="{Binding SpatialFilterSelectedItem}" HorizontalAlignment="Left" Height="23" Margin="185,213,0,0" VerticalAlignment="Top" Width="225"/>
-        <CheckBox Name="ProxyCheckBox" Content="Proxy" HorizontalAlignment="Left" Margin="10,261,0,0" VerticalAlignment="Top" Width="61"/>
-        <TextBox Name="ProxyTextBox" HorizontalAlignment="Left" Height="23" Margin="185,257,0,0" TextWrapping="Wrap" Text="{Binding Proxy}" VerticalAlignment="Top" Width="225"/>
+        <!--CheckBox Name="ProxyCheckBox" Content="Proxy" HorizontalAlignment="Left" Margin="10,261,0,0" VerticalAlignment="Top" Width="61"/-->
+        <!--TextBox Name="ProxyTextBox" HorizontalAlignment="Left" Height="23" Margin="185,257,0,0" TextWrapping="Wrap" Text="{Binding Proxy}" VerticalAlignment="Top" Width="225"/-->
         <Label Content="Groupe actif" HorizontalAlignment="Left" Margin="5,290,0,0" VerticalAlignment="Top" Width="78" Height="28" RenderTransformOrigin="0.493,0.152"/>
         <TextBox Name="ActiveGroupTextBox" HorizontalAlignment="Left" Height="23" Margin="185,293,0,0" TextWrapping="Wrap" Text="{Binding ActiveGroup}" VerticalAlignment="Top" Width="225"/>
         <Button Name="SendResponse" Content="Enregistrer" Command="{Binding SendResponseButtonCmd}" Click="SendResponse_Click" HorizontalAlignment="Left" Margin="185,331,0,0" VerticalAlignment="Top" Width="75" Height="22" IsDefault="True"/>
