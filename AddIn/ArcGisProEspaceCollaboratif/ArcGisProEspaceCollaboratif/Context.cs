@@ -634,7 +634,7 @@ namespace ArcGisProEspaceCollaboratif
             return spatialFilterGeometry;
         }
 
-        public ArcGisProEspaceCollaboratif.Core.Client GetConnexionEspaceCollaboratif()
+        public Client GetConnexionEspaceCollaboratif()
         {
             logger.Debug("GetConnexionEspaceCollaboratif ");
             this.URLHost = Helper.LoadUrlhost();
@@ -664,7 +664,7 @@ namespace ArcGisProEspaceCollaboratif
 
             try
             {
-                ArcGisProEspaceCollaboratif.Core.Client connexionServer = new Client(
+                Client connexionServer = new Client(
                         this.URLHost,
                         this.Login,
                         this.Password
