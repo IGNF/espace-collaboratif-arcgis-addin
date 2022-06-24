@@ -651,12 +651,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                     //ID
                     XPathNavigator nav = georemNav.SelectSingleNode("ID_GEOREM");
                     string idString = nav == null ? string.Empty : nav.Value;
-
-                    if (idString == "665127")
-                    {
-                        bool debug = true;
-                    }
-
                     report.Id = Convert.ToUInt64(idString);
 
                     //AUTORISATION
@@ -745,7 +739,6 @@ namespace ArcGisProEspaceCollaboratif.Core
                         string message = string.Format("Erreur : Signalement.Statut non valide : {0} Id = {1}\n{2}", nav.InnerXml, report.Id, e.Message);
                         logger.Error(string.Format("XMLResponse.ExtractReports : {0}\n", message));
                         continue;
-                        //throw new Exception(message);
                     }
 
                     //SOURCE
