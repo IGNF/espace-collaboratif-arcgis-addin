@@ -11,7 +11,6 @@ namespace ArcGisProEspaceCollaboratif
     /// </summary>
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        public static readonly Logger riplogger = Logger.Instance;
         public static readonly ILog logger = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public event PropertyChangedEventHandler PropertyChanged;

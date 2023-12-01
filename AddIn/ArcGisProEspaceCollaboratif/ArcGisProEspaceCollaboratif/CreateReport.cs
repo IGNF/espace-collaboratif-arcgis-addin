@@ -10,7 +10,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class CreateReport : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
 
         protected override async void OnClick()
@@ -60,7 +59,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Lancement du formulaire pour créer un nouveau signalement
-                    CreateReportViewModel createReportViewModel = new CreateReportViewModel(context, futursSketch);
+                    CreateReportViewModel createReportViewModel = new (context, futursSketch);
                     createReportViewModel.createReportView.DataContext = createReportViewModel;
                     bool? dialogResult = createReportViewModel.createReportView.ShowDialog();
                     // Si l'utilisateur a cliqué sur le bouton "Annuler"

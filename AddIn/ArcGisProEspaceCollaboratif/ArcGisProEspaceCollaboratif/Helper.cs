@@ -33,7 +33,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_layer_Croquis_Point = "Croquis_EC_Point";
         public const string name_group_layer = "Espace collaboratif";
 
-        public static List<string> CollaborativeSpaceLayers = new List<string>()
+        public static List<string> CollaborativeSpaceLayers = new ()
         {
             name_layer_Signalement,
             name_layer_Croquis_Point,
@@ -84,17 +84,16 @@ namespace ArcGisProEspaceCollaboratif
         public const string dateDefault = "01/01/2000";
         public const int lengthMaxField = 5000;
 
-        public static string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-        public static string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        public static readonly string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+        public static readonly string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)
-        public static readonly Dictionary<string, KeyValuePair<string, string>> reportAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        public static readonly Dictionary<string, KeyValuePair<string, string>> reportAttributes = new ()
         {
             { name_field_IdReport, new KeyValuePair<string,string> ("LONG","") },
             { name_field_Auteur, new KeyValuePair<string,string> ("TEXT", "50") },
@@ -116,7 +115,7 @@ namespace ArcGisProEspaceCollaboratif
         };
 
         // Dictionnaire des attributs des couches croquis (avec types et contraintes)
-        public static readonly Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new Dictionary<string, KeyValuePair<string, string>>
+        public static readonly Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new()
         {
             { name_field_LienReport, new KeyValuePair<string,string> ("LONG", "") },
             { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
@@ -154,7 +153,7 @@ namespace ArcGisProEspaceCollaboratif
             string about = "";
             string assemblyDir = Helper.EspaceCollaboratifDirectoryFiles;
             string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_about_status);
-            using (StreamReader sr = new StreamReader(fileTxt))
+            using (StreamReader sr = new (fileTxt))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -176,7 +175,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             string assemblyDir = Helper.EspaceCollaboratifDirectoryFiles;
             string fileTxt = string.Format("{0}{1}", assemblyDir, name_file_extensions);
-            using (StreamReader sr = new StreamReader(fileTxt))
+            using (StreamReader sr = new (fileTxt))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)
@@ -256,7 +255,7 @@ namespace ArcGisProEspaceCollaboratif
                 FeatureLayer collabSpaceLayer;
                 if (!bFcExists)
                 {
-                    List<object> arguments = new List<object>
+                    List<object> arguments = new ()
                     {
                         gdbPath, // Chemin de la geodatabase
                         fcName, // Nom de la feature class à créer                   
@@ -291,11 +290,15 @@ namespace ArcGisProEspaceCollaboratif
                         FeatureClass collabSpaceFc = context.CollaborativeSpaceGeodatabase.Geodatabase.OpenDataset<FeatureClass>(fcName);
 
                         // Ajout en tant que FeatureLayer à la carte
-                        collabSpaceLayer = LayerFactory.Instance.CreateFeatureLayer(
-                            collabSpaceFc,
-                            context.MapActiveView.Map,
-                            layerPosition,
-                            fcName
+                        // https://pro.arcgis.com/en/pro-app/latest/sdk/api-reference/topic76685.html
+                        var createParams = new FeatureLayerCreationParams(new Uri(context.Client.Url))
+                        {
+                            Name = fcName,
+                            MapMemberIndex = layerPosition
+                        };
+                        collabSpaceLayer = LayerFactory.Instance.CreateLayer<FeatureLayer>(
+                            createParams,
+                            context.MapActiveView.Map
                         );
                     }
                     else
@@ -304,7 +307,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
 
-                List<object> argumentsSpatialIndex = new List<object> { collabSpaceLayer };
+                List<object> argumentsSpatialIndex = new() { collabSpaceLayer };
                 await Geoprocessing.ExecuteToolAsync("RemoveSpatialIndex_management", Geoprocessing.MakeValueArray(argumentsSpatialIndex.ToArray()));
 
                 // Pour la couche de signalement :
@@ -318,7 +321,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Définition du domaine pour le champ Statut
                     string statusDomainName = "Status_domain";
 
-                    List<object> argumentsDomain = new List<object> {
+                    List<object> argumentsDomain = new () {
                         gdbPath,
                         statusDomainName,
                         "",
@@ -330,7 +333,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Ajout des codes au domaine
                     foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
                     {
-                        List<object> argumentsCodedValue = new List<object> {
+                        List<object> argumentsCodedValue = new () {
                             gdbPath,
                             statusDomainName,
                             (long)currStatus,
@@ -341,7 +344,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Application du domaine au champ statut
                     string fcPath = context.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
-                    List<object> argumentsAssignDomain = new List<object> {
+                    List<object> argumentsAssignDomain = new () {
                             fcPath,
                             Helper.name_field_Statut,
                             statusDomainName
@@ -403,14 +406,14 @@ namespace ArcGisProEspaceCollaboratif
         public static CIMRenderer CreateUniqueValueRendererForReportStatuses()
         {
             //Create the Unique Value Renderer
-            CIMUniqueValueRenderer uniqueValueRenderer = new CIMUniqueValueRenderer()
+            CIMUniqueValueRenderer uniqueValueRenderer = new ()
             {
                 // set the value field
                 Fields = new string[] { Helper.name_field_Statut }
             };
 
             //Construct the list of UniqueValueClasses
-            List<CIMUniqueValueClass> classes = new List<CIMUniqueValueClass>();
+            List<CIMUniqueValueClass> classes = new ();
 
             // Définition des couleurs
             var pendingColor = CIMColor.CreateRGBColor(255, 170, 0);
@@ -421,8 +424,8 @@ namespace ArcGisProEspaceCollaboratif
 
             foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
             {
-                List<CIMUniqueValue> statusValues = new List<CIMUniqueValue>();
-                CIMUniqueValue statusValue = new CIMUniqueValue() { FieldValues = new string[] { index.ToString() } };
+                List<CIMUniqueValue> statusValues = new ();
+                CIMUniqueValue statusValue = new () { FieldValues = new string[] { index.ToString() } };
                 statusValues.Add(statusValue);
 
                 List<double> statusRGBCodes = Status.GetStatusColor(currStatus);
@@ -442,7 +445,7 @@ namespace ArcGisProEspaceCollaboratif
        
             //Add the classes to a group (by default there is only one group or "symbol level")
             // Unique value groups
-            CIMUniqueValueGroup groupOne = new CIMUniqueValueGroup()
+            CIMUniqueValueGroup groupOne = new ()
             {
                 Heading = "Statuts",
                 Classes = classes.ToArray()
@@ -478,7 +481,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Une Geometry équivalente au croquis en entrée.</returns>
         public static List<MapPoint> GetPointCollectionFromSketch(Sketch currSketch)
         {
-            List<MapPoint> pointCollection = new List<MapPoint>();
+            List<MapPoint> pointCollection = new ();
 
             foreach (Point sketchVertex in currSketch.Points)
             {
@@ -499,7 +502,7 @@ namespace ArcGisProEspaceCollaboratif
             QueuedTask.Run(() =>
             {
 
-                point = MapPointBuilder.CreateMapPoint(pointin.Longitude, pointin.Latitude, SpatialReferences.WGS84);
+                point = MapPointBuilderEx.CreateMapPoint(pointin.Longitude, pointin.Latitude, SpatialReferences.WGS84);
 
                 if (!MapView.Active.Map.SpatialReference.IsEqual(point.SpatialReference))
                 {
@@ -560,11 +563,10 @@ namespace ArcGisProEspaceCollaboratif
             MapPoint pointResult = null;
             ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
-                using (MapPointBuilder mapPointBuilder = new MapPointBuilder())
-                {
-                    mapPointBuilder.SetValues(barycentreX, barycentreY);
-                    pointResult = mapPointBuilder.ToGeometry();
-                }
+                MapPointBuilderEx mapPointBuilder = new ();
+                mapPointBuilder.SetValues(barycentreX, barycentreY);
+                pointResult = mapPointBuilder.ToGeometry();
+                
             });
 
             if (pointResult.IsEmpty)
@@ -628,7 +630,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 default:
 
-                    List<MapPoint> listCentroid = new List<MapPoint>();
+                    List<MapPoint> listCentroid = new ();
                     foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in listCroquisEntree)
                     {
                         listCentroid.Add(Helper.Centroid(croquis));
@@ -675,7 +677,7 @@ namespace ArcGisProEspaceCollaboratif
             List<FieldDescription> fieldDescription
         )
         {
-            Dictionary<string, string> attributes = new Dictionary<string, string>();
+            Dictionary<string, string> attributes = new ();
 
             foreach(FieldDescription fieldDesc in fieldDescription)
             {
@@ -713,7 +715,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le croquis pour l'Espace collaboratif</returns>
         public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(Geometry geometry)
         {
-            ArcGisProEspaceCollaboratif.Core.Sketch newSketch = new ArcGisProEspaceCollaboratif.Core.Sketch();
+            ArcGisProEspaceCollaboratif.Core.Sketch newSketch = new ();
 
             // Selon le type géométrique de la géométrie à traiter.
             switch (geometry.GeometryType)
@@ -762,7 +764,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns></returns>
         public static ArcGisProEspaceCollaboratif.Core.Point CalculatePositionReport(List<Point> points)
         {
-            Point pointResult = new Point();
+            Point pointResult = new ();
 
             double barycentreX = 0;
             double barycentreY = 0;
@@ -813,8 +815,8 @@ namespace ArcGisProEspaceCollaboratif
                     
                     ArcGIS.Core.Geometry.MapPoint barycentre = Helper.Centroid(listSketchs);
 
-                    List<double> distanceSketch = new List<double>();
-                    List<MapPoint> centroidSketch = new List<MapPoint>();
+                    List<double> distanceSketch = new ();
+                    List<MapPoint> centroidSketch = new ();
 
                     foreach (ArcGisProEspaceCollaboratif.Core.Sketch croquis in listSketchs)
                     {               
@@ -857,7 +859,7 @@ namespace ArcGisProEspaceCollaboratif
         public static XmlDocument XML_Load()
         {
             string nom_FichierParametre = Helper.XML_NameFile();
-            XmlDocument paramsXML = new XmlDocument();
+            XmlDocument paramsXML = new ();
             paramsXML.Load(nom_FichierParametre);        
             return paramsXML;
         }
@@ -963,7 +965,7 @@ namespace ArcGisProEspaceCollaboratif
             XmlDocument paramsXML = Helper.XML_Load();
             XmlNode noeudRoot = paramsXML.SelectSingleNode(root);
 
-            XmlDocument newDoc = new XmlDocument();
+            XmlDocument newDoc = new ();
             newDoc.LoadXml("<" + elementName + ">" + elementVal + "</" + elementName + ">");
 
             XmlNode noeud = paramsXML.ImportNode(newDoc.FirstChild, true);
@@ -978,9 +980,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>La valeur associée à l'élément <paramref name="element"/> s'il existe (vide en cas contraire).</returns>
         public static string XML_FirstElement(string element)
         {
-            System.Xml.XmlDocument paramsEspaceCollaboratif = new System.Xml.XmlDocument();
+            System.Xml.XmlDocument paramsEspaceCollaboratif = new ();
 
-            StreamReader streamXML = new StreamReader(Helper.XML_NameFile());
+            StreamReader streamXML = new (Helper.XML_NameFile());
             paramsEspaceCollaboratif.Load(streamXML);
             System.Xml.XmlNodeList elemlist = paramsEspaceCollaboratif.DocumentElement.SelectNodes(element);
             streamXML.Close();
@@ -1000,12 +1002,12 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns></returns>
         public static List<string> XML_AllElement(string element)
         {
-            System.Xml.XmlDocument paramsEspaceCollaboratif = new System.Xml.XmlDocument();
-            StreamReader streamXML = new StreamReader(Helper.XML_NameFile());
+            System.Xml.XmlDocument paramsEspaceCollaboratif = new ();
+            StreamReader streamXML = new (Helper.XML_NameFile());
             paramsEspaceCollaboratif.Load(streamXML);
             System.Xml.XmlNodeList elemlist = paramsEspaceCollaboratif.DocumentElement.SelectNodes(element);
             streamXML.Close();
-            List<string> allElements = new List<string>();
+            List<string> allElements = new ();
             foreach (XmlNode node in elemlist)
             {
                 allElements.Add(node.InnerText);
@@ -1062,7 +1064,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="preferedThemes">La liste des thèmes préférés à sauvegarder dans le fichier de paramétrage.</param>
         public static void Save_PreferredThemes(List<ArcGisProEspaceCollaboratif.Core.Theme> preferedThemes)
         {
-            List<string> ListThemes = new List<string>();
+            List<string> ListThemes = new ();
 
             foreach (ArcGisProEspaceCollaboratif.Core.Theme theme in preferedThemes)
             {

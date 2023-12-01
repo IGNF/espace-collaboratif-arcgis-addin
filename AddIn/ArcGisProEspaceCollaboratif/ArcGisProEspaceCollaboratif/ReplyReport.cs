@@ -11,7 +11,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class ReplyReport : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(ReplyReport));
         protected override async void OnClick()
         {
@@ -46,11 +45,11 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Liste des signalements valides auxquels l'utilisateur peut répondre
-                    List<Report> replyReports = new List<Report>();
+                    List<Report> replyReports = new ();
                     string messageReportNoValid = "";
                     // Récupération des objets sélectionnés
-                    var selectedFeatures = context.MapActiveView.Map.GetSelection();
-                    foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+                    SelectionSet selectedFeatures = context.MapActiveView.Map.GetSelection();
+                    foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                     {
                         if (kvp.Key.Name != Helper.name_layer_Signalement)
                         {
@@ -104,7 +103,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Ouverture de la boite "ReplyReport" s'il y a au moins un signalement valide
-                    ReplyReportViewModel replyReportViewModel = new ReplyReportViewModel(context, replyReports, messageReportNoValid);
+                    ReplyReportViewModel replyReportViewModel = new (context, replyReports, messageReportNoValid);
                     replyReportViewModel.replyReportView.DataContext = replyReportViewModel;
                     bool? dialogResult = replyReportViewModel.replyReportView.ShowDialog();
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue

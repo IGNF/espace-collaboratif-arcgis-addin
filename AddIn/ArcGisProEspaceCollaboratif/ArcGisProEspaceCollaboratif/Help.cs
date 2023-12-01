@@ -12,7 +12,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class HelpManual : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpManual));
 
         protected override void OnClick()
@@ -20,7 +19,7 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Clic sur le bouton d'ouverture du manuel de l'add-in Espace collaboratif");
 
             string file = string.Format("{0}{1}", Helper.EspaceCollaboratifDirectoryFiles, Helper.name_file_manuel);
-            Process fileopener = new Process();
+            Process fileopener = new ();
             fileopener.StartInfo.FileName = "explorer";
             fileopener.StartInfo.Arguments = string.Format("\"{0}\"", file);
             fileopener.Start();
@@ -29,7 +28,6 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpFileLog : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpFileLog));
 
         protected override void OnClick()
@@ -58,7 +56,6 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpAbout : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpAbout));
 
         protected override void OnClick()
@@ -77,7 +74,7 @@ namespace ArcGisProEspaceCollaboratif
             message += string.Format("Version : {0}, '{1}'\n", version, product);
             message += copyright;
             logger.Info(message);
-            FeedbackInformationViewModel feedbackInformationViewModel = new FeedbackInformationViewModel()
+            FeedbackInformationViewModel feedbackInformationViewModel = new ()
             {
                 MessageFeedback = message,
                 Logo = string.Format("{0}logo_IGN.png", Helper.EspaceCollaboratifDirectoryImages)

@@ -143,7 +143,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     // layerCheck est sous la forme 'troncon_de_voie_ferree' ou 'Cartes IGN (GEOGRAPHICALGRIDSYSTEMS.MAPS)'
                     string name;
-                    if (layerCheck.Contains("("))
+                    if (layerCheck.Contains('('))
                     {
                         string[] layerCheckName = layerCheck.Split('(');
                         name = layerCheckName[0].Remove(layerCheckName[0].Length - 1);

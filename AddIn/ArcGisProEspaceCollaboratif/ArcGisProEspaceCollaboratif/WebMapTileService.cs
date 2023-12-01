@@ -64,7 +64,7 @@ namespace ArcGisProEspaceCollaboratif
                 };
 
                 // WMTS service connexion.
-                List<CIMWMTSServiceConnection> serviceConnections = new List<CIMWMTSServiceConnection>();
+                List<CIMWMTSServiceConnection> serviceConnections = new ();
                 var connection = new CIMWMTSServiceConnection
                 {
                     Description = layer.Description,
@@ -80,7 +80,7 @@ namespace ArcGisProEspaceCollaboratif
                     foreach (CIMWMTSServiceConnection serviceConnection in serviceConnections)
                     {
                         // Ajout de la couche Geoservices dans la carte
-                        lf.CreateLayer(serviceConnection, Map);
+                        //lf.CreateLayer(serviceConnection, Map);
                     }                    
                 });
             }

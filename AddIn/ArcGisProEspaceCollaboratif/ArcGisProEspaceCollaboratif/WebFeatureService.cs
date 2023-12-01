@@ -63,7 +63,7 @@ namespace ArcGisProEspaceCollaboratif
             get => _url;
             set
             {
-                if (value.Contains("&"))
+                if (value.Contains('&'))
                 {
                     string[] tmp = value.Split('&');
                     string[] database = tmp[1].Split('=');
@@ -107,15 +107,12 @@ namespace ArcGisProEspaceCollaboratif
 
                 LayerName = layer.Name;
                 Url = layer.Url;
-                if (InternetServerConnection == null)
-                {
-                    InternetServerConnection = new CIMInternetServerConnection
+                InternetServerConnection ??= new CIMInternetServerConnection
                     {
                         URL = string.Format("{0}?SERVICE=WFS&REQUEST=GetCapabilities", Url),
                         User = Login,
                         Password = Password
                     };
-                }
 
                 // WFS service connection.
                 var connection = new CIMWFSServiceConnection
@@ -130,7 +127,8 @@ namespace ArcGisProEspaceCollaboratif
                 {   
                     ILayerFactory lf = LayerFactory.Instance;
                     //GroupLayer grpNew = lf.CreateGroupLayer(Map, 0, activeGroup);
-                    Layer layerWFScreate = lf.CreateLayer(connection, Map);
+                    LayerCreationParams lcp = new(connection);
+                    //Layer layerWFScreate = lf.CreateLayer(lcp, Map);
                 });
             }
         }

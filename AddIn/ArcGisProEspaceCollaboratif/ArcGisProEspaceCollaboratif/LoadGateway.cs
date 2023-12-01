@@ -15,7 +15,6 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(LoadGateway));
 
         protected override async void OnClick()
@@ -61,7 +60,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Chargement du dialogue "Charger les couches de mon groupe"
-                    LoadGatewayViewModel loadGatewayViewModel = new LoadGatewayViewModel(context);
+                    LoadGatewayViewModel loadGatewayViewModel = new (context);
                     loadGatewayViewModel.loadGatewayView.DataContext = loadGatewayViewModel;
                     bool? dialogResult = loadGatewayViewModel.loadGatewayView.ShowDialog();
                     if (dialogResult == false)

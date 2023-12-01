@@ -272,7 +272,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <returns>La liste des couches</returns>
         private ObservableCollection<string> GetLayersNameForSpatialFilterFromMap()
         {
-            ObservableCollection<string> layersName = new ObservableCollection<string>();
+            ObservableCollection<string> layersName = new ();
             IReadOnlyList<Layer> layers = this.Context.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in layers)
             {
@@ -288,7 +288,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 }
                 
                 // Si une couche est du type WFS/WMTS ou si une couche est différente de polygone
-                if (!(layer is FeatureLayer featureLayer) || featureLayer.ShapeType != esriGeometryType.esriGeometryPolygon)
+                if (layer is not FeatureLayer featureLayer || featureLayer.ShapeType != esriGeometryType.esriGeometryPolygon)
                 {
                     continue;
                 }

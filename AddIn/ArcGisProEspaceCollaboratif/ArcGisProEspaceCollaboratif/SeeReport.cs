@@ -12,7 +12,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class SeeReport : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(SeeReport));
 
         protected override async void OnClick()
@@ -44,7 +43,7 @@ namespace ArcGisProEspaceCollaboratif
                         throw new Exception(error);
                     }
 
-                    Dictionary<string, string> attributes = new Dictionary<string, string>();
+                    Dictionary<string, string> attributes = new ();
 
                     List<FieldDescription> fieldDescription = reportLayer.GetFieldDescriptions();
                     IReadOnlyList<long> lOid = selectedFeatures.GetObjectIDs();
@@ -70,7 +69,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Ouverture de la boite "SeeReport" s'il y a un et un seul signalement sélectionné
                     // TODO Eric : faire défiler les fiches de tous les signalements sélectionnés
                     // http://sd-redmine.ign.fr/issues/15041 
-                    SeeReportViewModel seeReportViewModel = new SeeReportViewModel(context, attributes);
+                    SeeReportViewModel seeReportViewModel = new (context, attributes);
                     seeReportViewModel.seeReportView.DataContext = seeReportViewModel;
                     bool? dialogResult = seeReportViewModel.seeReportView.ShowDialog();
                     // L'utilisateur a cliqué sur la croix pour fermer le dialogue

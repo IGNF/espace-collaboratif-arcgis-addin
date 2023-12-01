@@ -14,6 +14,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
+using ArcGIS.Core.Data.Exceptions;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -73,7 +74,6 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Context));
 
         /// <summary>
@@ -316,12 +316,12 @@ namespace ArcGisProEspaceCollaboratif
                 FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
                 FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
-                EditOperation editOperation = new EditOperation();
+                EditOperation editOperation = new ();
                 editOperation.Callback(context =>
                 {
                     try
                     {
-                        QueryFilter queryFilter = new QueryFilter
+                        QueryFilter queryFilter = new ()
                         {
                             WhereClause = string.Format("{0} = {1}", Helper.name_field_IdReport, reportUdating.Id)
                         };
@@ -378,7 +378,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 return await QueuedTask.Run(() =>
                 {
-                    ArcGIS.Desktop.Editing.EditOperation createOperation = new ArcGIS.Desktop.Editing.EditOperation
+                    ArcGIS.Desktop.Editing.EditOperation createOperation = new ()
                     {
                         Name = "Generate reports",
                         SelectNewFeatures = false
@@ -404,7 +404,7 @@ namespace ArcGisProEspaceCollaboratif
                                 if (currSketch.Points.Count == 0) continue;
 
                                 // on caste le featureLayer en fonction du type du croquis pour utiliser la bonne couche associée
-                                int layerIndex = this.GetIndexLayerFromSketchType(currSketch.Type);
+                                int layerIndex = GetIndexLayerFromSketchType(currSketch.Type);
                                 if (layerIndex == -1)
                                 {
                                     logger.Error(string.Format("Context.CreerPointSignalement : {0} {1}\n", "Type non reconnu : ", currSketch.Type.ToString()));
@@ -455,7 +455,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Ordre des couches : [reportLayer, pointSketchLayer, lineSketchLayer, polygonSketchLayer]
         /// </summary>
         /// <param name="sketchType">Type du croquis à traiter</param>
-        public int GetIndexLayerFromSketchType(SketchType sketchType)
+        public static int GetIndexLayerFromSketchType(SketchType sketchType)
         {
             // [reportLayer, pointSketchLayer, lineSketchLayer, polygonSketchLayer]
 
@@ -490,7 +490,7 @@ namespace ArcGisProEspaceCollaboratif
         /// Récupère les valeurs des champs de la table de signalements pour le nouveau signalement à insérer.
         /// </summary>
         /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
-        public Dictionary<string, object> GetFieldValuesForReport(Report newReport)
+        public static Dictionary<string, object> GetFieldValuesForReport(Report newReport)
         {
             // Signalement
             var reportFields = new Dictionary<string, object>
@@ -524,7 +524,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="currSketch">Croquis à ajouter.</param>
         /// <param name="idNewReport">Identifiant du signalement en cours d'ajout.</param>
-        public Dictionary<string, object> GetFieldValuesForSketch(Sketch currSketch, ulong idNewReport)
+        public static Dictionary<string, object> GetFieldValuesForSketch(Sketch currSketch, ulong idNewReport)
         {
             var sketchFields = new Dictionary<string, object>();
 
@@ -559,13 +559,13 @@ namespace ArcGisProEspaceCollaboratif
                     case SketchType.Ligne :
                     case SketchType.Fleche:
                     case SketchType.MultiLigne:
-                        Polyline sketchLine = PolylineBuilder.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
+                        Polyline sketchLine = PolylineBuilderEx.CreatePolyline(Helper.GetPointCollectionFromSketch(currSketch));
                         sketchFields.Add(Helper.name_field_Shape, sketchLine);
                         break;
 
                     case SketchType.Polygone:
                     case SketchType.Multipolygone:
-                        Polygon sketchPolygon = PolygonBuilder.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
+                        Polygon sketchPolygon = PolygonBuilderEx.CreatePolygon(Helper.GetPointCollectionFromSketch(currSketch));
                         sketchFields.Add(Helper.name_field_Shape, sketchPolygon);
                         break;
             
@@ -585,7 +585,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
-        public ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> filterGeometries)
+        public static ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> filterGeometries)
         {
             if (filterGeometries.Count == 0)
                 return new ArcGisProEspaceCollaboratif.Core.Box();
@@ -609,14 +609,14 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Liste d'Geometry contenant les géométries devant servir pour le filtrage spatial lors de l'importation des signalements.</returns>
         public List<Geometry> GetSpatialFilterGeometry(string filterLayerName)
         {
-            List<Geometry> spatialFilterGeometry = new List<Geometry>();
+            List<Geometry> spatialFilterGeometry = new ();
             FeatureLayer filterLayer = this.GetLayerByName(filterLayerName);
 
             if (filterLayer == null)
                 return spatialFilterGeometry;
 
             FeatureClass featureClassFilter = filterLayer.GetFeatureClass();
-            QueryFilter spatialQueryFilter = new QueryFilter();
+            QueryFilter spatialQueryFilter = new ();
 
             RowCursor rowCursor = featureClassFilter.Search(
                         spatialQueryFilter,
@@ -640,7 +640,7 @@ namespace ArcGisProEspaceCollaboratif
             this.URLHost = Helper.LoadUrlhost();
             logger.Debug("URLHost : " + this.URLHost);
 
-            ConnectViewModel connectViewModel = new ConnectViewModel()
+            ConnectViewModel connectViewModel = new ()
             {
                 Uri = this.URLHost
             };
@@ -664,7 +664,7 @@ namespace ArcGisProEspaceCollaboratif
 
             try
             {
-                Client connexionServer = new Client(
+                Client connexionServer = new (
                         this.URLHost,
                         this.Login,
                         this.Password
@@ -727,7 +727,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public void DisplayInformationsAfterConnection()
         {
-            FeedbackInformationViewModel feedbackInformationViewModel = new FeedbackInformationViewModel();
+            FeedbackInformationViewModel feedbackInformationViewModel = new ();
             feedbackInformationViewModel.feedbackInformationView.DataContext = feedbackInformationViewModel;
 
             // Le logo du groupe auquel l'utilisateur appartient
@@ -806,7 +806,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
-                GroupChoiceViewModel groupChoiceViewModel = new GroupChoiceViewModel(Profil.Group.Name, Profil);
+                GroupChoiceViewModel groupChoiceViewModel = new (Profil.Group.Name, Profil);
                 groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
                 bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
                 // Si l'utilisateur a cliqué sur le bouton "Annuler"
@@ -867,7 +867,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Liste de croquis créés à partir des objects sélectionnés.</returns>
         public List<ArcGisProEspaceCollaboratif.Core.Sketch > MakeSketchFromSelection()
         {
-            List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new List<ArcGisProEspaceCollaboratif.Core.Sketch>();
+            List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new ();
 
             if (this.MapActiveView == null)
             {
@@ -877,8 +877,8 @@ namespace ArcGisProEspaceCollaboratif
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
             {
-                var selectedFeatures = this.MapActiveView.Map.GetSelection();
-                foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+                SelectionSet selectedFeatures = this.MapActiveView.Map.GetSelection();
+                foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                 {
                     //get the layer of the selected feature
                     var featureLayer = kvp.Key as FeatureLayer;
@@ -914,11 +914,11 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="status">Le statut des signalements Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de signalements Ripart sur la carte ayant le statut indiqué.</returns>
-        public int CountReportsByStatus(int status)
+        public long CountReportsByStatus(int status)
         {
             FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
             FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
-            QueryFilter queryFilter = new QueryFilter
+            QueryFilter queryFilter = new ()
             {
                 WhereClause = Helper.name_field_Statut + " = " + status
             };
@@ -931,7 +931,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="statut">Le statut des signalements Ripart qu'on veut dénombrer.</param>
         /// <returns>Le décompte de signalements Ripart sur la carte ayant le statut indiqué.</returns>
-        public int CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Status.EnumStatus status)
+        public long CountReportsByStatus(ArcGisProEspaceCollaboratif.Core.Status.EnumStatus status)
         {
             return this.CountReportsByStatus((int)status);
         }

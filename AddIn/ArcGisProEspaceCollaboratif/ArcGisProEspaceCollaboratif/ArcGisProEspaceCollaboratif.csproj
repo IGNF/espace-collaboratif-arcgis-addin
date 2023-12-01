@@ -1,217 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D8A8D0B5-022E-43A7-9D47-003BE67525E2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArcGisProEspaceCollaboratif</RootNamespace>
-    <AssemblyName>ArcGisProEspaceCollaboratif</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files\ArcGIS\Pro\bin\ArcGISPro.exe</StartProgram>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files\ArcGIS\Pro\bin\ArcGISPro.exe</StartProgram>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ArcGISFolder>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\ESRI\ArcGISPro', 'InstallDir', null, RegistryView.Registry64))</ArcGISFolder>
-    <ArcGISFolder Condition="'$(ArcGISFolder)' == ''">$(registry:HKEY_CURRENT_USER\SOFTWARE\ESRI\ArcGISPro@InstallDir)</ArcGISFolder>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoWarn>CA1416</NoWarn>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="MvvmDialogs, Version=8.0.0.0, Culture=neutral, PublicKeyToken=3d3b9708589bc73e, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmDialogs.8.0.0\lib\net472\MvvmDialogs.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="ArcGIS.Desktop.Framework">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Core">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Core">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\Core\ArcGIS.Desktop.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Mapping">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\Mapping\ArcGIS.Desktop.Mapping.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Catalog">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\Catalog\ArcGIS.Desktop.Catalog.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Editing">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\Editing\ArcGIS.Desktop.Editing.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Extensions">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\DesktopExtensions\ArcGIS.Desktop.Extensions.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.GeoProcessing">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\GeoProcessing\ArcGIS.Desktop.GeoProcessing.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Layouts">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\Extensions\Layout\ArcGIS.Desktop.Layouts.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Shared.Wpf">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Shared.Wpf.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Ribbon.Wpf">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Ribbon.Wpf.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.DataGrid.Contrib.Wpf">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.DataGrid.Contrib.Wpf.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Resources">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Resources.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ArcGIS.Desktop.Resources">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ArcGIS.Desktop.Resources.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ESRI.ArcGIS.ItemIndex">
-      <HintPath>C:\Program Files\ArcGIS\Pro\bin\ESRI.ArcGIS.ItemIndex.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.0.2\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.0.2\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.0.2\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.0.2\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=4.0.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.4.0.2\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
+    <Content Include="Config.daml" />
+    <Content Include="Images\AddInDesktop16.png" />
+    <Content Include="Images\AddInDesktop32.png" />
+    <Content Include="DarkImages\AddInDesktop16.png" />
+    <Content Include="DarkImages\AddInDesktop32.png" />
+    <Content Include="Images\About.png" />
+    <Content Include="Images\answer.png" />
+    <Content Include="Images\Book.png" />
+    <Content Include="Images\config.png" />
+    <Content Include="Images\connect.png" />
+    <Content Include="Images\connect1.png" />
+    <Content Include="Images\create.png" />
+    <Content Include="Images\Log.png" />
+    <Content Include="Images\map-black.png" />
+    <Content Include="Images\map-blue.png" />
+    <Content Include="Images\map-green.png" />
+    <Content Include="Images\map-red.png" />
+    <Content Include="Images\map-yellow.png" />
+    <Content Include="Images\point-blue.png" />
+    <Content Include="Images\point-violet.png" />
+    <Content Include="Images\s1.png" />
+    <Content Include="Images\s2.png" />
+    <Content Include="Images\s3.png" />
+    <Content Include="Images\s4.png" />
+    <Content Include="Images\s5.png" />
+    <Content Include="Images\s6.png" />
+    <Content Include="Images\s7.png" />
+    <Content Include="Images\s8.png" />
+    <Content Include="Images\search.png" />
+    <Content Include="Images\showAttributTable.png" />
+    <Content Include="Images\test_tube.png" />
+    <Content Include="Images\update.png" />
+    <Content Include="Resources\ajax_loader_green_256.gif" />
+    <Content Include="Images\baguetteCroquis.png" />
+    <Content Include="Resources\document-dossier-g100-orange-papier-icone-4442-64.png" />
+    <Content Include="Resources\document-dossier-g3796-vert-papier-icone-7172-48.png" />
+    <Content Include="Resources\document-dossier-g3844-orange-papier-icone-4826-64.png" />
+    <Content Include="Resources\document-dossier-g3844-vert-papier-icone-7258-48.png" />
+    <Content Include="Resources\document81.png" />
+    <Content Include="Resources\Fatcow-Farm-Fresh-Connect.ico" />
+    <Content Include="Images\cleaning.png" />
+    <Content Include="Images\charger.png" />
+    <Content Include="Images\visualiser.png" />
+    <Content Include="Images\test.png" />
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Config.daml">
-      <SubType>Designer</SubType>
-    </AddInContent>
-    <AddInContent Include="Images\AddInDesktop16.png" />
-    <AddInContent Include="Images\AddInDesktop32.png" />
-    <AddInContent Include="DarkImages\AddInDesktop16.png" />
-    <AddInContent Include="DarkImages\AddInDesktop32.png" />
+    <ProjectReference Include="..\..\..\Core\ArcGisProEspaceCollaboratif.Core\ArcGisProEspaceCollaboratif.Core.csproj" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <Project>{2ea3ba62-21f5-4f14-8ba7-80ab7f9426ea}</Project>
+      <Name>ArcGisProEspaceCollaboratif.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssociatedObjects.cs" />
-    <Compile Include="CollaborativeSpaceGeodatabase.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="Test.cs" />
-    <Compile Include="Utils\RelayCommand.cs" />
-    <Compile Include="ViewModels\CreateReportViewModel.cs" />
-    <Compile Include="ViewModels\FeedbackInformationViewModel.cs" />
-    <Compile Include="ViewModels\ConnectViewModel.cs" />
-    <Compile Include="ViewModels\GroupChoiceViewModel.cs" />
-    <Compile Include="ViewModels\LoadGatewayViewModel.cs" />
-    <Compile Include="ViewModels\ReplyReportViewModel.cs" />
-    <Compile Include="ViewModels\HelpConfigureViewModel.cs" />
-    <Compile Include="ViewModels\SeeReportViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Views\CreateReportView.xaml.cs">
-      <DependentUpon>CreateReportView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\FeedbackInformationView.xaml.cs">
-      <DependentUpon>FeedbackInformationView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ConnectView.xaml.cs">
-      <DependentUpon>ConnectView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="LoadGateway.cs" />
-    <Compile Include="Connect.cs" />
-    <Compile Include="Help.cs" />
-    <Compile Include="Context.cs" />
-    <Compile Include="CreateReport.cs" />
-    <Compile Include="DownloadReports.cs" />
-    <Compile Include="HelpConfigure.cs" />
-    <Compile Include="Module1.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs" />
-    <Compile Include="ReplyReport.cs" />
-    <Compile Include="DeleteReport.cs" />
-    <Compile Include="Views\GroupChoiceView.xaml.cs">
-      <DependentUpon>GroupChoiceView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LoadGatewayView.xaml.cs">
-      <DependentUpon>LoadGatewayView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ReplyReportView.xaml.cs">
-      <DependentUpon>ReplyReportView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="SeeAssociatedObjects.cs" />
-    <Compile Include="SeeReport.cs" />
-    <Compile Include="Views\HelpConfigureView.xaml.cs">
-      <DependentUpon>HelpConfigureView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SeeReportView.xaml.cs">
-      <DependentUpon>SeeReportView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WebFeatureService.cs" />
-    <Compile Include="WebMapTileService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Files\Espace_co_Add-in_ArcGIS_Pro.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <Resource Include="Resources\LogoIGN.gif" />
+    <Resource Include="Resources\no_logo.gif" />
+    <EmbeddedResource Include="Images\logo_IGN.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Files\AboutStatusResponse.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Files\espaceco.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Files\formats.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\ArcGisProEspaceCollaboratif.Core\ArcGisProEspaceCollaboratif.Core.csproj">
@@ -220,144 +85,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <None Include="Files\Espace_co_Add-in_ArcGIS_Pro.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Backup-2.x.zip" />
+    <None Include="Properties\sauve\Settings.Designer.cs.NotUsed" />
+    <None Include="Properties\sauve\Settings.settings" />
+    <None Include="Resources\LogoIGN.gif" />
+    <None Include="Resources\no_logo.gif" />
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\About.png" />
-    <AddInContent Include="Images\answer.png" />
-    <AddInContent Include="Images\Book.png" />
-    <AddInContent Include="Images\config.png" />
-    <AddInContent Include="Images\connect.png" />
-    <AddInContent Include="Images\connect1.png" />
-    <AddInContent Include="Images\create.png" />
-    <AddInContent Include="Images\Log.png" />
-    <EmbeddedResource Include="Images\logo_IGN.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <AddInContent Include="Images\map-black.png" />
-    <AddInContent Include="Images\map-blue.png" />
-    <AddInContent Include="Images\map-green.png" />
-    <AddInContent Include="Images\map-red.png" />
-    <AddInContent Include="Images\map-yellow.png" />
-    <AddInContent Include="Images\point-blue.png" />
-    <AddInContent Include="Images\point-violet.png" />
-    <AddInContent Include="Images\s1.png" />
-    <AddInContent Include="Images\s2.png" />
-    <AddInContent Include="Images\s3.png" />
-    <AddInContent Include="Images\s4.png" />
-    <AddInContent Include="Images\s5.png" />
-    <AddInContent Include="Images\s6.png" />
-    <AddInContent Include="Images\s7.png" />
-    <AddInContent Include="Images\s8.png" />
-    <AddInContent Include="Images\search.png" />
-    <AddInContent Include="Images\showAttributTable.png" />
-    <AddInContent Include="Images\test_tube.png" />
-    <AddInContent Include="Images\update.png" />
+    <PackageReference Include="Esri.ArcGISPro.Extensions30" Version="3.2.0.49743" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.1" />
+    <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="MvvmDialogs" Version="9.1.2" />
   </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Resources\ajax_loader_green_256.gif" />
-    <AddInContent Include="Images\baguetteCroquis.png" />
-    <AddInContent Include="Resources\document-dossier-g100-orange-papier-icone-4442-64.png" />
-    <AddInContent Include="Resources\document-dossier-g3796-vert-papier-icone-7172-48.png" />
-    <AddInContent Include="Resources\document-dossier-g3844-orange-papier-icone-4826-64.png" />
-    <AddInContent Include="Resources\document-dossier-g3844-vert-papier-icone-7258-48.png" />
-    <AddInContent Include="Resources\document81.png" />
-    <AddInContent Include="Resources\Fatcow-Farm-Fresh-Connect.ico" />
-    <Resource Include="Resources\LogoIGN.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\cleaning.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\charger.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\visualiser.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\no_logo.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Views\CreateReportView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\FeedbackInformationView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ConnectView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\GroupChoiceView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LoadGatewayView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ReplyReportView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\HelpConfigureView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SeeReportView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Files\AboutStatusResponse.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Files\espaceco.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Files\formats.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\test.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!--
-  PackageAction can be:
-  BuildDefault: ArcGIS Pro is required. An esriAddinX package is created and copied to ArcGIS Pro add-in folder.
-  BuildZipPostProcess: ArcGIS Pro install is NOT required to build the add-in.  An esriAddinX package is created in your output folder.
-  BuildNoPostProcess:  ArcGIS Pro install is NOT required to build the add-in.  An esriAddinX package is NOT created.
-  -->
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PackageAction>BuildDefault</PackageAction>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PackageAction>BuildDefault</PackageAction>
-  </PropertyGroup>
-  <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.PackageAddIn" />
-  <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.CleanAddIn" />
-  <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.ConvertToRelativePath" />
-  <!--<Import Project="Esri.ArcGISPro.Extensions.targets" Condition="Exists('Esri.ArcGISPro.Extensions.targets')" />-->
-  <Import Project="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets" Condition="Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <!--<Target Name="BeforeBuild">
-    <Error Text="C:\Users\epeyrouse\AppData\Local\Programs\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets not found." Condition="!Exists('C:\Users\epeyrouse\AppData\Local\Programs\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets')" />
-  </Target>-->
 </Project>

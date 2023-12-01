@@ -88,8 +88,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             bool selectedSketch = false;
             bool selectedReport = false;
 
-            var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
-            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+            SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {
                 if (kvp.Key.Name == Helper.name_layer_Signalement &&
                     kvp.Value.Count > 0)
@@ -137,8 +137,8 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             List<string> listObjects = new List<string>();
 
-            var selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
-            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures)
+            SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {
                 var featureLayer = kvp.Key as FeatureLayer;
                 List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();

@@ -48,7 +48,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly ILog logger = LogManager.GetLogger(typeof(Client));
 
         #endregion
@@ -211,7 +210,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                     FileStream fileStream = new FileStream(kv.Value, FileMode.Open, FileAccess.Read);
 
                     byte[] buffer = new byte[4096];
-                    int bytesRead = 0;
+                    int bytesRead;
                     while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
                     {
                         rs.Write(buffer, 0, bytesRead);

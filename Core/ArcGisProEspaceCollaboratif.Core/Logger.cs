@@ -16,7 +16,7 @@ namespace ArcGisProEspaceCollaboratif.Core
        //le fichier de configuration du log
        private readonly string configFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\log4net.config";
        //le chemin vers le répertoire du fichier de log
-       private static string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\logs";
+       private static readonly string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\EspaceCollaboratif\\logs";
 
        //niveau de log
        private readonly string level = "ALL";

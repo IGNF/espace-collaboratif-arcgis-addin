@@ -8,7 +8,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class SeeAssociatedObjects : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(SeeAssociatedObjects));
 
         protected override async void OnClick()
@@ -30,7 +29,7 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
-                    AssociatedObjects associatedObjects = new AssociatedObjects(context);
+                    AssociatedObjects associatedObjects = new (context);
                     associatedObjects.SelectObjects();
                 }
                 catch (Exception e)

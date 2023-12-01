@@ -3,9 +3,9 @@ using ArcGIS.Core.Data;
 using System;
 using System.Collections.Generic;
 using log4net;
-using ArcGisProEspaceCollaboratif.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
+using ArcGIS.Core.Data.Exceptions;
 
 namespace ArcGisProEspaceCollaboratif
 {

@@ -12,7 +12,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class HelpConfigure : Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpConfigure));
 
         protected override void OnClick()
@@ -25,7 +24,7 @@ namespace ArcGisProEspaceCollaboratif
                 // Test de la présence du fichier XML de paramétrage
                 context.CheckConfigFile();
 
-                HelpConfigureViewModel helpConfigureViewModel = new HelpConfigureViewModel(context);
+                HelpConfigureViewModel helpConfigureViewModel = new(context);
                 helpConfigureViewModel.helpConfigureView.DataContext = helpConfigureViewModel;
                 bool? dialogResult = helpConfigureViewModel.helpConfigureView.ShowDialog();
                 // L'utilisateur a cliqué sur la croix pour fermer le dialogue

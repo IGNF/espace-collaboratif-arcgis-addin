@@ -60,12 +60,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// Info-bulle sur la zone de texte du login
         /// </summary>
-        public string LoginToolTip => "Entrez votre login utilisateur";
+        public static string LoginToolTip => "Entrez votre login utilisateur";
 
         /// <summary>
         /// Info-bulle sur la zone de texte du password
         /// </summary>
-        public string PasswordToolTip => "Entrez votre password utilisateur";
+        public static string PasswordToolTip => "Entrez votre password utilisateur";
 
         /// <summary>
         /// 

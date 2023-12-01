@@ -12,7 +12,6 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(DownloadReports));
 
         protected override async void OnClick()
@@ -34,7 +33,7 @@ namespace ArcGisProEspaceCollaboratif
                     context.CheckConfigFile();
 
                     // Préparation des paramètres à envoyer pour la requête de récupération des signalements
-                    Dictionary<string, string> parameters = new Dictionary<string, string>();
+                    Dictionary<string, string> parameters = new ();
 
                     // Paramètre groupe
                     int groupeId = -1;
@@ -62,7 +61,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
-                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog("Récupération des signalements sur le serveur...");
+                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ("Récupération des signalements sur le serveur...");
                     progressDialog.Show();
                     List<Report> reports = context.Client.GetGeoRems(parameters);
                     progressDialog.Hide();
@@ -78,7 +77,7 @@ namespace ArcGisProEspaceCollaboratif
                         int result = DateTime.Compare(dtStart, dtEnd);
                         if (sStartDate != sEndDate && result < 0)
                         {
-                            List<Report> reportToKeep = new List<Report>();
+                            List<Report> reportToKeep = new ();
 
                             foreach (Report report in reports)
                             {
@@ -95,7 +94,7 @@ namespace ArcGisProEspaceCollaboratif
                     // Filtrage spatial des signalements
                     if (hasFilter)
                     {
-                        List<Report> reportToKeep = new List<Report>();
+                        List<Report> reportToKeep = new ();
 
                         foreach (Report report in reports)
                         {
@@ -125,10 +124,10 @@ namespace ArcGisProEspaceCollaboratif
 //                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
-                    int newReports = context.CountReportsByStatus(EnumStatus.submit);
-                    int pendingReports = context.CountReportsByStatus(EnumStatus.pending) + context.CountReportsByStatus(EnumStatus.pending0) + context.CountReportsByStatus(EnumStatus.pending1) + context.CountReportsByStatus(EnumStatus.pending2);
-                    int rejectedReports = context.CountReportsByStatus(EnumStatus.reject) + context.CountReportsByStatus(EnumStatus.reject0);
-                    int validatedReports = context.CountReportsByStatus(EnumStatus.valid) + context.CountReportsByStatus(EnumStatus.valid0);
+                    long newReports = context.CountReportsByStatus(EnumStatus.submit);
+                    long pendingReports = context.CountReportsByStatus(EnumStatus.pending) + context.CountReportsByStatus(EnumStatus.pending0) + context.CountReportsByStatus(EnumStatus.pending1) + context.CountReportsByStatus(EnumStatus.pending2);
+                    long rejectedReports = context.CountReportsByStatus(EnumStatus.reject) + context.CountReportsByStatus(EnumStatus.reject0);
+                    long validatedReports = context.CountReportsByStatus(EnumStatus.valid) + context.CountReportsByStatus(EnumStatus.valid0);
 
                     string message = "Import de " + countReports + " signalement(s) depuis l'Espace collaboratif :\n";
                     message += "\n _ " + newReports + " nouveaux signalements.";
@@ -158,11 +157,11 @@ namespace ArcGisProEspaceCollaboratif
         /// Item3 : bbox des géométries contenues dans la couche,
         /// Item4 : liste des géométries contenues dans la couche.
         /// </returns>
-        public Tuple<bool, bool, Box, List<Geometry>> GetSpatialFilterParameters(string filterLayerName)
+        public static Tuple<bool, bool, Box, List<Geometry>> GetSpatialFilterParameters(string filterLayerName)
         {
             //Initialisation
-            Box bboxFiltrageSpatial = new Box();
-            List<Geometry> spatialFilterGeometry = new List<Geometry>();
+            Box bboxFiltrageSpatial = new ();
+            List<Geometry> spatialFilterGeometry = new ();
 
             Tuple< bool, bool, Box, List<Geometry>> noFilterTuple = Tuple.Create(false, false, bboxFiltrageSpatial, spatialFilterGeometry);
             Tuple< bool, bool, Box, List<Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
@@ -217,7 +216,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             // On ajoute la BBOX comme paramètre de la requête
-            bboxFiltrageSpatial = context.GetBBox(spatialFilterGeometry);
+            bboxFiltrageSpatial = Context.GetBBox(spatialFilterGeometry);
             
             return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
         }

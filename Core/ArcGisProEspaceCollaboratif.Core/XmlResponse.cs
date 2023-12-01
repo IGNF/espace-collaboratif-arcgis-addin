@@ -26,7 +26,6 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
-        private static readonly Logger riplogger = Logger.Instance;
         private static readonly ILog logger = LogManager.GetLogger(typeof(XmlResponse));
 
         /// <summary>
@@ -654,7 +653,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
                     if (idString == "665127")
                     {
-                        bool debug = true;
+                        continue;
                     }
 
                     report.Id = Convert.ToUInt64(idString);
@@ -823,7 +822,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             catch (Exception e)
             {
-                string message = "";
+                string message;
                 if (!(report is null))
                 {
                     message = string.Format("Une erreur est survenue dans l'import d'un signalement {0}\n{1}", report.Id, e.Message);
@@ -985,7 +984,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns>nombre total de réponses</returns>
         public int GetTotalResponse()
         {
-            int total = 0;
+            int total;
             string xpath = "/geors/PAGE/TOTAL";
             try
             {
@@ -1015,7 +1014,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         /// <returns></returns>
         public string GetDate()
         {
-            string sdate = "";
+            string sdate;
             string xpath = "/geors/PAGE/DATE";
             try
             {
