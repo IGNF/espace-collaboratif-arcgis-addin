@@ -15,6 +15,7 @@ using ArcGIS.Desktop.Editing;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
+using ArcGIS.Core.CIM;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -120,33 +121,30 @@ namespace ArcGisProEspaceCollaboratif
             this.Init(MapView.Active);
         }
 
+
         /// <summary>
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        public async Task Init(MapView activeView)
+        private async Task Init(MapView activeView)
         {
-            await QueuedTask.Run(async () =>
+            this.MapActiveView = activeView;
+
+            Project project = Project.Current;
+            if (project.Name.Length == 0)
             {
-                this.MapActiveView = activeView;
+                string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                logger.Error(string.Format("Context.Init : {0}\n", message));
+                throw new ArgumentNullException(message);
+            }
 
-                Project project = Project.Current;
-                if (project.Name.Length == 0)
-                {
-                    string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
-                    logger.Error(string.Format("Context.Init : {0}\n", message));
-                    throw new ArgumentNullException(message);
-                }
+            this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
+            this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
-                this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
-                this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
+            this.CheckConfigFile();
+            await this.CreateOrLoadReportLayers();
 
-                this.CheckConfigFile();
-                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
-                await this.CollaborativeSpaceGeodatabase.InitAsync();
-
-                logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
-            });
+            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
         #endregion
@@ -180,67 +178,253 @@ namespace ArcGisProEspaceCollaboratif
         }
 
         /// <summary>
+        /// Ajoute les champs indiqués dans le dictionnaire à la feature class en entrée.
+        /// </summary>
+        /// <param name="fcPath">Chemin de la feature class dans laquelle les champs doivent être ajoutés.</param>
+        /// <param name="fcAttributesDict">Dictionnaire contenant le nom, le type et la longueur éventuelle des champs à traiter.</param>
+        /// <returns></returns>
+        public void AddFieldsToFc(string fcPath, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict)
+        {
+            foreach (KeyValuePair<string, KeyValuePair<string, string>> kvp in fcAttributesDict)
+            {
+                string fieldName = kvp.Key;
+                string fieldType = kvp.Value.Key;
+                string fieldLength = kvp.Value.Value;
+
+                Geoprocessing.ExecuteToolAsync("AddField_management", Geoprocessing.MakeValueArray(fcPath, fieldName, fieldType, "", "", fieldLength));
+            }
+        }
+
+        private FeatureLayer LoadCollabLayer(string fcName, int layerPosition)
+        {
+            // Pour la couche donnée en entrée, vide la geodatabase pour supprimer les objets dans la carte
+            this.EmptyCollabFeatureClasses(fcName);
+
+            FeatureLayer collabSpaceLayer;
+            if (!this.IsLayerInMap(fcName))
+            {
+                // Ouverture de la feature class
+                FeatureClass collabSpaceFc = this.CollaborativeSpaceGeodatabase.Geodatabase.OpenDataset<FeatureClass>(fcName);
+
+                // Ajout en tant que FeatureLayer à la carte
+                // https://pro.arcgis.com/en/pro-app/latest/sdk/api-reference/topic76685.html
+                FeatureLayerCreationParams createParams = new(new Uri(this.Client.Url))
+                {
+                    Name = fcName,
+                    MapMemberIndex = layerPosition
+                };
+                collabSpaceLayer = LayerFactory.Instance.CreateLayer<FeatureLayer>(
+                    createParams,
+                    this.MapActiveView.Map
+                );
+            }
+            else
+            {
+                collabSpaceLayer = this.GetLayerByName(fcName);
+            }
+            return collabSpaceLayer;
+        }
+
+        private FeatureLayer CreateCollabLayer(string fcPath, string fcName, string fcTypeGeometry, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict)
+        {
+            List<object> arguments = new()
+                {
+                    this.CollaborativeSpaceGeodatabase.GeoDatabasePath, // Chemin de la geodatabase
+                    fcName, // Nom de la feature class à créer                   
+                    fcTypeGeometry, // type de géométrie                    
+                    "", // no template                    
+                    "DISABLED", // no z values                    
+                    "DISABLED", // no m values
+                                // Ajout de la référence spatiale
+                    this.SpatialReference
+                };
+
+            // Création de la feature class
+            Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", Geoprocessing.MakeValueArray(arguments.ToArray()));
+
+            // Ajout des champs à la nouvelle feature class
+            
+            this.AddFieldsToFc(fcPath, fcAttributesDict);
+
+            // La nouvelle feature class est chargée automatiquement dans la carte.
+            // On récupère le FeatureLayer correspondant.
+            return this.GetLayerByName(fcName);
+        }
+        /// <summary>
+        /// Définition de la symbologie en fonction des valeurs du champ Statut.
+        /// </summary>
+        /// <returns></returns>
+        public CIMRenderer CreateUniqueValueRendererForReportStatuses()
+        {
+            //Create the Unique Value Renderer
+            CIMUniqueValueRenderer uniqueValueRenderer = new()
+            {
+                // set the value field
+                Fields = new string[] { Helper.name_field_Statut }
+            };
+
+            //Construct the list of UniqueValueClasses
+            List<CIMUniqueValueClass> classes = new();
+
+            // Définition des couleurs
+            var pendingColor = CIMColor.CreateRGBColor(255, 170, 0);
+            var validColor = CIMColor.CreateRGBColor(0, 255, 0);
+            var rejectColor = CIMColor.CreateRGBColor(255, 0, 0);
+
+            int index = 0;
+
+            foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
+            {
+                List<CIMUniqueValue> statusValues = new();
+                CIMUniqueValue statusValue = new() { FieldValues = new string[] { index.ToString() } };
+                statusValues.Add(statusValue);
+
+                List<double> statusRGBCodes = Status.GetStatusColor(currStatus);
+                var statusColor = CIMColor.CreateRGBColor(statusRGBCodes[0], statusRGBCodes[1], statusRGBCodes[2]);
+
+                var status = new CIMUniqueValueClass()
+                {
+                    Values = statusValues.ToArray(),
+                    Label = Status.GetDisplayStatus(currStatus),
+                    Visible = true,
+                    Editable = true,
+                    Symbol = new CIMSymbolReference() { Symbol = SymbolFactory.Instance.ConstructPointSymbol(statusColor, 15, SimpleMarkerStyle.Pushpin) }
+                };
+                classes.Add(status);
+                index++;
+            }
+
+            //Add the classes to a group (by default there is only one group or "symbol level")
+            // Unique value groups
+            CIMUniqueValueGroup groupOne = new()
+            {
+                Heading = "Statuts",
+                Classes = classes.ToArray()
+            };
+            uniqueValueRenderer.Groups = new CIMUniqueValueGroup[] { groupOne };
+
+            return uniqueValueRenderer as CIMRenderer;
+        }
+
+        /// <summary>
+        /// Applique une symbolisation à la couche des signalements.
+        /// </summary>
+        /// <param name="fcLayer">FeatureLayer à laquelle le symbole doit être appliqué.</param>
+        /// <returns></returns>
+        public async Task SetReportLayerStyle(FeatureLayer fcLayer)
+        {
+            await QueuedTask.Run(() =>
+            {
+                CIMRenderer uniqueValueRenderer = this.CreateUniqueValueRendererForReportStatuses();
+
+                //setting the renderer to the feature layer
+                fcLayer.SetRenderer(uniqueValueRenderer);
+            });
+        }
+
+        public async Task LoadOrCreateCollaborativeSpaceLayers(string fcName, string fcTypeGeometry, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition)
+        {
+            string fcPath = this.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
+            bool bFeatureClassExist = this.CollaborativeSpaceGeodatabase.IsFeatureClassExists(fcName);
+            
+            // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
+            FeatureLayer collabSpaceLayer;
+            if (bFeatureClassExist)
+            { 
+                collabSpaceLayer = this.LoadCollabLayer(fcName, layerPosition);
+            }
+            // Si la feature class n'existe pas dans la geodatabase du projet, on la crée
+            else
+            {
+                // La nouvelle feature class est chargée automatiquement dans la carte.
+                // On récupère le FeatureLayer correspondant.
+                collabSpaceLayer = this.CreateCollabLayer(fcPath, fcName, fcTypeGeometry, fcAttributesDict);
+            }
+            List<object> argumentsSpatialIndex = new() { collabSpaceLayer };
+            await Geoprocessing.ExecuteToolAsync("RemoveSpatialIndex_management", Geoprocessing.MakeValueArray(argumentsSpatialIndex.ToArray()));
+
+            // Pour la couche de signalement :
+            // Application d'une symbologie
+            // Application d'un domaine (clés-valeurs) pour le champ statut
+            if (fcName == Helper.name_layer_Signalement)
+            {
+                await this.SetReportLayerStyle(collabSpaceLayer);
+
+                // Définition du domaine pour le champ Statut
+                string statusDomainName = "Status_domain";
+
+                List<object> argumentsDomain = new() {
+                        this.CollaborativeSpaceGeodatabase.GeoDatabasePath,
+                        statusDomainName,
+                        "",
+                        "LONG",
+                        "CODED"
+                    };
+                await Geoprocessing.ExecuteToolAsync("CreateDomain_management", Geoprocessing.MakeValueArray(argumentsDomain.ToArray()));
+
+                // Ajout des codes au domaine
+                foreach (Status.EnumStatus currStatus in Enum.GetValues(typeof(Status.EnumStatus)))
+                {
+                    List<object> argumentsCodedValue = new() {
+                            this.CollaborativeSpaceGeodatabase.GeoDatabasePath,
+                            statusDomainName,
+                            (long)currStatus,
+                            Status.GetDisplayStatus(currStatus)
+                        };
+                    await Geoprocessing.ExecuteToolAsync("AddCodedValueToDomain_management", Geoprocessing.MakeValueArray(argumentsCodedValue.ToArray()));
+                }
+
+                // Application du domaine au champ statut
+                List<object> argumentsAssignDomain = new() {
+                            fcPath,
+                            Helper.name_field_Statut,
+                            statusDomainName
+                        };
+                await Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
+            }
+        }
+
+        /// <summary>
         /// Création ou chargement des couches de signalement de l'espace collaboratif
         /// </summary>
         public async Task CreateOrLoadReportLayers()
         {
-            // Création ou chargement des calques dédiés à de l'espace collaboratif s'ils sont absents de la carte en cours.
-            string polygonSketchLayer = Helper.name_layer_Croquis_Polygone;
-            string lineSketchLayer = Helper.name_layer_Croquis_Ligne;
-            string pointSketchLayer = Helper.name_layer_Croquis_Point;
-            string reportLayer = Helper.name_layer_Signalement;
-
-            //Suppression du groupe de couches s'il existe
-            IEnumerable<GroupLayer> groupLayers = this.MapActiveView.Map.GetLayersAsFlattenedList().OfType<GroupLayer>();
-            foreach (GroupLayer grLayer in groupLayers)
+            if (this.CollaborativeSpaceGeodatabase is null)
             {
-                if (grLayer.Name == Helper.name_group_layer)
-                {
-                    this.MapActiveView.Map.RemoveLayer(grLayer);
-                    break;
-                }
+                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
             }
-
+            
             // Signalements
-            await Helper.LoadOrCreateCollaborativeSpaceLayer(
-                reportLayer,
+            await this.LoadOrCreateCollaborativeSpaceLayers(
+                Helper.name_layer_Signalement,
                 "POINT",
                 Helper.reportAttributes,
                 0
                 );
 
             // Croquis ponctuels
-            await Helper.LoadOrCreateCollaborativeSpaceLayer(
-                pointSketchLayer,
+            await this.LoadOrCreateCollaborativeSpaceLayers(
+                Helper.name_layer_Croquis_Point,
                 "POINT",
                 Helper.sketchAttributes,
                 1
                 );
 
             // Croquis linéaires
-            await Helper.LoadOrCreateCollaborativeSpaceLayer(
-                lineSketchLayer,
+            await this.LoadOrCreateCollaborativeSpaceLayers(
+                Helper.name_layer_Croquis_Ligne,
                 "POLYLINE",
                 Helper.sketchAttributes,
                 2
                 );
 
             // Croquis polygones
-            await Helper.LoadOrCreateCollaborativeSpaceLayer(
-                polygonSketchLayer,
+            await this.LoadOrCreateCollaborativeSpaceLayers(
+                Helper.name_layer_Croquis_Polygone,
                 "POLYGON",
                 Helper.sketchAttributes,
                 3
                 );
-
-            // Création du groupe de couches
-            GroupLayer groupLayerCollabSpace = LayerFactory.Instance.CreateGroupLayer(this.MapActiveView.Map, 0, "Espace collaboratif");
-
-            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(reportLayer), 0);
-            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(pointSketchLayer), 1);
-            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(lineSketchLayer), 2);
-            groupLayerCollabSpace.MoveLayer(this.GetLayerByName(polygonSketchLayer), 3);
-
         }
 
         /// <summary>
@@ -286,17 +470,18 @@ namespace ArcGisProEspaceCollaboratif
 
 
         /// <summary>
-        /// Vide les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point"
+        /// 
         /// de leur contenu.
         /// </summary>
-        public void EmptyCollabFeatureClasses()
+        public void EmptyCollabFeatureClasses(string layerName)
         {
             try
             {
-                foreach (string layerName in Helper.CollaborativeSpaceLayers)
+                if (!this.IsLayerInMap(layerName))
                 {
-                    this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
+                    return;
                 }
+                this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
             }
             catch (Exception e)
             {
@@ -321,7 +506,7 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     try
                     {
-                        QueryFilter queryFilter = new ()
+                        ArcGIS.Core.Data.QueryFilter queryFilter = new ()
                         {
                             WhereClause = string.Format("{0} = {1}", Helper.name_field_IdReport, reportUdating.Id)
                         };
@@ -385,6 +570,10 @@ namespace ArcGisProEspaceCollaboratif
                     };
 
                     FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
+                    if (reportLayer is null)
+                    {
+                        return false;
+                    }
                     FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
 
                     // Placement des signalements importés et filtrés sur la carte.
@@ -806,7 +995,7 @@ namespace ArcGisProEspaceCollaboratif
             {
                 // sinon le choix d'un autre groupe est présenté à l'utilisateur
                 // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
-                GroupChoiceViewModel groupChoiceViewModel = new (Profil.Group.Name, Profil);
+                GroupChoiceViewModel groupChoiceViewModel = new (Profil);
                 groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
                 bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
                 // Si l'utilisateur a cliqué sur le bouton "Annuler"
@@ -874,6 +1063,7 @@ namespace ArcGisProEspaceCollaboratif
                 return sketches;
             }
 
+            string message = "";
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
             {
@@ -884,15 +1074,19 @@ namespace ArcGisProEspaceCollaboratif
                     var featureLayer = kvp.Key as FeatureLayer;
                     List<FieldDescription> fieldDescription = featureLayer.GetFieldDescriptions();
                     List<long> lOid = kvp.Value;
+                    
                     foreach (long oid in lOid)
                     {
                         QueuedTask.Run(() =>
                         {
                             // Initialisation d'un nouveau croquis avec la géométrie
                             var inspector = featureLayer.Inspect(oid);
-                            Geometry geometryFeature = inspector.Shape;
+                            ArcGIS.Core.Geometry.Geometry geometryFeature = inspector.Shape;
                             ArcGisProEspaceCollaboratif.Core.Sketch tmpSketch = Helper.MakeSketch(geometryFeature);
-
+                            if (tmpSketch == null)
+                            {
+                                message += string.Format("Le croquis pour le signalement {0} n'a pu être créé.\n", oid);
+                            }
                             // Ajout des attributs au nouveau croquis
                             Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
                             foreach (KeyValuePair<string, string> kv in attributes)
@@ -905,8 +1099,18 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
             });
-                       
-            return sketches;
+            System.Windows.MessageBoxResult result = System.Windows.MessageBoxResult.Cancel;
+            if (!string.IsNullOrEmpty(message))
+            {
+                message += "Voulez-vous continuer ?";
+                result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
+            }  
+            if (result == System.Windows.MessageBoxResult.OK ||
+                result == System.Windows.MessageBoxResult.Yes)
+            {
+                return sketches;
+            }
+            else { return null; }
         }
  
         /// <summary>

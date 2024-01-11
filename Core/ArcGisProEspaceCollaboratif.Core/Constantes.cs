@@ -62,5 +62,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         public const string N_REPORT_IN_GDB = "NoSignalement";
         public const string LIEN_REPORT = "Lien_signalement";
         public const string DEFAULT_DATE_EXTRACTION = "2000-01-01 00:00:00";
+
+        public const string ESPACECO = "[ESPACE CO] ";
     }
 }

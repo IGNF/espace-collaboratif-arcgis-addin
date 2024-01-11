@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="172" Width="420" WindowStartupLocation="CenterScreen">
+        Title="{Binding Title}" Height="172" Width="420" WindowStartupLocation="CenterScreen" Topmost="True">
     <Grid Margin="0,0,-0.4,5.6">
         <Grid.RowDefinitions>
             <RowDefinition Height="25*"/>

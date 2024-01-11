@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping.Win32;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 
@@ -134,3 +135,14 @@ namespace ArcGisProEspaceCollaboratif
         }
     }
 }
+
+
+// Create the group layer and add sublayers.
+/*
+FeatureLayer devTwo = new FeatureLayer(new Uri("https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/DevA_Pathways/FeatureServer/1"));
+exemple : [ESPACE CO] Test ecriture
+GroupLayer gLayer = new GroupLayer();
+gLayer.Name = "Group: Dev A";
+gLayer.Layers.Add(devOne);
+gLayer.Layers.Add(devTwo);
+gLayer.Layers.Add(devThree);*/

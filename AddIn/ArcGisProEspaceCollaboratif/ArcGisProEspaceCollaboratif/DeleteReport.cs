@@ -21,8 +21,17 @@ namespace ArcGisProEspaceCollaboratif
             {
                 try
                 {
-                    Context context = Context.Instance;
+                    // Demande de confirmation
+                    string message = string.Format("Vous allez supprimer les signalements et croquis de votre projet ArcGIS. Ceux-ci seront toutefois toujours accessibles sur l'Espace collaboratif. \nSouhaitez-vous poursuivre la suppression ?");
+                    System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                    if (messageBoxResult == System.Windows.MessageBoxResult.Cancel ||
+                        messageBoxResult == System.Windows.MessageBoxResult.No)
+                    {
+                        return;
+                    }
 
+                    // TODO, est-il nécessaire de se connecter pour vider les couches de signalement ???
+                    Context context = Context.Instance;
                     // Il faut s'être connecté au service pour la créer un signalement
                     if (context.Client == null)
                     {
@@ -33,25 +42,13 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
-
-                    // Demande de confirmation
-                    string message = string.Format("Vous allez supprimer les signalements et croquis de votre projet ArcGIS. Ceux-ci seront toutefois toujours accessibles sur l'Espace collaboratif. \nSouhaitez-vous poursuivre la suppression ?");
-                    System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
-                    if (messageBoxResult == System.Windows.MessageBoxResult.Cancel ||
-                        messageBoxResult == System.Windows.MessageBoxResult.No)
+                    else
                     {
-                        return;
-                    }
-
-                    // Suppression
-                    context.EmptyCollabFeatureClasses();
-
-                    IEnumerable<GroupLayer> groupLayers = context.MapActiveView.Map.GetLayersAsFlattenedList().OfType<GroupLayer>();
-                    foreach (GroupLayer grLayer in groupLayers)
-                    {
-                        if (grLayer.Name == Helper.name_group_layer)
+                        // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
+                        // Vider aussi les tables ??
+                        foreach (string layerName in Helper.CollaborativeSpaceLayers)
                         {
-                            context.MapActiveView.Map.RemoveLayer(grLayer);
+                            context.EmptyCollabFeatureClasses(layerName);
                         }
                     }
                 }

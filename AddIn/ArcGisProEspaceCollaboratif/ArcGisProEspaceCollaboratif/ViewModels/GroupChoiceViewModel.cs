@@ -1,8 +1,20 @@
-﻿using ArcGisProEspaceCollaboratif.Core;
+﻿using ArcGIS.Core.Data.UtilityNetwork.Trace;
+using ArcGIS.Core.Internal.CIM;
+using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Mapping;
+using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using System.Security.Policy;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -10,7 +22,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
     {
         #region Parameters
         /// <summary>
-        /// L'instance du dialogue "Choix du groupe"
+        /// L'instance du dialogue "Paramètres de travail"
         /// </summary>
         public GroupChoiceView groupChoiceView;
 
@@ -18,19 +30,20 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Le profil de l'utilisateur
         /// </summary>
         public Profile Profile { get; set; }
+
         #endregion
 
         #region Constructors
         /// <summary>
-        /// Initialisation du dialogue "Choix du groupe"
+        /// Initialisation du dialogue "Paramètres de travail"
         /// </summary>
         /// <param name="activeGroup"></param>
         /// <param name="profile"></param>
-        public GroupChoiceViewModel(string activeGroup, Profile profil)
+        public GroupChoiceViewModel(Profile profil)
         {
             this.Profile = profil;
             this.groupChoiceView = new GroupChoiceView();
-            this.InitializeGroupChoiceView(activeGroup);  
+            this.InitializeGroupChoiceView();
         }
         #endregion
 
@@ -39,15 +52,73 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         public ObservableCollection<string> GroupItemsSourceGroupComboBox { get; set; }
+        
+        /// <summary>
+        /// Le nom du fichier shape et son chemin
+        /// </summary>
+        private Dictionary<string, string> NewShapeFile { get; set; }
+
+        private string WorkZone { get; set; }
+
+        public ObservableCollection<string> WorkZoneItemsSourceGroupComboBox { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         public string GroupSelectedItemComboBox { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string WorkZoneSelectedItemComboBox { get; set; }
+
         #endregion
 
         #region Commands
+        public ICommand BrowseButtonCmd { get { return new RelayCommand(OnBrowse, AlwaysTrue); } }
+
+        /// <summary>
+        /// L'utilisateur a cliqué sur le bouton "Parcourir".
+        /// Il faut ouvrir le dialogue de sélection de fichier
+        /// </summary>
+        private void OnBrowse()
+        {
+            List<string> Formats = new()
+            {
+                ".shp",
+                ".SHP"
+            };
+            string defaultExtension = string.Format("{0}|{1}", Formats[0], Formats[1]);
+            string filters = string.Format("ESRI ShapeFile (*{0},*{1}|*{2};*{3})", Formats[0], Formats[1], Formats[0], Formats[1]);
+            Microsoft.Win32.OpenFileDialog dlg = new()
+            {
+                DefaultExt = defaultExtension,
+                Filter = filters,
+                Multiselect = false,
+                Title = "Nouvelle zone de travail Shapefile"
+            };
+            bool? result = dlg.ShowDialog();
+            if (result == true)
+            {
+                string extension = dlg.FileName.Substring(dlg.FileName.Length - 4, 4);
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    if (!Formats.Contains(extension))
+                    {
+                        string message = string.Format("Le fichier de type [{0}] n'est pas un fichier Shapefile.", extension);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            message,
+                            Constantes.ERROR
+                        );
+                    }
+                }
+                string fileName = dlg.SafeFileName.Replace(extension, "");
+                this.NewShapeFile[fileName] = dlg.FileName; 
+                this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
+                this.WorkZoneSelectedItemComboBox = fileName;
+            }
+        }
+
         public ICommand CancelButtonCmd { get { return new RelayCommand(OnCancel, AlwaysTrue); } }
 
         /// <summary>
@@ -63,14 +134,78 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Enregistrer".
-        /// Il faut sauvegarder le choix du profil
+        /// Il faut sauvegarder le choix du profil et/ou importer/sauvegarder la zone de travail
         /// </summary>
-        private void OnRegister()
+        private async void OnRegister()
         {
+            string zone = this.groupChoiceView.WorkZoneComboBox.Text;
+
+            // Si le nom de la zone de travail est vide → extraction complete
+            if (string.IsNullOrEmpty(zone))
+            {
+                string message = "Vous n'avez pas spécifié de zone de travail. Lorsque vous importerez les signalements ou les données de votre groupe, le chargement se fera sur la totalité du territoire et sera probablement long. Voulez-vous continuer ?";
+                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                if (result == System.Windows.MessageBoxResult.No)
+                {
+                    return;
+                }
+                else
+                {
+                    Helper.SaveWorkZone(zone);
+                }
+            }
+
+            // Récupération du nom du groupe que l'utilisateur a choisi
             int index = this.groupChoiceView.GroupComboBox.SelectedIndex;
             string igGroup = this.Profile.Geogroupes[index].Id;
             string nomGroup = this.Profile.Geogroupes[index].Name;
             this.Profile.IdNameGroup = (igGroup, nomGroup);
+            Helper.SaveActiveGroup(nomGroup);
+
+            // Est-ce qu'un changement de groupe ou de zone de travail est intervenu au moment de la sauvegarde ?
+            // Si oui, il faut supprimer l'ensemble des couches et le groupe
+            DeleteMapsAndGroup(zone);
+
+            // Création d'une nouvelle zone de travail si le dictionnaire est rempli avec un shape
+            // que l'utilisateur a chargé avec le bouton 'Parcourir'
+            if (this.NewShapeFile.Count > 0)
+            {
+                string pathToSource = this.NewShapeFile[zone];
+                if (string.IsNullOrEmpty(pathToSource))
+                {
+                    string message = string.Format("Impossible d'importer le fichier {0}", pathToSource);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                }
+                await Helper.AddLayer(pathToSource);
+                Helper.SaveWorkZone(zone);
+            }
+            
+        }
+
+        private void DeleteMapsAndGroup(string userZone)
+        {
+            // TODO Si c'est un projet nouvellement créé, il faut vérifier si la table des tables existe
+            // Le nom de la zone stocké dans le xml .../xxx_espaceco.xml
+            string storedZone = Helper.LoadWorkZone();
+            string storedGroup = Helper.LoadActiveGroup();
+            bool bNewZone = storedZone != userZone && !(storedZone == null && userZone == "");
+            bool bNewGroup = storedGroup != this.Profile.Group.Name;
+            // Si rien n'a changé, on sort
+            if (!bNewGroup && !bNewZone)
+            {
+                return;
+            }
+            
+            // Récupération de l'ensemble des noms des couches chargées dans le projet QGIS
+            List <Map> maps = Helper.GetMaps();
+            // On regarde si le projet QGIS contient des couches Espace co
+            // Si l'utilisateur a changé de groupe, on supprime l'ancien(s'il existe dans le projet)
+            // et toutes les couches associées. On supprime la base sqlite et on la recrée
+            // Si l'utilisateur a changé de zone de travail, il faut supprimer les couches
+            if (bNewZone)
+            {
+                int a = 1;
+            }
         }
 
         private bool AlwaysTrue() { return true; }
@@ -80,10 +215,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        private void InitializeGroupChoiceView(string activeGroup)
+        private void InitializeGroupChoiceView()
         {
             this.SetItemsSourceGroupComboBox();
-            this.SetGroupSelectedItemComboBox(activeGroup);
+            this.SetGroupSelectedItemComboBox();
+            this.SetItemsSourceWorkZoneComboBox();
+            this.SetWorkZoneSelectedItemComboBox();
         }
         /// <summary>
         /// 
@@ -91,7 +228,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public void SetItemsSourceGroupComboBox()
         {
             // Ajout des noms de groupes trouvés pour l'utilisateur
-            ObservableCollection<string> GroupNames = new ObservableCollection<string>();
+            ObservableCollection<string> GroupNames = new ();
             foreach (GeoGroup geogroup in this.Profile.Geogroupes)
             {
                 GroupNames.Add(geogroup.Name);
@@ -103,12 +240,26 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         /// <param name="activeGroup"></param>
-        public void SetGroupSelectedItemComboBox(string activeGroup)
+        public void SetGroupSelectedItemComboBox()
         {
-            if (!string.IsNullOrEmpty(activeGroup))
+            this.GroupSelectedItemComboBox = Helper.LoadActiveGroup();
+        }
+
+        public void SetItemsSourceWorkZoneComboBox()
+        {
+            this.NewShapeFile = new Dictionary<string, string>();
+            this.WorkZone = Helper.LoadWorkZone();
+            this.WorkZoneItemsSourceGroupComboBox = new ObservableCollection<string>
             {
-                this.GroupSelectedItemComboBox = activeGroup;
-            }
+                "",
+                this.WorkZone
+            };
+        }
+
+        public void SetWorkZoneSelectedItemComboBox()
+        {
+            this.WorkZoneSelectedItemComboBox = this.WorkZone;
+
         }
         #endregion
     }

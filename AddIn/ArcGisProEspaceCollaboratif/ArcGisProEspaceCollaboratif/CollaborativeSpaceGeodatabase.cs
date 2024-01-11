@@ -6,6 +6,7 @@ using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Core.Data.Exceptions;
+using ArcGIS.Core.Data.DDL;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -37,19 +38,33 @@ namespace ArcGisProEspaceCollaboratif
 
         public CollaborativeSpaceGeodatabase()
         {     
-            Uri gdbUri = new Uri(uriString: GeoDatabasePath);
+            Uri gdbUri = new(uriString: this.GeoDatabasePath);
             this.FileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(gdbUri);
+            this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
         }
 
         #endregion
 
         #region Other methods
 
-        public async System.Threading.Tasks.Task InitAsync()
+        /// <summary>
+        /// Vérifie si une table existe dans une Geodatabase.
+        /// </summary>
+        /// <param name="tableName"> Nom de la table à chercher.
+        /// <returns>true si la table existe dans la geodatabase, false sinon.</returns>
+        public bool IsTableExists(string tableName)
         {
-            await QueuedTask.Run(() => {
-                this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
-            });
+            try
+            {
+                TableDefinition tableDefinition = this.Geodatabase.GetDefinition<TableDefinition>(tableName);
+                tableDefinition.Dispose();
+                return true;
+            }
+            catch
+            {
+                // GetDefinition throws an exception if the definition doesn't exist
+                return false;
+            }
         }
 
         /// <summary>
@@ -57,26 +72,19 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="featureClassName"> Nom de la feature class à chercher.
         /// <returns>true si la feature class existe dans la geodatabase, false sinon.</returns>
-        public bool IsFeatureClassInGeodatabase(string featureClassName)
+        public bool IsFeatureClassExists(string featureClassName)
         {
             try
             {
-                IReadOnlyList<FeatureClassDefinition> listFeatureClassDefinition = this.Geodatabase.GetDefinitions<FeatureClassDefinition>();
-                foreach (FeatureClassDefinition lfcd in listFeatureClassDefinition)
-                {
-                    if (lfcd.GetName() == featureClassName)
-                    {
-                        return true;
-                    }
-                }
+                FeatureClassDefinition featureClassDefinition = this.Geodatabase.GetDefinition<FeatureClassDefinition>(featureClassName);
+                featureClassDefinition.Dispose();
+                return true;
             }
-            catch (GeodatabaseException exObj)
+            catch
             {
-                logger.Error(string.Format("CollaborativeSpaceGeodatabase.IsFeatureClassInGeodatabase : {0}\n", exObj.Message));
-                throw new Exception(exObj.Message);
+                return false;
             }
             
-            return false;
         }
 
         #endregion
@@ -87,17 +95,12 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="featureClassName"> Nom de la feature class à vider.
         /// <returns>void</returns>
-        public void EmptyFeatureClass (string featureClassName)
+        public void EmptyFeatureClass(string featureClassName)
         {
             try
             {
-                if (!IsFeatureClassInGeodatabase(featureClassName))
-                {
-                    return;
-                }
                 string featureClassPath = string.Format("{0}\\{1}", this.GeoDatabasePath, featureClassName);
                 Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
-                // WARNING: this action creates a layer in the active map.
             }
             catch (GeodatabaseException exObj)
             {

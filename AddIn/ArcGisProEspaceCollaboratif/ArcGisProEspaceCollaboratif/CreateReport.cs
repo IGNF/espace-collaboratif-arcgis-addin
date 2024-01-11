@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -8,7 +7,7 @@ using ArcGisProEspaceCollaboratif.ViewModels;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class CreateReport : Button
+    internal class CreateReport : System.Windows.Controls.Button
     {
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
 
@@ -36,20 +35,29 @@ namespace ArcGisProEspaceCollaboratif
                     bool bRes = context.IsLayerInMap(Helper.name_layer_Signalement);
                     if (!bRes)
                     {
-                        string message = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
-                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", message));
+                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de créer un nouveau signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", mess));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                            message,
+                            mess,
                             Constantes.ERROR);
                         return;
                     }
 
                     // Transformation des objets sélectionnés en croquis.
+                    string message = "";
                     List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeSketchFromSelection();
+                    if (futursSketch == null)
+                    {
+                        message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pu être créés";    
+                    }
                     logger.Debug(futursSketch.Count + " croquis générés.");
                     if (futursSketch.Count == 0)
                     {
-                        string message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
+                        message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
+                        
+                    }
+                    if (string.IsNullOrEmpty(message))
+                    {
                         logger.Error(string.Format("CreateReport.OnClick.context.MakeSketchFromSelection : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             message,
