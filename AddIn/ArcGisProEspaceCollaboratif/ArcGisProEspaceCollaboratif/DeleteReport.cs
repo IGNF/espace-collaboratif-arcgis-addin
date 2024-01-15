@@ -30,7 +30,6 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
 
-                    // TODO, est-il nécessaire de se connecter pour vider les couches de signalement ???
                     Context context = Context.Instance;
                     // Il faut s'être connecté au service pour la créer un signalement
                     if (context.Client == null)
@@ -42,15 +41,13 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
-                    else
+                   
+                    // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
+                    foreach (string layerName in Helper.CollaborativeSpaceLayers)
                     {
-                        // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
-                        // Vider aussi les tables ??
-                        foreach (string layerName in Helper.CollaborativeSpaceLayers)
-                        {
-                            context.EmptyCollabFeatureClasses(layerName);
-                        }
+                        context.EmptyCollabFeatureClasses(layerName);
                     }
+
                 }
                 catch (Exception e)
                 {
