@@ -47,7 +47,7 @@
             Importer les signalements de son profil actif sur l'Espace collaboratif<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_SeeReport" keytip="W" caption="Visualiser" className="SeeReport" loadOnClick="true" smallImage="Images\visualiser.png" largeImage="Images\visualiser.png">
-          <tooltip heading="Visualer">
+          <tooltip heading="Visualiser">
             Ouvrir la fiche du signalement sélectionné<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_ReplyReport" keytip="W" caption="Répondre" className="ReplyReport" loadOnClick="true" smallImage="Images\answer.png" largeImage="Images\answer.png">

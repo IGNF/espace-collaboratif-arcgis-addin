@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;

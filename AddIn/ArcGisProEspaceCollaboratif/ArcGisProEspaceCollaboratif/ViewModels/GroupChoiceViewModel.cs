@@ -1,20 +1,12 @@
-﻿using ArcGIS.Core.Data.UtilityNetwork.Trace;
-using ArcGIS.Core.Internal.CIM;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
+﻿using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Linq;
 using System.Windows.Input;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -113,8 +105,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     }
                 }
                 string fileName = dlg.SafeFileName.Replace(extension, "");
-                this.NewShapeFile[fileName] = dlg.FileName; 
-                this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
+                this.NewShapeFile[fileName] = dlg.FileName;
+                // Evitons les doublons
+                if (!this.WorkZoneItemsSourceGroupComboBox.Contains(fileName))
+                {
+                    this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
+                }               
                 this.WorkZoneSelectedItemComboBox = fileName;
             }
         }
@@ -170,16 +166,18 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             // que l'utilisateur a chargé avec le bouton 'Parcourir'
             if (this.NewShapeFile.Count > 0)
             {
-                string pathToSource = this.NewShapeFile[zone];
-                if (string.IsNullOrEmpty(pathToSource))
+                if (this.NewShapeFile.ContainsKey(zone))
                 {
-                    string message = string.Format("Impossible d'importer le fichier {0}", pathToSource);
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
-                }
-                await Helper.AddLayer(pathToSource);
-                Helper.SaveWorkZone(zone);
-            }
-            
+                    string pathToSource = this.NewShapeFile[zone];
+                    if (string.IsNullOrEmpty(pathToSource))
+                    {
+                        string message = string.Format("Impossible d'importer le fichier {0}", pathToSource);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                    }
+                    await Helper.AddLayer(pathToSource);
+                    Helper.SaveWorkZone(zone);
+                } 
+            }  
         }
 
         private void DeleteMapsAndGroup(string userZone)
@@ -247,13 +245,31 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         public void SetItemsSourceWorkZoneComboBox()
         {
-            this.NewShapeFile = new Dictionary<string, string>();
             this.WorkZone = Helper.LoadWorkZone();
+            this.NewShapeFile = new Dictionary<string, string>();
             this.WorkZoneItemsSourceGroupComboBox = new ObservableCollection<string>
             {
-                "",
-                this.WorkZone
+                ""
             };
+            // Quelles sont les couches de polygone qui existent dans la carte ?
+            IReadOnlyList<Layer> mapLayers = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.ShapeType == esriGeometryType.esriGeometryPolygon).ToList();
+            foreach (var layer in mapLayers)
+            {
+                string layerName = layer.Name;
+                if (layerName == Helper.name_layer_Croquis_Polygone)
+                {
+                    continue;
+                }
+                this.WorkZoneItemsSourceGroupComboBox.Add(layerName);
+            }
+            
+            if (!string.IsNullOrEmpty(this.WorkZone))
+            {
+                if (this.WorkZoneItemsSourceGroupComboBox.Contains(this.WorkZone))
+                {
+                    this.WorkZoneSelectedItemComboBox = this.WorkZone;
+                }                
+            }
         }
 
         public void SetWorkZoneSelectedItemComboBox()

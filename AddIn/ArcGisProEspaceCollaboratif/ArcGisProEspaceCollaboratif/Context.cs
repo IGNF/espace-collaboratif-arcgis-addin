@@ -142,6 +142,16 @@ namespace ArcGisProEspaceCollaboratif
             this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
+            // Pour créer les couches liées au signalement, il faut que le client soit initialisé.
+            if (this.Client == null)
+            {
+                // Établissement de la connexion avec le service Espace collaboratif.
+                this.Client = this.GetConnexionEspaceCollaboratif();
+                if (this.Client == null)
+                {
+                    return;
+                }
+            }
             await this.CreateOrLoadReportLayers();
 
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");

@@ -3,10 +3,6 @@ using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using ArcGIS.Desktop.Mapping;
-using System.Linq;
 
 namespace ArcGisProEspaceCollaboratif
 {

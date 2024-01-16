@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.ViewModels;
+using System.Collections.Generic;
 
 namespace ArcGisProEspaceCollaboratif
 {
-    internal class CreateReport : System.Windows.Controls.Button
+    internal class CreateReport : Button
     {
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CreateReport));
 

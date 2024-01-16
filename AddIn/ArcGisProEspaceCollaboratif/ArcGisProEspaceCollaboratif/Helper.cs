@@ -625,8 +625,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>Le chemin complet + nom du fichier du fichier de paramétrage.</returns>
         public static string XML_NameFile()
         {
-            string workDir = Context.Instance.DirectoryWorking;
-            return string.Format("{0}\\{1}", System.IO.Path.GetFullPath(workDir), Helper.name_file_espaceco_xml);
+            Project project = Project.Current;
+            string fullPath = System.IO.Path.GetDirectoryName(project.Path);
+            return string.Format("{0}\\{1}", fullPath, Helper.name_file_espaceco_xml);
         }
 
         /// <summary>
