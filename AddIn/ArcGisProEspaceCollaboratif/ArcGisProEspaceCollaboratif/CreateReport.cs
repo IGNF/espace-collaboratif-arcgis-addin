@@ -49,15 +49,16 @@ namespace ArcGisProEspaceCollaboratif
                     List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeSketchFromSelection();
                     if (futursSketch == null)
                     {
-                        message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pu être créés";    
+                        message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pu être créés";
+                        return;
                     }
                     logger.Debug(futursSketch.Count + " croquis générés.");
                     if (futursSketch.Count == 0)
                     {
                         message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
-                        
+                        return;
                     }
-                    if (string.IsNullOrEmpty(message))
+                    if (!string.IsNullOrEmpty(message))
                     {
                         logger.Error(string.Format("CreateReport.OnClick.context.MakeSketchFromSelection : {0}\n", message));
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(

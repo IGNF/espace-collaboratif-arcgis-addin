@@ -207,9 +207,6 @@ namespace ArcGisProEspaceCollaboratif
 
         private FeatureLayer LoadCollabLayer(string fcName, int layerPosition)
         {
-            // Pour la couche donnée en entrée, vide la geodatabase pour supprimer les objets dans la carte
-            this.EmptyCollabFeatureClasses(fcName);
-
             FeatureLayer collabSpaceLayer;
             if (!this.IsLayerInMap(fcName))
             {
@@ -1109,18 +1106,19 @@ namespace ArcGisProEspaceCollaboratif
                     }
                 }
             });
-            System.Windows.MessageBoxResult result = System.Windows.MessageBoxResult.Cancel;
+            // Si le message n'est pas vide, c'est qu'il y a des problèmes dans la création des croquis
+            // Il faut demander à l'utilisateur s'il veut continuer
             if (!string.IsNullOrEmpty(message))
             {
                 message += "Voulez-vous continuer ?";
-                result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-            }  
-            if (result == System.Windows.MessageBoxResult.OK ||
-                result == System.Windows.MessageBoxResult.Yes)
-            {
-                return sketches;
+                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                if (result == System.Windows.MessageBoxResult.Cancel ||
+                    result == System.Windows.MessageBoxResult.No)
+                {
+                    return null;
+                }
             }
-            else { return null; }
+            return sketches;
         }
  
         /// <summary>

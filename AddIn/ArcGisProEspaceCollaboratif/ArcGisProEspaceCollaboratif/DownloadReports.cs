@@ -32,6 +32,12 @@ namespace ArcGisProEspaceCollaboratif
                     // Test de la présence du fichier XML de paramétrage
                     context.CheckConfigFile();
 
+                    // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
+                    foreach (string layerName in Helper.CollaborativeSpaceLayers)
+                    {
+                        context.EmptyCollabFeatureClasses(layerName);
+                    }
+
                     // Préparation des paramètres à envoyer pour la requête de récupération des signalements
                     Dictionary<string, string> parameters = new ();
 
