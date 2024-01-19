@@ -23,7 +23,9 @@ namespace ArcGisProEspaceCollaboratif
                     if (context.Client == null)
                     {
                         // Établissement de la connexion avec le service Espace collaboratif.
-                        context.Client = context.GetConnexionEspaceCollaboratif();
+                        ArcGisProEspaceCollaboratif.Core.Client client = null;
+                        context.GetConnexionEspaceCollaboratif(ref client);
+                        context.Client = client;
                         if (context.Client == null)
                         {
                             return;

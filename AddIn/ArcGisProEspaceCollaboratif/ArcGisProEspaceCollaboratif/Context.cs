@@ -142,18 +142,19 @@ namespace ArcGisProEspaceCollaboratif
             this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
-            // Pour créer les couches liées au signalement, il faut que le client soit initialisé.
+            /*
             if (this.Client == null)
             {
                 // Établissement de la connexion avec le service Espace collaboratif.
-                this.Client = this.GetConnexionEspaceCollaboratif();
-                if (this.Client == null)
+                ArcGisProEspaceCollaboratif.Core.Client client = null;
+                this.GetConnexionEspaceCollaboratif(ref client);
+                this.Client = client;
+                if (this.Client == null || this.Client.Profile == null)
                 {
                     return;
                 }
             }
-            await this.CreateOrLoadReportLayers();
-
+            */
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
@@ -830,13 +831,13 @@ namespace ArcGisProEspaceCollaboratif
             return spatialFilterGeometry;
         }
 
-        public Client GetConnexionEspaceCollaboratif()
+        public void GetConnexionEspaceCollaboratif(ref ArcGisProEspaceCollaboratif.Core.Client connexionServer)
         {
             logger.Debug("GetConnexionEspaceCollaboratif ");
             this.URLHost = Helper.LoadUrlhost();
             logger.Debug("URLHost : " + this.URLHost);
 
-            ConnectViewModel connectViewModel = new ()
+            ConnectViewModel connectViewModel = new (this)
             {
                 Uri = this.URLHost
             };
@@ -852,13 +853,22 @@ namespace ArcGisProEspaceCollaboratif
             if (dialogResult == false)
             {
                 connectViewModel.connectView.Close();
-                return null;
+                return;
             }
-            // Récupération du login et mot de passe introduits.
-            this.Login = connectViewModel.Login;
-            this.Password = connectViewModel.Password;
 
-            try
+            // Récupération du login, du mot de passe introduits et la connexion serveur.
+            if (connectViewModel.ConnexionServer != null)
+            {
+                this.Login = connectViewModel.Login;
+                this.Password = connectViewModel.Password;
+                connexionServer = connectViewModel.ConnexionServer;
+                return;
+            }
+            
+            
+
+
+            /*try
             {
                 Client connexionServer = new (
                         this.URLHost,
@@ -915,7 +925,7 @@ namespace ArcGisProEspaceCollaboratif
                         break;
                 }
             }
-            return null;
+            return null;*/
         }
 
         /// <summary>

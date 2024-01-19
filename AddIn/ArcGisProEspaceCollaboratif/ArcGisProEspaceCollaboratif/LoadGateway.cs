@@ -33,8 +33,10 @@ namespace ArcGisProEspaceCollaboratif
 
                     if (context.Profil == null)
                     {
-                        Client client = context.GetConnexionEspaceCollaboratif();
-                        if (client == null)
+                        ArcGisProEspaceCollaboratif.Core.Client client = null;
+                        context.GetConnexionEspaceCollaboratif(ref client);
+                        context.Client = client;
+                        if (context.Client == null)
                         {
                             string message = "Un problème de connexion avec le service Espace collaboratif est survenu. Veuillez ré-essayer.";
                             logger.Error(string.Format("LoadGateway.OnClick.GetConnexionEspaceCollaboratif : {0}\n", message));

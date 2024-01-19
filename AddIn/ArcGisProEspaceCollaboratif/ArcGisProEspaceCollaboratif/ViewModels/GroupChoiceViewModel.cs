@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -44,7 +45,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// 
         /// </summary>
         public ObservableCollection<string> GroupItemsSourceGroupComboBox { get; set; }
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string GroupSelectedItemComboBox { get; set; }
+
         /// <summary>
         /// Le nom du fichier shape et son chemin
         /// </summary>
@@ -52,17 +57,29 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         private string WorkZone { get; set; }
 
-        public ObservableCollection<string> WorkZoneItemsSourceGroupComboBox { get; set; }
+        private ObservableCollection<string> workZoneItemsSourceGroupComboBox = new();
+        public ObservableCollection<string> WorkZoneItemsSourceGroupComboBox
+        {
+            get { return workZoneItemsSourceGroupComboBox; }
+            set
+            {
+                workZoneItemsSourceGroupComboBox = value;
+                NotifyPropertyChanged(nameof(WorkZoneItemsSourceGroupComboBox));
+            }
+        }
 
+        private string WorkZoneSelectedItem;
         /// <summary>
         /// 
         /// </summary>
-        public string GroupSelectedItemComboBox { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string WorkZoneSelectedItemComboBox { get; set; }
+        public string WorkZoneSelectedItemComboBox {
+            get { return WorkZoneSelectedItem; }
+            set
+            {
+                WorkZoneSelectedItem = value;
+                NotifyPropertyChanged(nameof(WorkZoneSelectedItemComboBox));
+            }
+        }
 
         #endregion
 
@@ -75,6 +92,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// </summary>
         private void OnBrowse()
         {
+            string fileName = "";
             List<string> Formats = new()
             {
                 ".shp",
@@ -104,15 +122,23 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                         );
                     }
                 }
-                string fileName = dlg.SafeFileName.Replace(extension, "");
+                fileName = dlg.SafeFileName.Replace(extension, "");
                 this.NewShapeFile[fileName] = dlg.FileName;
                 // Evitons les doublons
                 if (!this.WorkZoneItemsSourceGroupComboBox.Contains(fileName))
                 {
-                    this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
-                }               
-                this.WorkZoneSelectedItemComboBox = fileName;
+                    //this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
+                    this.WorkZoneItemsSourceGroupComboBox.Insert(0, fileName);
+                }
             }
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                if (this.WorkZoneItemsSourceGroupComboBox.Contains(fileName))
+                {
+                    this.WorkZone = fileName;
+                    this.WorkZoneSelectedItemComboBox = fileName;
+                }
+            }           
         }
 
         public ICommand CancelButtonCmd { get { return new RelayCommand(OnCancel, AlwaysTrue); } }
@@ -260,7 +286,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     continue;
                 }
-                this.WorkZoneItemsSourceGroupComboBox.Add(layerName);
+                if (!this.WorkZoneItemsSourceGroupComboBox.Contains(layerName))
+                {
+                    this.WorkZoneItemsSourceGroupComboBox.Add(layerName);
+                }
             }
             
             if (!string.IsNullOrEmpty(this.WorkZone))

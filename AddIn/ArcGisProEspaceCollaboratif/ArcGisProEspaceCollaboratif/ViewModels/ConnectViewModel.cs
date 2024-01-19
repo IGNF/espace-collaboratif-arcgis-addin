@@ -1,6 +1,8 @@
 ﻿using ArcGisProEspaceCollaboratif.Views;
 using ArcGisProEspaceCollaboratif.Utils;
 using System.Windows.Input;
+using ArcGisProEspaceCollaboratif.Core;
+using System;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
 {
@@ -29,6 +31,14 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// L'URL de connexion au service 
         /// </summary>
         public string Uri { get; set; } = "";
+
+        public Client ConnexionServer { get; set; } = null;
+
+        /// <summary>
+        /// Le contexte de travail qui contient le résultat de la requete
+        /// vers l'espace collaboratif Profil/GeoGroupes/Groupes/Thèmes/Attributs
+        /// </summary>
+        public Context Context { get; set; }
         #endregion
 
         #region Constructors
@@ -36,9 +46,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Iniialisation du dialogue "Connexion à https://espacecollaboratif.ign.fr"
         /// </summary>
         /// <param name="uri"></param>
-        public ConnectViewModel()
+        public ConnectViewModel(Context context)
         {
-            this.connectView = new ConnectView(); 
+            this.connectView = new ConnectView();
+            this.Context = context;
         }
         #endregion
 
@@ -87,6 +98,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         public ICommand ConnectButtonCmd { get { return new RelayCommand(OnConnect, AlwaysTrue); } }
 
+        private bool AlwaysTrue() { return true; }
+
         /// <summary>
         /// L'utilisateur a cliqué sur le bouton "Connecter".
         /// Il faut sauvegarder le login et le password
@@ -96,9 +109,69 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             this.Login = this.connectView.LoginTextBox.Text;
             this.Password = this.connectView.PasswordBox.Password;
+            this.ConnexionServer = this.Connexion();
         }
 
-        private bool AlwaysTrue() { return true; }
-        #endregion
+        private Client Connexion()
+        {
+            Client connexionServer = new(
+                        this.Uri,
+                        this.Login,
+                        this.Password
+                    );
+            try
+            {
+                logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
+
+                // Récupération du profil utilisateur
+                this.Context.Profil = connexionServer.GetProfile();
+                if (this.Context.Profil == null)
+                {
+                    string message = "Récupération du profil utilisateur impossible";
+                    logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message));
+                    throw new ArgumentNullException(message);
+                }
+
+                // Affichage de la boite du choix du groupe à l'utilisateur
+                if (!this.Context.DisplayFormChoiceGroup(ref connexionServer))
+                {
+                    return null;
+                }
+
+                // Affichage des infos suite à la connexion à l'Espace collaboratif
+                this.Context.DisplayInformationsAfterConnection();
+
+                return connexionServer;
+            }
+            catch (Exception erreurConnexion)
+            {
+                this.Password = "";
+
+                switch (erreurConnexion.Message.ToString())
+                {
+                    case "(401) Unauthorized":
+                        string message = "Login et/ou mot de passe incorrect(s)";
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
+                        break;
+
+                    case "Login inconnu":
+                        message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
+                        break;
+
+                    case "no_group":
+                        message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
+                        break;
+
+                    default:
+                        message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.Uri, erreurConnexion.Message.ToString());
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
+                        break;
+                }
+            }
+            return connexionServer;
+        }
     }
+    #endregion
 }

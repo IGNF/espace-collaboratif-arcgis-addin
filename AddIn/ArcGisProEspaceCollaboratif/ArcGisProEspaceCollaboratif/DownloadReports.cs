@@ -25,7 +25,9 @@ namespace ArcGisProEspaceCollaboratif
                     // Est-ce que l'utilisateur s'est connecté ?
                     if (context.Client == null)
                     {
-                        context.Client = (Client)context.GetConnexionEspaceCollaboratif();
+                        ArcGisProEspaceCollaboratif.Core.Client client = null;
+                        context.GetConnexionEspaceCollaboratif(ref client);
+                        context.Client = client;
                         if (context.Client == null) return;
                     }
 
