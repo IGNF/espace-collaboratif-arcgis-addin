@@ -108,7 +108,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private void OnConnect()
         {
             this.Login = this.connectView.LoginTextBox.Text;
+            Helper.SaveLogin(this.Login);
+            this.Context.Login = this.Login;
             this.Password = this.connectView.PasswordBox.Password;
+            this.Context.Password = this.Password;
             this.ConnexionServer = this.Connexion();
         }
 
@@ -146,29 +149,18 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             catch (Exception erreurConnexion)
             {
                 this.Password = "";
-
-                switch (erreurConnexion.Message.ToString())
+                string messageError = erreurConnexion.Message.ToString() switch
                 {
-                    case "(401) Unauthorized":
-                        string message = "Login et/ou mot de passe incorrect(s)";
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    case "Login inconnu":
-                        message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    case "no_group":
-                        message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    default:
-                        message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.Uri, erreurConnexion.Message.ToString());
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
+                    "(401) Unauthorized" => "Login et/ou mot de passe incorrect(s)",
+                    "Login inconnu" => string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login),
+                    "no_group" => "Accès refusé. L'utilisateur n'appartient à aucun groupe.",
+                    _ => string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.Uri, erreurConnexion.Message.ToString()),
+                };
+                if (messageError != string.Empty)
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(messageError, Constantes.ERROR);
                 }
+                
             }
             return connexionServer;
         }

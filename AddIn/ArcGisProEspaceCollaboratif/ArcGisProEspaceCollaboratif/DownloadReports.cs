@@ -74,6 +74,13 @@ namespace ArcGisProEspaceCollaboratif
                     List<Report> reports = context.Client.GetGeoRems(parameters);
                     progressDialog.Hide();
 
+                    if (reports.Count == 0)
+                    {
+                        string mess = "Pas de signalements extraits depuis l'Espace collaboratif";
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.INFORMATION);
+                        return;
+                    }
+
                     // Filtrage par dates
                     // le cas sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate == Constantes.DEFAULT_DATE_EXTRACTION
                     // est celui des paramètres d'extraction ligne 47 car on extrait les signalements avec la date de début
@@ -142,7 +149,7 @@ namespace ArcGisProEspaceCollaboratif
                     message += "\n _ " + validatedReports + " signalement(s) validé(s).";
                     message += "\n _ " + rejectedReports + " signalement(s) rejeté(s).";
 
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.INFORMATION);
                 }
                 catch (Exception e)
                 {
@@ -179,7 +186,8 @@ namespace ArcGisProEspaceCollaboratif
                 string message = "Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)";
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                 if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
-                    messageBoxResult == System.Windows.MessageBoxResult.Yes )
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes ||
+                    messageBoxResult == System.Windows.MessageBoxResult.None)
                 {
                     return overrideFilterTuple;
                 }
@@ -196,7 +204,8 @@ namespace ArcGisProEspaceCollaboratif
                 string message = string.Format("La carte en cours ne contient pas la couche '{0}' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                 if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
-                    messageBoxResult == System.Windows.MessageBoxResult.Yes)
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes ||
+                    messageBoxResult == System.Windows.MessageBoxResult.None)
                 {
                     return overrideFilterTuple;
                 }
@@ -212,7 +221,8 @@ namespace ArcGisProEspaceCollaboratif
                 string message = string.Format("La couche '{0}' ne contient aucun objet utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                 if (messageBoxResult == System.Windows.MessageBoxResult.OK ||
-                    messageBoxResult == System.Windows.MessageBoxResult.Yes)
+                    messageBoxResult == System.Windows.MessageBoxResult.Yes ||
+                    messageBoxResult == System.Windows.MessageBoxResult.None)
                 {
                     return overrideFilterTuple;
                 }

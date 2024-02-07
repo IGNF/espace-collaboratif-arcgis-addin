@@ -21,7 +21,8 @@ namespace ArcGisProEspaceCollaboratif
                     string message = string.Format("Vous allez supprimer les signalements et croquis de votre projet ArcGIS. Ceux-ci seront toutefois toujours accessibles sur l'Espace collaboratif. \nSouhaitez-vous poursuivre la suppression ?");
                     System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
                     if (messageBoxResult == System.Windows.MessageBoxResult.Cancel ||
-                        messageBoxResult == System.Windows.MessageBoxResult.No)
+                        messageBoxResult == System.Windows.MessageBoxResult.No ||
+                        messageBoxResult == System.Windows.MessageBoxResult.None)
                     {
                         return;
                     }

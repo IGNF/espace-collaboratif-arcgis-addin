@@ -16,6 +16,7 @@ using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
+using System.Security.Policy;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -334,14 +335,18 @@ namespace ArcGisProEspaceCollaboratif
         {
             string fcPath = this.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
             bool bFeatureClassExist = this.CollaborativeSpaceGeodatabase.IsFeatureClassExists(fcName);
-            
-            // Si la feature class existe déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
+
+            // Si la feature class existe dans la geodatabase existe -t'elle dans la carte ?
+            FeatureLayer fl = this.GetLayerByName(fcName);
+            //
+            // déjà, on l'ouvre et on l'ajoute comme couche (FeatureLayer) à la carte
             FeatureLayer collabSpaceLayer;
-            if (bFeatureClassExist)
+            if (bFeatureClassExist && fl is not null)
             { 
                 collabSpaceLayer = this.LoadCollabLayer(fcName, layerPosition);
             }
-            // Si la feature class n'existe pas dans la geodatabase du projet, on la crée
+
+            // Si la feature class n'existe pas dans la geodatabase du projet ou dans la carte, on la crée
             else
             {
                 // La nouvelle feature class est chargée automatiquement dans la carte.
@@ -488,6 +493,10 @@ namespace ArcGisProEspaceCollaboratif
                 if (!this.IsLayerInMap(layerName))
                 {
                     return;
+                }
+                if (this.CollaborativeSpaceGeodatabase is null)
+                {
+                    this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
                 }
                 this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
             }
@@ -820,6 +829,9 @@ namespace ArcGisProEspaceCollaboratif
                         false // important : sinon on n'obtient qu'un seul objet
                     );
 
+            // Si la référence spatiale de la carte est différente de celle par défaut WGS84
+            this.SpatialReference = Helper.IsDefaultSpatialReference();
+
             // On parcourt les objets de la feature class utilisée pour le filtre spatial
             while (rowCursor.MoveNext())
             {
@@ -848,8 +860,8 @@ namespace ArcGisProEspaceCollaboratif
 
             // Lancement du formulaire de saisi du login et mot de passe
             bool? dialogResult = connectViewModel.connectView.ShowDialog();
-            // Si l'utilisateur a cliqué sur le bouton "Annuler"
-            // il n'y aura pas de connexion
+            // Si l'utilisateur a cliqué sur le bouton "Annuler" ou sur la croix
+            // il n'y aura pas de connexion 
             if (dialogResult == false)
             {
                 connectViewModel.connectView.Close();
@@ -1121,9 +1133,10 @@ namespace ArcGisProEspaceCollaboratif
             if (!string.IsNullOrEmpty(message))
             {
                 message += "Voulez-vous continuer ?";
-                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION,System.Windows.MessageBoxButton.YesNo);
                 if (result == System.Windows.MessageBoxResult.Cancel ||
-                    result == System.Windows.MessageBoxResult.No)
+                    result == System.Windows.MessageBoxResult.No ||
+                    result == System.Windows.MessageBoxResult.None)
                 {
                     return null;
                 }

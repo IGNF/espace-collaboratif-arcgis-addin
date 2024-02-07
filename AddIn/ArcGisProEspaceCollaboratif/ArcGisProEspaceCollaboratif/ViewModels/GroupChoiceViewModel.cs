@@ -6,6 +6,7 @@ using ArcGisProEspaceCollaboratif.Views;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.Toolkit.Primitives;
 
@@ -127,7 +128,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 // Evitons les doublons
                 if (!this.WorkZoneItemsSourceGroupComboBox.Contains(fileName))
                 {
-                    //this.WorkZoneItemsSourceGroupComboBox.Add(fileName);
                     this.WorkZoneItemsSourceGroupComboBox.Insert(0, fileName);
                 }
             }
@@ -162,18 +162,21 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             string zone = this.groupChoiceView.WorkZoneComboBox.Text;
 
+            if (zone != null)
+            {
+                Helper.SaveWorkZone(zone);
+            }
+
             // Si le nom de la zone de travail est vide → extraction complete
             if (string.IsNullOrEmpty(zone))
             {
                 string message = "Vous n'avez pas spécifié de zone de travail. Lorsque vous importerez les signalements ou les données de votre groupe, le chargement se fera sur la totalité du territoire et sera probablement long. Voulez-vous continuer ?";
-                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
-                if (result == System.Windows.MessageBoxResult.No)
+                System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                if (messageBoxResult == System.Windows.MessageBoxResult.No ||
+                    messageBoxResult == System.Windows.MessageBoxResult.Cancel ||
+                    messageBoxResult == System.Windows.MessageBoxResult.None)
                 {
                     return;
-                }
-                else
-                {
-                    Helper.SaveWorkZone(zone);
                 }
             }
 

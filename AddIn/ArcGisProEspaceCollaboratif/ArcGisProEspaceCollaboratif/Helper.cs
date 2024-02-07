@@ -14,6 +14,9 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Core;
+using System.Windows.Forms;
+using ArcGIS.Core.Internal.CIM;
+using System.Runtime.CompilerServices;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -214,11 +217,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="report">le signalement EspaceCollaboratif à tester.</param>
         /// <param name="geometrys">La liste des géométries à tester pour le filtrage spatial.</param>
         /// <returns>True si le signalement à tester est incluse à l'intérieur d'une des géométries fournies en entrée.</returns>
-        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<Geometry> geometrys)
+        public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<ArcGIS.Core.Geometry.Geometry> geometrys)
         {
             MapPoint reportPoint = Helper.TransformPoint(report.Position);
 
-            foreach (Geometry geometry in geometrys)
+            foreach (ArcGIS.Core.Geometry.Geometry geometry in geometrys)
             {
                 if (!geometry.IsEmpty)
                 {
@@ -257,13 +260,30 @@ namespace ArcGisProEspaceCollaboratif
         {
             List<MapPoint> pointCollection = new ();
 
-            foreach (Point sketchVertex in currSketch.Points)
+            foreach (Core.Point sketchVertex in currSketch.Points)
             {
                 pointCollection.Add(Helper.TransformPoint(sketchVertex));
             }
 
             return pointCollection;
         }
+
+        public static ArcGIS.Core.Geometry.SpatialReference IsDefaultSpatialReference()
+        {
+            //Par défaut GCS_WGS_1984
+            ArcGIS.Core.Geometry.SpatialReference spatialRef = SpatialReferences.WGS84;
+            // Si la référence de la carte n'est pas WGS84, il faut prendre celle de la carte
+            MapView mapUser = MapView.Active;
+            ArcGIS.Core.Geometry.SpatialReference mapUserSpatialReference = mapUser.Map.SpatialReference;
+            string nameMapUserSpatialReference = mapUserSpatialReference.Name;
+            string nameDefaultSpatialReference = spatialRef.Name;
+            if (nameMapUserSpatialReference != nameDefaultSpatialReference)
+            {
+                spatialRef = mapUserSpatialReference;
+            }
+            return spatialRef;
+        }
+
 
         /// <summary>
         /// Convertit un point ArcGisProEspaceCollaboratif.Core.Point en son équivalent ArcGIS.Core.Geometry.MapPoint. 
@@ -275,14 +295,8 @@ namespace ArcGisProEspaceCollaboratif
             MapPoint point = null;
             QueuedTask.Run(() =>
             {
-
-                point = MapPointBuilderEx.CreateMapPoint(pointin.Longitude, pointin.Latitude, SpatialReferences.WGS84);
-
-                if (!MapView.Active.Map.SpatialReference.IsEqual(point.SpatialReference))
-                {
-                    //project the point
-                    point = GeometryEngine.Instance.Project(point, MapView.Active.Map.SpatialReference) as MapPoint;
-                }            
+                ArcGIS.Core.Geometry.SpatialReference spatialRef = IsDefaultSpatialReference();
+                point = MapPointBuilderEx.CreateMapPoint(pointin.Longitude, pointin.Latitude, spatialRef);        
             });
 
             return point;
@@ -301,7 +315,7 @@ namespace ArcGisProEspaceCollaboratif
             }
 
             // S'il faut arrondir la valeur des coordonnées du point
-            return new Point(pointIn.X, pointIn.Y);
+            return new Core.Point(pointIn.X, pointIn.Y);
         }
         
         /// <summary>
@@ -474,9 +488,9 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public static Point ReplaceSpatialReferenceToPoint(MapPoint point)
+        public static Core.Point ReplaceSpatialReferenceToPoint(MapPoint point)
         {
-            Geometry result = GeometryEngine.Instance.Project(point, SpatialReferences.WGS84);
+            ArcGIS.Core.Geometry.Geometry result = GeometryEngine.Instance.Project(point, SpatialReferences.WGS84);
             MapPoint projectedPt = result as MapPoint;
             return TransformPoint(projectedPt);
         }
@@ -487,7 +501,7 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometry">La géométrie qu'il faut convertir en croquis de l'Espace collaboratif</param>
         /// <returns>Le croquis pour l'Espace collaboratif</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(Geometry geometry)
+        public static ArcGisProEspaceCollaboratif.Core.Sketch MakeSketch(ArcGIS.Core.Geometry.Geometry geometry)
         {
             if (geometry == null)
             {
@@ -506,7 +520,7 @@ namespace ArcGisProEspaceCollaboratif
 
                 case GeometryType.Polyline:
                     newSketch.SetType(Sketch.SketchType.Ligne);
-                    Polyline polyline = geometry as Polyline;
+                    ArcGIS.Core.Geometry.Polyline polyline = geometry as ArcGIS.Core.Geometry.Polyline;
                     foreach (MapPoint mapPoint in polyline.Points)
                     {
                         newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mapPoint));
@@ -515,7 +529,7 @@ namespace ArcGisProEspaceCollaboratif
                   
                 case GeometryType.Polygon:
                     newSketch.SetType(Sketch.SketchType.Polygone);
-                    Polygon polygon = geometry as Polygon;
+                    ArcGIS.Core.Geometry.Polygon polygon = geometry as ArcGIS.Core.Geometry.Polygon;
                     foreach (MapPoint mp in polygon.Points)
                     {
                         newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mp));
@@ -540,14 +554,14 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePositionReport(List<Point> points)
+        public static ArcGisProEspaceCollaboratif.Core.Point CalculatePositionReport(List<Core.Point> points)
         {
-            Point pointResult = new ();
+            Core.Point pointResult = new ();
 
             double barycentreX = 0;
             double barycentreY = 0;
 
-            foreach (Point point in points)
+            foreach (Core.Point point in points)
             {
                 barycentreX += point.Longitude;
                 barycentreY += point.Latitude;
@@ -1146,11 +1160,21 @@ namespace ArcGisProEspaceCollaboratif
             {
                 Map map = MapView.Active.Map;
                 Layer layer = LayerFactory.Instance.CreateLayer(new Uri(uri), map);
+                ArcGIS.Core.Geometry.SpatialReference layer_projection = layer.GetSpatialReference();
+                string projection_name = layer_projection.Name;
+                string message = "";
+                if (projection_name == "Unknown")
+                {
+                    message = string.Format("Le système de coordonnées de référence (SCR) n'est pas assigné pour la couche [{0}]. Veuillez le renseigner avec [View/Geoprocessing/Define projection/Parameters]", layer.Name);
+                }
                 if (layer == null)
                 {
-                    string message = string.Format("Layer {0} failed to load", uri);
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                    message = string.Format("Layer {0} failed to load", uri);
                 }
+                if (!string.IsNullOrWhiteSpace(message))
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.WARNING);
+                }          
                 return layer;
             });
         }
