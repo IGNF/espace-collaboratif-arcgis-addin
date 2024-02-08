@@ -89,7 +89,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             }
             else
             {
-                // Couleur par défaut
                 return "Indéfini";
             }
 

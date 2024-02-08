@@ -65,6 +65,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             if (numberReports == 1)
             {
                 this.NumberReportLabel = string.Format("Réponse au signalement n°{0}", this.Reports[0].Id);
+                this.StatutSelectedItemComboBox = Status.GetDisplayStatus(Reports[0].Status);
             }
             else
             {           
@@ -91,7 +92,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// "Rejeté (hors spéc.)"
         /// "Rejeté (hors de propos)"
         /// </summary>
-        public ObservableCollection<string> StatutItemsSourceComboBox { get; set; }
+        private ObservableCollection<string> statutItemsSourceComboBox = new();
+
+        public ObservableCollection<string> StatutItemsSourceComboBox
+        {
+            get { return statutItemsSourceComboBox; }
+            set
+            {
+                statutItemsSourceComboBox = value;
+                NotifyPropertyChanged(nameof(StatutItemsSourceComboBox));
+            }
+        }
 
         /// <summary>
         /// Le statut sélectionné par l'utilisateur dans la liste déroulante

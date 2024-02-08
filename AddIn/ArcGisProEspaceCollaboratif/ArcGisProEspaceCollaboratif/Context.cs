@@ -129,6 +129,11 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
         private async Task Init(MapView activeView)
         {
+            if (this.CollaborativeSpaceGeodatabase is null)
+            {
+                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
+            }
+
             this.MapActiveView = activeView;
 
             Project project = Project.Current;
@@ -402,11 +407,6 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         public async Task CreateOrLoadReportLayers()
         {
-            if (this.CollaborativeSpaceGeodatabase is null)
-            {
-                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
-            }
-            
             // Signalements
             await this.LoadOrCreateCollaborativeSpaceLayers(
                 Helper.name_layer_Signalement,
@@ -493,10 +493,6 @@ namespace ArcGisProEspaceCollaboratif
                 if (!this.IsLayerInMap(layerName))
                 {
                     return;
-                }
-                if (this.CollaborativeSpaceGeodatabase is null)
-                {
-                    this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
                 }
                 this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
             }
