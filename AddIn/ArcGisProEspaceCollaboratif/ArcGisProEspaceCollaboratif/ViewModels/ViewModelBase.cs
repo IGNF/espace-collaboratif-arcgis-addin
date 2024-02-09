@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using log4net;
-using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {

@@ -65,7 +65,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             if (numberReports == 1)
             {
                 this.NumberReportLabel = string.Format("Réponse au signalement n°{0}", this.Reports[0].Id);
-                this.StatutSelectedItemComboBox = Status.GetDisplayStatus(Reports[0].Status);
+                this.StatutSelectedItemComboBox = Status.GetDisplayStatus(this.Reports[0].Status);
             }
             else
             {           

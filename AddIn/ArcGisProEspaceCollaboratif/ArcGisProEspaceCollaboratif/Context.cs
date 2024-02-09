@@ -16,7 +16,6 @@ using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
-using System.Security.Policy;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -148,19 +147,7 @@ namespace ArcGisProEspaceCollaboratif
             this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
             this.CheckConfigFile();
-            /*
-            if (this.Client == null)
-            {
-                // Établissement de la connexion avec le service Espace collaboratif.
-                ArcGisProEspaceCollaboratif.Core.Client client = null;
-                this.GetConnexionEspaceCollaboratif(ref client);
-                this.Client = client;
-                if (this.Client == null || this.Client.Profile == null)
-                {
-                    return;
-                }
-            }
-            */
+
             logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
         }
 
@@ -856,8 +843,9 @@ namespace ArcGisProEspaceCollaboratif
 
             // Lancement du formulaire de saisi du login et mot de passe
             bool? dialogResult = connectViewModel.connectView.ShowDialog();
-            // Si l'utilisateur a cliqué sur le bouton "Annuler" ou sur la croix
-            // il n'y aura pas de connexion 
+
+            // Si l'utilisateur a cliqué sur le bouton "Annuler" ou sur la croix de connectViewModel
+            // il n'y aura pas de connexion
             if (dialogResult == false)
             {
                 connectViewModel.connectView.Close();
@@ -872,68 +860,6 @@ namespace ArcGisProEspaceCollaboratif
                 connexionServer = connectViewModel.ConnexionServer;
                 return;
             }
-            
-            
-
-
-            /*try
-            {
-                Client connexionServer = new (
-                        this.URLHost,
-                        this.Login,
-                        this.Password
-                    );
-                
-                logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
-                
-                // Récupération du profil utilisateur
-                this.Profil = connexionServer.GetProfile();
-                if (this.Profil == null)
-                {
-                    string message = "Récupération du profil utilisateur impossible";
-                    logger.Error(string.Format("Context.GetConnexionEspaceCollaboratif : {0}\n", message));
-                    throw new ArgumentNullException(message);
-                }
-
-                // Affichage de la boite du choix du groupe à l'utilisateur
-                if (!this.DisplayFormChoiceGroup(ref connexionServer))
-                {
-                    return null;
-                }
-
-                // Affichage des infos suite à la connexion à l'Espace collaboratif
-                this.DisplayInformationsAfterConnection();
-
-                return connexionServer;
-            }
-            catch (Exception erreurConnexion)
-            {
-                this.Password = "";
-                
-                switch (erreurConnexion.Message.ToString())
-                {
-                    case "(401) Unauthorized":
-                        string message = "Login et/ou mot de passe incorrect(s)";
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    case "Login inconnu":
-                        message = string.Format("''{0}'' n'est pas un utilisateur enregistré dans un groupe de l'Espace collaboratif.", this.Login);
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    case "no_group":
-                        message = "Accès refusé. L'utilisateur n'appartient à aucun groupe.";
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-
-                    default:
-                        message = string.Format("Impossible d'accéder au service de l'Espace collaboratif à l'adresse suivante : {0}\n\nVeuillez contacter le support. Erreur : {1}\n", this.URLHost, erreurConnexion.Message.ToString());
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.ERROR);
-                        break;
-                }
-            }
-            return null;*/
         }
 
         /// <summary>

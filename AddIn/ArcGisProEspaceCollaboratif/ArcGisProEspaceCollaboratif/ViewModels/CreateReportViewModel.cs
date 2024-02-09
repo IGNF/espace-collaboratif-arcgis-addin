@@ -134,7 +134,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <returns>Le nom de l'auteur et son profil</returns>
         private void SetUserProfileHeaderGroupBox()
         {
-            string textGroupBox = "";
+            string textGroupBox;
             if (string.IsNullOrEmpty(this.Context.Profil.Group.Name))
             {
                 textGroupBox = string.Format("{0} (Profil par défaut)", this.Context.Profil.Author.Name);
@@ -342,13 +342,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     continue;
                 }
 
-                // Superflu - déjà filtré en entrée
-                // Si le thème n'est pas dans le filtre du profil, on ne l'affiche pas
-/*                if (!thGroup.Filtered)
-                {
-                    continue;
-                }
-*/
                 // Un thème peut ne pas avoir d'attributs dans ce cas là,
                 // il faut afficher le thème avec une case à cocher
                 if (thGroup.Attributes == null)
