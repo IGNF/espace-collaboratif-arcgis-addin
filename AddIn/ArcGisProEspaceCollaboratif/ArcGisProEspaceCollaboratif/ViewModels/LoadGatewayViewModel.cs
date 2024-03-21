@@ -295,6 +295,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             get
             {
+                if (this.Context.MapActiveView == null)
+                {
+                    this.Context.MapActiveView = MapView.Active;
+                }
                 System.Collections.ObjectModel.ReadOnlyObservableCollection<Layer> observableLayers = this.Context.MapActiveView.Map.Layers;
                 
                 List<string> layersInMap = new List<string>();

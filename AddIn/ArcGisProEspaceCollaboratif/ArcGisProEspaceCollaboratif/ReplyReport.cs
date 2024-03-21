@@ -50,6 +50,10 @@ namespace ArcGisProEspaceCollaboratif
                     List<Report> replyReports = new ();
                     string messageReportNoValid = "";
                     // Récupération des objets sélectionnés
+                    if (context.MapActiveView == null)
+                    {
+                        context.MapActiveView = MapView.Active;
+                    }
                     SelectionSet selectedFeatures = context.MapActiveView.Map.GetSelection();
                     foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                     {

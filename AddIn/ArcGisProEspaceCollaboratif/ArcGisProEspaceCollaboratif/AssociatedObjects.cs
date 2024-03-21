@@ -88,6 +88,10 @@ namespace ArcGisProEspaceCollaboratif.Core
             bool selectedSketch = false;
             bool selectedReport = false;
 
+            if (this.Context.MapActiveView == null)
+            {
+                this.Context.MapActiveView = MapView.Active;
+            }
             SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {
@@ -137,6 +141,10 @@ namespace ArcGisProEspaceCollaboratif.Core
         {
             List<string> listObjects = new List<string>();
 
+            if (this.Context.MapActiveView == null)
+            {
+                this.Context.MapActiveView = MapView.Active;
+            }
             SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {

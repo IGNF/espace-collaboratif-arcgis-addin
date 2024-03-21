@@ -458,7 +458,7 @@ namespace ArcGisProEspaceCollaboratif
         {
             if (this.MapActiveView == null)
             {
-                return false;
+                this.MapActiveView = MapView.Active;
             }
             IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
@@ -1018,6 +1018,10 @@ namespace ArcGisProEspaceCollaboratif
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
             {
+                if (this.MapActiveView == null)
+                {
+                    this.MapActiveView = MapView.Active;
+                }
                 SelectionSet selectedFeatures = this.MapActiveView.Map.GetSelection();
                 foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                 {

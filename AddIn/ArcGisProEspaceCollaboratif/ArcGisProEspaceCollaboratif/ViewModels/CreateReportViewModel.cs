@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
@@ -1024,6 +1025,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 ArcGIS.Core.Geometry.MapPoint mppt = Helper.TransformPoint(report.Position);
                 builderEx.Union(mppt.Extent);
+            }
+            if (this.Context.MapActiveView == null)
+            {
+                this.Context.MapActiveView = MapView.Active;
             }
             this.Context.MapActiveView.ZoomTo(builderEx.ToGeometry().Extent);
         }

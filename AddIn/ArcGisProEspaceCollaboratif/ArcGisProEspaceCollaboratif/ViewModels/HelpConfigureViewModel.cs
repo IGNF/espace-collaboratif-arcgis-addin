@@ -272,6 +272,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <returns>La liste des couches</returns>
         private ObservableCollection<string> GetLayersNameForSpatialFilterFromMap()
         {
+            if (this.Context.MapActiveView == null)
+            {
+                this.Context.MapActiveView = MapView.Active;
+            }
             ObservableCollection<string> layersName = new ();
             IReadOnlyList<Layer> layers = this.Context.MapActiveView.Map.GetLayersAsFlattenedList();
             foreach (var layer in layers)
