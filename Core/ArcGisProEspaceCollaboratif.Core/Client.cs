@@ -94,12 +94,17 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 foreach (var item in parameters)
                 {
-                    paramString += item.Key + "=" + item.Value + "&";
+                    paramString += string.Format("{0}={1}&", item.Key, item.Value);
                 }
             }
             try
             {
-                res = paramString == "" ? client.DownloadString(url) : client.DownloadString(url + "?" + paramString);
+                string finalUrl = url;
+                if (paramString != "")
+                {
+                    finalUrl = string.Format("{0}?{1}", url, paramString.Substring(0, paramString.Length - 1));
+                }
+                res = client.DownloadString(finalUrl);
             }
             catch (Exception e)
             {

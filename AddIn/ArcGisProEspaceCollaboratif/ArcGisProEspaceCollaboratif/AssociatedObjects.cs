@@ -4,6 +4,7 @@ using ArcGIS.Desktop.Mapping;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -87,12 +88,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         {    
             bool selectedSketch = false;
             bool selectedReport = false;
-
-            if (this.Context.MapActiveView == null)
-            {
-                this.Context.MapActiveView = MapView.Active;
-            }
-            SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            SelectionSet selectedFeatures = this.Context.GetMap().GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {
                 if (kvp.Key.Name == Helper.name_layer_Signalement &&
@@ -140,12 +136,7 @@ namespace ArcGisProEspaceCollaboratif.Core
         private List<string> SelectAssociatedID(string fieldName)
         {
             List<string> listObjects = new List<string>();
-
-            if (this.Context.MapActiveView == null)
-            {
-                this.Context.MapActiveView = MapView.Active;
-            }
-            SelectionSet selectedFeatures = this.Context.MapActiveView.Map.GetSelection();
+            SelectionSet selectedFeatures = this.Context.GetMap().GetSelection();
             foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
             {
                 var featureLayer = kvp.Key as FeatureLayer;

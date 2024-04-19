@@ -3,6 +3,7 @@ using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -266,6 +267,12 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 ""
             };
             // Quelles sont les couches de polygone qui existent dans la carte ?
+            if (MapView.Active.Map == null)
+            {
+                string mess = "Pas de carte active, impossible de récupérer les couches de celle-ci";
+                logger.Error(string.Format("GroupChoiceViewModel.SetItemsSourceWorkZoneComboBox : {0}\n", mess));
+                throw new Exception(mess);
+            }
             IReadOnlyList<Layer> mapLayers = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.ShapeType == esriGeometryType.esriGeometryPolygon).ToList();
             foreach (var layer in mapLayers)
             {

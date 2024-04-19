@@ -17,6 +17,7 @@ using ArcGIS.Desktop.Core;
 using System.Windows.Forms;
 using ArcGIS.Core.Internal.CIM;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -220,12 +221,13 @@ namespace ArcGisProEspaceCollaboratif
         public static bool IsInGeometry(ArcGisProEspaceCollaboratif.Core.Report report, List<ArcGIS.Core.Geometry.Geometry> geometrys)
         {
             MapPoint reportPoint = Helper.TransformPoint(report.Position);
-
+            // ArcGIS.Core.Geometry.Geometry resultPoint = GeometryEngine.Instance.Project(reportPoint, SpatialReferences.WGS84);
             foreach (ArcGIS.Core.Geometry.Geometry geometry in geometrys)
             {
-                if (!geometry.IsEmpty)
+                ArcGIS.Core.Geometry.Geometry geomResult = GeometryEngine.Instance.Project(geometry, SpatialReferences.WGS84);
+                if (!geomResult.IsEmpty)
                 {
-                    if (GeometryEngine.Instance.Intersects(reportPoint, geometry))
+                    if (GeometryEngine.Instance.Intersects(reportPoint, geomResult))
                         return true;
                 }
             }
@@ -274,6 +276,12 @@ namespace ArcGisProEspaceCollaboratif
             ArcGIS.Core.Geometry.SpatialReference spatialRef = SpatialReferences.WGS84;
             // Si la référence de la carte n'est pas WGS84, il faut prendre celle de la carte
             MapView mapUser = MapView.Active;
+            if (mapUser.Map == null)
+            {
+                string message = "Pas de carte active, impossible de déterminer le SRID de celle-ci";
+                logger.Error(string.Format("Helper.IsDefaultSpatialReference : {0}\n", message));
+                throw new Exception(message);
+            }
             ArcGIS.Core.Geometry.SpatialReference mapUserSpatialReference = mapUser.Map.SpatialReference;
             string nameMapUserSpatialReference = mapUserSpatialReference.Name;
             string nameDefaultSpatialReference = spatialRef.Name;
@@ -295,8 +303,8 @@ namespace ArcGisProEspaceCollaboratif
             MapPoint point = null;
             QueuedTask.Run(() =>
             {
-                ArcGIS.Core.Geometry.SpatialReference spatialRef = IsDefaultSpatialReference();
-                point = MapPointBuilderEx.CreateMapPoint(pointin.Longitude, pointin.Latitude, spatialRef);        
+                // ArcGIS.Core.Geometry.SpatialReference spatialRef = IsDefaultSpatialReference();
+                point = MapPointBuilderEx.CreateMapPoint(pointin.Longitude, pointin.Latitude, SpatialReferences.WGS84);        
             });
 
             return point;
@@ -1159,6 +1167,12 @@ namespace ArcGisProEspaceCollaboratif
             return QueuedTask.Run(() =>
             {
                 Map map = MapView.Active.Map;
+                if (map == null)
+                {
+                    string mess = "Pas de carte active, impossible d'ajouter une couche à celle-ci";
+                    logger.Error(string.Format("Helper.AddLayer : {0}\n", mess));
+                    throw new Exception(mess);
+                }
                 Layer layer = LayerFactory.Instance.CreateLayer(new Uri(uri), map);
                 ArcGIS.Core.Geometry.SpatialReference layer_projection = layer.GetSpatialReference();
                 string projection_name = layer_projection.Name;
@@ -1183,6 +1197,12 @@ namespace ArcGisProEspaceCollaboratif
         public static void RemoveLayersInMap(List<string> layersName)
         {
             Map map = MapView.Active.Map;
+            if (map == null)
+            {
+                string mess = "Pas de carte active, impossible de détruire les couches de celle-ci";
+                logger.Error(string.Format("Helper.RemoveLayersInMap : {0}\n", mess));
+                throw new Exception(mess);
+            }
             IReadOnlyList<Layer> layers = map.GetLayersAsFlattenedList();
             foreach (Layer layer in layers)
             {

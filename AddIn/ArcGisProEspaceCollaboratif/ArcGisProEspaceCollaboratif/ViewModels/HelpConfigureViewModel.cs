@@ -1,10 +1,12 @@
 ﻿using ArcGIS.Core.CIM;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Utils;
 using ArcGisProEspaceCollaboratif.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace ArcGisProEspaceCollaboratif.ViewModels
@@ -272,12 +274,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <returns>La liste des couches</returns>
         private ObservableCollection<string> GetLayersNameForSpatialFilterFromMap()
         {
-            if (this.Context.MapActiveView == null)
-            {
-                this.Context.MapActiveView = MapView.Active;
-            }
             ObservableCollection<string> layersName = new ();
-            IReadOnlyList<Layer> layers = this.Context.MapActiveView.Map.GetLayersAsFlattenedList();
+            Map map = this.Context.GetMap();
+            if (map == null)
+            {
+                return layersName;
+            }
+            IReadOnlyList<Layer> layers = map.GetLayersAsFlattenedList();
             foreach (var layer in layers)
             {
                 // Si une couche WFS/WMTS a perdu sa connexion

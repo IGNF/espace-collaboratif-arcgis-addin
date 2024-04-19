@@ -127,23 +127,21 @@ namespace ArcGisProEspaceCollaboratif
 
             try
             {
-                using (Table table = OpenTable(tableName))
+                using Table table = OpenTable(tableName);
+                // si la table n'existe pas, on renvoie une liste vide
+                if (table == null)
                 {
-                    // si la table n'existe pas, on renvoie une liste vide
-                    if (table == null)
-                    {
-                        return queryFilter;
-                    }
-
-                    // Est-ce que le champ existe
-                    if (!IsFieldInTable(table, fieldName))
-                    {
-                        string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
-                        throw new Exception(message);
-                    }
-
-                    queryFilter = MakeQueryFilter(fieldType, fieldName, listValue);
+                    return queryFilter;
                 }
+
+                // Est-ce que le champ existe
+                if (!IsFieldInTable(table, fieldName))
+                {
+                    string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
+                    throw new Exception(message);
+                }
+
+                queryFilter = MakeQueryFilter(fieldType, fieldName, listValue);
             }
             catch(Exception e)
             {
@@ -181,7 +179,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="table">le nom de la table</param>
         /// <param name="fieldName">le nom du champ</param>
         /// <returns>true si le champ existe, false sinon</returns>
-        private bool IsFieldInTable(Table table, string fieldName)
+        static private bool IsFieldInTable(Table table, string fieldName)
         {
             TableDefinition tableDefinition = table.GetDefinition();
             int res = tableDefinition.FindField(fieldName);
@@ -199,7 +197,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="fieldName">le nom du champ</param>
         /// <param name="values">les valeurs à chercher</param>
         /// <returns>retourne la requête remplie</returns>
-        private QueryFilter MakeQueryFilter(string fieldType, string fieldName, List<string> values)
+        static private QueryFilter MakeQueryFilter(string fieldType, string fieldName, List<string> values)
         { 
             string tmp = string.Format("{0} IN (", fieldName) ;
             foreach (string value in values)

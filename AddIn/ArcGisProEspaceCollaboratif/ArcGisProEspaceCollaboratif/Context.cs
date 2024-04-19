@@ -16,6 +16,8 @@ using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
+using System.Runtime.CompilerServices;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -70,7 +72,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le système géodésique employé par le service de l'espace collaboratif
         /// </summary>
-        public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
+        public ArcGIS.Core.Geometry.SpatialReference spatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
 
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
@@ -128,27 +130,30 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
         private async Task Init(MapView activeView)
         {
-            if (this.CollaborativeSpaceGeodatabase is null)
+            await QueuedTask.Run(() =>
             {
-                this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
-            }
+                if (this.CollaborativeSpaceGeodatabase is null)
+                {
+                    this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
+                }
 
-            this.MapActiveView = activeView;
+                this.MapActiveView = activeView;
 
-            Project project = Project.Current;
-            if (project.Name.Length == 0)
-            {
-                string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
-                logger.Error(string.Format("Context.Init : {0}\n", message));
-                throw new ArgumentNullException(message);
-            }
+                Project project = Project.Current;
+                if (project.Name.Length == 0)
+                {
+                    string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                    logger.Error(string.Format("Context.Init : {0}\n", message));
+                    throw new ArgumentNullException(message);
+                }
 
-            this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
-            this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
+                this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
+                this.FileMapWorking = System.IO.Path.GetFileNameWithoutExtension(project.Name);
 
-            this.CheckConfigFile();
+                this.CheckConfigFile();
 
-            logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+                logger.Debug("Initialisation du contexte et des éléments de l'Espace collaboratif");
+            });
         }
 
         #endregion
@@ -160,11 +165,13 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
         public void CheckConfigFile()
         {
-            if (this.DirectoryWorking == "")
-            {
-                Project project = Project.Current;
+            Project project = Project.Current;
+            //project.SaveAsync();
+            this.DirectoryWorking = project.HomeFolderPath;
+            /*if (this.DirectoryWorking == "")
+            {  
                 this.DirectoryWorking = System.IO.Path.GetDirectoryName(project.Path);
-            }
+            }*/
             string fileConfiguration = string.Format("{0}\\{1}", this.DirectoryWorking, Helper.name_file_espaceco_xml);
             if (!File.Exists(fileConfiguration))
             {
@@ -179,6 +186,42 @@ namespace ArcGisProEspaceCollaboratif
                     throw new Exception(string.Format("Impossible de poursuivre la procédure en raison de l'absence du fichier XML de paramétrage pour se connecter au service de l'Espace collaboratif.\nLe fichier '{0}' doit se situer dans le dossier suivant :\n'{1}'", Helper.name_file_espaceco_xml, this.DirectoryWorking));
                 }
             }
+        }
+
+        public Map GetMap()
+        {
+           
+            if (this.MapActiveView == null)
+            {
+                this.MapActiveView = MapView.Active;
+            }
+
+            Map map = null;
+            if (this.MapActiveView.Map != null)
+            {
+                map = this.MapActiveView.Map;
+            }
+            else
+            {
+                Project proj = Project.Current;
+                IEnumerable<MapProjectItem> mpi = proj.GetItems<MapProjectItem>();
+                foreach (MapProjectItem item in mpi)
+                {
+                    string layerName = item.Name;
+                    if (string.IsNullOrEmpty(layerName))
+                    {
+                        continue;
+                    }
+                    if (layerName == "Map")
+                    {
+                        QueuedTask.Run(() =>
+                        {
+                            map = item.GetMap();
+                        });
+                    }
+                }
+            }
+            return map;
         }
 
         /// <summary>
@@ -216,7 +259,7 @@ namespace ArcGisProEspaceCollaboratif
                 };
                 collabSpaceLayer = LayerFactory.Instance.CreateLayer<FeatureLayer>(
                     createParams,
-                    this.MapActiveView.Map
+                    this.GetMap()
                 );
             }
             else
@@ -237,7 +280,7 @@ namespace ArcGisProEspaceCollaboratif
                     "DISABLED", // no z values                    
                     "DISABLED", // no m values
                                 // Ajout de la référence spatiale
-                    this.SpatialReference
+                    this.spatialReference
                 };
 
             // Création de la feature class
@@ -434,12 +477,8 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>La couche ou null si non trouvée</returns>
         public FeatureLayer GetLayerByName(string layerName)
         {
-            if (this.MapActiveView == null)
-            {
-                this.MapActiveView = MapView.Active;
-            }
             // Enumération des couches et groupes de couches
-            IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = this.GetMap().GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName)
@@ -456,11 +495,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>true si la couche existe, false dans le cas contraire.</returns>
         public bool IsLayerInMap(string layerName)
         {
-            if (this.MapActiveView == null)
-            {
-                this.MapActiveView = MapView.Active;
-            }
-            IReadOnlyList<Layer> mapLayers = this.MapActiveView.Map.GetLayersAsFlattenedList();
+            IReadOnlyList<Layer> mapLayers = this.GetMap().GetLayersAsFlattenedList();
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName) return true;
@@ -511,29 +546,24 @@ namespace ArcGisProEspaceCollaboratif
                             WhereClause = string.Format("{0} = {1}", Helper.name_field_IdReport, reportUdating.Id)
                         };
 
-                        using (RowCursor rowCursor = reportFeatureClass.Search(queryFilter, false))
+                        using RowCursor rowCursor = reportFeatureClass.Search(queryFilter, false);
+                        while (rowCursor.MoveNext())
                         {
-                            while (rowCursor.MoveNext())
-                            {
-                                
-                                using (Feature feature = (Feature)rowCursor.Current)
-                                {
-                                    // In order to update the Map and/or the attribute table.
-                                    // Has to be called before any changes are made to the row
-                                    context.Invalidate(feature);
-                                    feature[Helper.name_field_DateMAJ] = reportUdating.DateUpdate;
-                                    feature[Helper.name_field_DateValidation] = reportUdating.DateValidation;
-                                    feature[Helper.name_field_Reponse] = reportUdating.ConcatenateResponse();
-                                    feature[Helper.name_field_Statut] = reportUdating.Status;
 
-                                    feature.Store();
-                                    // Has to be called after the store too
-                                    context.Invalidate(feature);
-                                }
-                            }
+                            using Feature feature = (Feature)rowCursor.Current;
+                            // In order to update the Map and/or the attribute table.
+                            // Has to be called before any changes are made to the row
+                            context.Invalidate(feature);
+                            feature[Helper.name_field_DateMAJ] = reportUdating.DateUpdate;
+                            feature[Helper.name_field_DateValidation] = reportUdating.DateValidation;
+                            feature[Helper.name_field_Reponse] = reportUdating.ConcatenateResponse();
+                            feature[Helper.name_field_Statut] = reportUdating.Status;
+
+                            feature.Store();
+                            // Has to be called after the store too
+                            context.Invalidate(feature);
                         }
                     }
-
                     catch (GeodatabaseException exObj)
                     {
                         throw new Exception (exObj.Message);
@@ -781,9 +811,11 @@ namespace ArcGisProEspaceCollaboratif
 
             // Initialisation de la bbox avec l'emprise de la première géométrie
             Envelope bbox = filterGeometries[0].Extent;
-
+            // La géométrie de filtre spatial doit être en WGS84 dans tous les cas.
+            //SpatialReference tmpSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
             foreach (Geometry geom in filterGeometries)
             {
+               //Geometry tmpGeom = GeometryEngine.Instance.Project(geom, tmpSpatialReference);
                 Envelope bboxTemp = geom.Extent;
                 bbox.Union(bboxTemp);
             }
@@ -813,13 +845,14 @@ namespace ArcGisProEspaceCollaboratif
                     );
 
             // Si la référence spatiale de la carte est différente de celle par défaut WGS84
-            this.SpatialReference = Helper.IsDefaultSpatialReference();
+            // this.spatialReference = Helper.IsDefaultSpatialReference();
 
             // On parcourt les objets de la feature class utilisée pour le filtre spatial
             while (rowCursor.MoveNext())
             {
                 Feature featureSpatialFilter = rowCursor.Current as Feature;
-                Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), this.SpatialReference);
+                //spatialFilterGeometry.Add(featureSpatialFilter.GetShape());
+                Geometry geomFeature = GeometryEngine.Instance.Project(featureSpatialFilter.GetShape(), SpatialReferences.WGS84);
                 spatialFilterGeometry.Add(geomFeature);
             }
 
@@ -1018,11 +1051,7 @@ namespace ArcGisProEspaceCollaboratif
             // Get the currently selected features in the map
             QueuedTask.Run(()=>
             {
-                if (this.MapActiveView == null)
-                {
-                    this.MapActiveView = MapView.Active;
-                }
-                SelectionSet selectedFeatures = this.MapActiveView.Map.GetSelection();
+                SelectionSet selectedFeatures = this.GetMap().GetSelection();
                 foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                 {
                     //get the layer of the selected feature

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
@@ -50,11 +51,7 @@ namespace ArcGisProEspaceCollaboratif
                     List<Report> replyReports = new ();
                     string messageReportNoValid = "";
                     // Récupération des objets sélectionnés
-                    if (context.MapActiveView == null)
-                    {
-                        context.MapActiveView = MapView.Active;
-                    }
-                    SelectionSet selectedFeatures = context.MapActiveView.Map.GetSelection();
+                    SelectionSet selectedFeatures = context.GetMap().GetSelection();
                     foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                     {
                         if (kvp.Key.Name != Helper.name_layer_Signalement)
