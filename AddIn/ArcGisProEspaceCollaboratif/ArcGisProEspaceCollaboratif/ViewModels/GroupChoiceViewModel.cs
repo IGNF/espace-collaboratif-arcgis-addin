@@ -168,6 +168,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             // Récupération du nom du groupe que l'utilisateur a choisi
             int index = this.groupChoiceView.GroupComboBox.SelectedIndex;
+            if (index == -1)
+            {
+                return;
+            }
             string igGroup = this.Profile.Geogroupes[index].Id;
             string nomGroup = this.Profile.Geogroupes[index].Name;
             this.Profile.IdNameGroup = (igGroup, nomGroup);
@@ -255,7 +259,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// <param name="activeGroup"></param>
         public void SetGroupSelectedItemComboBox()
         {
-            this.GroupSelectedItemComboBox = Helper.LoadActiveGroup();
+            string groupeActif = Helper.LoadActiveGroup();
+            if (this.GroupSelectedItemComboBox.Contains(groupeActif))
+            {
+                this.GroupSelectedItemComboBox = groupeActif;
+            }
+            else
+            {
+                this.GroupSelectedItemComboBox = this.Profile.Geogroupes[0].Name;
+            }           
         }
 
         public void SetItemsSourceWorkZoneComboBox()
