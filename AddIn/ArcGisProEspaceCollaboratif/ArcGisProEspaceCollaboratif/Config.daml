@@ -79,7 +79,7 @@
           <tooltip heading="Configurer">Configurer l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpManual" keytip="W" caption="Ouvrir manuel" className="HelpManual" loadOnClick="true" smallImage="Images\Book.png" largeImage="Images\Book.png">
-          <tooltip heading="Ouvir manuel">
+          <tooltip heading="Ouvrir manuel">
             Ouvrir le manuel utilisateur de l'add-in<disabledText /></tooltip>
         </button>
         <button id="ArcGisProEspaceCollaboratif_HelpFileLog" keytip="W" caption="Ouvrir log" className="HelpFileLog" loadOnClick="true" smallImage="Images\Log.png" largeImage="Images\Log.png">

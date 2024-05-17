@@ -7,6 +7,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.Data.DDL;
+using ArcGisProEspaceCollaboratif.Core;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -30,6 +31,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(CollaborativeSpaceGeodatabase));
 
         #endregion

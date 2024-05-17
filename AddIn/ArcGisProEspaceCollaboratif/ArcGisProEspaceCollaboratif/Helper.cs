@@ -95,6 +95,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Helper));
 
         // Dictionnaire des attributs de la couche signalements (avec types et contraintes)

@@ -12,6 +12,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class SeeReport : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(SeeReport));
 
         protected override async void OnClick()

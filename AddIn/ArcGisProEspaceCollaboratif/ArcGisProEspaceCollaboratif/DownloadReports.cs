@@ -12,6 +12,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class DownloadReports : ArcGIS.Desktop.Framework.Contracts.Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(DownloadReports));
 
         protected override async void OnClick()

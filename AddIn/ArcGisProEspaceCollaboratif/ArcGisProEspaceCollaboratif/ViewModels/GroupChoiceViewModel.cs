@@ -260,7 +260,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         public void SetGroupSelectedItemComboBox()
         {
             string groupeActif = Helper.LoadActiveGroup();
-            if (this.GroupSelectedItemComboBox.Contains(groupeActif))
+            if (this.GroupItemsSourceGroupComboBox.Contains(groupeActif))
             {
                 this.GroupSelectedItemComboBox = groupeActif;
             }

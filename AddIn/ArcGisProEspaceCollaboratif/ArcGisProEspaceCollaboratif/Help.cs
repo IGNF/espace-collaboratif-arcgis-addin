@@ -12,6 +12,7 @@ namespace ArcGisProEspaceCollaboratif
 {
     internal class HelpManual : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpManual));
 
         protected override void OnClick()
@@ -28,6 +29,7 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpFileLog : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpFileLog));
 
         protected override void OnClick()
@@ -56,6 +58,7 @@ namespace ArcGisProEspaceCollaboratif
 
     internal class HelpAbout : Button
     {
+        private static readonly Logger riplogger = Logger.Instance;
         private static readonly log4net.ILog logger = LogManager.GetLogger(typeof(HelpAbout));
 
         protected override void OnClick()

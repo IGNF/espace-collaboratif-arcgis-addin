@@ -77,6 +77,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
         /// </summary>
+        private static readonly Logger riplogger = Logger.Instance;
         public static readonly log4net.ILog logger = LogManager.GetLogger(typeof(Context));
 
         /// <summary>
@@ -120,6 +121,12 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         private Context()
         {
+            if (MapView.Active == null)
+            {
+                string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                logger.Error(string.Format("Context.Init : {0}\n", message));
+                throw new ArgumentNullException(message);
+            }
             this.Init(MapView.Active);
         }
 
@@ -193,7 +200,17 @@ namespace ArcGisProEspaceCollaboratif
            
             if (this.MapActiveView == null)
             {
-                this.MapActiveView = MapView.Active;
+                if (MapView.Active == null)
+                {
+                    string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                    logger.Error(string.Format("Context.GetMap : {0}\n", message));
+                    throw new ArgumentNullException(message);
+                }
+                else
+                {
+                    this.MapActiveView = MapView.Active;
+                }
+                
             }
 
             Map map = null;

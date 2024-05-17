@@ -94,7 +94,8 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 if (!file.Name.StartsWith(date))
                 {
-                    File.Delete(string.Format("{0}\\{1}", logPath, file));
+                    //File.Delete(string.Format("{0}\\{1}", logPath, file));
+                    File.Delete(file.FullName);
                 }
             }
         }
