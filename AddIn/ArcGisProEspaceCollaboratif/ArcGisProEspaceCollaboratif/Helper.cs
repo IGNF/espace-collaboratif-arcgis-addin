@@ -521,6 +521,16 @@ namespace ArcGisProEspaceCollaboratif
             // Selon le type géométrique de la géométrie à traiter.
             switch (geometry.GeometryType)
             {
+                case GeometryType.Multipoint:
+                    
+                    newSketch.SetType(Sketch.SketchType.Point);
+                    var multiPoint = geometry as ArcGIS.Core.Geometry.Multipoint;
+                    foreach (var pt in multiPoint.Points)
+                    {
+                        newSketch.AddPoint(ReplaceSpatialReferenceToPoint(pt));
+                    }
+                    break;
+
                 case GeometryType.Point:
                     newSketch.SetType(Sketch.SketchType.Point);
                     MapPoint point = geometry as MapPoint;
@@ -539,14 +549,27 @@ namespace ArcGisProEspaceCollaboratif
                 case GeometryType.Polygon:
                     newSketch.SetType(Sketch.SketchType.Polygone);
                     ArcGIS.Core.Geometry.Polygon polygon = geometry as ArcGIS.Core.Geometry.Polygon;
-                    foreach (MapPoint mp in polygon.Points)
+                    int numberOfPart = polygon.PartCount;
+                    if (numberOfPart > 1)
                     {
-                        newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mp));
+                        string mess = string.Format("Pour la création d'un croquis à partir d'une surface, il faut un polygone sans trous, ni îles.");
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            mess,
+                            Constantes.WARNING
+                        );
+                        logger.Warn(mess);
+                    }
+                    else
+                    {
+                        foreach (MapPoint mp in polygon.Points)
+                        {
+                            newSketch.AddPoint(ReplaceSpatialReferenceToPoint(mp));
+                        }
                     }
                     break;
 
                 default:
-                    string message = "Géométrie non prise en charge pour la transformer en croquis.";
+                    string message = string.Format("Géométrie ({0}) non prise en charge pour la transformer en croquis. Les types de géométrie acceptés sont : Point, Multipoint, Polyligne et Polygone.", geometry.GeometryType.ToString());
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                         message,
                         Constantes.WARNING

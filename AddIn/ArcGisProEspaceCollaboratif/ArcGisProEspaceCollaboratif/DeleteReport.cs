@@ -3,6 +3,7 @@ using ArcGIS.Desktop.Framework.Contracts;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Framework;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -42,11 +43,14 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
 
+                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ProgressDialog("Suppression des signalements et croquis dans la carte...");
+                    progressDialog.Show();
                     // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
                     foreach (string layerName in Helper.CollaborativeSpaceLayers)
                     {
                         context.EmptyCollabFeatureClasses(layerName);
                     }
+                    progressDialog.Hide();
 
                 }
                 catch (Exception e)

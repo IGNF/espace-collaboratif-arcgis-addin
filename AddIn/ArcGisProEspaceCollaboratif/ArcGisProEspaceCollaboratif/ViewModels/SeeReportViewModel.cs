@@ -134,8 +134,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             }
             else
             {
-                GetHyperLink(document);
+                SimpleGetHyperLink(document);
             }
+        }
+
+        private void SimpleGetHyperLink(string document)
+        {
+            this.seeReportView.TextBlockHyperlink.Inlines.Add(document);
         }
 
         /// <summary>

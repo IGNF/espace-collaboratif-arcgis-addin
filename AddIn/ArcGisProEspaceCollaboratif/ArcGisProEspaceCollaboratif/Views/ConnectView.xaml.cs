@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 
 namespace ArcGisProEspaceCollaboratif.Views
 {
@@ -12,7 +13,12 @@ namespace ArcGisProEspaceCollaboratif.Views
         /// </summary>
         public ConnectView()
         {
-            InitializeComponent();
+            /*
+            Si cette fonction sort en erreur après le build, il faut supprimer le répertoire \obj
+            qui est au même niveau que le dossier Resources et refaire un build de la solution
+            */
+
+            this.InitializeComponent();
         }
 
         /// <summary>

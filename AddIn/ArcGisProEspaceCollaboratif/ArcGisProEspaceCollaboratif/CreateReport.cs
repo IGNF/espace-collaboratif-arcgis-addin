@@ -48,17 +48,22 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Transformation des objets sélectionnés en croquis.
+                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ProgressDialog("Création des signalements et croquis dans la carte...");
+                    progressDialog.Show();
+
                     string message = "";
                     List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = context.MakeSketchFromSelection();
                     if (futursSketch == null)
                     {
                         message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pu être créés";
+                        progressDialog.Hide();
                         return;
                     }
                     logger.Debug(futursSketch.Count + " croquis générés.");
                     if (futursSketch.Count == 0)
                     {
                         message = "Aucun objet sélectionné.\nIl est donc impossible de déterminer le point d'application du nouveau signalement à créer.";
+                        progressDialog.Hide();
                         return;
                     }
                     if (!string.IsNullOrEmpty(message))
@@ -68,6 +73,7 @@ namespace ArcGisProEspaceCollaboratif
                             message,
                             Constantes.WARNING
                         );
+                        progressDialog.Hide();
                         return;
                     }
 
@@ -80,8 +86,10 @@ namespace ArcGisProEspaceCollaboratif
                     if (dialogResult == false)
                     {
                         createReportViewModel.createReportView.Close();
+                        progressDialog.Hide();
                         return;
                     }
+                    progressDialog.Hide();
                 }
                 catch (Exception e)
                 {  

@@ -18,6 +18,7 @@ using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
 using System.Runtime.CompilerServices;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -1084,18 +1085,20 @@ namespace ArcGisProEspaceCollaboratif
                             var inspector = featureLayer.Inspect(oid);
                             ArcGIS.Core.Geometry.Geometry geometryFeature = inspector.Shape;
                             ArcGisProEspaceCollaboratif.Core.Sketch tmpSketch = Helper.MakeSketch(geometryFeature);
-                            if (tmpSketch == null)
+                            if (tmpSketch.Points.Count == 0)
                             {
                                 message += string.Format("Le croquis pour le signalement {0} n'a pu être créé.\n", oid);
                             }
-                            // Ajout des attributs au nouveau croquis
-                            Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
-                            foreach (KeyValuePair<string, string> kv in attributes)
+                            else
                             {
-                                tmpSketch.AddAttribute(kv.Key, kv.Value);
-                            }
-
-                            sketches.Add(tmpSketch);
+                                // Ajout des attributs au nouveau croquis
+                                Dictionary<string, string> attributes = Helper.GetAttributes(inspector, fieldDescription);
+                                foreach (KeyValuePair<string, string> kv in attributes)
+                                {
+                                    tmpSketch.AddAttribute(kv.Key, kv.Value);
+                                }
+                                sketches.Add(tmpSketch);
+                            }    
                         }); 
                     }
                 }

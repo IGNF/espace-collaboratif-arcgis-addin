@@ -117,13 +117,13 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
         private Client Connexion()
         {
-            Client connexionServer = new(
+            try
+            {
+                Client connexionServer = new(
                         this.Uri,
                         this.Login,
                         this.Password
                     );
-            try
-            {
                 logger.Info("Création de la connexion au serveur " + connexionServer.ToString());
 
                 // Récupération du profil utilisateur
@@ -159,10 +159,9 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 if (messageError != string.Empty)
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(messageError, Constantes.ERROR);
-                }
-                
+                }    
             }
-            return connexionServer;
+            return null;
         }
     }
     #endregion
