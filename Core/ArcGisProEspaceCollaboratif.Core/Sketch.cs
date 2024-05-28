@@ -169,6 +169,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             objet.Add(xattributs);
             doc.Root.Add(objet);
             return doc;
-        }      
+        }
     }
 }
