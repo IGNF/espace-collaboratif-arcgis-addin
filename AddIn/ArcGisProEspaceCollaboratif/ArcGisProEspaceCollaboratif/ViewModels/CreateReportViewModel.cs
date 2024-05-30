@@ -352,11 +352,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                     {
                         check_ = "1";
                     }
-                    CheckBox checkBox_ = SetCheckBox(name, check_, false);
-                    this.StackPanelGlobal.Children.Add(checkBox_);
+                    RadioButton radioButton_ = SetRadioButton(name, check_, false);
+                    this.StackPanelGlobal.Children.Add(radioButton_);
                     List<string> controls_ = new List<string>();
-                    this.ControlsCreate.Add(checkBox_.Name, controls_);
-                    this.OnRegisterName(checkBox_.Name, checkBox_);
+                    this.ControlsCreate.Add(radioButton_.Name, controls_);
+                    this.OnRegisterName(radioButton_.Name, radioButton_);
                     continue;
                 }
                 // Un expander par theme qui contient tous les attributs initialisés par type
@@ -368,16 +368,17 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 StackPanel stackPanelExpander = SetStackPanel(name);
                 this.OnRegisterName(stackPanelExpander.Name, stackPanelExpander);
 
-                CheckBox checkBox = SetCheckBox(name, check, false);
-                stackPanelExpander.Children.Add(checkBox);
-                this.OnRegisterName(checkBox.Name, checkBox);
+                RadioButton radioButton = SetRadioButton(name, check, false);
+                stackPanelExpander.Children.Add(radioButton);
+                this.OnRegisterName(radioButton.Name, radioButton);
 
                 Expander expander = SetExpander();
                 List<string> controls = new List<string>();
                 expander.Content = DisplayTypeAttributes(thGroup, ref controls);
                 stackPanelExpander.Children.Add(expander);
                 this.StackPanelGlobal.Children.Add(stackPanelExpander);
-                this.ControlsCreate.Add(checkBox.Name, controls);
+                //this.ControlsCreate.Add(checkBox.Name, controls);
+                this.ControlsCreate.Add(radioButton.Name, controls);
             }
         }
 
@@ -455,6 +456,31 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 checkBox.FontWeight = FontWeights.Bold;
             }
             return checkBox;
+        }
+
+        private RadioButton SetRadioButton(string content, string check, bool bold)
+        {
+            RadioButton radioButton = new RadioButton()
+            {
+                Content = content,
+                Name = this.RemoveSpecialCharacter(string.Format("RadioButton_{0}", content)),
+                GroupName = "theme"
+            };
+            if (check == "1" ||
+               check == "True" ||
+               check == "TRUE" ||
+               check == "true" ||
+               check == "Vrai" ||
+               check == "VRAI" ||
+               check == "vrai")
+            {
+                radioButton.IsChecked = true;
+            }
+            if (bold)
+            {
+                radioButton.FontWeight = FontWeights.Bold;
+            }
+            return radioButton;
         }
 
         /// <summary>
@@ -1045,15 +1071,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             foreach (KeyValuePair<string, List<string>> kvp in this.ControlsCreate)
             {
-                CheckBox cb = (CheckBox)this.createReportView.FindName(kvp.Key);
-                if (cb.IsChecked == false)
+                RadioButton rb = (RadioButton)this.createReportView.FindName(kvp.Key);
+                if (rb.IsChecked == false)
                 {
                     continue;
                 }
-                string themeName = cb.Content.ToString();
+                string themeName = rb.Content.ToString();
                 Group group = new Group
                 {
-                    Name = cb.Content.ToString(),
+                    Name = rb.Content.ToString(),
                     Id = GetCorrespondenceIdNameTheme(themeName)
                 };
 
@@ -1088,7 +1114,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                             UserSelectedValue = val,
                             TagDisplay = checkBox.Content.ToString(),
                             TagName = tagName,
-                            ThemeName = cb.Content.ToString(),
+                            ThemeName = rb.Content.ToString(),
                             Required = bRequired
                         };
                         tmpTheme.Attributes.Add(tmpThemeAttributes);
