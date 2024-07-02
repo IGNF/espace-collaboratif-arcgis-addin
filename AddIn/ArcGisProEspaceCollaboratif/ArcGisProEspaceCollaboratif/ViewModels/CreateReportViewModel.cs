@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Framework.Utilities;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.Utils;
@@ -326,6 +327,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             ScrollViewer scrollViewer = SetScrollViewer();
             scrollViewer.Content = this.StackPanelGlobal;
             this.createReportView.GridGeneral.Children.Add(scrollViewer);
+            this.Context.Groupeactif = newGroupActive.Name;
+            this.PreferredGroup = newGroupActive.Name;
         }
 
         /// <summary>
@@ -867,7 +870,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 try
                 {
                     // Est-ce que le format de fichier joint est autorisé ?
-                    string extension = openFileDialog.FileName.Split('.')[1];
+                    string[] splits = openFileDialog.FileName.Split('.');
+                    if (splits.Length < 2)
+                    {
+                        message = string.Format("Le fichier {0} n'est pas accepté comme pièce-jointe", openFileDialog.FileName);
+                        logger.Error(string.Format("CreateReportViewModel.OnJoinDocument : {0}\n", message));
+                        throw new Exception(message);
+                    }
+                    // Fichier à plusieurs points (tutorial_Espace_Collaboratif_web_4.2V1.docx)
+                    string extension = splits[splits.Length - 1];
                     if (!Helper.IsFileExtensionAuthorised(extension))
                     {
                         message = string.Format("Les fichiers de type '.{0}' ne sont pas autorisés comme pièce-jointe", extension);
@@ -1468,7 +1479,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             string strNormalize = sb.ToString().Normalize(NormalizationForm.FormC);
 
             // Les caractères spéciaux ensuite
-            List<string> tmp = new List<string>
+            List<string> tmp = new()
             {
                 "/",
                 " ",
@@ -1483,7 +1494,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 "%",
                 "°",
                 "&",
-                "="
+                "=",
+                "."
             };
             foreach (string item in tmp)
             {
@@ -1497,7 +1509,7 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         /// Récupère dans la ComboBox 'Groupe' le nom du groupe sélectionné par l'utilisateur
         /// et rempli les attributs Name et Id de la classe Group
         /// </summary>
-        /// <returns>Retourne le groupe avec ses atrrbuts remplis</returns>
+        /// <returns>Retourne le groupe avec ses attributs remplis</returns>
         private Group GetGroupSelectedItemComboBox()
         {
             Group group = null;
@@ -1507,8 +1519,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
 
             if (groupName == Constantes.AUCUN)
             {
-//                this.StackPanelGlobal.Children.Add(SetLabel("Pas de groupe, pas d'attributs", true));
-//                this.createReportView.GridGeneral.Children.Add(this.StackPanelGlobal);
                 return group;
             }
 

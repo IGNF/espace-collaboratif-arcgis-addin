@@ -85,8 +85,6 @@ namespace ArcGisProEspaceCollaboratif.Core
             WebClient client = new WebClient();
             string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.Login + ":" + this.Password));
             client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
-            /*System.Net.ServicePointManager.ServerCertificateValidationCallback =
-                new System.Net.Security.RemoteCertificateValidationCallback(ServiceRequest.ValidateRemoteCertificate);*/
             System.Net.ServicePointManager.ServerCertificateValidationCallback =
                 new System.Net.Security.RemoteCertificateValidationCallback(delegate { return true; });
 
@@ -234,10 +232,12 @@ namespace ArcGisProEspaceCollaboratif.Core
             try
             {
                 wresp = wr.GetResponse();
-                Stream stream2 = wresp.GetResponseStream();
-                StreamReader reader2 = new StreamReader(stream2);
-                result = reader2.ReadToEnd();
-                Console.WriteLine(string.Format("File uploaded, server response is: {0}", reader2.ReadToEnd()));
+                Stream receiveStream = wresp.GetResponseStream();
+                Encoding encode = System.Text.Encoding.GetEncoding("utf-8");
+                StreamReader readStream = new StreamReader(receiveStream, encode);
+                result = readStream.ReadToEnd();
+                Console.WriteLine(string.Format("File uploaded, server response is: {0}", readStream.ReadToEnd()));
+                wresp.Close();
             }
             catch (Exception ex)
             {

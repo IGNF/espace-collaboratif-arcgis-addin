@@ -5,10 +5,9 @@ using log4net;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using System.Collections.Generic;
-using ArcGIS.Desktop.Internal.Framework;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Core.Geometry;
-//using System.Windows.Forms;
+using static ArcGisProEspaceCollaboratif.Core.Sketch;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -144,7 +143,12 @@ namespace ArcGisProEspaceCollaboratif
                             {
                                 if (tmpSketch.Points.Count == 0)
                                 {
-                                    message += string.Format("Le croquis pour le signalement {0} n'a pu être créé.\n", oid);
+                                    message += string.Format("Le croquis pour le signalement {0} n'a pu être créé. Géométrie vide.\n", oid);
+                                }
+                                else if (tmpSketch.Points.Count == 1 && tmpSketch.Type == SketchType.Ligne ||
+                                         tmpSketch.Points.Count == 2 && tmpSketch.Type == SketchType.Polygone)
+                                {
+                                    message += string.Format("Le croquis pour le signalement {0} n'a pu être créé. Géométrie invalide.\n", oid);
                                 }
                                 else
                                 {
