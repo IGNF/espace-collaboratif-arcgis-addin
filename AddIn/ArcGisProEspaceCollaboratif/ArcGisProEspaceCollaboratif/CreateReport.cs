@@ -37,6 +37,7 @@ namespace ArcGisProEspaceCollaboratif
                         context.Client = client;
                         if (context.Client == null)
                         {
+                            progressDialog.Hide();
                             return;
                         }
                     }

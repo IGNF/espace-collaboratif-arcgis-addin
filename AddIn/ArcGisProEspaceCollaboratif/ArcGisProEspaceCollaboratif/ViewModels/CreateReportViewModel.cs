@@ -305,8 +305,10 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 {
                     if (newGroupActive.Name == geoGroupe.Name)
                     {
-                        listThemesGroup = geoGroupe.Themes;
-                        filteredThemes = geoGroupe.FilteredThemes;
+                        (Profile, string) profilMessage = this.Context.Client.SetChangeUserProfil(geoGroupe.Id);
+                        this.Context.Profil = profilMessage.Item1;
+                        listThemesGroup = profilMessage.Item1.Themes;
+                        filteredThemes = profilMessage.Item1.FilteredThemes;
                         break;
                     }
                 }
