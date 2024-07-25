@@ -343,11 +343,16 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         {
             foreach (Theme thGroup in listThemesGroup)
             {
+                // Recherche du groupe
                 if (name != thGroup.Group.Name)
                 {
                     continue;
                 }
-
+                // Le thème n'est pas filtré, on passe au suivant 
+                if (thGroup.Filtered == false)
+                {
+                    continue;
+                }
                 // Un thème peut ne pas avoir d'attributs dans ce cas là,
                 // il faut afficher le thème avec une case à cocher
                 if (thGroup.Attributes == null)
@@ -1497,7 +1502,8 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
                 "°",
                 "&",
                 "=",
-                "."
+                ".",
+                "@"
             };
             foreach (string item in tmp)
             {
@@ -1522,6 +1528,11 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             if (groupName == Constantes.AUCUN)
             {
                 return group;
+            }
+
+            if (this.Context.Profil.Geogroupes is null)
+            {
+                this.OnPropertyChanged();
             }
 
             foreach (GeoGroup geoGroup in this.Context.Profil.Geogroupes)

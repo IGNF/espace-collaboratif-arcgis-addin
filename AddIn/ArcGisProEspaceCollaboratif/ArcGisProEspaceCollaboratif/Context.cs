@@ -749,7 +749,6 @@ namespace ArcGisProEspaceCollaboratif
                 { Helper.name_field_Reponse, Helper.Limite(newReport.ConcatenateResponse()) },
                 { Helper.name_field_Autorisation, newReport.Authorisation },
                 { Helper.name_field_Source, newReport.Source },
-
                 { Helper.name_field_Shape, Helper.TransformPoint(newReport.Position) }
             };
 
@@ -979,19 +978,19 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     Helper.SaveActiveGroup("Aucun");
                 }
-                else
-                {
-                    Helper.SaveActiveGroup(this.Profil.Group.Name);
+            }
+            else if (this.Profil.Geogroupes.Count == 1)
+            {
+                Helper.SaveActiveGroup(this.Profil.Group.Name);
 
-                    // On enregistre le groupe comme groupe préféré (par défaut) pour la création de signalement
-                    // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
-                    string preferredGroup = Helper.Load_PreferredGroup();
-                    if (preferredGroup != Profil.Group.Name)
-                    {
-                        Helper.Save_PreferredThemes(new List<string>());
-                    }
-                    Helper.Save_PreferredGroup(Profil.Group.Name);
+                // On enregistre le groupe comme groupe préféré (par défaut) pour la création de signalement
+                // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
+                string preferredGroup = Helper.Load_PreferredGroup();
+                if (preferredGroup != Profil.Group.Name)
+                {
+                    Helper.Save_PreferredThemes(new List<string>());
                 }
+                Helper.Save_PreferredGroup(Profil.Group.Name);
             }
             else
             {
@@ -1017,7 +1016,7 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     this.Profil = groupChoiceViewModel.Profile;
                 }
-                else
+                else if (this.Profil.Group.Name != idNomGroupe.Item2)
                 {
                     // récupère le profil et un message dans un tuple
                     (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupe.Item1);
