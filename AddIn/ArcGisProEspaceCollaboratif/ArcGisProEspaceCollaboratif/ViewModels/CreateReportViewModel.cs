@@ -503,6 +503,22 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
         private ComboBox SetComboBox(Dictionary<string, string> values, string defaultValue, string attributeName)
         {
             List<string> lvalues = new List<string>();
+            // Il peut arriver que la valeur par défaut ne soit pas dans la liste des valeurs,
+            // la valeur vide par exemple, il faut alors l'ajouter
+            // sinon cela plante dans SelectedItem = values[defaultValue]
+            if (!values.ContainsKey(defaultValue))
+            {
+                Dictionary<string, string> tmpValues = new()
+                {
+                    { defaultValue, defaultValue }
+                };
+                foreach (KeyValuePair<string, string> kvp in values)
+                {
+                    tmpValues.Add(kvp.Key, kvp.Value);
+                }
+                values.Clear();
+                values = tmpValues;
+            }
             foreach (KeyValuePair<string, string> kvp in values)
             {
                 lvalues.Add(kvp.Value);
