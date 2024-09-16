@@ -85,7 +85,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\Espace_co_Add-in_ArcGIS_Pro.pdf">
+    <None Include="Files\ENR_Espace_co_Add-in_ArcGIS_Pro_2_0_0.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

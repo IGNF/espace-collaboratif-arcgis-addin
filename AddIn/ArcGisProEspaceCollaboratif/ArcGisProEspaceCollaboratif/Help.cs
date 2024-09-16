@@ -3,6 +3,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using log4net;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -41,17 +42,19 @@ namespace ArcGisProEspaceCollaboratif
             string fileLog = string.Format("*{0}", Constantes.NAMELOGFILE);
             try
             {
-                var logFile = (from f in directory.GetFiles(fileLog)
+                System.IO.FileInfo logFile = (from f in directory.GetFiles(fileLog)
                                orderby f.LastWriteTime descending
                                select f).First();
-
-                System.Diagnostics.Process.Start(logFile.FullName);
+                if (logFile != null)
+                {
+                    Process process = System.Diagnostics.Process.Start("notepad.exe", logFile.FullName);
+                }
             }
-            catch
+            catch (Exception e)
             {
-                string message = string.Format("Le fichier yyyy.MM.dd{0} n'existe pas le répertoire {1}", Constantes.NAMELOGFILE, logPath);
-                logger.Error(string.Format("HelpFileLog.OnClick : {0}\n", message));
-                MessageBox.Show(message,Constantes.ERROR);
+                // string message = string.Format("Le fichier yyyy.MM.dd{0} n'existe pas le répertoire {1}", Constantes.NAMELOGFILE, logPath);
+                logger.Error(string.Format("HelpFileLog.OnClick : {0}\n", e.Message));
+                MessageBox.Show(e.Message,Constantes.ERROR);
             }
         }
     }

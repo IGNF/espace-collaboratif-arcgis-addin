@@ -30,7 +30,7 @@ namespace ArcGisProEspaceCollaboratif
         public const string name_file_espaceco_xml = "espaceco.xml";
         public const string name_file_extensions = "formats.txt";
         public const string name_file_about_status = "AboutStatusResponse.txt";
-        public const string name_file_manuel = "Espace_co_Add-in_ArcGIS_Pro.pdf";
+        public const string name_file_manuel = "ENR_Espace_co_Add-in_ArcGIS_Pro_2_0_0.pdf";
 
         public const string name_layer_Signalement = "Signalement";
         public const string name_layer_Croquis_Polygone = "Croquis_EC_Polygone";
