@@ -38,7 +38,7 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Clic sur le bouton d'ouverture du fichier de log de l'add-in Espace collaboratif");
 
             string logPath = Logger.GetLogPath();
-            DirectoryInfo directory = new DirectoryInfo(logPath);
+            DirectoryInfo directory = new(logPath);
             string fileLog = string.Format("*{0}", Constantes.NAMELOGFILE);
             try
             {

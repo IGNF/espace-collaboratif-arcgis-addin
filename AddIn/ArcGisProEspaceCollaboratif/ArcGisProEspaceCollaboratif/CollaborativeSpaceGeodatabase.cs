@@ -8,6 +8,7 @@ using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.Data.DDL;
 using ArcGisProEspaceCollaboratif.Core;
+using System.Runtime.CompilerServices;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -181,13 +182,30 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="table">le nom de la table</param>
         /// <param name="fieldName">le nom du champ</param>
         /// <returns>true si le champ existe, false sinon</returns>
-        static private bool IsFieldInTable(Table table, string fieldName)
+        private bool IsFieldInTable(Table table, string fieldName)
         {
             TableDefinition tableDefinition = table.GetDefinition();
             int res = tableDefinition.FindField(fieldName);
             if (res == -1)
             {
                 return false;
+            }
+            return true;
+        }
+
+        public bool IsFieldsInTable(string nameTable, Dictionary<string, KeyValuePair<string, string>> dictFieldsName)
+        {
+            Table table = this.OpenTable(nameTable);
+            if (table == null)
+            {
+                return false;
+            }
+            foreach (KeyValuePair<string, KeyValuePair<string, string>> kvp in dictFieldsName)
+            {
+                if (!this.IsFieldInTable(table, kvp.Key))
+                {
+                    return false;
+                }
             }
             return true;
         }

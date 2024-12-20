@@ -16,9 +16,6 @@ using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
-using System.Runtime.CompilerServices;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -386,6 +383,16 @@ namespace ArcGisProEspaceCollaboratif
 
         public async Task LoadOrCreateCollaborativeSpaceLayers(string fcName, string fcTypeGeometry, Dictionary<string, KeyValuePair<string, string>> fcAttributesDict, int layerPosition)
         {
+            // Est-ce que les tables existent dans la Geodatabase
+            if (this.CollaborativeSpaceGeodatabase.IsTableExists(fcName))
+            {
+                // Est-ce que les colonnes dans la table sont correctement chargées ?
+                if (!this.CollaborativeSpaceGeodatabase.IsFieldsInTable(fcName, fcAttributesDict))
+                {
+                    throw new Exception("Impossible de continuer, les tables pour télécharger les signalements sont erronées. Veuillez les détruire dans le projet et la Geodatabase puis relancer l'outil.");
+                }
+            }
+            
             string fcPath = this.CollaborativeSpaceGeodatabase.GeoDatabasePath + "\\" + fcName;
             bool bFeatureClassExist = this.CollaborativeSpaceGeodatabase.IsFeatureClassExists(fcName);
 
@@ -398,7 +405,6 @@ namespace ArcGisProEspaceCollaboratif
             { 
                 collabSpaceLayer = this.LoadCollabLayer(fcName, layerPosition);
             }
-
             // Si la feature class n'existe pas dans la geodatabase du projet ou dans la carte, on la crée
             else
             {
@@ -631,7 +637,8 @@ namespace ArcGisProEspaceCollaboratif
                         var reportFields = new Dictionary<string, object>();
                         reportFields = GetFieldValuesForReport(newReport);
 
-                        createOperation.Create(reportLayer, reportFields);
+                        ArcGIS.Desktop.Editing.RowToken rowToken = createOperation.Create(reportLayer, reportFields);
+                        long? objectID = rowToken.ObjectID;
 
                         // Croquis
                         if (!newReport.IsCroquisEmpty())
@@ -919,16 +926,21 @@ namespace ArcGisProEspaceCollaboratif
         {
             FeedbackInformationViewModel feedbackInformationViewModel = new ();
             feedbackInformationViewModel.feedbackInformationView.DataContext = feedbackInformationViewModel;
-
+            string logoByDefault = "/ArcGisProEspaceCollaboratif;component/Resources/LogoIGN.gif";
+            // L'utilisateur peut appartenir à un groupe, mais sans logo, on affiche le logo IGN
+            if (Profil.Logo == "")
+            {
+                feedbackInformationViewModel.Logo = logoByDefault;
+            }
             // Le logo du groupe auquel l'utilisateur appartient
-            if (!string.IsNullOrEmpty(Profil.Logo))
+            else if (!string.IsNullOrEmpty(Profil.Logo))
             {
                 feedbackInformationViewModel.Logo = string.Format("{0}{1}", this.URLHost, Profil.Logo);
             }
-            // L'utilisateur sans groupe à un profil par défaut, on affiche le logo IGN
-            else if (Profil.Title == "Profil par défaut")
+            // Cas d'un profil par défaut -> logo IGN
+            if (Profil.Title == "Profil par défaut")
             {
-                feedbackInformationViewModel.Logo = "/ArcGisProEspaceCollaboratif;component/Resources/LogoIGN.gif";
+                feedbackInformationViewModel.Logo = logoByDefault;
             }
             string message = "Connexion réussie à l'Espace collaboratif\n\n";
             message += string.Format(" Serveur : {0}\n", this.URLHost);
@@ -985,69 +997,67 @@ namespace ArcGisProEspaceCollaboratif
 
                 // On enregistre le groupe comme groupe préféré (par défaut) pour la création de signalement
                 // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
-                string preferredGroup = Helper.Load_PreferredGroup();
-                if (preferredGroup != Profil.Group.Name)
+                string pGroup = Helper.Load_PreferredGroup();
+                if (pGroup != Profil.Group.Name)
                 {
                     Helper.Save_PreferredThemes(new List<string>());
                 }
                 Helper.Save_PreferredGroup(Profil.Group.Name);
             }
-            else
+            // sinon le choix d'un autre groupe est présenté à l'utilisateur
+            // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
+            GroupChoiceViewModel groupChoiceViewModel = new (Profil);
+            groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
+            bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
+            // Si l'utilisateur a cliqué sur le bouton "Annuler"
+            // dans son choix du groupe, on sort
+            if (dialogResult == false)
             {
-                // sinon le choix d'un autre groupe est présenté à l'utilisateur
-                // le formulaire est proposé même si l'utilisateur n'appartient qu'à un groupe
-                GroupChoiceViewModel groupChoiceViewModel = new (Profil);
-                groupChoiceViewModel.groupChoiceView.DataContext = groupChoiceViewModel;
-                bool? dialogResult = groupChoiceViewModel.groupChoiceView.ShowDialog();
-                // Si l'utilisateur a cliqué sur le bouton "Annuler"
-                // dans son choix du groupe, on sort
-                if (dialogResult == false)
-                {
-                    groupChoiceViewModel.groupChoiceView.Close();
-                    return false;
-                }
+                groupChoiceViewModel.groupChoiceView.Close();
+                return false;
+            }
                
-                // le choix du nouveau profil est validé
-                // le nouvel id et nom du groupe sont retournés dans un tuple
-                (string, string) idNomGroupe = groupChoiceViewModel.Profile.IdNameGroup;
+            // le choix du nouveau profil est validé
+            // le nouvel id et nom du groupe sont retournés dans un tuple
+            (string, string) idNomGroupe = groupChoiceViewModel.Profile.IdNameGroup;
 
-                // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
-                if (groupChoiceViewModel.Profile.Geogroupes.Count == 1)
+            // si l'utilisateur n'appartient qu'à un seul groupe, le profil chargé reste actif
+            if (groupChoiceViewModel.Profile.Geogroupes.Count == 1)
+            {
+                this.Profil = groupChoiceViewModel.Profile;
+            }
+            else if (this.Profil.Group.Name != idNomGroupe.Item2)
+            {
+                // récupère le profil et un message dans un tuple
+                (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupe.Item1);
+                string messTmp = profilMessage.Item2;
+
+                // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
+                if (messTmp.Contains("actif"))
                 {
+                    // le profil chargé reste actif
                     this.Profil = groupChoiceViewModel.Profile;
                 }
-                else if (this.Profil.Group.Name != idNomGroupe.Item2)
+                else
                 {
-                    // récupère le profil et un message dans un tuple
-                    (Profile, string) profilMessage = connexionServer.SetChangeUserProfil(idNomGroupe.Item1);
-                    string messTmp = profilMessage.Item2;
-
-                    // SetChangeUserProfil retourne un message "Le profil pour le groupe xxx est déjà actif"
-                    if (messTmp.Contains("actif"))
-                    {
-                        // le profil chargé reste actif
-                        this.Profil = groupChoiceViewModel.Profile;
-                    }
-                    else
-                    {
-                        // setChangeUserProfil retourne un message vide le nouveau profil devient actif
-                        this.Profil = profilMessage.Item1;
-                    }
+                    // setChangeUserProfil retourne un message vide le nouveau profil devient actif
+                    this.Profil = profilMessage.Item1;
                 }
-
-                // Sauvegarde du groupe actif dans le xml du projet utilisateur
-                this.Groupeactif = idNomGroupe.Item2;
-                Helper.SaveActiveGroup(this.Groupeactif);
-
-                // On enregistre le groupe comme groupe préféré pour la création de signalement
-                // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
-                string preferredGroup = Helper.Load_PreferredGroup();
-                if (preferredGroup != Profil.Group.Name)
-                {
-                    Helper.Save_PreferredThemes(new List<string>());
-                }
-                Helper.Save_PreferredGroup(Profil.Group.Name);
             }
+
+            // Sauvegarde du groupe actif dans le xml du projet utilisateur
+            this.Groupeactif = idNomGroupe.Item2;
+            Helper.SaveActiveGroup(this.Groupeactif);
+
+            // On enregistre le groupe comme groupe préféré pour la création de signalement
+            // Si ce n'est pas le même qu'avant, on vide les thèmes préférés
+            string preferredGroup = Helper.Load_PreferredGroup();
+            if (preferredGroup != Profil.Group.Name)
+            {
+                Helper.Save_PreferredThemes(new List<string>());
+            }
+            Helper.Save_PreferredGroup(Profil.Group.Name);
+
             return true;
         }
  
