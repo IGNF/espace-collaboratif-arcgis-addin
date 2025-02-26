@@ -651,7 +651,7 @@ namespace ArcGisProEspaceCollaboratif
                                 int layerIndex = GetIndexLayerFromSketchType(currSketch.Type);
                                 if (layerIndex == -1)
                                 {
-                                    logger.Error(string.Format("Context.CreerPointSignalement : {0} {1}\n", "Type non reconnu : ", currSketch.Type.ToString()));
+                                    logger.Error(string.Format("Context.InsertReports : {0} {1}\n", "Type non reconnu : ", currSketch.Type.ToString()));
                                     continue;
                                 }
                                 FeatureLayer sketchFeatureLayer = GetLayerByName(Helper.CollaborativeSpaceLayers[layerIndex]);
@@ -673,7 +673,7 @@ namespace ArcGisProEspaceCollaboratif
                     if (!result)
                     {
                         string error = createOperation.ErrorMessage;
-                        logger.Error(string.Format("Context.CreerPointSignalement : {0}\n", error));
+                        logger.Error(string.Format("Context.InsertReports : {0}\n", error));
                     }
                     else
                     {

@@ -17,6 +17,8 @@ namespace ArcGisProEspaceCollaboratif
             logger.Debug("Click sur le bouton de suppression de tous les objets des couches de signalement");
             await QueuedTask.Run(() =>
             {
+                ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ProgressDialog("Suppression des signalements et croquis dans la carte...");
+                progressDialog.Show();
                 try
                 {
                     Context context = Context.Instance;
@@ -43,8 +45,6 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
 
-                    ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ProgressDialog("Suppression des signalements et croquis dans la carte...");
-                    progressDialog.Show();
                     // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
                     foreach (string layerName in Helper.CollaborativeSpaceLayers)
                     {

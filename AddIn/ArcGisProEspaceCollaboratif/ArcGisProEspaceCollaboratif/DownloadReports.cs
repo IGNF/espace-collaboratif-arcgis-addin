@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping.TOC;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using log4net;
@@ -20,7 +21,8 @@ namespace ArcGisProEspaceCollaboratif
             await QueuedTask.Run(async () =>
             {
                 try
-                {                    
+                {
+                    logger.Info("DownloadReports : début du traitement.");
                     Context context = Context.Instance;
 
                     // Est-ce que l'utilisateur s'est connecté ?
@@ -70,6 +72,8 @@ namespace ArcGisProEspaceCollaboratif
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
 
+                    logger.Info("DownloadReports : fin check files.");
+
                     ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ("Récupération des signalements sur le serveur...");
                     progressDialog.Show();
                     List<Report> reports = context.Client.GetGeoRems(parameters);
@@ -81,7 +85,7 @@ namespace ArcGisProEspaceCollaboratif
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.INFORMATION);
                         return;
                     }
-
+                    logger.Info("DownloadReports : fin requête spatiale.");
                     // Filtrage par dates
                     // le cas sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate == Constantes.DEFAULT_DATE_EXTRACTION
                     // est celui des paramètres d'extraction ligne 47 car on extrait les signalements avec la date de début
@@ -106,6 +110,7 @@ namespace ArcGisProEspaceCollaboratif
                             reports = reportToKeep;
                         }
                     }
+                    logger.Info("DownloadReports : fin filtrage par date.");
 
                     // Filtrage spatial des signalements
                     if (hasFilter)
@@ -121,7 +126,7 @@ namespace ArcGisProEspaceCollaboratif
                         }
                         reports = reportToKeep;
                     }
-
+                    logger.Info("DownloadReports : fin filtrage spatial.");
                     progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
                     // Chargement ou création des couches liées aux signalements
@@ -133,10 +138,10 @@ namespace ArcGisProEspaceCollaboratif
                     int countReports = reports.Count;
                     await context.InsertReports(reports);
                     progressDialog.Hide();
-
+                    logger.Info("DownloadReports : fin import des signalements.");
                     //Zoom sur la couche des signalements (supprimé à la demande du SVRP)
-//                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
-//                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
+                    //                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
+                    //                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
                     long newReports = context.CountReportsByStatus(EnumStatus.submit);
@@ -149,7 +154,8 @@ namespace ArcGisProEspaceCollaboratif
                     message += "\n _ " + pendingReports + " signalement(s) en cours de traitement.";
                     message += "\n _ " + validatedReports + " signalement(s) validé(s).";
                     message += "\n _ " + rejectedReports + " signalement(s) rejeté(s).";
-
+                    logger.Info(message);
+                    logger.Info("DownloadReports : fin du traitement.");
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.INFORMATION);
                 }
                 catch (Exception e)
