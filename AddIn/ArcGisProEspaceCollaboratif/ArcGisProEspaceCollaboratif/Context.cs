@@ -16,6 +16,10 @@ using static ArcGisProEspaceCollaboratif.Core.Sketch;
 using ArcGisProEspaceCollaboratif.ViewModels;
 using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.CIM;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
+using ArcGIS.Core.Data.DDL;
+using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -164,10 +168,12 @@ namespace ArcGisProEspaceCollaboratif
         #endregion
 
         /// <summary>
-        /// Teste si le fichier de configuration espaceco.xml n'existe pas dans le répertoire de travail, on le copie 
-        /// du répertoire d'installation 
+        /// Teste si le fichier de configuration espaceco.xml n'existe pas dans le répertoire de travail et le copie 
+        /// à partir du répertoire d'installation 
         /// </summary>
-        /// <returns>true si le fichier de configuration espaceco.xml est à côté de la carte en cours.</returns>
+        /// <exception>
+        /// Renvoie une exception si le fichier ne peut-être copié.
+        /// </exception>
         public void CheckConfigFile()
         {
             Project project = Project.Current;
@@ -193,9 +199,94 @@ namespace ArcGisProEspaceCollaboratif
             }
         }
 
-        public Map GetMap()
+        /// <summary>
+        /// Teste si la carte active contient les couches "Signalement", "Croquis_EC_Polygone",
+        /// "Croquis_EC_Ligne" et "Croquis_EC_Point".
+        /// Si non demande à changer de carte active
+        /// Si oui et que les couches n'existent pas, demande leur création.
+        /// </summary>
+        /// <exception>
+        /// Retourne une exception si l'utilisateur n'a pas choisi la bonne carte active
+        /// </exception>
+        public async Task CheckMapActiveWithCollaborativeLayersAsync()
+        { 
+            MapView activeMap = GetActiveMap();
+            IReadOnlyList<Layer> layers = activeMap.Map.GetLayersAsFlattenedList();
+            int nb = 0;
+            foreach (Layer layer in layers)
+            {
+                if (Helper.CollaborativeSpaceLayers.Contains(layer.Name))
+                {
+                    nb++;
+                }
+            }
+            if (nb != 4)
+            {
+                string msg = string.Format("La carte {0} ne contient pas les couches signalement et croquis, est ce la bonne carte active ?\nSi oui, voulez-vous créer ces couches ? Répondre Yes.\nSi non, veuillez changer de carte active et répondre No.", activeMap.Map.Name);
+                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(msg, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                if (result == System.Windows.MessageBoxResult.Cancel ||
+                    result == System.Windows.MessageBoxResult.No ||
+                    result == System.Windows.MessageBoxResult.None)
+                {
+                    throw new Exception("La carte active doit contenir les couches signalement et croquis pour pouvoir extraire les signalements. Veuillez changer de carte.");
+                }
+                else
+                {
+                    await CreateOrLoadReportLayers();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Teste si pour les couches signalement et croquis la connexion à la source de données
+        /// est 'Connected'. Dans tous les autres cas, la fonction tente une reconnexion automatique
+        /// à la source de données générale.
+        /// </summary>
+        /// <exception>
+        /// Renvoie une exception si la connexion est Broken, Disconnected ou Unattempted.
+        /// </exception>
+        public static void CheckConnectionStatus()
         {
-           
+            MapView activeMap = GetActiveMap();
+            IReadOnlyList<Layer> layers = activeMap.Map.GetLayersAsFlattenedList();
+            foreach (Layer layer in layers)
+            {
+                if (!Helper.CollaborativeSpaceLayers.Contains(layer.Name))
+                {
+                    continue;
+                }
+                if (layer.ConnectionStatus is ConnectionStatus.Connected)
+                {
+                    continue;
+                }
+                if (layer.ConnectionStatus is ConnectionStatus.Broken)
+                {
+                    throw new Exception("Impossible d'établir la connexion à la source de données pour les couches signalement et croquis.\nPour connecter l'ensemble des couches, cliquer sur le point d'exclamation rouge, sélectionner le fichier ****.gdb dans Project/Databases, sélectionner une des couches Signalement ou Croquis puis sur OK.");
+                }
+                if (layer.ConnectionStatus is ConnectionStatus.Disconnected)
+                {
+                    throw new Exception("La source de données est valide, mais actuellement déconnectée.");
+                }
+                if (layer.ConnectionStatus is ConnectionStatus.Unattempted)
+                {
+                    throw new Exception("Aucune tentative de connexion n'a été effectuée.");
+                }
+            }
+        }
+
+        public static MapView GetActiveMap()
+        {
+            //Get the active map view.
+            var mapView = MapView.Active;
+            if (mapView == null)
+                return null;
+
+            //Return the active map view.
+            return mapView;
+        }
+
+        public Map SearchMap(string layerNameToSearch)
+        {
             if (this.MapActiveView == null)
             {
                 if (MapView.Active == null)
@@ -208,7 +299,50 @@ namespace ArcGisProEspaceCollaboratif
                 {
                     this.MapActiveView = MapView.Active;
                 }
-                
+            }
+
+            Map map = null;
+            if (this.MapActiveView.Map != null)
+            {
+                map = this.MapActiveView.Map;
+            }
+            else
+            {
+                Project proj = Project.Current;
+                IEnumerable<MapProjectItem> mpi = proj.GetItems<MapProjectItem>();
+                foreach (MapProjectItem item in mpi)
+                {
+                    string layerName = item.Name;
+                    if (string.IsNullOrEmpty(layerName))
+                    {
+                        continue;
+                    }
+                    if (layerName.ToLower() == layerNameToSearch.ToLower())
+                    {
+                        QueuedTask.Run(() =>
+                        {
+                            map = item.GetMap();
+                        });
+                    }
+                }
+            }
+            return map;
+        }
+
+        public Map GetMap()
+        {
+            if (this.MapActiveView == null)
+            {
+                if (MapView.Active == null)
+                {
+                    string message = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                    logger.Error(string.Format("Context.GetMap : {0}\n", message));
+                    throw new ArgumentNullException(message);
+                }
+                else
+                {
+                    this.MapActiveView = MapView.Active;
+                }
             }
 
             Map map = null;
@@ -260,7 +394,7 @@ namespace ArcGisProEspaceCollaboratif
         private FeatureLayer LoadCollabLayer(string fcName, int layerPosition)
         {
             FeatureLayer collabSpaceLayer;
-            if (!this.IsLayerInMap(fcName))
+            if (!IsLayerInMap(fcName))
             {
                 // Ouverture de la feature class
                 FeatureClass collabSpaceFc = this.CollaborativeSpaceGeodatabase.Geodatabase.OpenDataset<FeatureClass>(fcName);
@@ -502,13 +636,21 @@ namespace ArcGisProEspaceCollaboratif
         public FeatureLayer GetLayerByName(string layerName)
         {
             // Enumération des couches et groupes de couches
-            IReadOnlyList<Layer> mapLayers = this.GetMap().GetLayersAsFlattenedList();
+            Map map = this.SearchMap(layerName);
+            if (map == null)
+            {
+                return null;
+            }
+            IReadOnlyList<Layer> mapLayers = map.GetLayersAsFlattenedList();
+            if (mapLayers == null)
+            {
+                return null;
+            }
             foreach (var layer in mapLayers)
             {
                 if (layer.Name == layerName)
                     return layer as FeatureLayer;
             }
-
             return null;
         }
 
@@ -517,14 +659,24 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="name">Le nom de la couche dont on veut connaître l'existence.</param>
         /// <returns>true si la couche existe, false dans le cas contraire.</returns>
-        public bool IsLayerInMap(string layerName)
+        public static bool IsLayerInMap(string layerName)
         {
-            IReadOnlyList<Layer> mapLayers = this.GetMap().GetLayersAsFlattenedList();
-            foreach (var layer in mapLayers)
+            MapView activeMap = GetActiveMap();
+            IReadOnlyList<Layer> layers = activeMap.Map.GetLayersAsFlattenedList();
+            foreach (Layer layer in layers)
             {
-                if (layer.Name == layerName) return true;
+                if (layer.Name == layerName)
+                {
+                    return true;
+                }
             }
             return false;
+            /*
+            Map map = this.SearchMap(layerName);
+            if (map == null)
+            { return false; }
+
+            return true;*/
         }
 
 
@@ -536,9 +688,9 @@ namespace ArcGisProEspaceCollaboratif
         {
             try
             {
-                if (!this.IsLayerInMap(layerName))
+                if (!IsLayerInMap(layerName))
                 {
-                    return;
+                    throw new Exception(string.Format("La couche {0} n'existe pas dans la carte active, veuillez changer de carte.", layerName));
                 }
                 this.CollaborativeSpaceGeodatabase.EmptyFeatureClass(layerName);              
             }
@@ -1070,6 +1222,10 @@ namespace ArcGisProEspaceCollaboratif
         {
             FeatureLayer reportLayer = this.GetLayerByName(Helper.name_layer_Signalement);
             FeatureClass reportFeatureClass = reportLayer.GetFeatureClass();
+            if (reportFeatureClass == null)
+            {
+                throw new Exception(string.Format("Impossible de récupérer le nombre d'objets par status pour la couche {0}.", Helper.name_layer_Signalement));
+            }
             QueryFilter queryFilter = new ()
             {
                 WhereClause = Helper.name_field_Statut + " = " + status

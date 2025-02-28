@@ -37,7 +37,15 @@ namespace ArcGisProEspaceCollaboratif
                     // Test de la présence du fichier XML de paramétrage
                     context.CheckConfigFile();
 
-                    // Vide la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
+                    // Est-ce la bonne carte active qui contient les couches signalement et croquis ?
+                    // si ce n'est pas la bonne carte active, il faut arrêter l'import des signalements et demander la bonne carte active
+                    // si c'est la bonne carte active mais que les couches signalement et croquis n'existent pas, il faut demander à créer ces couches
+                    await context.CheckMapActiveWithCollaborativeLayersAsync();
+
+                    // Si c'est la bonne carte active, il faut vérifier que les couches sont connectées à la source de données
+                    Context.CheckConnectionStatus();
+
+                    // Enfin, il faut supprimer les données dans la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
                     foreach (string layerName in Helper.CollaborativeSpaceLayers)
                     {
                         context.EmptyCollabFeatureClasses(layerName);

@@ -37,7 +37,7 @@ namespace ArcGisProEspaceCollaboratif
                     }
 
                     // Est-ce que la couche signalement existe dans la carte ?
-                    if (!context.IsLayerInMap(Helper.name_layer_Signalement))
+                    if (!Context.IsLayerInMap(Helper.name_layer_Signalement))
                     {
                         string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de répondre à un signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
