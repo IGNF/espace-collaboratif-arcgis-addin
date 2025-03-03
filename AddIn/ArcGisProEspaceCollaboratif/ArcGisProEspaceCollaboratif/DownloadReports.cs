@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -84,12 +87,15 @@ namespace ArcGisProEspaceCollaboratif
 
                     ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ("Récupération des signalements sur le serveur...");
                     progressDialog.Show();
+                    // Délai pour télécharger les objets du serveur 10mn
+                    //await DownloadReports.StopDownloadReports(progressDialog, 600);
                     List<Report> reports = context.Client.GetGeoRems(parameters);
                     progressDialog.Hide();
 
                     if (reports.Count == 0)
                     {
                         string mess = "Pas de signalements extraits depuis l'Espace collaboratif";
+                        logger.Info(mess);
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.INFORMATION);
                         return;
                     }
@@ -137,6 +143,8 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Info("DownloadReports : fin filtrage spatial.");
                     progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
+                    // Délai pour importer les objets dans la carte 10mn
+                    //await DownloadReports.StopDownloadReports(progressDialog, 600);
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
 
@@ -144,12 +152,19 @@ namespace ArcGisProEspaceCollaboratif
 //                    context.RemoveAllObjectsFromLayers();
 
                     int countReports = reports.Count;
-                    await context.InsertReports(reports);
+                    bool res = await context.InsertReports(reports);
                     progressDialog.Hide();
+                    if (!res)
+                    {
+                        string mess = "Context.InsertReports a retourné une erreur, fin du traitement. Veuillez consulter le fichier de log.";
+                        logger.Error(mess);
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.ERROR);
+                        return;
+                    }
                     logger.Info("DownloadReports : fin import des signalements.");
                     //Zoom sur la couche des signalements (supprimé à la demande du SVRP)
-                    //                    FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
-                    //                    context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
+                    //FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
+                    //context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
                     long newReports = context.CountReportsByStatus(EnumStatus.submit);
@@ -172,6 +187,26 @@ namespace ArcGisProEspaceCollaboratif
                     string message = string.Format("{0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("DownloadReports.OnClick : {0}\n", message));
                     return;
+                }
+            });
+        }
+
+        private static Task StopDownloadReports(ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progDialog, uint timeToStop)
+        {
+            return QueuedTask.Run(async () =>
+            {
+                for (uint iSeconds = 0; iSeconds < timeToStop; iSeconds++)
+                {
+                    await Task.Delay(1000);
+                }
+                string msg = "Le délai imparti pour télécharger les signalements est écoulé, voulez-vous continuer le processus ?";
+                System.Windows.MessageBoxResult result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(msg, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                if (result == System.Windows.MessageBoxResult.Cancel ||
+                    result == System.Windows.MessageBoxResult.No ||
+                    result == System.Windows.MessageBoxResult.None)
+                {
+                    progDialog.Hide();
+                    throw new Exception("Téléchargement des signalements interrompu par l'utilisateur.");
                 }
             });
         }
