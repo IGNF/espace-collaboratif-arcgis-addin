@@ -259,13 +259,15 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             this.SpatialFilterItemsSource = layersNameForSpatialFilter;
 
             string nameLayerForSpatialFilter = Helper.LoadNameLayerForSpatialFilter();
-            if (layersNameForSpatialFilter.IndexOf(nameLayerForSpatialFilter) == -1)
-            {
-                this.SpatialFilterSelectedItem = layersNameForSpatialFilter[0];
-            }
-            else if (layersNameForSpatialFilter.IndexOf(nameLayerForSpatialFilter) != -1)
+            Int32 index = layersNameForSpatialFilter.IndexOf(nameLayerForSpatialFilter);
+            if (index == -1)
             {
                 this.SpatialFilterSelectedItem = Helper.LoadNameLayerForSpatialFilter();
+                
+            }
+            else if (index != -1)
+            {
+                this.SpatialFilterSelectedItem = layersNameForSpatialFilter[0];
             }
             this.helpConfigureView.SpecialFilterCheckBox.IsChecked = true;
         }

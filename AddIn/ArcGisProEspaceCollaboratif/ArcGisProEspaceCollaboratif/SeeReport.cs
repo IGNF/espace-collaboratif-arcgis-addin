@@ -41,7 +41,7 @@ namespace ArcGisProEspaceCollaboratif
                     // L'utilisateur a t'il sélectionné un et un seul signalement ?
                     FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
                     var selectedFeatures = reportLayer.GetSelection();
-                    if (selectedFeatures.GetCount() != 1)
+                    if (selectedFeatures.GetCount() > 1 || selectedFeatures.GetCount() == 0)
                     {
                         throw new Exception(error);
                     }

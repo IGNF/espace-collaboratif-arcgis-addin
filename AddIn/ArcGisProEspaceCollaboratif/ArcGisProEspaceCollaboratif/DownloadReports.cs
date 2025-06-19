@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using ArcGIS.Core.CIM;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Layouts.DockPanes;
+using ArcGIS.Desktop.Internal.Mapping.Object3DRenderingFilter;
 using ArcGIS.Desktop.Internal.Mapping.TOC;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
@@ -28,8 +32,16 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Info("DownloadReports : début du traitement.");
                     Context context = Context.Instance;
 
-                    // Est-ce que l'utilisateur s'est connecté ?
-                    if (context.Client == null)
+                    // Est-ce que l'utilisateur s'est connecté ou a changé de projet ?
+                    Project project = Project.Current;
+                    if (project.HomeFolderPath.Length == 0)
+                    {
+                        string mess = "Votre projet doit être enregistré avant de pouvoir utiliser l'add-in Espace collaboratif";
+                        logger.Error(string.Format("Context.Init : {0}\n", mess));
+                        throw new ArgumentNullException(mess);
+                    }
+
+                    if (context.Client == null || (context.DirectoryWorking != project.HomeFolderPath))
                     {
                         ArcGisProEspaceCollaboratif.Core.Client client = null;
                         context.GetConnexionEspaceCollaboratif(ref client);
@@ -72,8 +84,7 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Paramètre filtrage spatial
                     string filterLayerName = Helper.LoadNameLayerForSpatialFilter();
-                    Tuple<bool, bool, Box, List<Geometry>> filterParameters = GetSpatialFilterParameters(filterLayerName);
-
+                    Tuple<bool, bool, Box, List<ArcGIS.Core.Geometry.Geometry>> filterParameters = GetSpatialFilterParameters(context, filterLayerName);
                     bool hasFilter = filterParameters.Item1;
                     bool overrideFilter = filterParameters.Item2;
 
@@ -82,14 +93,14 @@ namespace ArcGisProEspaceCollaboratif
 
                     if (hasFilter)
                         parameters.Add("box", filterParameters.Item3.BoxToString());
-
+                    
                     logger.Info("DownloadReports : fin check files.");
 
                     ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog progressDialog = new ("Récupération des signalements sur le serveur...");
                     progressDialog.Show();
-                    // Délai pour télécharger les objets du serveur 10mn
-                    //await DownloadReports.StopDownloadReports(progressDialog, 600);
                     List<Report> reports = context.Client.GetGeoRems(parameters);
+                    // Délai pour télécharger les objets du serveur 10mn
+                    // await DownloadReports.StopDownloadReports(progressDialog, 600);
                     progressDialog.Hide();
 
                     if (reports.Count == 0)
@@ -143,13 +154,15 @@ namespace ArcGisProEspaceCollaboratif
                     logger.Info("DownloadReports : fin filtrage spatial.");
                     progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
-                    // Délai pour importer les objets dans la carte 10mn
-                    //await DownloadReports.StopDownloadReports(progressDialog, 600);
+                    
                     // Chargement ou création des couches liées aux signalements
                     await context.CreateOrLoadReportLayers();
 
+                    // Délai pour importer les objets dans la carte 10mn
+                    //await DownloadReports.StopDownloadReports(progressDialog, 600);
+
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
-//                    context.RemoveAllObjectsFromLayers();
+                    //                    context.RemoveAllObjectsFromLayers();
 
                     int countReports = reports.Count;
                     bool res = await context.InsertReports(reports);
@@ -213,6 +226,12 @@ namespace ArcGisProEspaceCollaboratif
 
         /// <summary>
         /// Renvoie les paramètres de filtrage spatial des signalements sous forme de tuple.
+        /// 1. Pas de sélection ni de nom de couche indiqué dans le fichier de paramètres -> extraction France entière
+        /// 2. Pas de sélection ni de couche associée au nom stocké dans le fichier de paramètres -> extraction France entière
+        /// 3. Pas de sélection ni d'objets dans la couche servant au filtrage spatial -> extraction France entière
+        /// 4. Pas de sélection mais un nom de couche indiqué dans le fichier de paramètres -> extraction à partir de cette couche
+        /// 5. Une sélection et un nom de couche indiqué dans le fichier de paramètres -> extraction à partir de la sélection
+        /// 6. Par défaut -> extraction France entière
         /// </summary>
         /// <param name="filterLayerName">Nom de la couche définie comme filtre spatial.</param>
         /// <returns>Un tuple :
@@ -221,17 +240,19 @@ namespace ArcGisProEspaceCollaboratif
         /// Item3 : bbox des géométries contenues dans la couche,
         /// Item4 : liste des géométries contenues dans la couche.
         /// </returns>
-        public static Tuple<bool, bool, Box, List<Geometry>> GetSpatialFilterParameters(string filterLayerName)
+        public static Tuple<bool, bool, Box, List<ArcGIS.Core.Geometry.Geometry>> GetSpatialFilterParameters(Context cxt, string filterLayerName)
         {
             //Initialisation
-            Box bboxFiltrageSpatial = new ();
-            List<Geometry> spatialFilterGeometry = new ();
+            Box bboxFiltrageSpatial = new();
+            List<ArcGIS.Core.Geometry.Geometry> spatialFilterGeometry = new();
 
-            Tuple< bool, bool, Box, List<Geometry>> noFilterTuple = Tuple.Create(false, false, bboxFiltrageSpatial, spatialFilterGeometry);
-            Tuple< bool, bool, Box, List<Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
+            Tuple<bool, bool, Box, List<ArcGIS.Core.Geometry.Geometry>> noFilterTuple = Tuple.Create(false, false, bboxFiltrageSpatial, spatialFilterGeometry);
+            Tuple<bool, bool, Box, List<ArcGIS.Core.Geometry.Geometry>> overrideFilterTuple = Tuple.Create(false, true, bboxFiltrageSpatial, spatialFilterGeometry);
 
-            // Cas où le nom de la couche est non rempli
-            if (string.IsNullOrEmpty(filterLayerName))
+            List<ArcGIS.Core.Geometry.Geometry> geomFromSelection = CheckSelectedObjects(cxt);
+
+            // Cas 1 : le nom de la couche et la sélection sont vides -> extraction France entière
+            if (string.IsNullOrEmpty(filterLayerName) && geomFromSelection.Count == 0)
             {
                 string message = "Impossible de déterminer dans le fichier de paramétrage de l'Espace collaboratif le nom de la couche à utiliser pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)";
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
@@ -247,9 +268,10 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
+            // Cas 2 : le nom de la couche est indiqué mais elle n'existe pas dans la carte et la sélection est vide -> extraction France entière
             Context context = Context.Instance;
             Layer filterLayer = context.GetLayerByName(filterLayerName);
-            if (filterLayer == null)
+            if (filterLayer == null && geomFromSelection.Count == 0)
             {
                 string message = string.Format("La carte en cours ne contient pas la couche '{0}' définie pour le filtrage spatial des signalements.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
@@ -265,8 +287,9 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
+            // Cas 3 : la couche existe mais ne contient pas d'objets et la sélection est vide -> extraction France entière
             spatialFilterGeometry = context.GetSpatialFilterGeometry(filterLayerName);
-            if (spatialFilterGeometry.Count == 0)
+            if (spatialFilterGeometry.Count == 0 && geomFromSelection.Count == 0)
             {
                 string message = string.Format("La couche '{0}' ne contient aucun objet utilisable pour le filtrage spatial.\n\nSouhaitez-vous poursuivre l'import des signalements sur la France entière ? (Cela risque de prendre du temps.)", filterLayerName);
                 System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
@@ -282,10 +305,66 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
 
-            // On ajoute la BBOX comme paramètre de la requête
-            bboxFiltrageSpatial = Context.GetBBox(spatialFilterGeometry);
-            
-            return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
+            // Cas 4 : la sélection est vide mais la couche pour le filtrage spatial contient un ou plusieurs objets -> extraction à partir de cette couche
+            if (spatialFilterGeometry.Count >= 1 && geomFromSelection.Count == 0)
+            {
+                // On ajoute la BBOX comme paramètre de la requête
+                bboxFiltrageSpatial = Context.GetBBoxBis(spatialFilterGeometry);
+                return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
+            }
+
+            // Cas 5 : la sélection est remplie et la couche pour le filtrage spatial contient un ou plusieurs objets -> extraction à partir de la sélection
+            if (spatialFilterGeometry.Count >= 1 && geomFromSelection.Count >= 1)
+            {
+                // On ajoute la BBOX comme paramètre de la requête
+                bboxFiltrageSpatial = Context.GetBBoxBis(geomFromSelection);
+                return Tuple.Create(true, false, bboxFiltrageSpatial, geomFromSelection);
+            }
+
+            // Cas par défaut : extraction France entière
+            return noFilterTuple;
+        }
+
+        /// <summary>
+        /// Contrôle si un des cas suivants est vrai:
+        ///    1) un ou plusieurs croquis sélectionnés
+        ///    2) une ou plusieurs signalements sélectionnés
+        /// </summary>
+        /// <returns>
+        ///     - Une chaine de caractères vide si pas de sélection ou sélection d'objets de type différents
+        ///     - "sketch" si des croquis sont sélectionnés, 
+        ///     - "report" si des signalements sont sélectionnés
+        /// </returns>
+        private static List<ArcGIS.Core.Geometry.Geometry> CheckSelectedObjects(Context context)
+        {
+            List<ArcGIS.Core.Geometry.Geometry> spatialFilterGeometry = new();
+            SelectionSet selectedFeatures = context.GetMap().GetSelection();
+            foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
+            {
+                if (kvp.Value.Count == 0)
+                {
+                    continue;
+                }
+                if (kvp.Key is not FeatureLayer featureLayer)
+                {
+                    continue;
+                }
+                if (featureLayer.ShapeType is not esriGeometryType.esriGeometryPolygon)
+                {
+                    continue;
+                }
+                List<long> lOid = kvp.Value;
+                foreach (long oid in lOid)
+                {
+                    QueuedTask.Run(() =>
+                    {
+                        ArcGIS.Desktop.Editing.Attributes.Inspector inspector = featureLayer.Inspect(oid);
+                        ArcGIS.Core.Geometry.Geometry geometryFeature = inspector.Shape;
+                        spatialFilterGeometry.Add(geometryFeature);
+                    });
+                }
+            }
+            return spatialFilterGeometry;
         }
 
         protected override void OnUpdate()

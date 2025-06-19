@@ -20,6 +20,7 @@ using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Data.DDL;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Windows.Documents;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -331,6 +332,7 @@ namespace ArcGisProEspaceCollaboratif
 
         public Map GetMap()
         {
+            Map map = null;
             if (this.MapActiveView == null)
             {
                 if (MapView.Active == null)
@@ -342,13 +344,11 @@ namespace ArcGisProEspaceCollaboratif
                 else
                 {
                     this.MapActiveView = MapView.Active;
+                    if (this.MapActiveView.Map != null)
+                    {
+                        map = this.MapActiveView.Map;
+                    }
                 }
-            }
-
-            Map map = null;
-            if (this.MapActiveView.Map != null)
-            {
-                map = this.MapActiveView.Map;
             }
             else
             {
@@ -361,12 +361,17 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         continue;
                     }
-                    if (layerName == "Map")
+                    QueuedTask.Run(() =>
                     {
-                        QueuedTask.Run(() =>
-                        {
-                            map = item.GetMap();
-                        });
+                        map = item.GetMap();
+                    });
+                    if (map is null)
+                    {
+                        return map;
+                    }
+                    if (layerName == map.Name)
+                    {
+                        break;
                     }
                 }
             }
@@ -980,22 +985,54 @@ namespace ArcGisProEspaceCollaboratif
         /// </summary>
         /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
         /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
-        public static ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> filterGeometries)
+        public static ArcGisProEspaceCollaboratif.Core.Box GetBBoxBis(List<Geometry> filterGeometries)
         {
             if (filterGeometries.Count == 0)
                 return new ArcGisProEspaceCollaboratif.Core.Box();
 
-            // Initialisation de la bbox avec l'emprise de la première géométrie
-            Envelope bbox = filterGeometries[0].Extent;
             // La géométrie de filtre spatial doit être en WGS84 dans tous les cas.
-            //SpatialReference tmpSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            SpatialReference tmpSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            // Initialisation de la bbox avec l'emprise de la première géométrie
+            Geometry tmp = GeometryEngine.Instance.Project(filterGeometries[0], tmpSpatialReference);
+            EnvelopeBuilderEx builderEx = new EnvelopeBuilderEx(tmp.Extent);
+            int nb = 0;
             foreach (Geometry geom in filterGeometries)
             {
-               //Geometry tmpGeom = GeometryEngine.Instance.Project(geom, tmpSpatialReference);
-                Envelope bboxTemp = geom.Extent;
-                bbox.Union(bboxTemp);
+                if (nb == 0)
+                {
+                    continue;
+                }
+                Geometry tmpGeom = GeometryEngine.Instance.Project(geom, tmpSpatialReference);
+                builderEx.Union(tmpGeom.Extent);
             }
+            return new ArcGisProEspaceCollaboratif.Core.Box(builderEx.XMin, builderEx.YMin, builderEx.XMax, builderEx.YMax);
+        }
 
+        /// <summary>
+        /// Calcule la BBox Ripart qui enveloppe une liste d'objects géométriques.
+        /// </summary>
+        /// <param name="geometriesFiltres">La liste des Geometry dont on veut obtenir l'enveloppe globale.</param>
+        /// <returns>Ripart.Core.Box qui enveloppe tous les Geometry de <paramref name="geometriesFiltres"/>.</returns>
+        public static ArcGisProEspaceCollaboratif.Core.Box GetBBox(List<Geometry> filterGeometries)
+        {
+            if (filterGeometries.Count == 0)
+                return new ArcGisProEspaceCollaboratif.Core.Box();
+            // La géométrie de filtre spatial doit être en WGS84 dans tous les cas.
+            SpatialReference tmpSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            // Initialisation de la bbox avec l'emprise de la première géométrie
+            Envelope bbox = filterGeometries[0].Extent;
+            int nb = 0;
+            foreach (Geometry geom in filterGeometries)
+            {
+                if (nb == 0)
+                {
+                    continue;
+                }
+                Geometry tmp = GeometryEngine.Instance.Project(geom, tmpSpatialReference);
+                Envelope bboxTemp = tmp.Extent;
+                bbox.Union(bboxTemp);
+                nb++;
+            }
             return new ArcGisProEspaceCollaboratif.Core.Box(bbox.XMin, bbox.YMin, bbox.XMax, bbox.YMax);
         }
 
