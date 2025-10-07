@@ -12,7 +12,7 @@
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
   </AddInInfo>
   <modules>
-    <insertModule id="ArcGisProEspaceCollaboratif_Module" className="ArcGisProEspaceCollaboratifModule" autoLoad="false" caption="Add-in Espace collaboratif">
+    <insertModule id="ArcGisProEspaceCollaboratif_Module" className="Module1" autoLoad="false" caption="Add-in Espace collaboratif">
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
         <tab id="ArcGisProEspaceCollaboratif_Tab1" caption="IGN Espace co" keytip="Add-in Espace collaboratif">
