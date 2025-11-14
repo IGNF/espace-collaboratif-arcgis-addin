@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Core.Geometry;
 using static ArcGisProEspaceCollaboratif.Core.Sketch;
+using ArcGIS.Desktop.Framework;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -26,8 +27,6 @@ namespace ArcGisProEspaceCollaboratif
                 progressDialog.Show();
                 try
                 {
-                    //Context context = Context.Instance;
-
                     // Il faut s'être connecté au service pour créer un signalement
                     if (context.Client == null)
                     {
@@ -56,10 +55,11 @@ namespace ArcGisProEspaceCollaboratif
 
                     // Transformation des objets sélectionnés en croquis.
                     string message = "";
-                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = MakeSketchFromSelection();
+                    SelectionSet selectedFeatures = context.GetMap().GetSelection();
+                    List<ArcGisProEspaceCollaboratif.Core.Sketch> futursSketch = MakeSketchFromSelection(selectedFeatures);
                     if (futursSketch == null)
                     {
-                        message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pu être créés";
+                        message = "Arrêt demandé par l'utilisateur, certains croquis n'ont pas pu être créés";
                         progressDialog.Hide();
                         return;
                     }
@@ -108,11 +108,21 @@ namespace ArcGisProEspaceCollaboratif
             });
         }
 
+        private void OnPointCaptured(MapPoint point)
+        {
+            // Désabonnement pour éviter les appels multiples
+            CapturePointNotifier.PointCaptured -= OnPointCaptured;
+
+            
+
+            // Tu peux maintenant continuer ton workflow ici
+        }
+
         /// <summary>
         /// Transforme en croquis les objets sélectionnés dans la carte en cours.
         /// </summary>
         /// <returns>Liste de croquis créés à partir des objects sélectionnés.</returns>
-        public List<ArcGisProEspaceCollaboratif.Core.Sketch> MakeSketchFromSelection()
+        public List<ArcGisProEspaceCollaboratif.Core.Sketch> MakeSketchFromSelection(SelectionSet selectedFeatures)
         {
             List<ArcGisProEspaceCollaboratif.Core.Sketch> sketches = new();
 
@@ -125,7 +135,6 @@ namespace ArcGisProEspaceCollaboratif
             // Get the currently selected features in the map
             QueuedTask.Run(() =>
             {
-                SelectionSet selectedFeatures = context.GetMap().GetSelection();
                 foreach (KeyValuePair<MapMember, List<long>> kvp in selectedFeatures.ToDictionary())
                 {
                     //get the layer of the selected feature

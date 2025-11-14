@@ -9,6 +9,10 @@ using ArcGIS.Core.Data.Exceptions;
 using ArcGIS.Core.Data.DDL;
 using ArcGisProEspaceCollaboratif.Core;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Threading;
+using ArcGIS.Core.Internal.CIM;
+using System.IO;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -20,14 +24,16 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// 
         /// </summary>
-        public string GeoDatabasePath { get; set; } = CoreModule.CurrentProject.DefaultGeodatabasePath;
+        public string GeoDatabasePath { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Geodatabase Geodatabase { get; set; }
+        public Geodatabase Geodatabase { get; private set; }
 
-        public FileGeodatabaseConnectionPath FileGeodatabaseConnectionPath { get; set; }
+        public FileGeodatabaseConnectionPath FileGeodatabaseConnectionPath { get; private set; }
+
+        public bool IsOpen { get; private set; }
 
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
@@ -40,10 +46,54 @@ namespace ArcGisProEspaceCollaboratif
         #region Constructors
 
         public CollaborativeSpaceGeodatabase()
-        {     
-            Uri gdbUri = new(uriString: this.GeoDatabasePath);
+        {
+            string gdbDirectory = System.IO.Path.GetDirectoryName(CoreModule.CurrentProject.DefaultGeodatabasePath);
+            // Définir le chemin complet de la geodatabase
+            this.GeoDatabasePath = System.IO.Path.Combine(gdbDirectory, $"{Constantes.ESPACECO_GDB}.gdb");
+
+            // Créer la geodatabase si elle n'existe pas
+            CreateOrNotFileGeodatabase(GeoDatabasePath, gdbDirectory, Constantes.ESPACECO_GDB);
+
+            // Initialiser les objets de connexion
+            Uri gdbUri = new Uri(GeoDatabasePath);
             this.FileGeodatabaseConnectionPath = new FileGeodatabaseConnectionPath(gdbUri);
-            this.Geodatabase = new Geodatabase(this.FileGeodatabaseConnectionPath);
+            this.Geodatabase = new Geodatabase(FileGeodatabaseConnectionPath);
+            this.IsOpen = true;
+        }
+
+        public void Close()
+        {
+            this.Geodatabase.Dispose();
+            IsOpen = false;
+        }
+
+        private static async void CreateOrNotFileGeodatabase(string gdbPath, string folderPath, string gdbName)
+        {
+            try
+            {
+                // Vérifie si la geodatabase existe déjà
+                if (Directory.Exists(gdbPath))
+                {
+                    logger.Info($"CollaborativeSpaceGeodatabase.CreateOrNotFileGeodatabase, la geodatabase existe déjà : {gdbPath}");
+                    return;
+                }
+
+                await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
+                {
+                    var parameters = ArcGIS.Desktop.Core.Geoprocessing.Geoprocessing.MakeValueArray(folderPath, gdbName, "CURRENT");
+                    var result = await ArcGIS.Desktop.Core.Geoprocessing.Geoprocessing.ExecuteToolAsync("management.CreateFileGDB", parameters, null);
+                    if (result.IsFailed)
+                    {
+                        logger.Error($"CollaborativeSpaceGeodatabase.CreateOrNotFileGeodatabase, échec de la création de la geodatabase : {gdbPath}");
+                        throw new Exception();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"CollaborativeSpaceGeodatabase.CreateOrNotFileGeodatabase : {ex.Message}\n");
+                throw;
+            }
         }
 
         #endregion
@@ -124,9 +174,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="fieldType">le type du champ</param>
         /// <param name="listValue">les valeurs à trouver</param>
         /// <returns>la requête construite</returns>
-        public QueryFilter GetQueryFilter(string tableName, string fieldName, string fieldType, List<string> listValue)
+        public ArcGIS.Core.Data.QueryFilter GetQueryFilter(string tableName, string fieldName, string fieldType, List<string> listValue)
         {
-            QueryFilter queryFilter = new QueryFilter();
+            ArcGIS.Core.Data.QueryFilter queryFilter = new ArcGIS.Core.Data.QueryFilter();
 
             try
             {
@@ -204,9 +254,11 @@ namespace ArcGisProEspaceCollaboratif
             {
                 if (!this.IsFieldInTable(table, kvp.Key))
                 {
+                    table.Dispose();
                     return false;
                 }
             }
+            table.Dispose();
             return true;
         }
 
@@ -217,7 +269,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <param name="fieldName">le nom du champ</param>
         /// <param name="values">les valeurs à chercher</param>
         /// <returns>retourne la requête remplie</returns>
-        static private QueryFilter MakeQueryFilter(string fieldType, string fieldName, List<string> values)
+        static private ArcGIS.Core.Data.QueryFilter MakeQueryFilter(string fieldType, string fieldName, List<string> values)
         { 
             string tmp = string.Format("{0} IN (", fieldName) ;
             foreach (string value in values)
@@ -230,7 +282,7 @@ namespace ArcGisProEspaceCollaboratif
             string whereClause = tmp.Remove((tmp.Length - 1), 1);
             whereClause += ")";
 
-            QueryFilter queryFilter = new QueryFilter
+            ArcGIS.Core.Data.QueryFilter queryFilter = new ArcGIS.Core.Data.QueryFilter
             {
                 WhereClause = whereClause
             };

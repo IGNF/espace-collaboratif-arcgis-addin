@@ -55,10 +55,11 @@ namespace ArcGisProEspaceCollaboratif
                     // Est-ce la bonne carte active qui contient les couches signalement et croquis ?
                     // si ce n'est pas la bonne carte active, il faut arrêter l'import des signalements et demander la bonne carte active
                     // si c'est la bonne carte active mais que les couches signalement et croquis n'existent pas, il faut demander à créer ces couches
-                    await context.CheckMapActiveWithCollaborativeLayersAsync();
-
-                    // Si c'est la bonne carte active, il faut vérifier que les couches sont connectées à la source de données
-                    Context.CheckConnectionStatus();
+                    bool isCheckProblems = await context.CheckMapActiveWithCollaborativeLayersAsync();
+                    if (isCheckProblems)
+                    {
+                        return;
+                    }
 
                     // Enfin, il faut supprimer les données dans la Geodatabase pour les couches "Signalement", "Croquis_EC_Polygone", "Croquis_EC_Ligne", "Croquis_EC_Point" 
                     foreach (string layerName in Helper.CollaborativeSpaceLayers)
@@ -70,12 +71,8 @@ namespace ArcGisProEspaceCollaboratif
                     Dictionary<string, string> parameters = new ();
 
                     // Paramètre groupe
-                    int groupeId = -1;
-                    if (Helper.LoadExtractionForGroup() == "true")
-                    {
-                        groupeId = Convert.ToInt32(context.Profil.Group.Id);
-                        parameters.Add("group", groupeId.ToString());
-                    }
+                    int groupeId = Convert.ToInt32(context.Profil.Group.Id);
+                    parameters.Add("group", groupeId.ToString());
 
                     // Paramètres date d'extraction
                     string sStartDate = string.Format("{0:yyyy-MM-dd HH:mm:ss}", Helper.LoadStartDateExtraction());
@@ -110,7 +107,8 @@ namespace ArcGisProEspaceCollaboratif
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.INFORMATION);
                         return;
                     }
-                    logger.Info("DownloadReports : fin requête spatiale.");
+                    logger.Info(string.Format("DownloadReports : fin requête spatiale. {0} signalements.", reports.Count));
+
                     // Filtrage par dates
                     // le cas sStartDate != Constantes.DEFAULT_DATE_EXTRACTION && sEndDate == Constantes.DEFAULT_DATE_EXTRACTION
                     // est celui des paramètres d'extraction ligne 47 car on extrait les signalements avec la date de début
@@ -135,7 +133,7 @@ namespace ArcGisProEspaceCollaboratif
                             reports = reportToKeep;
                         }
                     }
-                    logger.Info("DownloadReports : fin filtrage par date.");
+                    logger.Info(string.Format("DownloadReports : fin filtrage par date. {0} signalements.", reports.Count));
 
                     // Filtrage spatial des signalements
                     if (hasFilter)
@@ -151,7 +149,8 @@ namespace ArcGisProEspaceCollaboratif
                         }
                         reports = reportToKeep;
                     }
-                    logger.Info("DownloadReports : fin filtrage spatial.");
+                    logger.Info(string.Format("DownloadReports : fin filtrage par date. {0} signalements.", reports.Count));
+
                     progressDialog = new ProgressDialog("Import des signalements dans la carte...");
                     progressDialog.Show();
                     
@@ -162,7 +161,7 @@ namespace ArcGisProEspaceCollaboratif
                     //await DownloadReports.StopDownloadReports(progressDialog, 600);
 
                     // On vide les couches récupérées au cas où elles contiendraient d'anciens objets
-                    //                    context.RemoveAllObjectsFromLayers();
+                    //context.RemoveAllObjectsFromLayers();
 
                     int countReports = reports.Count;
                     bool res = await context.InsertReports(reports);
@@ -175,9 +174,6 @@ namespace ArcGisProEspaceCollaboratif
                         return;
                     }
                     logger.Info("DownloadReports : fin import des signalements.");
-                    //Zoom sur la couche des signalements (supprimé à la demande du SVRP)
-                    //FeatureLayer reportLayer = context.GetLayerByName(Helper.name_layer_Signalement);
-                    //context.MapActiveView.ZoomTo(reportLayer.QueryExtent());
 
                     // Message de confirmation
                     long newReports = context.CountReportsByStatus(EnumStatus.submit);
@@ -309,7 +305,7 @@ namespace ArcGisProEspaceCollaboratif
             if (spatialFilterGeometry.Count >= 1 && geomFromSelection.Count == 0)
             {
                 // On ajoute la BBOX comme paramètre de la requête
-                bboxFiltrageSpatial = Context.GetBBoxBis(spatialFilterGeometry);
+                bboxFiltrageSpatial = Context.GetBBoxTer(spatialFilterGeometry);
                 return Tuple.Create(true, false, bboxFiltrageSpatial, spatialFilterGeometry);
             }
 
@@ -317,7 +313,7 @@ namespace ArcGisProEspaceCollaboratif
             if (spatialFilterGeometry.Count >= 1 && geomFromSelection.Count >= 1)
             {
                 // On ajoute la BBOX comme paramètre de la requête
-                bboxFiltrageSpatial = Context.GetBBoxBis(geomFromSelection);
+                bboxFiltrageSpatial = Context.GetBBoxTer(geomFromSelection);
                 return Tuple.Create(true, false, bboxFiltrageSpatial, geomFromSelection);
             }
 

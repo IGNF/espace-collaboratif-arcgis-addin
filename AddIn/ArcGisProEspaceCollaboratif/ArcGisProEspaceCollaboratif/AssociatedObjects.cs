@@ -5,6 +5,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace ArcGisProEspaceCollaboratif.Core
 {
@@ -71,7 +72,16 @@ namespace ArcGisProEspaceCollaboratif.Core
                     Helper.name_layer_Croquis_Polygone
                 };
                 List<string> listID = this.SelectAssociatedID(Constantes.N_REPORT_IN_GDB);
+               
                 this.SelectAssociatedObjectsFromList(layersName, Constantes.LIEN_REPORT, listID);
+                SelectionSet selectedFeatures = this.Context.GetMap().GetSelection();
+                if (selectedFeatures == null || selectedFeatures.Count == 0)
+                {
+                    string message = "Pas de croquis associé au signalement.";
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.INFORMATION);
+                    return;
+                }
+
             }
         }
 
@@ -167,7 +177,7 @@ namespace ArcGisProEspaceCollaboratif.Core
             {
                 foreach (string layerName in layersName)
                 {
-                    QueryFilter queryFilter = this.Context.CollaborativeSpaceGeodatabase.GetQueryFilter(layerName, fieldName, "long", listObjects);
+                    ArcGIS.Core.Data.QueryFilter queryFilter = this.Context.CollaborativeSpaceGeodatabase.GetQueryFilter(layerName, fieldName, "long", listObjects);
                     var method = SelectionCombinationMethod.New;
                     FeatureLayer featureLayer = this.Context.GetLayerByName(layerName);
                     featureLayer.Select(queryFilter, method);

@@ -21,6 +21,10 @@ using ArcGIS.Core.Data.DDL;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Windows.Documents;
+using ArcGIS.Desktop.Workflow.Exceptions;
+using static ArcGIS.Desktop.Internal.Core.PortalTrafficDataService.ServiceErrorResponse;
+using System.Windows.Interop;
+using System.Windows.Media.Converters;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -75,7 +79,7 @@ namespace ArcGisProEspaceCollaboratif
         /// <summary>
         /// Le système géodésique employé par le service de l'espace collaboratif
         /// </summary>
-        public ArcGIS.Core.Geometry.SpatialReference spatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
+        public ArcGIS.Core.Geometry.SpatialReference SpatialReference { get; set; } = SpatialReferenceBuilder.CreateSpatialReference(4326);
 
         /// <summary>
         /// Le logger qui permet d'enregistrer des informations sur le processus
@@ -130,7 +134,7 @@ namespace ArcGisProEspaceCollaboratif
                 logger.Error(string.Format("Context.Init : {0}\n", message));
                 throw new ArgumentNullException(message);
             }
-            this.Init(MapView.Active);
+            this.Init();
         }
 
 
@@ -138,7 +142,7 @@ namespace ArcGisProEspaceCollaboratif
         /// initialisation du contexte et des éléments Ripart
         /// </summary>
         /// <param name="activeView">L'activeView associée à la carte en cours.</param>
-        private async Task Init(MapView activeView)
+        private async Task Init()
         {
             await QueuedTask.Run(() =>
             {
@@ -147,7 +151,7 @@ namespace ArcGisProEspaceCollaboratif
                     this.CollaborativeSpaceGeodatabase = new CollaborativeSpaceGeodatabase();
                 }
 
-                this.MapActiveView = activeView;
+                this.MapActiveView = MapView.Active;
 
                 Project project = Project.Current;
                 if (project.Name.Length == 0)
@@ -207,18 +211,70 @@ namespace ArcGisProEspaceCollaboratif
         /// Si oui et que les couches n'existent pas, demande leur création.
         /// </summary>
         /// <exception>
-        /// Retourne une exception si l'utilisateur n'a pas choisi la bonne carte active
+        /// Retourne false si l'utilisateur n'a pas choisi la bonne carte active, true pour continuer
         /// </exception>
-        public async Task CheckMapActiveWithCollaborativeLayersAsync()
+        public async Task <bool> CheckMapActiveWithCollaborativeLayersAsync()
         { 
             MapView activeMap = GetActiveMap();
             IReadOnlyList<Layer> layers = activeMap.Map.GetLayersAsFlattenedList();
+
             int nb = 0;
-            foreach (Layer layer in layers)
-            {
-                if (Helper.CollaborativeSpaceLayers.Contains(layer.Name))
+            int nbNotConnected = 0;
+            //Les couches sont elles connectées à la bonne geodatabase ?
+            List<string> layersToBeRemoved = new List<string>();
+            foreach (var layer in layers)
+            {    
+                if (!Helper.CollaborativeSpaceLayers.Contains(layer.Name))
                 {
-                    nb++;
+                    continue;
+                }
+                // Il faut vérifier que les couches sont connectées à la source de données
+                if (!this.CheckConnectionStatus(layer))
+                {
+                    nbNotConnected++;
+                }
+                else if (layer is FeatureLayer featureLayer)
+                {
+                    // Accède à la source de données
+                    var table = featureLayer.GetTable();
+                    Geodatabase workspace = table.GetDatastore() as Geodatabase;
+                    if (workspace != null)
+                    {
+                        string actualPath = workspace.GetPath().AbsolutePath;
+                        string normalizedActualPath = Path.GetFullPath(actualPath).Trim().ToLowerInvariant();
+                        string normalizedExpectedPath = Path.GetFullPath(this.CollaborativeSpaceGeodatabase.GeoDatabasePath).Trim().ToLowerInvariant();
+                        if (normalizedActualPath != normalizedExpectedPath)
+                        {
+                            layersToBeRemoved.Add(layer.Name);
+                        }
+                        else
+                        {
+                            nb++;
+                        }
+                    }
+                }
+            }
+            if (nbNotConnected > 0)
+            {
+                string mess = "Impossible d'établir la connexion à la source de données pour les couches signalement et croquis.\nPour connecter l'ensemble des couches, cliquer sur le point d'exclamation rouge, sélectionner le fichier [répertoire projet/espaceco.gdb], sélectionner une des tables Signalement ou Croquis puis sur OK.\nSi elles n'existent pas dans la géodatabase, il faut supprimer les couches dans la carte et relancer l'import des signalements.";
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mess, Constantes.INFORMATION);
+                return true;
+            }
+            if (layersToBeRemoved.Count != 0)
+            {
+                string mesg = string.Format("La carte {0} contient les couches signalement et croquis, mais ne sont pas connectées à la bonne geodatabase. Voulez-vous détruire ces couches et les recréer ?\nSi oui, Répondre Yes.\nSi non, veuillez changer de carte active et répondre No.", activeMap.Map.Name);
+                System.Windows.MessageBoxResult res = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(mesg, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
+                if (res == System.Windows.MessageBoxResult.OK ||
+                    res == System.Windows.MessageBoxResult.Yes ||
+                    res == System.Windows.MessageBoxResult.None)
+                {
+                    Helper.RemoveLayersInMap(layersToBeRemoved);
+                    await CreateOrLoadReportLayers();
+                    nb = 4;
+                }
+                else
+                {
+                    return true;
                 }
             }
             if (nb != 4)
@@ -229,16 +285,17 @@ namespace ArcGisProEspaceCollaboratif
                     result == System.Windows.MessageBoxResult.No ||
                     result == System.Windows.MessageBoxResult.None)
                 {
-                    throw new Exception("La carte active doit contenir les couches signalement et croquis pour pouvoir extraire les signalements. Veuillez changer de carte.");
+                    return true;
                 }
                 else
                 {
                     await CreateOrLoadReportLayers();
                 }
             }
+            return false;
         }
 
-        /// <summary>
+        /// <summary>{
         /// Teste si pour les couches signalement et croquis la connexion à la source de données
         /// est 'Connected'. Dans tous les autres cas, la fonction tente une reconnexion automatique
         /// à la source de données générale.
@@ -246,33 +303,24 @@ namespace ArcGisProEspaceCollaboratif
         /// <exception>
         /// Renvoie une exception si la connexion est Broken, Disconnected ou Unattempted.
         /// </exception>
-        public static void CheckConnectionStatus()
+        public bool CheckConnectionStatus(Layer layer)
         {
-            MapView activeMap = GetActiveMap();
-            IReadOnlyList<Layer> layers = activeMap.Map.GetLayersAsFlattenedList();
-            foreach (Layer layer in layers)
+            switch (layer.ConnectionStatus)
             {
-                if (!Helper.CollaborativeSpaceLayers.Contains(layer.Name))
-                {
-                    continue;
-                }
-                if (layer.ConnectionStatus is ConnectionStatus.Connected)
-                {
-                    continue;
-                }
-                if (layer.ConnectionStatus is ConnectionStatus.Broken)
-                {
-                    throw new Exception("Impossible d'établir la connexion à la source de données pour les couches signalement et croquis.\nPour connecter l'ensemble des couches, cliquer sur le point d'exclamation rouge, sélectionner le fichier ****.gdb dans Project/Databases, sélectionner une des couches Signalement ou Croquis puis sur OK.");
-                }
-                if (layer.ConnectionStatus is ConnectionStatus.Disconnected)
-                {
-                    throw new Exception("La source de données est valide, mais actuellement déconnectée.");
-                }
-                if (layer.ConnectionStatus is ConnectionStatus.Unattempted)
-                {
-                    throw new Exception("Aucune tentative de connexion n'a été effectuée.");
-                }
+                case ConnectionStatus.Connected:
+                    return true;
+
+                case ConnectionStatus.Broken:
+                case ConnectionStatus.Disconnected:
+                case ConnectionStatus.Unattempted:
+                    return false;
+
+                default:
+                    return false;
             }
+            //throw new Exception("Impossible d'établir la connexion à la source de données pour les couches signalement et croquis.\nPour connecter l'ensemble des couches, cliquer sur le point d'exclamation rouge, sélectionner le fichier ****.gdb dans Project/Databases, sélectionner une des couches Signalement ou Croquis puis sur OK.");
+            //throw new Exception("La source de données est valide, mais actuellement déconnectée.");
+            //throw new Exception("Aucune tentative de connexion n'a été effectuée.");
         }
 
         public static MapView GetActiveMap()
@@ -352,6 +400,8 @@ namespace ArcGisProEspaceCollaboratif
             }
             else
             {
+                map = this.MapActiveView.Map;
+                /*
                 Project proj = Project.Current;
                 IEnumerable<MapProjectItem> mpi = proj.GetItems<MapProjectItem>();
                 foreach (MapProjectItem item in mpi)
@@ -373,7 +423,7 @@ namespace ArcGisProEspaceCollaboratif
                     {
                         break;
                     }
-                }
+                }*/
             }
             return map;
         }
@@ -434,7 +484,7 @@ namespace ArcGisProEspaceCollaboratif
                     "DISABLED", // no z values                    
                     "DISABLED", // no m values
                                 // Ajout de la référence spatiale
-                    this.spatialReference
+                    this.SpatialReference
                 };
 
             // Création de la feature class
@@ -463,11 +513,6 @@ namespace ArcGisProEspaceCollaboratif
 
             //Construct the list of UniqueValueClasses
             List<CIMUniqueValueClass> classes = new();
-
-            // Définition des couleurs
-            var pendingColor = CIMColor.CreateRGBColor(255, 170, 0);
-            var validColor = CIMColor.CreateRGBColor(0, 255, 0);
-            var rejectColor = CIMColor.CreateRGBColor(255, 0, 0);
 
             int index = 0;
 
@@ -593,6 +638,10 @@ namespace ArcGisProEspaceCollaboratif
                         };
                 await Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
             }
+            if (this.CollaborativeSpaceGeodatabase.IsOpen)
+            {
+                this.CollaborativeSpaceGeodatabase.Close();
+            }
         }
 
         /// <summary>
@@ -676,12 +725,6 @@ namespace ArcGisProEspaceCollaboratif
                 }
             }
             return false;
-            /*
-            Map map = this.SearchMap(layerName);
-            if (map == null)
-            { return false; }
-
-            return true;*/
         }
 
 
@@ -772,6 +815,123 @@ namespace ArcGisProEspaceCollaboratif
         {
             try
             {
+                return await QueuedTask.Run(async () =>
+                {
+                    var createOperation = new ArcGIS.Desktop.Editing.EditOperation
+                    {
+                        Name = "Generate reports",
+                        SelectNewFeatures = false
+                    };
+
+                    FeatureLayer reportLayer = GetLayerByName(Helper.name_layer_Signalement);
+                    if (reportLayer is null)
+                    {
+                        logger.Error("Context.InsertReports : layer 'Signalement' introuvable.");
+                        return false;
+                    }
+
+                    // Liste des ObjectIDs créés pour rollback
+                    var createdObjectIDs = new List<(FeatureLayer layer, long objectID)>();
+
+                    foreach (var newReport in reports)
+                    {
+                        var reportFields = GetFieldValuesForReport(newReport);
+                        var rowToken = createOperation.Create(reportLayer, reportFields);
+                        if (rowToken.ObjectID.HasValue)
+                            createdObjectIDs.Add((reportLayer, rowToken.ObjectID.Value));
+
+                        if (!newReport.IsCroquisEmpty())
+                        {
+                            foreach (var currSketch in newReport.Sketches)
+                            {
+                                if (currSketch.Points.Count == 0)
+                                {
+                                    logger.Warn($"Context.InsertReports : croquis ignoré (aucun point) pour le rapport {newReport.Id}.");
+                                    continue;
+                                }
+
+                                int layerIndex = GetIndexLayerFromSketchType(currSketch.Type);
+                                if (layerIndex == -1)
+                                {
+                                    logger.Error($"Context.InsertReports : type de croquis non reconnu : {currSketch.Type}. Annulation de l'opération.");
+                                    createOperation.Abort();
+                                    return false;
+                                }
+
+                                FeatureLayer sketchFeatureLayer = GetLayerByName(Helper.CollaborativeSpaceLayers[layerIndex]);
+                                var sketchFields = GetFieldValuesForSketch(currSketch, newReport.Id);
+                                if (sketchFields.Count > 0)
+                                {
+                                    var sketchToken = createOperation.Create(sketchFeatureLayer, sketchFields);
+                                    if (sketchToken.ObjectID.HasValue)
+                                        createdObjectIDs.Add((sketchFeatureLayer, sketchToken.ObjectID.Value));
+                                }
+                            }
+                        }
+                    }
+
+                    if (createOperation.IsEmpty)
+                    {
+                        logger.Warn("Context.InsertReports : aucune modification détectée dans l'opération d'édition.");
+                        return true;
+                    }
+
+                    bool result = createOperation.Execute();
+                    if (!result)
+                    {
+                        logger.Error($"Context.InsertReports : erreur lors de l'exécution de l'opération - {createOperation.ErrorMessage}");
+                        return false;
+                    }
+
+                    try
+                    {
+                        await Project.Current.SaveEditsAsync();
+                        return true;
+                    }
+                    catch (Exception saveEx)
+                    {
+                        logger.Error($"Context.InsertReports : erreur lors de la sauvegarde - {saveEx.Message}");
+
+                        // Rollback manuel : suppression des entités créées
+                        var rollbackOperation = new ArcGIS.Desktop.Editing.EditOperation
+                        {
+                            Name = "Rollback InsertReports"
+                        };
+
+                        foreach (var (layer, objectID) in createdObjectIDs)
+                        {
+                            rollbackOperation.Delete(layer, objectID);
+                        }
+
+                        bool rollbackResult = rollbackOperation.Execute();
+                        if (!rollbackResult)
+                        {
+                            logger.Error($"Context.InsertReports : rollback échoué - {rollbackOperation.ErrorMessage}");
+                        }
+                        else
+                        {
+                            logger.Warn("Context.InsertReports : rollback effectué avec succès.");
+                        }
+
+                        return false;
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Context.InsertReports : exception - {e.Message}\n{e}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Insère sur la carte en cours une liste de signalements (avec leurs éventuels croquis associés).
+        /// </summary>
+        /// <param name="newReport">Le signalement qu'il faut placer sur la carte en cours.</param>
+        public async Task<bool> InsertReportsSave(List<Report> reports)
+        {
+            try
+            {
                 return await QueuedTask.Run(() =>
                 {
                     ArcGIS.Desktop.Editing.EditOperation createOperation = new ()
@@ -824,9 +984,12 @@ namespace ArcGisProEspaceCollaboratif
                             }
                         }                       
                     }
-
+                    if (createOperation.IsEmpty)
+                    {
+                        logger.Warn("Context.InsertReports : aucune modification détectée dans l'opération d'édition.");
+                        return false;
+                    }
                     bool result = createOperation.Execute();
-
                     if (!result)
                     {
                         string error = createOperation.ErrorMessage;
@@ -837,7 +1000,7 @@ namespace ArcGisProEspaceCollaboratif
                         Project.Current.SaveEditsAsync();
                     }
 
-                    return result;
+                    return true;
 
                 });
             }
@@ -979,6 +1142,26 @@ namespace ArcGisProEspaceCollaboratif
 
             return sketchFields;
         }
+
+
+        public static ArcGisProEspaceCollaboratif.Core.Box GetBBoxTer(List<Geometry> filterGeometries)
+        {
+            if (filterGeometries == null || filterGeometries.Count == 0)
+                return new ArcGisProEspaceCollaboratif.Core.Box();
+
+            SpatialReference wgs84 = SpatialReferenceBuilder.CreateSpatialReference(4326);
+            EnvelopeBuilderEx builderEx = new EnvelopeBuilderEx(GeometryEngine.Instance.Project(filterGeometries[0], wgs84).Extent);
+
+            foreach (var geom in filterGeometries.Skip(1))
+            {
+                if (geom == null) continue;
+                var projected = GeometryEngine.Instance.Project(geom, wgs84);
+                builderEx.Union(projected.Extent);
+            }
+
+            return new ArcGisProEspaceCollaboratif.Core.Box(builderEx.XMin, builderEx.YMin, builderEx.XMax, builderEx.YMax);
+        }
+
 
         /// <summary>
         /// Calcule la BBox Ripart qui enveloppe une liste d'objects géométriques.
