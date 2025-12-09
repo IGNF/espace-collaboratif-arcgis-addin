@@ -85,9 +85,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\ENR_Espace_co_Add-in_ArcGIS_Pro_2_0_0.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Backup-2.x.zip" />
     <None Include="Properties\sauve\Settings.Designer.cs.NotUsed" />
