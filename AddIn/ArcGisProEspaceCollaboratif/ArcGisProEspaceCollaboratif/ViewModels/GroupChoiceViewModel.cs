@@ -212,17 +212,6 @@ namespace ArcGisProEspaceCollaboratif.ViewModels
             {
                 return;
             }
-            
-            // Récupération de l'ensemble des noms des couches chargées dans le projet QGIS
-            List <Map> maps = Helper.GetMaps();
-            // On regarde si le projet QGIS contient des couches Espace co
-            // Si l'utilisateur a changé de groupe, on supprime l'ancien(s'il existe dans le projet)
-            // et toutes les couches associées. On supprime la base sqlite et on la recrée
-            // Si l'utilisateur a changé de zone de travail, il faut supprimer les couches
-            if (bNewZone)
-            {
-                int a = 1;
-            }
         }
 
         private bool AlwaysTrue() { return true; }

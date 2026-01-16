@@ -109,15 +109,6 @@ namespace ArcGisProEspaceCollaboratif
             });
         }
 
-        private void OnPointCaptured(MapPoint point)
-        {
-            // Désabonnement pour éviter les appels multiples
-            CapturePointNotifier.PointCaptured -= OnPointCaptured;
-
-            
-
-            // Tu peux maintenant continuer ton workflow ici
-        }
 
         /// <summary>
         /// Transforme en croquis les objets sélectionnés dans la carte en cours.
