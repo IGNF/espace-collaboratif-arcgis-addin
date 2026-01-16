@@ -36,6 +36,18 @@ namespace ArcGisProEspaceCollaboratif
                         }
                     }
 
+                    bool bRes = Context.IsLayerInMap(Helper.name_layer_Signalement);
+                    if (!bRes)
+                    {
+                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de supprimer le contenu des couches de signalements.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", mess));
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            mess,
+                            Constantes.ERROR);
+                        progressDialog.Hide();
+                        return;
+                    }
+
                     // Demande de confirmation
                     string message = string.Format("Vous allez supprimer les signalements et croquis de votre projet ArcGIS. Ceux-ci seront toutefois toujours accessibles sur l'Espace collaboratif. \nSouhaitez-vous poursuivre la suppression ?");
                     System.Windows.MessageBoxResult messageBoxResult = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message, Constantes.QUESTION, System.Windows.MessageBoxButton.YesNo);
@@ -63,6 +75,7 @@ namespace ArcGisProEspaceCollaboratif
                     );
                     string message = string.Format("Problème dans la suppression des objets des couches signalements : {0}\n{1}", e.Message, e.StackTrace);
                     logger.Error(string.Format("DeleteReport.OnClick : {0}\n", message));
+                    progressDialog.Hide();
                 }
             });
         }

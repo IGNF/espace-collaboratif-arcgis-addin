@@ -19,6 +19,9 @@ namespace ArcGisProEspaceCollaboratif
                 try
                 {
                     Context context = Context.Instance;
+                    // Dans le cas d'un nouveau projet, il faut vérifier l'existence du fichier de configuration
+                    context.CheckConfigFile();
+
                     ArcGisProEspaceCollaboratif.Core.Client client = null;
                     if (client == null)
                     {

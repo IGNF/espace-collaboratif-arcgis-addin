@@ -28,10 +28,8 @@ namespace ArcGisProEspaceCollaboratif
                 if (dialogResult == false)
                 {
                     helpConfigureViewModel.helpConfigureView.Close();
-                    return;
-                
+                    return;                
                 }
-
             }
             catch (Exception e)
             { 

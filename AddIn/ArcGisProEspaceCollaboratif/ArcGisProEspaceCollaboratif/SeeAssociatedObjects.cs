@@ -32,6 +32,19 @@ namespace ArcGisProEspaceCollaboratif
                             return;
                         }
                     }
+
+                    // Est-ce que la couche signalement existe dans la carte ?
+                    bool bRes = Context.IsLayerInMap(Helper.name_layer_Signalement);
+                    if (!bRes)
+                    {
+                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de visualiser les associations signalement/croquis.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", mess));
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            mess,
+                            Constantes.ERROR);
+                        return;
+                    }
+
                     AssociatedObjects associatedObjects = new (context);
                     associatedObjects.SelectObjects();
                 }

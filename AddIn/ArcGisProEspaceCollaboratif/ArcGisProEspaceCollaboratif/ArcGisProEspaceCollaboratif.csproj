@@ -98,4 +98,5 @@
     <PackageReference Include="log4net" Version="3.1.0" />
     <PackageReference Include="MvvmDialogs" Version="9.1.2" />
   </ItemGroup>
+  <Import Project="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets" Condition="Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets')" />
 </Project>

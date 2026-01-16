@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using ArcGIS.Core.Internal.CIM;
 using System.IO;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -153,7 +154,7 @@ namespace ArcGisProEspaceCollaboratif
             try
             {
                 string featureClassPath = string.Format("{0}\\{1}", this.GeoDatabasePath, featureClassName);
-                Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
+                Task<IGPResult> igpresult = Geoprocessing.ExecuteToolAsync("TruncateTable_management", Geoprocessing.MakeValueArray(featureClassPath));
             }
             catch (GeodatabaseException exObj)
             {
@@ -165,6 +166,10 @@ namespace ArcGisProEspaceCollaboratif
         #endregion
 
         #region Select rows in table
+
+
+        private static ArcGIS.Core.Data.QueryFilter EmptySelectionFilter()
+            => new ArcGIS.Core.Data.QueryFilter { WhereClause = "1=0" };
 
         /// <summary>
         /// Création d'une requête en fonction d'une liste de valeurs
@@ -181,17 +186,18 @@ namespace ArcGisProEspaceCollaboratif
             try
             {
                 using Table table = OpenTable(tableName);
-                // si la table n'existe pas, on renvoie une liste vide
-                if (table == null)
-                {
-                    return queryFilter;
-                }
 
                 // Est-ce que le champ existe
                 if (!IsFieldInTable(table, fieldName))
                 {
                     string message = string.Format("Le champ n'existe pas dans la table {0}. Il faut demander l'aide du support collaboratif", table.GetName());
                     throw new Exception(message);
+                }
+
+                // Liste vide ou nulle
+                if (listValue == null || listValue.Count == 0)
+                {
+                    return EmptySelectionFilter();
                 }
 
                 queryFilter = MakeQueryFilter(fieldType, fieldName, listValue);
@@ -209,7 +215,7 @@ namespace ArcGisProEspaceCollaboratif
        /// Ouvre une table
        /// </summary>
        /// <param name="tableName">le nom de la table</param>
-       /// <returns>Une reférence si la table existe, null sinon</returns>
+       /// <returns>Une reférence si la table existe</returns>
         private Table OpenTable(string tableName)
         {
             Table table;
@@ -217,11 +223,11 @@ namespace ArcGisProEspaceCollaboratif
             {
                 table = Geodatabase.OpenDataset<Table>(tableName);
             }
-            catch
+            catch (Exception e)
             {
-                string message = string.Format("La table {0} n'existe pas dans la GeoDatabase", tableName);
-                logger.Fatal(string.Format("CollaborativeSpaceGeodatabase.OpenTable : {0}\n", message));              
-                return null;
+                string message = string.Format("La GeoDatabase est impossible à ouvrir ou la table {0} n'existe pas.\n{1}", tableName, e.Message);
+                logger.Fatal(string.Format("CollaborativeSpaceGeodatabase.OpenTable : {0}\n", message));
+                throw new Exception(message);
             }
             return table;
         }
@@ -246,10 +252,6 @@ namespace ArcGisProEspaceCollaboratif
         public bool IsFieldsInTable(string nameTable, Dictionary<string, KeyValuePair<string, string>> dictFieldsName)
         {
             Table table = this.OpenTable(nameTable);
-            if (table == null)
-            {
-                return false;
-            }
             foreach (KeyValuePair<string, KeyValuePair<string, string>> kvp in dictFieldsName)
             {
                 if (!this.IsFieldInTable(table, kvp.Key))

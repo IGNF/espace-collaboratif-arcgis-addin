@@ -1,6 +1,7 @@
 ﻿using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Framework;
 using ArcGIS.Desktop.Mapping;
 using ArcGisProEspaceCollaboratif.Core;
 using ArcGisProEspaceCollaboratif.ViewModels;
@@ -36,6 +37,18 @@ namespace ArcGisProEspaceCollaboratif
                         {
                             return;
                         }
+                    }
+
+                    // Est-ce que la couche signalement existe dans la carte ?
+                    bool bRes = Context.IsLayerInMap(Helper.name_layer_Signalement);
+                    if (!bRes)
+                    {
+                        string mess = "Pas de couche 'Signalement' dans la carte.\nIl est donc impossible de visualiser le contenu d'un signalement.\nIl faut se connecter à l'Espace collaboratif et télécharger les signalements.";
+                        logger.Error(string.Format("CreateReport.OnClick.context.IsLayerInMap : {0}\n", mess));
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                            mess,
+                            Constantes.ERROR);
+                        return;
                     }
 
                     // L'utilisateur a t'il sélectionné un et un seul signalement ?

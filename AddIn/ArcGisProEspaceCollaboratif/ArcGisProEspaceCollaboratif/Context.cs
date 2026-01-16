@@ -638,10 +638,10 @@ namespace ArcGisProEspaceCollaboratif
                         };
                 await Geoprocessing.ExecuteToolAsync("AssignDomainToField_management", Geoprocessing.MakeValueArray(argumentsAssignDomain.ToArray()));
             }
-            if (this.CollaborativeSpaceGeodatabase.IsOpen)
+            /*if (this.CollaborativeSpaceGeodatabase.IsOpen)
             {
                 this.CollaborativeSpaceGeodatabase.Close();
-            }
+            }*/
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ using System.Windows.Media;
 namespace ArcGisProEspaceCollaboratif
 {
     /// <summary>
-    /// Classe contenant des utilitaires pour le plugin
+    /// Classe contenant des utilitaires pour l'addin
     /// </summary>
     public class Helper
     {
@@ -87,7 +87,6 @@ namespace ArcGisProEspaceCollaboratif
         public const string xml_GroupePrefere = "/Parametres_connexion_a_EspaceCollaboratif/Serveur/groupe_prefere";
 
         public const string dateDefault = "01/01/2000";
-        public const int lengthMaxField = 5000;
 
         public static readonly string EspaceCollaboratifDirectoryFiles = string.Format("{0}\\Files\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
         public static readonly string EspaceCollaboratifDirectoryImages = string.Format("{0}\\Images\\", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
@@ -110,12 +109,12 @@ namespace ArcGisProEspaceCollaboratif
             { name_field_DateCreation, new KeyValuePair<string,string> ("DATE", "") },
             { name_field_DateMAJ, new KeyValuePair<string,string> ("DATE", "") },
             { name_field_DateValidation, new KeyValuePair<string,string> ("DATE", "") },
-            { name_field_Themes, new KeyValuePair<string,string> ("TEXT",  Helper.lengthMaxField.ToString()) },
+            { name_field_Themes, new KeyValuePair<string,string> ("TEXT",  Constantes.lengthMaxField.ToString()) },
             { name_field_Statut, new KeyValuePair<string,string> ("LONG", "") },
-            { name_field_Message, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
-            { name_field_Reponse, new KeyValuePair<string,string> ("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_Message, new KeyValuePair<string,string> ("TEXT", Constantes.lengthMaxField.ToString()) },
+            { name_field_Reponse, new KeyValuePair<string,string> ("TEXT", Constantes.lengthMaxField.ToString()) },
             { name_field_Url, new KeyValuePair<string,string> ("TEXT", "") },
-            { name_field_Document, new KeyValuePair<string,string> ("TEXT",  Helper.lengthMaxField.ToString()) },
+            { name_field_Document, new KeyValuePair<string,string> ("TEXT",  Constantes.lengthMaxField.ToString()) },
             { name_field_Autorisation, new KeyValuePair<string,string> ("TEXT", "") },
             { name_field_Source, new KeyValuePair<string,string> ("TEXT", "") }
         };
@@ -124,8 +123,8 @@ namespace ArcGisProEspaceCollaboratif
         public static readonly Dictionary<string, KeyValuePair<string, string>> sketchAttributes = new()
         {
             { name_field_LienReport, new KeyValuePair<string,string> ("LONG", "") },
-            { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", "") },
-            { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Helper.lengthMaxField.ToString()) },
+            { name_field_NomCroquis, new KeyValuePair<string, string>("TEXT", Constantes.lengthMaxField.ToString()) },
+            { name_field_Attributs, new KeyValuePair<string, string>("TEXT", Constantes.lengthMaxField.ToString()) }
 //            { name_field_LienBDuni, new KeyValuePair<string, string>("TEXT", "") }
         };
 
@@ -243,9 +242,9 @@ namespace ArcGisProEspaceCollaboratif
         /// <returns>L'object champ raccourcie à ses EspaceCollaboratifHelper.longueurMaxChamp premiers caractères si il dépasse cette taille limite</returns>
         public static string Limite(string champ)
         {
-            if (champ.Length > Helper.lengthMaxField)
+            if (champ.Length > Constantes.lengthMaxField)
             {
-                return champ.Substring(0, Helper.lengthMaxField);
+                return champ.Substring(0, Constantes.lengthMaxField);
             }
             else
             {

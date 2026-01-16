@@ -50,6 +50,7 @@ namespace ArcGisProEspaceCollaboratif
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
                             mess,
                             Constantes.ERROR);
+                        progressDialog.Hide();
                         return;
                     }
 

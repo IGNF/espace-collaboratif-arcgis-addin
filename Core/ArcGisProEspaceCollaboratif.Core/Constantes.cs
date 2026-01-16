@@ -65,5 +65,7 @@ namespace ArcGisProEspaceCollaboratif.Core
 
         public const string ESPACECO = "[ESPACE CO] ";
         public const string ESPACECO_GDB = "espaceco";
+
+        public const int lengthMaxField = 5000;
     }
 }

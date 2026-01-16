@@ -839,6 +839,15 @@ namespace ArcGisProEspaceCollaboratif.Core
             return signalements;
         }
 
+        private string TruncateString(string input)
+        {
+            if (input.Length > Constantes.lengthMaxField)
+            {
+                return input.Substring(0, Constantes.lengthMaxField);
+            }
+            return input;
+        }
+
         /// <summary>
         ///  Extrait les croquis d'un signalement et les ajoute dans l'objet Signalement 
         ///  passé en paramètre
@@ -853,7 +862,7 @@ namespace ArcGisProEspaceCollaboratif.Core
                 foreach (XPathNavigator sketchNav in itSketch)
                 {
                     Sketch.SketchType type = (Sketch.SketchType)Enum.Parse(typeof(Sketch.SketchType), sketchNav.GetAttribute("type", ""), true);
-                    string nameSketch = EncodeToUTF8(sketchNav.SelectSingleNode("nom").Value);
+                    string nameSketch = TruncateString(EncodeToUTF8(sketchNav.SelectSingleNode("nom").Value));
 
                     //attributs
                     XPathNodeIterator itAttribut = sketchNav.Select("attributs/attribut");
