@@ -162,7 +162,7 @@ L'add-in propose une symbologie par défaut pour les signalements en fonction de
 [^1]: Cf. Tableau 3 : Valeurs et signification des statuts
 
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">4.4 Configuration du plugin</span>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">4.4 Configuration de l'add-in</span>
 
 Pour son fonctionnement, l'add-in stocke tous ses paramètres de configuration dans un fichier de type XML dénommé **<span style="font-family: Consolas, monospace; color: #00B050">espaceco.xml</span>**. Ce dernier se situe dans le même dossier que celui qui contient le fichier projet ArcGIS Pro (.aprx).
 
@@ -172,7 +172,7 @@ Ce fichier étant nécessaire à son fonctionnement, l'add-in le génère automa
   <h2 id="5-utilisation" style="color: #00ADC5">5. Utilisation</h2>
 </div>
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">5.1 Connexion au service</span><span style="color: red; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">- Modifié !</span>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">5.1 Connexion au service</span>
 
 <div  style="text-align: center;"> 
 	<img  src="Image4.png" />
@@ -275,7 +275,7 @@ Sélectionner un signalement sur la carte à l’aide du bouton de sélection d�
 Une fenêtre avec les informations du signalement (description, thème et attributs, commentaire, réponses éventuelles) s’ouvre :
 
 <div  style="text-align: center;"> 
-	<img  src="Image12.png" alt="Figure 8" height = 400/>
+	<img  src="Image12.png" alt="Figure 8" height = 500/>
   <p><strong><span style="color: #548DD4">Figure 8 : Fiche d’un signalement</span></strong></p>
 </div>
 
@@ -329,8 +329,8 @@ Le formulaire suivant permet de :
 - joindre un document : la taille du fichier ne doit pas excéder 5 Mo, les formats autorisés sont listés dans l’annexe 5.3 ;
 - créer un ou plusieurs signalement(s) : dans le premier cas, un signalement unique est créé et positionné sur le centroïde de l’ensemble des objets sélectionnés. Dans le second cas, il est créé un nouveau signalement par objet sélectionné, avec pour position, à chaque fois, le centroïde de l’objet.
 
-<div  style="text-align: center;"> 
-	<img  src="Image17.png" alt="Figure 11" style="margin-right: 20px; vertical-align: middle; height = 400"/>"   "<img  src="Image18.png" alt="Figure 11" style="vertical-align: middle;" height = 200"/>
+<div  style="text-align: center;">
+	<img  src="Image17.png" alt="Figure 11" height = 500"/>       <img  src="Image18.png" alt="Figure 11" height = 200"/>
   <p><strong><span style="color: #548DD4">Figure 11 : Formulaires de création de nouveaux signalements</span></strong></p>
 </div>
 
@@ -359,8 +359,8 @@ Cet outil (baguette magique) permet de sélectionner sur la carte tous les croqu
 
 On sélectionne deux signalements (en jaune), puis on clique sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Voir les objets associés</span>**. Tous les croquis associés aux deux signalements sont alors sélectionnés
 
-<div  style="text-align: center;"> 
-	<img  src="Image21.png" alt="Figure 12" height = 300/>"   "<img  src="Image22.png" height = 300/>
+<div  style="text-align: center;">
+	<img  src="Image21.png" alt="Figure 12" height = 300/>        <img  src="Image22.png" height = 300/>
   <p><strong><span style="color: #548DD4">Figure 12  : Exemple d’utilisation de la « Baguette magique »</span></strong></p>
 </div>
 
@@ -423,8 +423,9 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 
 
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="6-annexes"style="color: #00ADC5">6. Annexes</h2>
+  <h2 id="6-annexes" style="color: #00ADC5">6. Annexes</h2>
 </div>
+
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.1 Tableau 1 : champs de la couche Signalement</span>
 
@@ -449,7 +450,7 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 |Source|Text|Application utilisée pour la création du signalement (site web, application mobile, plugin SIG, UNKNOWN = API)|
 
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.2 Tableau 2 : champs des calques Croquis_EC</span>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.2 Tableau 2 : champs des couches Croquis_EC</span>
 
 | Nom du champ | Type de champ | Contenu du champ |
 |--|--|--|
@@ -474,7 +475,7 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.5 Fichiers nécessaires au fonctionnement de l'add-in</span>
 
 <div  style="text-align: center;"> 
-	<img  src="Image27.png" height = 80 />
+	<img  src="Image27.png" height = 160 />
 </div>
 
 
