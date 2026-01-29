@@ -22,7 +22,7 @@
   - [4.4 Configuration de l'add-in](#44-configuration-de-ladd-in)
 - [5. Utilisation](#5-utilisation)
   - [5.1 Connexion au service](#51-connexion-au-service)
-    - [5.1.1 Cas d'un utilisateur appartenant à aucun groupe](#511-cas-dun-utilisateur-appartenant-à-aucun-groupe)
+    - [5.1.1 Cas d'un utilisateur n'appartenant à aucun groupe](#511-cas-dun-utilisateur-nappartenant-à-aucun-groupe)
     - [5.1.2 Cas d'un utilisateur appartenant à au moins un groupe](#512-cas-dun-utilisateur-appartenant-à-au-moins-un-groupe)
   - [5.2 Import des signalements](#52-import-des-signalements)
   - [5.3 Visualisation d'un signalement](#53-visualisation-dun-signalement)
@@ -52,10 +52,10 @@
 |--|--|--|
 |2.0.0|Mise à jour des versions du document et d'ArcGIS Pro  |12/09/2024|
 |2.0.1|Correction compatibilité addin|07/10/2025|
-|2.0.2|Mise des données de l'espace co dans une GDB séparée|09/12/2025|
+|2.0.2|Mise des données de l'espace co dans une GDB séparée.|09/12/2025|
 ||Modification du filtrage pour la récupération des signalements.||
 
-
+---
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
   <h2 id="3-préambule" style="color: #00ADC5">3. Préambule</h2>
 </div>
@@ -73,12 +73,12 @@ Un signalement contient :
 -   **Une position géographique** pour situer le signalement ;
 -   **Un commentaire** rédigé par l'auteur du signalement à l'adresse de l'IGN pour expliquer l’objet de son signalement ;
 -   **Un statut** pour situer le signalement dans la chaîne de traitement (reçu dans nos services, en cours de traitement, pris en compte…) ;
--   Éventuellement **un thème** associé pour définir la thématique IGN et/ou la thématique métier concernées par le signalement. Il est à noter que les signalements sans thème auront le statut ‘en demande de qualification’ tant qu’ils n’auront pas un thème associé.
+-   Éventuellement **un thème** associé pour définir le produit IGN ou la thématique métier concernés par le signalement. Il est à noter que les signalements sans thème auront le statut ‘en demande de qualification’ tant qu’ils n’auront pas un thème associé.
 -   Éventuellement un ou plusieurs attributs liés au thème ;
 -   Éventuellement des objets géométriques (ponctuels, linéaires, surfaciques) composant **un croquis** joint à ce signalement. Certains attributs de ce croquis peuvent aussi être joints au signalement ;
 -   Éventuellement **de 1 à 4 fichiers joints** de formats divers (pdf, doc, images…).
 
-Chaque signalement, sauf s’il est lié à un groupe ne partageant pas ses signalements, est accessible en consultation à tous les utilisateurs sur l’Espace collaboratif. Il y possède une fiche où tous ces éléments sont visibles ainsi que les réponses apportées par l’IGN.
+Chaque signalement, sauf s’il est lié à un groupe privé, est accessible en consultation à tous les utilisateurs sur l’Espace collaboratif. Il y possède une fiche où tous ces éléments sont visibles ainsi que les réponses apportées par l’IGN.
 
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; text-align: justify;">3.2 Rôle de l'add-in Espace collaboratif pour ArcGIS Pro</span>
@@ -90,7 +90,7 @@ L'utilisateur peut ainsi depuis ArcGIS Pro :
  - Leur ajouter une réponse (s’il en a la permission) ;
  - Créer de nouveaux signalements qui seront transmis au service concerné.
  
-L'intégration de l'add-in dans le SIG se traduit visuellement par l’ajout d’une barre d'outils supplémentaire dédiée aux fonctionnalités de l'add-in, et par des couches ajoutées à la carte active et qui sont destinées à contenir les différents objets issus de l’Espace collaboratif (ses signalements et croquis associés).
+L'intégration de l'add-in dans le SIG se traduit visuellement par l’ajout d’une barre d'outils supplémentaire dédiée aux fonctionnalités de l'add-in, et par des couches ajoutées à la carte active et qui sont destinées à contenir les différents objets issus de l’Espace collaboratif (les signalements et leurs croquis associés).
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">3.3 Prérequis</span>
 
@@ -105,7 +105,7 @@ L'add-in IGN_Espace_collaboratif ne fonctionne qu'en association avec un projet 
 
 NB : le nom du projet ArcGIS Pro dans lequel sera utilisé l'add-in Espace collaboratif ne doit pas contenir de point en dehors de son extension (.aprx).
 
-
+---
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
   <h2  id="4-installation-et-principes-de-fonctionnement" style="color: #00ADC5">4. Installation et principes de fonctionnement</h2>
 </div>
@@ -125,24 +125,24 @@ NB : le nom du projet ArcGIS Pro dans lequel sera utilisé l'add-in Espace colla
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">4.2 La barre d’outils IGN_Espace_collaboratif</span>
 
 <div  style="text-align: center;"> 
-	<img  src="Image2.png"  alt="Figure 1" height = 100/> 
+	<img  src="Image2.png"  alt="Figure 1" height = 140/> 
 	<p><strong><span style="color: #548DD4">Figure 1 : la barre d'outils de l’add-in IGN_Espace_collaboratif dans ArcGIS</span></strong></p>
 </div>
 
 La barre d’outils de l'add-in IGN_Espace_collaboratif est composée des outils suivants :
 
--   **1** Se connecter au service.
--   **2** Télécharger les signalements du service et les afficher sur la carte en cours.
--   **3** Visualiser le contenu d’un signalement (commentaire, réponses, document joint, croquis associés).
+-   **1** Se connecter à l'Espace collaboratif.
+-   **2** Télécharger les signalements de l'Espace collaboratif et les afficher sur la carte en cours.
+-   **3** Visualiser le contenu d’un signalement (thèmes et attributs, commentaire, réponses, document joint, croquis associés...).
 -   **4** Ajouter une nouvelle réponse à un signalement, qui sera envoyée à l’Espace collaboratif.
--   **5** Rédiger un nouveau signalement et l’envoyer à l’Espace collaboratif.
+-   **5** Créer un nouveau signalement et l’envoyer à l’Espace collaboratif.
 -   **6** Effacer, dans la carte courante, tous les objets signalements et croquis présents.
 -   **7** Sélectionner les croquis associés à un ou plusieurs signalements, ou les signalements associés à un ou plusieurs croquis.
 -   **8** Dérouler le menu d’aide de l'add-in.
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%; box-sizing: border-box;">4.3 Les couches gérées par l'add-in</span>
 
-Lors du premier chargement des signalements, l'add-in ajoute dans la carte 6 couches destinées à contenir les différents objets IGN_Espace_collaboratif. **Ces couches et leurs objets sont enregistrés dans une géodatabase séparée (Nouveauté version 2.0.2).**
+Lors du premier chargement des signalements, l'add-in ajoute dans la carte 6 couches destinés à contenir les différents objets IGN_Espace_collaboratif. **Ces couches et leurs objets sont enregistrés dans une géodatabase séparée (Nouveauté version 2.0.2).**
 
 <div  style="text-align: center;"> 
 	<img  src="Image3.png" alt="Figure 2" />
@@ -155,7 +155,7 @@ Ces couches dédiées se nomment :
 -   **<span style="color: #00B050">Croquis_EC_Ligne</span>** : contient les croquis de type linéaire sous forme de polylignes.
 -   **<span style="color: #00B050">Croquis_EC_Polygone</span>** : contient les croquis de type surfacique sous forme de polygones simples. 
 
-Ces 4 couches utilisent le même système géographique de coordonnées que celui utilisé par le service Espace collaboratif (WGS84, coordonnées géographiques en degrés décimaux). Néanmoins, l'utilisateur peut utiliser n’importe quel système géographique de coordonnées qui lui convient. L'add-in IGN_Espace_collaboratif et le SIG ArcGIS Pro assurent de façon automatique et transparente le changement de projection à la volée et dans les deux sens.
+Ces 4 couches utilisent le même système géographique de coordonnées que celui utilisé par le service Espace collaboratif (WGS84, coordonnées géographiques en degrés décimaux). Néanmoins, l'utilisateur peut utiliser n’importe quel système de coordonnées qui lui convient. L'add-in IGN_Espace_collaboratif et le SIG ArcGIS Pro assurent de façon automatique et transparente le changement de projection à la volée et dans les deux sens.
 
 L'add-in propose une symbologie par défaut pour les signalements en fonction de la valeur du champ statut[^1]. Néanmoins, l’utilisateur peut utiliser toute autre symbologie à sa convenance.
 
@@ -166,8 +166,10 @@ L'add-in propose une symbologie par défaut pour les signalements en fonction de
 
 Pour son fonctionnement, l'add-in stocke tous ses paramètres de configuration dans un fichier de type XML dénommé **<span style="font-family: Consolas, monospace; color: #00B050">espaceco.xml</span>**. Ce dernier se situe dans le même dossier que celui qui contient le fichier projet ArcGIS Pro (.aprx).
 
-Ce fichier étant nécessaire à son fonctionnement, l'add-in le génère automatiquement s’il n’existe pas déjà. Le paramétrage de l'add-in se fait via la fenêtre de configuration qui s’ouvre depuis le menu **<span style="font-family: Consolas, monospace; color: #0000FF">[Aide > Configurer le plugin]</span>**  de la barre d'outils. Les nouveaux paramètres saisis sont ensuite automatiquement enregistrés dans ce fichier XML.
+Ce fichier étant nécessaire à son fonctionnement, l'add-in le génère automatiquement s’il n’existe pas déjà. Le paramétrage de l'add-in se fait via la fenêtre de configuration qui s’ouvre depuis le menu **<span style="font-family: Consolas, monospace; color: #0000FF">[Aide > Configurer]</span>**  de la barre d'outils. Les nouveaux paramètres saisis sont ensuite automatiquement enregistrés dans ce fichier XML.  
 
+
+---
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
   <h2 id="5-utilisation" style="color: #00ADC5">5. Utilisation</h2>
 </div>
@@ -180,7 +182,7 @@ Ce fichier étant nécessaire à son fonctionnement, l'add-in le génère automa
 
 Toute interaction entre ArcGIS Pro et le service Espace collaboratif nécessite une authentification auprès de ce dernier avec un compte utilisateur existant.
 
-L’action de connexion au service est lancée automatiquement par l'add-in avant chaque action en cas d'absence de connexion. Elle peut aussi être manuellement lancée par l'utilisateur en cliquant sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Se connecter au service Espace collaboratif</span>**. Dans tous les cas, cela provoque l'ouverture d’une page web d’authentification.
+L’action de connexion au service est lancée automatiquement par l'add-in avant chaque action en cas d'absence de connexion. Elle peut aussi être manuellement lancée par l'utilisateur en cliquant sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Se connecter au service Espace collaboratif</span>**. Dans tous les cas, cela provoque l'ouverture du formulaire d’authentification.
 
 Le champ **<span style="font-family: Consolas, monospace; color: #0000FF">Votre login</span>** est pré-rempli par le login utilisé lors de la dernière connexion.
 
@@ -193,7 +195,7 @@ La fermeture d'ArcGIS Pro interrompt la connexion au service. Il faut donc la r�
 
 **Note :** En cas d’échec de la connexion (message : « la connexion a échoué »), il peut s’agir d’un problème d’accès au serveur. La définition des variables d’environnement HTTP_PROXY et HTTPS_PROXY avec les valeurs ad-hoc (dépendant de votre établissement) peut régler le problème.
 
-#### <span style="color: #00ADC5">5.1.1 Cas d'un utilisateur appartenant à aucun groupe</span>
+#### <span style="color: #00ADC5">5.1.1 Cas d'un utilisateur n'appartenant à aucun groupe</span>
 
 Au clic sur le bouton « Connecter », une fenêtre de confirmation apparaît :
 
@@ -230,7 +232,7 @@ Si l’utilisateur appartient à plusieurs groupes, un menu déroulant lui perme
 
 Cliquer sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Importer</span>** pour lancer la procédure de téléchargement des signalements depuis l’espace collaboratif IGN.
 
-La procédure efface préalablement tous les objets des calques spécifiques au fonctionnement de l'add-in IGN_Espace_collaboratif présents sur la carte. Les signalements importés sont mis dans la couche **<span style="font-family: Consolas, monospace; color: #00B050">Signalement</span>**. Lorsqu’ils sont accompagnés de croquis, ces derniers sont importés dans les différents calques **<span style="font-family: Consolas, monospace; color: #00B050">Croquis_EC</span>**.
+La procédure efface préalablement tous les objets des couches spécifiques au fonctionnement de l'add-in IGN_Espace_collaboratif présents sur la carte. Les signalements importés sont placés dans la couche **<span style="font-family: Consolas, monospace; color: #00B050">Signalement</span>**. Lorsqu’ils sont accompagnés de croquis, ces derniers sont importés dans les différents couches **<span style="font-family: Consolas, monospace; color: #00B050">Croquis_EC</span>**.
 
 L'add-in propose dans le formulaire de configuration, deux options pour filtrer[^2] l'import des signalements selon les besoins de l'utilisateur :
 
@@ -326,11 +328,14 @@ Le formulaire suivant permet de :
 - sélectionner le/les thèmes concernés par le signalement ;
 - remplir les éventuels attributs du ou des thèmes sélectionnés ;
 - joindre un croquis (l’option « joindre un croquis » est cochée par défaut, et détermine s'il faut joindre au nouveau signalement le (ou les) croquis généré(s) à partir des objets sélectionnés)
-- joindre un document : la taille du fichier ne doit pas excéder 5 Mo, les formats autorisés sont listés dans l’annexe 5.3 ;
+- joindre un document : la taille du fichier ne doit pas excéder 5 Mo, les formats autorisés sont listés dans l’annexe 6.4 ;
 - créer un ou plusieurs signalement(s) : dans le premier cas, un signalement unique est créé et positionné sur le centroïde de l’ensemble des objets sélectionnés. Dans le second cas, il est créé un nouveau signalement par objet sélectionné, avec pour position, à chaque fois, le centroïde de l’objet.
 
 <div  style="text-align: center;">
-	<img  src="Image17.png" alt="Figure 11" height = 500"/>       <img  src="Image18.png" alt="Figure 11" height = 200"/>
+  <div style="display: flex; justify-content: center; align-items: center; gap: 1cm;">
+		<img src="Image17.png" alt="Figure 11" height = 500" />
+		<img src="Image18.png" alt="image 18" height = 200"/>
+	</div>
   <p><strong><span style="color: #548DD4">Figure 11 : Formulaires de création de nouveaux signalements</span></strong></p>
 </div>
 
@@ -343,8 +348,7 @@ Un message informe du succès de l'envoi vers l’Espace collaboratif du nouveau
 	<img  src="Image19.png" />
 </div>
 
-Cliquer sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Supprimer</span>**  provoque la suppression sur la carte en cours de tous les objets IGN_Espace_collaboratif (signalements et croquis) qu'elle contenait. Ceux-ci ne sont en revanche pas supprimés sur l’Espace collaboratif.
-Les autres données présentes dans la carte ne sont pas affectées par l'opération.
+Cliquer sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Supprimer</span>**  provoque la suppression sur la carte en cours de tous les objets IGN_Espace_collaboratif (signalements et croquis) qu'elle contenait. Ceux-ci ne sont en revanche pas supprimés sur l’Espace collaboratif. Les autres données présentes dans la carte ne sont pas affectées par l'opération.
 
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">5.8 Visualiser les objets associés</span>
@@ -357,10 +361,13 @@ Cet outil (baguette magique) permet de sélectionner sur la carte tous les croqu
 
 **Exemple :**
 
-On sélectionne deux signalements (en jaune), puis on clique sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Voir les objets associés</span>**. Tous les croquis associés aux deux signalements sont alors sélectionnés
+On sélectionne deux signalements (en turquoise), puis on clique sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Voir les objets associés</span>**. Tous les croquis associés aux deux signalements sont alors sélectionnés
 
 <div  style="text-align: center;">
-	<img  src="Image21.png" alt="Figure 12" height = 300/>        <img  src="Image22.png" height = 300/>
+  <div style="display: flex; justify-content: center; align-items: center; gap: 1.5cm;">
+		<img src="Image21.png" alt="Figure 12" height = 300" />
+		<img src="Image22.png" alt="image 22 height = 300"/>
+	</div>
   <p><strong><span style="color: #548DD4">Figure 12  : Exemple d’utilisation de la « Baguette magique »</span></strong></p>
 </div>
 
@@ -370,7 +377,7 @@ Si on clique à nouveau sur le bouton, on retrouve la première situation avec l
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">5.9 Configurer l'add-in IGN_Espace_collaboratif</span>
 
 <div  style="text-align: center;"> 
-	<img  src="Image23.png" />
+	<img  src="Image23a.png" />
 </div>
 
 Cliquer sur **<span style="font-family: Consolas, monospace; color: #0000FF">Configurer</span>**  dans le menu Aide permet d’ouvrir le formulaire d'édition des paramètres de fonctionnement de l'add-in. Tous ces paramètres sont stockés dans le fichier de configuration espaceco.xml.
@@ -419,9 +426,10 @@ En cas de dysfonctionnent, il peut être utile de consulter ce log pour connaît
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">5.12 Le menu À propos de l'add-in IGN_Espace_collaboratif</span>
 
-Les informations de version de l’add-in sont consultables dans le menu **<span style="font-family: Consolas, monospace; color: #0000FF">Aide > A propos</span>**. 
+Les informations de version de l’add-in sont consultables dans le menu **<span style="font-family: Consolas, monospace; color: #0000FF">Aide > A propos</span>**.  
 
-
+<br>
+---
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
   <h2 id="6-annexes" style="color: #00ADC5">6. Annexes</h2>
 </div>
@@ -449,7 +457,7 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 |Autorisation|Text|Droits de réponse et de fermeture (attribution d’un statut clôturant) des signalements|
 |Source|Text|Application utilisée pour la création du signalement (site web, application mobile, plugin SIG, UNKNOWN = API)|
 
-
+<br>
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.2 Tableau 2 : champs des couches Croquis_EC</span>
 
 | Nom du champ | Type de champ | Contenu du champ |
@@ -458,12 +466,14 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 |Nom|string|Le nom du croquis.|
 |Attributs_croquis|string|Concaténation des éventuels attributs du croquis sous forme : nom attribut = "valeur attribut".|
 
+<br>
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.3 Tableau 3 : Valeurs et signification des statuts d'un signalement</span>
 
 <div  style="text-align: left;"> 
 	<img  src="Image28.png" />
 </div>
 
+<br>
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.4 Formats acceptés pour les documents joints</span>
 
 |Fichiers images |bmp, gif, jpg, jpeg, png  |
@@ -472,13 +482,14 @@ Les informations de version de l’add-in sont consultables dans le menu **<span
 |Feuilles de calcul|csv, kml, ods, xls, xlsx|
 |Fichiers compressés|zip, 7z |
 
+<br>
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.5 Fichiers nécessaires au fonctionnement de l'add-in</span>
 
 <div  style="text-align: center;"> 
 	<img  src="Image27.png" height = 160 />
 </div>
 
-
+<br>
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">6.6 Exemple de contenu du fichier de configuration espaceco.xml</span>
 
 ```xml
