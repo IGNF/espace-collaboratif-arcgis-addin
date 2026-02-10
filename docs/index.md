@@ -333,8 +333,8 @@ Le formulaire suivant permet de :
 
 <div  style="text-align: center;">
   <div style="display: flex; justify-content: center; align-items: center; gap: 1cm;">
-		<img src="Image17.png" alt="Figure 11" height = 500" />
-		<img src="Image18.png" alt="image 18" height = 200"/>
+		<img src="Image17.png" alt="Figure 11" height = "500" />
+		<img src="Image18.png" alt="image 18" height = "200"/>
 	</div>
   <p><strong><span style="color: #548DD4">Figure 11 : Formulaires de création de nouveaux signalements</span></strong></p>
 </div>
@@ -348,7 +348,8 @@ Un message informe du succès de l'envoi vers l’Espace collaboratif du nouveau
 	<img  src="Image19.png" />
 </div>
 
-Cliquer sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Supprimer</span>**  provoque la suppression sur la carte en cours de tous les objets IGN_Espace_collaboratif (signalements et croquis) qu'elle contenait. Ceux-ci ne sont en revanche pas supprimés sur l’Espace collaboratif. Les autres données présentes dans la carte ne sont pas affectées par l'opération.
+Cliquer sur le bouton **<span style="font-family: Consolas, monospace; color: #0000FF">Supprimer</span>**  provoque la suppression sur la carte en cours de tous les objets IGN_Espace_collaboratif (signalements et croquis) qu'elle contenait. Ceux-ci ne sont en revanche pas supprimés sur l’Espace collaboratif.
+Les autres données présentes dans la carte ne sont pas affectées par l'opération.
 
 
 ### <span style="color: white; background-color: #00ADC5; padding: 2px 5px; width: 100%;">5.8 Visualiser les objets associés</span>
@@ -365,8 +366,8 @@ On sélectionne deux signalements (en turquoise), puis on clique sur le bouton *
 
 <div  style="text-align: center;">
   <div style="display: flex; justify-content: center; align-items: center; gap: 1.5cm;">
-		<img src="Image21.png" alt="Figure 12" height = 300" />
-		<img src="Image22.png" alt="image 22 height = 300"/>
+		<img src="Image21.png" alt="Figure 12" height = "300"/>
+		<img src="Image22.png" alt="image 22" height = "300"/>
 	</div>
   <p><strong><span style="color: #548DD4">Figure 12  : Exemple d’utilisation de la « Baguette magique »</span></strong></p>
 </div>
@@ -428,7 +429,7 @@ En cas de dysfonctionnent, il peut être utile de consulter ce log pour connaît
 
 Les informations de version de l’add-in sont consultables dans le menu **<span style="font-family: Consolas, monospace; color: #0000FF">Aide > A propos</span>**.  
 
-<br>
+
 ---
 <div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
   <h2 id="6-annexes" style="color: #00ADC5">6. Annexes</h2>
