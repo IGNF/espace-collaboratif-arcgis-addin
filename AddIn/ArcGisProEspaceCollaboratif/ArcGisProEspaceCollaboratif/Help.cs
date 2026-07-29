@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using static System.Net.WebRequestMethods;
 
 namespace ArcGisProEspaceCollaboratif
 {
@@ -20,11 +21,19 @@ namespace ArcGisProEspaceCollaboratif
         {
             logger.Debug("Clic sur le bouton d'ouverture du manuel de l'add-in Espace collaboratif");
 
-            string file = string.Format("{0}{1}", Helper.EspaceCollaboratifDirectoryFiles, Helper.name_file_manuel);
-            Process fileopener = new ();
-            fileopener.StartInfo.FileName = "explorer";
-            fileopener.StartInfo.Arguments = string.Format("\"{0}\"", file);
-            fileopener.Start();
+            string url = Helper.url_manuel;
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Erreur lors de l'ouverture de l'URL : " + ex.Message);
+            }
         }
     }
 
